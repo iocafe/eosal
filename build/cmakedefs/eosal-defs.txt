@@ -1,0 +1,137 @@
+# eosal-defs.txt - Set cmake build environment variables common to all projects.
+# 28.7.2017/pekka
+
+# Windows 
+if(WIN32)
+  # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.
+  if (NOT DEFINED ENV{E_OS})
+    set(ENV{E_OS} "windows")
+  endif()
+
+  # Generic target operating system version "win32", "win64", "ubuntu16064", "mint18", etc.
+  # Used as name for banary folders and as part of installation package name. 
+  if (NOT DEFINED ENV{E_OSVER})
+    if (CMAKE_CL_64)
+      set(ENV{E_OSVER} "win64")
+    else()
+      set(ENV{E_OSVER} "win32")
+    endif()
+  endif()
+
+  # Compiler name, used as part of library and temporary folder name. 
+  # For example "vs2019", "mingw", "gcc", "gccarm9"...
+  if (NOT DEFINED ENV{E_COMPILER})
+    set(ENV{E_COMPILER} "vs2019")
+  endif()
+
+  # Root path for build.
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "c:/coderoot")
+  endif()
+
+# Linux or other unix like operating system
+else()
+  # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.
+  if (NOT DEFINED ENV{E_OS})
+    set(ENV{E_OS} "linux")
+  endif()
+
+  # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
+  # Used as name for banary folders and as part of installation package name. 
+  if (NOT DEFINED ENV{E_OSVER})
+    set(ENV{E_OSVER} "linux")
+  endif()
+
+  # Compiler name, used as part of library and temporary folder name. 
+  # For example "vs2015", "mingw", "gcc", "gccarm9"...
+  if (NOT DEFINED ENV{E_COMPILER})
+    set(ENV{E_COMPILER} "gcc")
+  endif()
+
+  # Root path for build.
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "/coderoot")
+  endif()
+endif()
+
+# Postfix letter "d" for debug libraries and binaries.
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  set(E_POSTFIX "d")
+else()
+  set(E_POSTFIX "")
+endif()
+
+# Include path.
+set(E_INCLUDE "$ENV{E_ROOT}/eosal")
+include_directories(${E_INCLUDE})
+set(E_INCLUDE "$ENV{E_ROOT}/${E_PROJECT}")
+include_directories(${E_INCLUDE})
+
+# Library path.
+set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_COMPILER}")
+
+# Binary path.
+set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OSVER}")
+
+# Set path to operating system specific scripts by build environment.
+if (NOT DEFINED ENV{E_BUILD_BIN})
+  if(WIN32)
+    set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/windows")
+    set(ENV{PATH} "$ENV{PATH};$ENV{E_BUILD_BIN}")
+  else()
+    set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/linux")
+    set(ENV{PATH} "$ENV{PATH}:$ENV{E_BUILD_BIN}")
+  endif()
+endif()
+
+# Temporary file path.
+set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OSVER}_$ENV{E_COMPILER}")
+
+# Commonly used libraries for eosal console application.
+set(ENV{OSAL_CONSOLE_APP_LIBS} "eosal${E_POSTFIX}")
+
+# Commonly used libraries for eosal application with TLS communication.
+set(ENV{OSAL_TLS_APP_LIBS} "eosal${E_POSTFIX}")
+
+# Commonly used libraries for objects console application.
+set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
+
+# Follow target build to select system libraries, not the build environment
+if($ENV{E_OS} MATCHES "windows")
+  set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};WS2_32")
+  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};crypto;ssl;pthread")
+  set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};WS2_32")
+endif()
+if($ENV{E_OS} MATCHES "linux")
+  set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};pthread")
+  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};crypto;ssl;pthread")
+  set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};pthread")
+endif()
+
+# Add defines to indicate target operating system and target OS version (at level needed for build).
+add_definitions(-DE_OS_$ENV{E_OS})
+add_definitions(-DE_OSVER_$ENV{E_OSVER})
+
+# Add gcc compiler warning flags.
+if($ENV{E_COMPILER} MATCHES "gcc")
+   if(NOT CMAKE_C_FLAGS MATCHES "-Wall")
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+   endif()
+   if(NOT CMAKE_CXX_FLAGS MATCHES "-Wall")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+   endif()
+endif()
+
+
+# if($ENV{E_OS} MATCHES "windows")
+#   # Force to always compile with W4
+#   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+#     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#   else()
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+#   endif()
+# elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+#   # Update if necessary
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
+# endif()
+

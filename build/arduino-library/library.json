@@ -1,0 +1,16 @@
+{
+  "name": "eosal",
+  "version": "1.0.0",
+  "keywords": "abstraction, os, osal",
+  "description": "Operating system abstraction layer for Arduino ARM cortex M4 build",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/pekkalehtikoski/eosal.git"
+  },
+  "frameworks": "arduino",
+  "platforms": [
+    "teensy", 
+    "stm32"
+  ]
+}

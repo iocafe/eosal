@@ -1,0 +1,8 @@
+Contributor Agreement Explained
+10.8.2018/pekka
+
+To accept any contribution I as sign the contributor agreement and email the completed agreement to pekka.lehtikoski@gmail.com. 
+
+The contributor agreement gives me and the contributor joint copyright interests in the code. The contributor retains copyrights while also granting those rights to me as the project owner. You need only sign the contributor agreement once in order to cover all changes that you might contribute to any of my projects. 
+
+Reason for the contributor agreement is that I might one day use the same code base also for commercial projects, and license those in other terms than MIT license used to publish code as open source. This doesn't mean that MIT licensed code will be taken away or removed. To keep open the option to write also commerical sofware, I cannot accept any contribution withhout signed contributor agreement.

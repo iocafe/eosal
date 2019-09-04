@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\code\console\common\osal_console.h" />
+    <ClInclude Include="..\..\code\console\common\osal_sysconsole.h" />
+    <ClInclude Include="..\..\code\debugcode\common\osal_debug.h" />
+    <ClInclude Include="..\..\code\defs\common\osal_common_defs.h" />
+    <ClInclude Include="..\..\code\defs\common\osal_global.h" />
+    <ClInclude Include="..\..\code\defs\common\osal_status.h" />
+    <ClInclude Include="..\..\code\defs\windows\osal_defs.h" />
+    <ClInclude Include="..\..\code\defs\windows\osal_types.h" />
+    <ClInclude Include="..\..\code\event\common\osal_event.h" />
+    <ClInclude Include="..\..\code\initialize\common\osal_initialize.h" />
+    <ClInclude Include="..\..\code\int64\common\osal_int64.h" />
+    <ClInclude Include="..\..\code\memory\common\osal_memory.h" />
+    <ClInclude Include="..\..\code\memory\common\osal_sysmem.h" />
+    <ClInclude Include="..\..\code\mutex\common\osal_mutex.h" />
+    <ClInclude Include="..\..\code\resmon\common\osal_resource_monitor.h" />
+    <ClInclude Include="..\..\code\string\common\osal_char.h" />
+    <ClInclude Include="..\..\code\string\common\osal_string.h" />
+    <ClInclude Include="..\..\code\thread\common\osal_thread.h" />
+    <ClInclude Include="..\..\code\timer\common\osal_timer.h" />
+    <ClInclude Include="..\..\code\utf16\common\osal_utf16.h" />
+    <ClInclude Include="..\..\code\utf32\common\osal_utf32.h" />
+    <ClInclude Include="..\..\eosal.h" />
+    <ClInclude Include="..\..\eosalx.h" />
+    <ClInclude Include="..\..\extensions\filesys\common\osal_dir.h" />
+    <ClInclude Include="..\..\extensions\filesys\common\osal_file.h" />
+    <ClInclude Include="..\..\extensions\filesys\common\osal_filestat.h" />
+    <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
+    <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
+    <ClInclude Include="..\..\extensions\serialize\common\osal_serialize.h" />
+    <ClInclude Include="..\..\extensions\serial\common\osal_serial.h" />
+    <ClInclude Include="..\..\extensions\socket\common\osal_socket.h" />
+    <ClInclude Include="..\..\extensions\strcnv\common\osal_strcnv.h" />
+    <ClInclude Include="..\..\extensions\stream\common\osal_stream.h" />
+    <ClInclude Include="..\..\extensions\stringx\common\osal_stringx.h" />
+    <ClInclude Include="..\..\extensions\time\common\osal_time.h" />
+    <ClInclude Include="..\..\extensions\tls\common\osal_tls.h" />
+    <ClInclude Include="..\..\extensions\typeid\common\osal_typeid.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\code\console\windows\osal_sysconsole.c" />
+    <ClCompile Include="..\..\code\debugcode\common\osal_debug.c" />
+    <ClCompile Include="..\..\code\event\windows\osal_event.c" />
+    <ClCompile Include="..\..\code\initialize\common\osal_initialize.c" />
+    <ClCompile Include="..\..\code\initialize\windows\osal_os_initialize.c" />
+    <ClCompile Include="..\..\code\int64\common\osal_int64.c" />
+    <ClCompile Include="..\..\code\memory\common\osal_memclear.c" />
+    <ClCompile Include="..\..\code\memory\common\osal_memcpy.c" />
+    <ClCompile Include="..\..\code\memory\common\osal_memmove.c" />
+    <ClCompile Include="..\..\code\memory\common\osal_memory.c" />
+    <ClCompile Include="..\..\code\memory\windows\osal_sysmem.c" />
+    <ClCompile Include="..\..\code\mutex\windows\osal_mutex.c" />
+    <ClCompile Include="..\..\code\resmon\common\osal_resource_monitor.c" />
+    <ClCompile Include="..\..\code\string\common\osal_int_to_string.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strchr.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strcmp.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strechr.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strlen.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strncat.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strncpy.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strnicmp.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strstr.c" />
+    <ClCompile Include="..\..\code\thread\windows\osal_thread.c" />
+    <ClCompile Include="..\..\code\thread\windows\osal_thread_priority.c" />
+    <ClCompile Include="..\..\code\timer\windows\osal_timer.c" />
+    <ClCompile Include="..\..\code\utf16\common\osal_char_utf16_to_utf32.c" />
+    <ClCompile Include="..\..\code\utf16\common\osal_char_utf32_to_utf16.c" />
+    <ClCompile Include="..\..\code\utf16\common\osal_string_utf16_to_utf8.c" />
+    <ClCompile Include="..\..\code\utf16\common\osal_string_utf16_to_utf8_malloc.c" />
+    <ClCompile Include="..\..\code\utf16\common\osal_string_utf8_to_utf16.c" />
+    <ClCompile Include="..\..\code\utf16\common\osal_string_utf8_to_utf16_malloc.c" />
+    <ClCompile Include="..\..\code\utf32\common\osal_char_utf32_to_utf8.c" />
+    <ClCompile Include="..\..\code\utf32\common\osal_char_utf8_to_utf32.c" />
+    <ClCompile Include="..\..\extensions\filesys\windows\osal_dir.c" />
+    <ClCompile Include="..\..\extensions\filesys\windows\osal_file.c" />
+    <ClCompile Include="..\..\extensions\filesys\windows\osal_filestat.c" />
+    <ClCompile Include="..\..\extensions\int64x\common\osal_int64_divide.c" />
+    <ClCompile Include="..\..\extensions\int64x\common\osal_int64_double.c" />
+    <ClCompile Include="..\..\extensions\int64x\common\osal_int64_multiply.c" />
+    <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
+    <ClCompile Include="..\..\extensions\rand\common\osal_rand.c" />
+    <ClCompile Include="..\..\extensions\serialize\common\osal_intser.c" />
+    <ClCompile Include="..\..\extensions\serialize\windows\osal_float.c" />
+    <ClCompile Include="..\..\extensions\serial\windows\osal_serial.c" />
+    <ClCompile Include="..\..\extensions\socket\common\osal_socket_util.c" />
+    <ClCompile Include="..\..\extensions\socket\windows\osal_socket.c" />
+    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_float_to_string.c" />
+    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_int64_to_string.c" />
+    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_string_to_float.c" />
+    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_string_to_int64.c" />
+    <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_pattern.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_string_get_item_int.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_string_get_item_value.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_string_to_int.c" />
+    <ClCompile Include="..\..\extensions\time\windows\osal_time.c" />
+    <ClCompile Include="..\..\extensions\tls\common\osal_openssl.c" />
+    <ClCompile Include="..\..\extensions\typeid\common\osal_typeid.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{E4A3C5EC-5D37-4EEF-8DE1-E2D597A0E31F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>eosal</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="static-win32-library.props" />
+    <Import Project="debug-vs2019.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="static-win32-library.props" />
+    <Import Project="release-vs2019.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="static-win64-library.props" />
+    <Import Project="debug-vs2019.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="static-win64-library.props" />
+    <Import Project="release-vs2019.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;OSAL_TRACE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;OSAL_TRACE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
