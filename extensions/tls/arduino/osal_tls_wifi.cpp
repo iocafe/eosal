@@ -31,7 +31,7 @@
    here, not by operating system.
  */
 static osalNetworkInterface osal_net_iface
-  = {"METAL",              /* host_name */
+  = {"BRASS",              /* host_name */
      "192.168.1.201",      /* ip_address */
      "255.255.255.0",      /* subnet_mask */
      "192.168.1.254",      /* gateway_address */
