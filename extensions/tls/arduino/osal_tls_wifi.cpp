@@ -39,6 +39,43 @@ static osalNetworkInterface osal_net_iface
      "66-7F-18-67-A1-D3",  /* mac */
      0};                   /* dhcp */
 
+
+// www.howsmyssl.com root certificate authority, to verify the server
+// change it to your server root CA
+// SHA1 fingerprint is broken now!
+static const char* test_root_ca = \
+     "-----BEGIN CERTIFICATE-----\n" \
+     "MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/\n" \
+     "MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\n" \
+     "DkRTVCBSb290IENBIFgzMB4XDTE2MDMxNzE2NDA0NloXDTIxMDMxNzE2NDA0Nlow\n" \
+     "SjELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUxldCdzIEVuY3J5cHQxIzAhBgNVBAMT\n" \
+     "GkxldCdzIEVuY3J5cHQgQXV0aG9yaXR5IFgzMIIBIjANBgkqhkiG9w0BAQEFAAOC\n" \
+     "AQ8AMIIBCgKCAQEAnNMM8FrlLke3cl03g7NoYzDq1zUmGSXhvb418XCSL7e4S0EF\n" \
+     "q6meNQhY7LEqxGiHC6PjdeTm86dicbp5gWAf15Gan/PQeGdxyGkOlZHP/uaZ6WA8\n" \
+     "SMx+yk13EiSdRxta67nsHjcAHJyse6cF6s5K671B5TaYucv9bTyWaN8jKkKQDIZ0\n" \
+     "Z8h/pZq4UmEUEz9l6YKHy9v6Dlb2honzhT+Xhq+w3Brvaw2VFn3EK6BlspkENnWA\n" \
+     "a6xK8xuQSXgvopZPKiAlKQTGdMDQMc2PMTiVFrqoM7hD8bEfwzB/onkxEz0tNvjj\n" \
+     "/PIzark5McWvxI0NHWQWM6r6hCm21AvA2H3DkwIDAQABo4IBfTCCAXkwEgYDVR0T\n" \
+     "AQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAYYwfwYIKwYBBQUHAQEEczBxMDIG\n" \
+     "CCsGAQUFBzABhiZodHRwOi8vaXNyZy50cnVzdGlkLm9jc3AuaWRlbnRydXN0LmNv\n" \
+     "bTA7BggrBgEFBQcwAoYvaHR0cDovL2FwcHMuaWRlbnRydXN0LmNvbS9yb290cy9k\n" \
+     "c3Ryb290Y2F4My5wN2MwHwYDVR0jBBgwFoAUxKexpHsscfrb4UuQdf/EFWCFiRAw\n" \
+     "VAYDVR0gBE0wSzAIBgZngQwBAgEwPwYLKwYBBAGC3xMBAQEwMDAuBggrBgEFBQcC\n" \
+     "ARYiaHR0cDovL2Nwcy5yb290LXgxLmxldHNlbmNyeXB0Lm9yZzA8BgNVHR8ENTAz\n" \
+     "MDGgL6AthitodHRwOi8vY3JsLmlkZW50cnVzdC5jb20vRFNUUk9PVENBWDNDUkwu\n" \
+     "Y3JsMB0GA1UdDgQWBBSoSmpjBH3duubRObemRWXv86jsoTANBgkqhkiG9w0BAQsF\n" \
+     "AAOCAQEA3TPXEfNjWDjdGBX7CVW+dla5cEilaUcne8IkCJLxWh9KEik3JHRRHGJo\n" \
+     "uM2VcGfl96S8TihRzZvoroed6ti6WqEBmtzw3Wodatg+VyOeph4EYpr/1wXKtx8/\n" \
+     "wApIvJSwtmVi4MFU5aMqrSDE6ea73Mj2tcMyo5jMd6jmeWUHK8so/joWUoHOUgwu\n" \
+     "X4Po1QYz+3dszkDqMp4fklxBwXRsW10KXzPMTZ+sOPAveyxindmjkW8lGy+QsRlG\n" \
+     "PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6\n" \
+     "KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==\n" \
+     "-----END CERTIFICATE-----\n";
+
+// You can use x.509 client certificates if you want
+//const char* test_client_key = "";   //to verify the client
+//const char* test_client_cert = "";  //to verify the client
+
 /** TLS library initialized flag.
  */
 os_boolean osal_tls_initialized = OS_FALSE;
@@ -60,7 +97,9 @@ typedef struct osalSocket
      */
     osalStreamHeader hdr;
 
-    WiFiClientSecure wifi;
+    /* Arduino librarie's Wifi TLS socket client object.
+     */
+    WiFiClientSecure client;
 
     /** Nonzero if socket is used.
      */
@@ -79,7 +118,7 @@ static osalSocket osal_tls[OSAL_MAX_SOCKETS];
 
 /* Prototypes for forward referred static functions.
  */
-static os_short osal_get_unused_socket(void);
+static osalSocket *osal_get_unused_socket(void);
 
 static oe_boolean osal_is_wifi_initialized(
     void);
@@ -135,9 +174,8 @@ osalStream osal_tls_open(
 {
     os_int port_nr;
     os_char host[OSAL_HOST_BUF_SZ];
-    os_short mysocket_ix, ix;
     os_boolean is_ipv6;
-    osalSocket *mysocket;
+    osalSocket *w;
     osalStatus rval = OSAL_STATUS_FAILED;
 
     /* Initialize sockets library, if not already initialized.
@@ -164,49 +202,32 @@ osalStream osal_tls_open(
 
     /* Get first unused osal_tls structure.
      */
-    mysocket_ix = osal_get_unused_socket();
-    if (mysocket_ix == OSAL_MAX_SOCKETS)
+    w = osal_get_unused_socket();
+    if (w == OS_NULL)
     {
         osal_debug_error("osal_tls: Too many sockets");
         goto getout;
     }
 
-    /* Clear osalSocket structure and save interface pointer.
+    /* Connect the socket.
      */
-    mysocket = osal_tls + mysocket_ix;
-    os_memclear(mysocket, sizeof(osalSocket));
-    mysocket->hdr.iface = &osal_tls_iface;
-
-    ix = osal_get_unused_client();
-    if (ix == OSAL_MAX_SOCKETS)
+    if (!t->client.connect(host, port))
     {
-        osal_debug_error("osal_tls: Too many client sockets");
+        osal_trace("Wifi: TLS socket connect failed");
         goto getout;
     }
 
-    if (osal_client[ix].connect(host, port_nr) == 0)
-    {
-        osal_debug_error("osal_tls: Socket connect failed");
-        rval = OSAL_STATUS_CONNECTION_REFUSED;
-        goto getout;
-    }
+    os_memclear(&w->hdr, sizeof(osalStreamHeader));
+    w->used = OS_TRUE;
 
-    osal_client_used[ix] = OS_TRUE;
-    mysocket->use = OSAL_SOCKET_CLIENT;
-    mysocket->index = ix;
-#if OSAL_SOCKET_WIFI
-    mysocket->sockindex = osal_client[ix].fd();
-#else
-    mysocket->sockindex = osal_client[ix].getSocketNumber();
-#endif
-    osal_trace2("Connecting socket");
+    osal_trace2("wifi: TLS socket connected.");
     osal_trace2(host);
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
 	 */
 	if (status) *status = OSAL_SUCCESS;
-    return (osalStream)mysocket;
+    return (osalStream)w;
 
 getout:
     /* Set status code and return NULL pointer to indicate failure.
@@ -235,30 +256,19 @@ getout:
 void osal_tls_close(
 	osalStream stream)
 {
-    osalSocket *mysocket;
-    os_short ix;
+    osalSocket *w;
 
     if (stream == OS_NULL) return;
-    mysocket = (osalSocket*)stream;
-    if (mysocket->use == OSAL_SOCKET_UNUSED)
+    w = (osalSocket*)stream;
+    if (!w->used)
     {
         osal_debug_error("osal_tls: Socket closed twice");
         return;
     }
 
-    ix = mysocket->index;
-    switch (mysocket->use)
-    {
-        case OSAL_SOCKET_CLIENT:
-            osal_client[ix].stop();
-            break;
+    w->client.stop();
 
-        default:
-            osal_debug_error("osal_tls: Socket can not be closed?");
-            break;
-    }
-
-    mysocket->use = OSAL_SOCKET_UNUSED;
+    mysocket->used = OS_FALSE;
 }
 
 
@@ -344,29 +354,27 @@ osalStatus osal_tls_write(
 	os_memsz *n_written,
 	os_int flags)
 {
-    osalSocket *mysocket;
+    osalSocket *w;
     int bytes;
-    os_short ix;
 
     *n_written = 0;
 
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-    mysocket = (osalSocket*)stream;
-    if (mysocket->use != OSAL_SOCKET_CLIENT)
+    w = (osalSocket*)stream;
+    if (!mysocket->used)
     {
-        osal_debug_error("osal_tls: Socket can not be read");
+        osal_debug_error("osal_tls: Unused socket");
         return OSAL_STATUS_FAILED;
     }
-    ix = mysocket->index;
 
-    if (!osal_client[ix].connected())
+    if (!w->client.connected())
     {
         osal_debug_error("osal_tls: Not connected");
         return OSAL_STATUS_FAILED;
     }
     if (n == 0) return OSAL_SUCCESS;
 
-    bytes = osal_client[ix].write(buf, n);
+    bytes = w->client.write(buf, n);
     if (bytes < 0) bytes = 0;
     *n_written = bytes;
 
@@ -410,28 +418,26 @@ osalStatus osal_tls_read(
 	os_memsz *n_read,
 	os_int flags)
 {
-	osalSocket *mysocket;
+    osalSocket *w;
     int bytes;
-    os_short ix;
 
     *n_read = 0;
 
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-    mysocket = (osalSocket*)stream;
-    if (mysocket->use != OSAL_SOCKET_CLIENT)
+    w = (osalSocket*)stream;
+    if (!w->used)
     {
         osal_debug_error("osal_tls: Socket can not be read");
         return OSAL_STATUS_FAILED;
     }
-    ix = mysocket->index;
 
-    if (!osal_client[ix].connected())
+    if (!w->client.connected())
     {
         osal_debug_error("osal_tls: Not connected");
         return OSAL_STATUS_FAILED;
     }
 
-    bytes = osal_client[ix].available();
+    bytes = w->client.available();
     if (bytes < 0) bytes = 0;
     if (bytes)
     {
@@ -440,11 +446,11 @@ osalStatus osal_tls_read(
             bytes = n;
         }
 
-        bytes = osal_client[ix].read(buf, bytes);
+        bytes = w->client.read(buf, bytes);
     }
 
 #if OSAL_TRACE >= 3
-    if (bytes > 0) osal_trace("Data received from socket");
+    if (bytes > 0) osal_trace2("Data received from socket", bytes);
 #endif
 
     *n_read = bytes;
@@ -513,19 +519,19 @@ void osal_tls_set_parameter(
   The osal_get_unused_socket() function finds index of first unused osal_tls item in
   osal_tls array.
 
-  @return Index of the first unused item in osal_tls array, OSAL_MAX_SOCKETS if all are in use.
+  @return Pointer to OSAL TLS socket structure, or OS_NULL if no free ones.
 
 ****************************************************************************************************
 */
-static os_short osal_get_unused_socket(void)
+static osalSocket *osal_get_unused_socket(void)
 {
-    os_short index;
+    int i;
 
-    for (index = 0; index < OSAL_MAX_TLS_CLIENTS; index++)
+    for (i = 0; i < OSAL_MAX_SOCKETS; i++)
     {
-        if (osal_tls[index].use == OSAL_SOCKET_UNUSED) return index;
+        if (!osal_tls[i].used) return osal_tls + i;
     }
-    return OSAL_MAX_SOCKETS;
+    return OS_NULL;
 }
 
 
@@ -546,7 +552,7 @@ static os_short osal_get_unused_socket(void)
 
 ****************************************************************************************************
 */
-static int osal_str_to_bin(
+/* static int osal_str_to_bin(
     byte *x,
     os_short n,
     const os_char* str,
@@ -564,6 +570,7 @@ static int osal_str_to_bin(
     }
     return i + 1 == n;
 }
+*/
 
 
 /**
@@ -581,7 +588,7 @@ static int osal_str_to_bin(
 
 ****************************************************************************************************
 */
-static void osal_ip_from_str(
+/* static void osal_ip_from_str(
     IPAddress& ip,
     const os_char *str)
 {
@@ -599,6 +606,7 @@ static void osal_ip_from_str(
     }
 #endif
 }
+*/
 
 
 /**
@@ -616,7 +624,7 @@ static void osal_ip_from_str(
 
 ****************************************************************************************************
 */
-static void osal_mac_from_str(
+/* static void osal_mac_from_str(
     byte mac[6],
     const char* str)
 {
@@ -633,6 +641,7 @@ static void osal_mac_from_str(
     }
 #endif
 }
+*/
 
 
 /**
@@ -696,6 +705,8 @@ void osal_tls_initialize(
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
+    osal_trace("Commecting to Wifi network...");
+    osal_trace(wifi_net_name);
     WiFi.begin(wifi_net_name, wifi_net_password);
 
     /* Set TLS library initialized flag, now waiting for wifi initialization. We do not lock
@@ -735,10 +746,16 @@ static oe_boolean osal_is_wifi_initialized(
             }
             return OS_FALSE;
         }
-        osal_trace("Wifi initialized");
+        osal_trace("Wifi network connected.");
 
         /* Here WE should convert IP address to string.
            ip_address = Ethernet.localIP(); */
+
+        /* Set up client certificate, if we use one.
+         */
+        // client.setCACert(test_root_ca);  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
+         //client.setCertificate(test_client_key); // for client verification
+         //client.setPrivateKey(test_client_cert);	// for client verification
 
         /* Mark that Wifi is intialized.
          */
