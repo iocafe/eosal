@@ -10,7 +10,7 @@
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -120,7 +120,7 @@ static osalSocket osal_tls[OSAL_MAX_SOCKETS];
  */
 static osalSocket *osal_get_unused_socket(void);
 
-static oe_boolean osal_is_wifi_initialized(
+static os_boolean osal_is_wifi_initialized(
     void);
 
 /**
@@ -130,13 +130,13 @@ static oe_boolean osal_is_wifi_initialized(
   @anchor osal_tls_open
 
   The osal_tls_open() function opens a socket. The socket can be either listening TCP
-  socket, connecting TCP socket or UDP multicast socket. 
+  socket, connecting TCP socket or UDP multicast socket.
 
   @param  parameters Socket parameters, a list string or direct value.
-		  Address and port to connect to, or interface and port to listen for.
+          Address and port to connect to, or interface and port to listen for.
           Socket IP address and port can be specified either as value of "addr" item
           or directly in parameter sstring. For example "192.168.1.55:20" or "localhost:12345"
-          specify IPv4 addressed. If only port number is specified, which is often 
+          specify IPv4 addressed. If only port number is specified, which is often
           useful for listening socket, for example ":12345".
           IPv4 address is automatically recognized from numeric address like
           "2001:0db8:85a3:0000:0000:8a2e:0370:7334", but not when address is specified as string
@@ -146,21 +146,21 @@ static oe_boolean osal_is_wifi_initialized(
   @param  option Not used for sockets, set OS_NULL.
 
   @param  status Pointer to integer into which to store the function status code. Value
-		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
+          OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
           See @ref osalStatus "OSAL function return codes" for full list.
-		  This parameter can be OS_NULL, if no status code is needed. 
+          This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the socket. Bit fields, combination of:
-          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
-          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address.
+          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections.
+          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket.
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open socket with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
           - OSAL_STREAM_BLOCKING: Open socket in blocking mode.
 
-		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
+          See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
   @return Stream pointer representing the socket, or OS_NULL if the function failed.
 
@@ -168,9 +168,9 @@ static oe_boolean osal_is_wifi_initialized(
 */
 osalStream osal_tls_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     os_int port_nr;
     os_char host[OSAL_HOST_BUF_SZ];
@@ -189,13 +189,14 @@ osalStream osal_tls_open(
      */
     if (!osal_is_wifi_initialized())
     {
-        return OSAL_STATUS_PENDING;
+        rval = OSAL_STATUS_PENDING;
+        goto getout;
     }
 
-	/* Get host name or numeric IP address and TCP port number from parameters.
+    /* Get host name or numeric IP address and TCP port number from parameters.
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
-	 */
+     */
     port_nr = OSAL_DEFAULT_SOCKET_PORT;
     osal_socket_get_host_name_and_port(parameters,
         &port_nr, host, sizeof(host), &is_ipv6);
@@ -211,7 +212,7 @@ osalStream osal_tls_open(
 
     /* Connect the socket.
      */
-    if (!t->client.connect(host, port))
+    if (!w->client.connect(host, port_nr))
     {
         osal_trace("Wifi: TLS socket connect failed");
         goto getout;
@@ -225,15 +226,15 @@ osalStream osal_tls_open(
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
-	 */
-	if (status) *status = OSAL_SUCCESS;
+     */
+    if (status) *status = OSAL_SUCCESS;
     return (osalStream)w;
 
 getout:
     /* Set status code and return NULL pointer to indicate failure.
-	 */
+     */
     if (status) *status = rval;
-	return OS_NULL;
+    return OS_NULL;
 }
 
 
@@ -248,13 +249,13 @@ getout:
   this call may result crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will
-		   point to invalid memory location.
+           point to invalid memory location.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_tls_close(
-	osalStream stream)
+    osalStream stream)
 {
     osalSocket *w;
 
@@ -267,8 +268,7 @@ void osal_tls_close(
     }
 
     w->client.stop();
-
-    mysocket->used = OS_FALSE;
+    w->used = OS_FALSE;
 }
 
 
@@ -282,21 +282,21 @@ void osal_tls_close(
 
   @param   stream Stream pointer representing the listening socket.
   @param   status Pointer to integer into which to store the function status code. Value
-		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
-		   The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming 
-		   connection, was accepted.  All other nonzero values indicate an error,
+           OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
+           The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming
+           connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
-		   This parameter can be OS_NULL, if no status code is needed. 
+           This parameter can be OS_NULL, if no status code is needed.
   @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Stream pointer representing the socket, or OS_NULL if the function failed.
 
 ****************************************************************************************************
 */
 osalStream osal_tls_accept(
-	osalStream stream,
-	osalStatus *status,
-	os_int flags)
+    osalStream stream,
+    osalStatus *status,
+    os_int flags)
 {
     if (status) *status = OSAL_STATUS_FAILED;
     return OS_NULL;
@@ -314,15 +314,15 @@ osalStream osal_tls_accept(
   @param   stream Stream pointer representing the socket.
   @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_tls_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
-	return OSAL_SUCCESS;
+    return OSAL_SUCCESS;
 }
 
 
@@ -336,23 +336,23 @@ osalStatus osal_tls_flush(
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
-  @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
-		   actually written to socket,  which may be less than n if there is not enough space
-		   left in the socket. If the function fails n_written is set to zero.
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
+           actually written to socket,  which may be less than n if there is not enough space
+           left in the socket. If the function fails n_written is set to zero.
   @param   flags Flags for the function.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_tls_write(
     osalStream stream,
-	const os_uchar *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    const os_uchar *buf,
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     osalSocket *w;
     int bytes;
@@ -361,7 +361,7 @@ osalStatus osal_tls_write(
 
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
     w = (osalSocket*)stream;
-    if (!mysocket->used)
+    if (!w->used)
     {
         osal_debug_error("osal_tls: Unused socket");
         return OSAL_STATUS_FAILED;
@@ -397,26 +397,26 @@ osalStatus osal_tls_write(
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
-		   at least this many bytes. 
-  @param   n_read Pointer to integer into which the function stores the number of bytes read, 
-           which may be less than n if there are fewer bytes available. If the function fails 
-		   n_read is set to zero.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation. 
-		   The OSAL_STREAM_PEEK flag causes the function to return data in socket, but nothing
-		   will be removed from the socket.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           at least this many bytes.
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
+           The OSAL_STREAM_PEEK flag causes the function to return data in socket, but nothing
+           will be removed from the socket.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_tls_read(
-	osalStream stream,
-	os_uchar *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    osalStream stream,
+    os_uchar *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     osalSocket *w;
     int bytes;
@@ -450,7 +450,7 @@ osalStatus osal_tls_read(
     }
 
 #if OSAL_TRACE >= 3
-    if (bytes > 0) osal_trace2("Data received from socket", bytes);
+    if (bytes > 0) osal_trace2_int("Data received from socket", bytes);
 #endif
 
     *n_read = bytes;
@@ -468,18 +468,18 @@ osalStatus osal_tls_read(
 
   @param   stream Stream pointer representing the socket.
   @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
   @return  Parameter value.
 
 ****************************************************************************************************
 */
 os_long osal_tls_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
-	/* Call the default implementation
-	 */
-	return osal_stream_default_get_parameter(stream, parameter_ix);
+    /* Call the default implementation
+     */
+    return osal_stream_default_get_parameter(stream, parameter_ix);
 }
 
 
@@ -493,20 +493,20 @@ os_long osal_tls_get_parameter(
 
   @param   stream Stream pointer representing the socket.
   @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
   @param   value Parameter value to set.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_tls_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
-	/* Call the default implementation
-	 */
-	osal_stream_default_set_parameter(stream, parameter_ix, value);
+    /* Call the default implementation
+     */
+    osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -693,7 +693,7 @@ void osal_tls_initialize(
 
     osal_tls_initialized = OS_TRUE;
 
-    osal_mac_from_str(mac, osal_net_iface.mac);
+    // osal_mac_from_str(mac, osal_net_iface.mac);
 
     /* Initialize using static configuration.
     osal_ip_from_str(ip_address, osal_net_iface.ip_address);
@@ -726,11 +726,11 @@ void osal_tls_initialize(
   The osal_is_wifi_initialized() function is used when opening or staring to listen for incoming
   connections to make sure that WiFi network is connected.
 
-  @return  OE_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
+  @return  OS_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
 
 ****************************************************************************************************
 */
-static oe_boolean osal_is_wifi_initialized(
+static os_boolean osal_is_wifi_initialized(
     void)
 {
     if (!osal_wifi_initialized)
@@ -739,10 +739,10 @@ static oe_boolean osal_is_wifi_initialized(
          */
         if (WiFi.status() != WL_CONNECTED)
         {
-            if (os_elapsed(osal_wifi_init_timer, 500))
+            if (os_elapsed(&osal_wifi_init_timer, 500))
             {
                 osal_trace2(".");
-                os_get_timer(&(osal_wifi_init_timer);
+                os_get_timer(&osal_wifi_init_timer);
             }
             return OS_FALSE;
         }
@@ -761,7 +761,7 @@ static oe_boolean osal_is_wifi_initialized(
          */
         osal_wifi_initialized = OS_TRUE;
     }
-    return OE_TRUE;
+    return OS_TRUE;
 }
 
 
@@ -778,7 +778,7 @@ static oe_boolean osal_is_wifi_initialized(
 ****************************************************************************************************
 */
 void osal_tls_shutdown(
-	void)
+    void)
 {
     if (osal_tls_initialized)
     {
@@ -818,11 +818,11 @@ osalStreamInterface osal_tls_iface
     osal_tls_close,
     osal_tls_accept,
     osal_tls_flush,
-	osal_stream_default_seek,
+    osal_stream_default_seek,
     osal_tls_write,
     osal_tls_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
     osal_tls_get_parameter,
     osal_tls_set_parameter,
     OS_NULL};
