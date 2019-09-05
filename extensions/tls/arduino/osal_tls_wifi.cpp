@@ -1,12 +1,12 @@
 /**
 
   @file    tls/arduino/osal_tls_wifi.c
-  @brief   OSAL sockets API arduino WizNet implementation.
+  @brief   OSAL TLS sockets API Arduino WiFi implementation.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    20.1.2017
 
-  Implementation of OSAL sockets for WizNet Ethernet within Arduino framework.
+  Implementation of OSAL sockets for secure TLS sockets over WiFi within Arduino framework.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -39,45 +39,17 @@ static osalNetworkInterface osal_net_iface
      "66-7F-18-67-A1-D3",  /* mac */
      0};                   /* dhcp */
 
-/* Socket library initialized flag.
+/** TLS library initialized flag.
  */
 os_boolean osal_tls_initialized = OS_FALSE;
 
-/* Client sockets.
+/** WiFi network connected flag.
  */
-#define OSAL_MAX_TLS_CLIENTS 6
-static WiFiClientSecure osal_client[OSAL_MAX_TLS_CLIENTS];
-static os_boolean osal_client_used[OSAL_MAX_TLS_CLIENTS];
+static os_boolean osal_wifi_initialized;
 
-/* Listening server sockets.
+/** WiFi network connection timer.
  */
-/* #define OSAL_MAX_TLS_SERVERS 2
-static WiFiServerSecure osal_server[OSAL_MAX_TLS_SERVERS]
-    = {WiFiServerSecure(OSAL_DEFAULT_SOCKET_PORT),
-       WiFiServerSecure(OSAL_DEFAULT_SOCKET_PORT+1)};
-static os_boolean osal_server_used[OSAL_MAX_TLS_SERVERS];
-*/
-
-
-/** Index to mark that there are no unused items in array.
- */
-#define OSAL_ALL_USED 127
-
-/** Maximum number of sockets.
- */
-#define OSAL_MAX_SOCKETS 8
-
-/** Possible socket uses.
- */
-typedef enum
-{
-    OSAL_SOCKET_UNUSED = 0,
-    OSAL_SOCKET_CLIENT,
-    OSAL_SOCKET_SERVER,
-    OSAL_SOCKET_UDP
-}
-osalSocketUse;
-
+static os_timer osal_wifi_init_timer;
 
 /** Arduino specific socket structure to store information.
  */
@@ -88,20 +60,17 @@ typedef struct osalSocket
      */
     osalStreamHeader hdr;
 
-    /** Nonzero if socket [sockindex] is used. One of OSAL_SOCKET_UNUSED, OSAL_SOCKET_CLIENT,
-        OSAL_SOCKET_SERVER or OSAL_SOCKET_UDP.
-     */
-    osalSocketUse use;
+    WiFiClientSecure wifi;
 
-    /** Index in osal_client, osal_server or osal_udp array, depending on "use" member.
-	 */
-    os_short index;
-
-    /** Wiznet chip's or other socket port index.
+    /** Nonzero if socket is used.
      */
-    int sockindex;
+    os_boolean used;
 }
 osalSocket;
+
+/** Maximum number of sockets.
+ */
+#define OSAL_MAX_SOCKETS 8
 
 /* Array of socket structures for every possible WizNet sockindex
  */
@@ -111,9 +80,9 @@ static osalSocket osal_tls[OSAL_MAX_SOCKETS];
 /* Prototypes for forward referred static functions.
  */
 static os_short osal_get_unused_socket(void);
-static os_short osal_get_unused_client(void);
-// static os_short osal_get_unused_server(void);
 
+static oe_boolean osal_is_wifi_initialized(
+    void);
 
 /**
 ****************************************************************************************************
@@ -178,6 +147,13 @@ osalStream osal_tls_open(
         osal_tls_initialize(0);
     }
 
+    /* If WiFi network is not connected, we can do nothing.
+     */
+    if (!osal_is_wifi_initialized())
+    {
+        return OSAL_STATUS_PENDING;
+    }
+
 	/* Get host name or numeric IP address and TCP port number from parameters.
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
@@ -189,7 +165,7 @@ osalStream osal_tls_open(
     /* Get first unused osal_tls structure.
      */
     mysocket_ix = osal_get_unused_socket();
-    if (mysocket_ix == OSAL_ALL_USED)
+    if (mysocket_ix == OSAL_MAX_SOCKETS)
     {
         osal_debug_error("osal_tls: Too many sockets");
         goto getout;
@@ -202,7 +178,7 @@ osalStream osal_tls_open(
     mysocket->hdr.iface = &osal_tls_iface;
 
     ix = osal_get_unused_client();
-    if (ix == OSAL_ALL_USED)
+    if (ix == OSAL_MAX_SOCKETS)
     {
         osal_debug_error("osal_tls: Too many client sockets");
         goto getout;
@@ -537,7 +513,7 @@ void osal_tls_set_parameter(
   The osal_get_unused_socket() function finds index of first unused osal_tls item in
   osal_tls array.
 
-  @return Index of the first unused item in osal_tls array, OSAL_ALL_USED (127) if all are in use.
+  @return Index of the first unused item in osal_tls array, OSAL_MAX_SOCKETS if all are in use.
 
 ****************************************************************************************************
 */
@@ -549,34 +525,8 @@ static os_short osal_get_unused_socket(void)
     {
         if (osal_tls[index].use == OSAL_SOCKET_UNUSED) return index;
     }
-    return OSAL_ALL_USED;
+    return OSAL_MAX_SOCKETS;
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Get first unused EthernetClient.
-  @anchor osal_get_unused_client
-
-  The osal_get_unused_client() function finds index of first unused EthernetClient item in
-  osal_clients array.
-
-  @return Index of the first unused item in osal_client array, OSAL_ALL_USED (127) if all are in use.
-
-****************************************************************************************************
-*/
-static os_short osal_get_unused_client(void)
-{
-    os_short index;
-
-    for (index = 0; index < OSAL_MAX_TLS_CLIENTS; index++)
-    {
-        if (!osal_client_used[index]) return index;
-    }
-    return OSAL_ALL_USED;
-}
-
 
 
 /**
@@ -699,15 +649,15 @@ static void osal_mac_from_str(
 ****************************************************************************************************
 */
 void osal_tls_initialize(
-    void)
+    osalTLSParam *prm)
 {
-    const char* ssid     = "bean24";
-    const char* password = "talvi333";
-
+    const os_char *wifi_net_name = "bean24";
+    const os_char *wifi_net_password = "talvi333";
+    int i;
 
     /* Initialize only once.
      */
-    IPAddress
+    /* IPAddress
         ip_address(192, 168, 1, 201),
         dns_address(8, 8, 8, 8),
         gateway_address(192, 168, 1, 254),
@@ -715,38 +665,87 @@ void osal_tls_initialize(
 
     byte
         mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
+    */
+
+    /* Clear Get parameters. Use defaults if not set.
+     */
+    for (i = 0; i < OSAL_MAX_SOCKETS; i++)
+    {
+        osal_tls[i].used = OS_FALSE;
+    }
+
+    /* Get parameters. Use defaults if not set.
+     */
+    if (prm)
+    {
+        if (prm->wifi_net_name) wifi_net_name = prm->wifi_net_name;
+        if (prm->wifi_net_password) wifi_net_password = prm->wifi_net_password;
+    }
 
     osal_tls_initialized = OS_TRUE;
-    os_memclear(osal_client_used, sizeof(osal_client_used));
 
     osal_mac_from_str(mac, osal_net_iface.mac);
 
     /* Initialize using static configuration.
-     */
     osal_ip_from_str(ip_address, osal_net_iface.ip_address);
     osal_ip_from_str(dns_address, osal_net_iface.dns_address);
     osal_ip_from_str(gateway_address, osal_net_iface.gateway_address);
     osal_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
-
-    /* Start the WiFi.
      */
-    WiFi.begin(ssid, password);
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    osal_trace("Wifi initialized ");
+    /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
+       without WiFi network.
+     */
+    WiFi.begin(wifi_net_name, wifi_net_password);
 
-    // ip_address = Ethernet.localIP();
-
-// Here WE should convert IP address to string.
-
-    /* Set socket library initialized flag.
+    /* Set TLS library initialized flag, now waiting for wifi initialization. We do not lock
+     * the code here to allow IO sequence, etc to proceed even without wifi.
      */
     osal_tls_initialized = OS_TRUE;
+    osal_wifi_initialized = OS_FALSE;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Check if WiFi network is connected.
+  @anchor osal_is_wifi_initialized
+
+  The osal_is_wifi_initialized() function is used when opening or staring to listen for incoming
+  connections to make sure that WiFi network is connected.
+
+  @return  OE_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
+
+****************************************************************************************************
+*/
+static oe_boolean osal_is_wifi_initialized(
+    void)
+{
+    if (!osal_wifi_initialized)
+    {
+        /* If WiFi is not connected, just return failure.
+         */
+        if (WiFi.status() != WL_CONNECTED)
+        {
+            if (os_elapsed(osal_wifi_init_timer, 500))
+            {
+                osal_trace2(".");
+                os_get_timer(&(osal_wifi_init_timer);
+            }
+            return OS_FALSE;
+        }
+        osal_trace("Wifi initialized");
+
+        /* Here WE should convert IP address to string.
+           ip_address = Ethernet.localIP(); */
+
+        /* Mark that Wifi is intialized.
+         */
+        osal_wifi_initialized = OS_TRUE;
+    }
+    return OE_TRUE;
+}
 
 
 /**
