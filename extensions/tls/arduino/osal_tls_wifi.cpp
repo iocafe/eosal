@@ -88,10 +88,11 @@ static os_boolean osal_wifi_initialized;
  */
 static os_timer osal_wifi_init_timer;
 
-/** Arduino specific socket structure to store information.
+/** Arduino specific socket class to store information.
  */
-typedef struct osalSocket
+class osalSocket
 {
+    public:
     /** A stream structure must start with this generic stream header structure, which contains
         parameters common to every stream.
      */
@@ -104,8 +105,7 @@ typedef struct osalSocket
     /** Nonzero if socket is used.
      */
     os_boolean used;
-}
-osalSocket;
+};
 
 /** Maximum number of sockets.
  */
@@ -210,6 +210,15 @@ osalStream osal_tls_open(
         goto getout;
     }
 
+    /* Set up client certificate, if we use one.
+     */
+    // w->client.setCACert(test_root_ca);  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
+     //w->client.setCertificate(test_client_key); // for client verification
+     //w->client.setPrivateKey(test_client_cert);	// for client verification
+
+    osal_trace2_int("Connecting to TLS socket port ", port_nr);
+    osal_trace2(host);
+
     /* Connect the socket.
      */
     if (!w->client.connect(host, port_nr))
@@ -218,11 +227,12 @@ osalStream osal_tls_open(
         goto getout;
     }
 
+w->client.println("GET https://www.howsmyssl.com/a/check HTTP/1.0");
+
     os_memclear(&w->hdr, sizeof(osalStreamHeader));
     w->used = OS_TRUE;
 
     osal_trace2("wifi: TLS socket connected.");
-    osal_trace2(host);
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
@@ -750,12 +760,6 @@ static os_boolean osal_is_wifi_initialized(
 
         /* Here WE should convert IP address to string.
            ip_address = Ethernet.localIP(); */
-
-        /* Set up client certificate, if we use one.
-         */
-        // client.setCACert(test_root_ca);  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
-         //client.setCertificate(test_client_key); // for client verification
-         //client.setPrivateKey(test_client_cert);	// for client verification
 
         /* Mark that Wifi is intialized.
          */
