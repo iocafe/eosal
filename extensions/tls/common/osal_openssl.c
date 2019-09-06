@@ -804,7 +804,7 @@ osalStatus osal_openssl_select(
 void osal_tls_initialize(
     osalTLSParam *prm)
 {
-    os_char
+    const os_char
         *certfile = OS_NULL,
         *keyfile = OS_NULL;
 
