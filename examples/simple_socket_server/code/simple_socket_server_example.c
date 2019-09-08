@@ -87,7 +87,8 @@ void example_setup(void)
 {
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
-    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":6001", OS_NULL,
+    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":6368", OS_NULL,
+//    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":6001", OS_NULL,
         OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
 #endif
 
