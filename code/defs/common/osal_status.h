@@ -40,13 +40,17 @@ typedef enum
      */
     OSAL_SUCCESS = 0,
 
+    /** No work to be done (not indicating an error).
+     */
+    OSAL_STATUS_NOTHING_TO_DO,
+
+    /** General operation pending (not indicating an error).
+     */
+    OSAL_STATUS_PENDING,
+
     /** General failed.
      */
     OSAL_STATUS_FAILED,
-
-    /** General operation pending.
-     */
-    OSAL_STATUS_PENDING,
 
     /** Creating thread failed.
      */

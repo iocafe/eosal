@@ -586,6 +586,11 @@ getout:
 
   The osal_socket_flush() function flushes data to be written to stream.
 
+  IMPORTANT, FLUSH MUST BE CALLED: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT) must
+  be called when select call returns even after writing or even if nothing was written, or
+  periodically in in single thread mode. This is necessary even if no data was written
+  previously, the socket may have stored buffered data to avoid blocking.
+
   @param   stream Stream pointer representing the socket.
   @param   flags Often OSAL_STREAM_DEFAULT. See @ref osalStreamFlags "Flags for Stream Functions"
            for full list of flags.
