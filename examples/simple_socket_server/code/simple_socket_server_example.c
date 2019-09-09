@@ -164,12 +164,14 @@ void example_loop(void)
                 osal_stream_close(open_socket);
                 open_socket = OS_NULL;
             }
-            else
-            {
-                osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
-            }
         }
     }
+
+    if (open_socket)
+    {
+        osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
+    }
+
 }
 
 void example_cleanup(void)
