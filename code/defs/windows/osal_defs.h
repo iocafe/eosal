@@ -201,7 +201,7 @@
 /** Generic TLS support on/off switch.
  */
 #ifndef OSAL_TLS_SUPPORT
-#define OSAL_TLS_SUPPORT 0
+#define OSAL_TLS_SUPPORT 1
 #endif
 
 /** If TLS based on OpenSSL define OSAL_OPENSSL_SUPPORT is nonzero. If TLS is based on platform specific
