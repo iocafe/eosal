@@ -587,7 +587,8 @@ getout:
   The osal_socket_flush() function flushes data to be written to stream.
 
   @param   stream Stream pointer representing the socket.
-  @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+  @param   flags Often OSAL_STREAM_DEFAULT. See @ref osalStreamFlags "Flags for Stream Functions"
+           for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
 		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 

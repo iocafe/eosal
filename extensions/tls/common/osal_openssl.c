@@ -602,7 +602,7 @@ osalStatus osal_openssl_read(
     sslsocket = (osalSSLSocket*)stream;
     osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
 
-osal_openssl_flush(stream, OSAL_STREAM_DEFAULT);
+// osal_openssl_flush(stream, OSAL_STREAM_DEFAULT);
 
     do
     {
@@ -679,16 +679,20 @@ osal_openssl_flush(stream, OSAL_STREAM_DEFAULT);
             nprocessed = SSL_read(sslsocket->ssl, buf, n);
             if (nprocessed == 0) break;
 
-            buf += nprocessed;
-            n -= nprocessed;
-            something_done += nprocessed;
-            *n_read = nprocessed;
-
-            status = osal_openssl_get_sslstatus(sslsocket->ssl, nprocessed);
+            /* If not error, advance
+             */
+            if (nprocessed > 0)
+            {
+                buf += nprocessed;
+                n -= nprocessed;
+                *n_read += nprocessed;
+            }
+            something_done = 1;
 
             /* Did SSL request to write bytes? This can happen if peer has requested SSL
                renegotiation.
              */
+            status = osal_openssl_get_sslstatus(sslsocket->ssl, nprocessed);
             if (status == OSAL_SSLSTATUS_WANT_IO)
             {
                 do {

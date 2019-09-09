@@ -30,7 +30,7 @@
 
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
 static osalStream stream, accepted_socket, open_socket;
 
@@ -119,8 +119,10 @@ void example_setup(void)
 
 void example_loop(void)
 {
-    os_uchar buf[64], *pos;
+    os_uchar buf[64];
     os_memsz n_read, n_written;
+    os_uint c;
+    os_int bytes;
 
     osal_socket_maintain();
 
@@ -141,27 +143,30 @@ void example_loop(void)
 
     if (open_socket)
     {
-        if (osal_stream_read(open_socket, buf, sizeof(buf), &n_read, OSAL_STREAM_DEFAULT))
+        if (osal_stream_read(open_socket, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("socket connection broken");
             osal_stream_close(open_socket);
             open_socket = OS_NULL;
         }
-        else
+        else if (n_read)
         {
-            pos = buf;
-            while (n_read > 0)
+            buf[n_read] ='\0';
+            osal_console_write((os_char*)buf);
+        }
+
+        c = osal_console_read();
+        if (c)
+        {
+            bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+            if (osal_stream_write(open_socket, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
             {
-                if (osal_stream_write(open_socket, pos, n_read, &n_written, OSAL_STREAM_DEFAULT))
-                {
-                    osal_stream_close(open_socket);
-                    open_socket = OS_NULL;
-                    break;
-                }
-                n_read -= n_written;
-                pos += n_written;
-                if (n_read == 0) break;
-                os_timeslice();
+                osal_stream_close(open_socket);
+                open_socket = OS_NULL;
+            }
+            else
+            {
+                osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
             }
         }
     }
