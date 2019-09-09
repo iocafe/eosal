@@ -71,12 +71,12 @@ os_uint osal_sysconsole_read(
 {
     struct termios attr;
     int nbytes;
-    static os_boolean line_buffering_disabled = 0;
+    static os_boolean line_buffering_disabled = OS_FALSE;
     const int stdin_handle = 0;
 
     if (!line_buffering_disabled)
     {
-        line_buffering_disabled = 1;
+        line_buffering_disabled = OS_TRUE;
 
         tcgetattr(stdin_handle, &attr);
         attr.c_lflag &= ~ICANON;

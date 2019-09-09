@@ -51,12 +51,12 @@ osalSSLStatus;
  */
 SSL_CTX *ctx;
 
-#define DEFAULT_BUF_SIZE 64
+#define OSAL_SSL_DEFAULT_BUF_SIZE 512
 
-#define OSAL_ENCRYPT_BUFFER_SZ 128
+#define OSAL_ENCRYPT_BUFFER_SZ 256
 
 
-#define OSAL_READ_BUF_SZ 128
+#define OSAL_READ_BUF_SZ 512
 
 
 /** OpenSSL specific socket data structure. OSAL functions cast their own stream structure
@@ -77,10 +77,6 @@ typedef struct osalSSLSocket
         function. 
 	 */
 	os_int open_flags;
-
-    /** Linux socket's file descriptor.
-     */
-    // int fd;
 
     SSL *ssl;
 
@@ -108,10 +104,6 @@ typedef struct osalSSLSocket
      */
     os_uchar read_buf[OSAL_READ_BUF_SZ];
     os_int read_buf_n;
-
-    /** Method to invoke when unencrypted bytes are available.
-     */
-//    void (*io_on_read)(char *buf, size_t len);
 }
 osalSSLSocket;
 
@@ -136,9 +128,6 @@ static osalStatus osal_openssl_client_init(
 static void osal_openssl_client_cleanup(
     osalSSLSocket *sslsocket);
 
-/* static os_boolean osal_openssl_client_want_write(
-    osalSSLSocket *sslsocket); */
-
 static osalSSLStatus osal_openssl_get_sslstatus(
     SSL* ssl,
     os_memsz n);
@@ -156,16 +145,8 @@ static void osal_openssl_queue_encrypted_bytes(
 static osalSSLStatus osal_openssl_do_ssl_handshake(
     osalSSLSocket *sslsocket);
 
-/* static int osal_openssl_on_read_cb(
-    osalSSLSocket *sslsocket,
-    char* src,
-    size_t len); */
-
 static osalStatus osal_openssl_do_encrypt(
     osalSSLSocket *sslsocket);
-
-/* static int osal_openssl_do_sock_read(
-    osalSSLSocket *sslsocket); */
 
 static osalStatus osal_openssl_do_sock_write(
     osalSSLSocket *sslsocket);
@@ -1141,7 +1122,7 @@ static void osal_openssl_queue_encrypted_bytes(
 static osalSSLStatus osal_openssl_do_ssl_handshake(
     osalSSLSocket *sslsocket)
 {
-    char buf[DEFAULT_BUF_SIZE];
+    char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
     osalSSLStatus status;
 
     int n = SSL_do_handshake(sslsocket->ssl);
@@ -1190,7 +1171,7 @@ static osalSSLStatus osal_openssl_do_ssl_handshake(
 static osalStatus osal_openssl_do_encrypt(
     osalSSLSocket *sslsocket)
 {
-    char buf[DEFAULT_BUF_SIZE];
+    char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
     osalSSLStatus status;
     osalStatus s;
     int n;
