@@ -32,7 +32,7 @@
 
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
 
 /* Modify connection parameters here: These apply to different communication types
    EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET sets TCP/IP address to connect to.
@@ -42,7 +42,7 @@
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific 
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
-#define EXAMPLE_TCP_SOCKET "192.168.1.221:6001"
+#define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
 #define EXAMPLE_TLS_SOCKET "127.0.0.1:55555"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
@@ -101,6 +101,8 @@ os_int osal_main(
     {
         osal_socket_maintain();
 
+        /* Print data received from the stream to console.
+         */
         if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("read: connection broken");
@@ -112,6 +114,8 @@ os_int osal_main(
             osal_console_write((os_char*)buf);
         }
 
+        /* And write user key presses to the stream.
+         */
         c = osal_console_read();
         if (c)
         {
@@ -123,6 +127,9 @@ os_int osal_main(
             }
         }
 
+        /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
+           implementetios buffers data internally and this moves buffered data.
+         */
         if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("flush: connection broken");

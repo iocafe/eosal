@@ -4,8 +4,14 @@
   @brief   Socket client example.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    9.9.2019
 
+  Connects a socket to server
+  - Create worker thread to trigger custom event once per two seconds.
+  - Block in select, print asterix '*' when select is unblocked.
+  - Print characters received from the socket to console.
+  - Write characters typed by use to socket at custom event.
+  
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
@@ -15,6 +21,12 @@
 */
 #include "eosalx.h"
 
+/* Modify connection parameters here: These apply to different communication types
+ */
+#define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
+
+/* Parameters to start a worter thread. 
+ */
 typedef struct MyThreadParams
 {
     osalEvent  myevent;
@@ -22,6 +34,22 @@ typedef struct MyThreadParams
 }
 MyThreadParams;
 
+
+/**
+****************************************************************************************************
+
+  @brief Worker thread.
+
+  The worker thread function sents custom event to allow blocked osal_stream_select() to continue.
+
+  @param   prm Pointer to worker thread parameter structure.
+  @param   done Event to set when worker thread has started. Often used to indicate that 
+           worker thread has made a local copy of parameters.
+
+  @return  None.
+
+****************************************************************************************************
+*/
 static void mythread_func(
 	void *prm,
     osalEvent done)
@@ -33,7 +61,7 @@ static void mythread_func(
 
     while (!p->stopthread)
     {
-        os_sleep(osal_rand(10, 300));
+        os_sleep(2000);
         osal_event_set(p->myevent);
     }
 }
@@ -60,16 +88,23 @@ os_int osal_main(
     osalStream handle;
     osalStatus status;
     osalSelectData selectdata;
-    os_char mystr[] = "0.eppu", buf[64];
+    os_char buf[64], *p;
     os_memsz n_read, n_written;
+    os_int bytes, n;
+    os_uint c;
     osalEvent  myevent;
     MyThreadParams mythreadprm;
     osalThreadHandle *mythread;
 
-    handle = osal_stream_open(OSAL_SOCKET_IFACE, "localhost:" OSAL_DEFAULT_SOCKET_PORT_STR,
-    // handle = osal_stream_open(OSAL_SOCKET_IFACE, "[localhost]:" OSAL_DEFAULT_SOCKET_PORT_STR,
-        OS_NULL, &status, OSAL_STREAM_CONNECT|OSAL_STREAM_SELECT);
-
+    /* Initialize socket library and connect a socket. Notice flag OSAL_STREAM_TCP_NODELAY.
+       If OSAL_STREAM_TCP_NODELAY is given, the nagle algorithm is disabled and writes
+       are buffered until enough data for a packet collected, or osal_stream_flush is
+       called. This is very useful for fast IO, etc, but not so for data transfer over
+       internet, like user interfaces.
+     */
+    osal_socket_initialize();
+    handle = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET,
+        OS_NULL, &status, OSAL_STREAM_CONNECT|OSAL_STREAM_SELECT|OSAL_STREAM_TCP_NODELAY);
     if (status)
     {
 	    osal_console_write("osal_stream_open failed\n");
@@ -87,71 +122,94 @@ os_int osal_main(
     mythread = osal_thread_create(mythread_func, &mythreadprm,
 	    OSAL_THREAD_ATTACHED, 0, "mythread");
 
-    status = osal_stream_write(handle, (os_uchar*)mystr,
-        os_strlen(mystr)-1, &n_written, OSAL_STREAM_DEFAULT);
-
-
     while (OS_TRUE)
     {
-        if (mystr[0]++ == '9') mystr[0] = '0';
-
+        /* Block here until something needs attention. 
+         */
         status = osal_stream_select(&handle, 1, myevent, &selectdata, 0, OSAL_STREAM_DEFAULT);
         if (status)
         {
-	        osal_console_write("osal_stream_select failed\n");
+	        osal_debug_error("osal_stream_select failed\n");
             break;
         }
 
+        /* So asterix to indicate that the thread was unblocked.
+         */
+        osal_console_write("*");
+
+        /* Handle custom event set by the worker thread.
+         */
         if (selectdata.eventflags & OSAL_STREAM_CUSTOM_EVENT)
         {
-            osal_console_write("custom event\n");
-            /* status = osal_stream_write(handle, mystr,
-                os_strlen(mystr)-1, &n_written, OSAL_STREAM_DEFAULT);
-            os_memclear(buf, sizeof(buf));
-            status = osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT);
-            osal_console_write(buf);
-            osal_console_write("\n"); */
+            osal_console_write("<custom event>");
+
+            /* At custom event, write user key presses to the stream.
+             */
+            p = buf;
+            n = 0;
+            while ((c = osal_console_read()))
+            {
+                bytes = osal_char_utf32_to_utf8(p, sizeof(buf) - n, c);
+                p += bytes;
+                n += bytes;
+                if (n >= sizeof(buf) - 4) break;
+            }
+
+            if (osal_stream_write(handle, buf, n, &n_written, OSAL_STREAM_DEFAULT))
+            {
+                osal_debug_error("write: connection broken");
+                break;
+            }
         }
 
-        if (selectdata.eventflags & OSAL_STREAM_ACCEPT_EVENT)
-        {
-            osal_console_write("accept event\n");
-        }
-
+        /* Handle close event. This should not be really necessary. If socket is broken
+           the osal_stream_read() will return an error.
+         */
         if (selectdata.eventflags & OSAL_STREAM_CLOSE_EVENT)
         {
             osal_console_write("close event\n");
             break;
         }
 
+        /* Handle the connect event. Also strictly not necessary. If the socket is still
+           connecting, osal_stream_write() should return with nwritten = 0.
+         */
         if (selectdata.eventflags & OSAL_STREAM_CONNECT_EVENT)
         {
             osal_console_write("connect event\n");
 
             if (selectdata.errorcode)
             {
-                osal_console_write("connect failed\n");
+                osal_debug_error("connect failed\n");
                 break;
             }
         }
 
-        if (selectdata.eventflags & OSAL_STREAM_READ_EVENT)
+        /* Print data received from the stream to console.
+         */
+        if (osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
-            osal_console_write("read event\n");
-            os_memclear(buf, sizeof(buf));
-            status = osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT);
-            if (status) break;
+            osal_debug_error("read: connection broken");
+            break;
+        }
+        else if (n_read)
+        {
+            buf[n_read] ='\0';
             osal_console_write(buf);
-            osal_console_write("\n");
         }
 
-        if (selectdata.eventflags & OSAL_STREAM_WRITE_EVENT)
+        /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
+           implementetios buffers data internally and this moves buffered data.
+         */
+        if (osal_stream_flush(handle, OSAL_STREAM_DEFAULT))
         {
-            /* osal_console_write("write event\n");
-            status = osal_stream_write(handle, mystr, os_strlen(mystr)-1, &n_written, OSAL_STREAM_DEFAULT); */
+            osal_debug_error("flush: connection broken");
+            break;
         }
     }
 
+    /* Close the socket handle
+     */
     osal_stream_close(handle);
 
     /* Join worker thread to this thread.
@@ -163,6 +221,8 @@ os_int osal_main(
      */
     osal_event_delete(myevent);
 
-
+    /* Clean up the socket library.
+     */
+    osal_socket_shutdown();
     return 0;
 }
