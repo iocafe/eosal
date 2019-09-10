@@ -47,6 +47,7 @@ void osal_sysconsole_write(
 {
     /* Should wide character version fputws be used? */
     fputs(text, stdout);
+    fflush(stdout);
 }
 
 
