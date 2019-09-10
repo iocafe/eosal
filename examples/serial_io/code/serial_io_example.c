@@ -6,6 +6,8 @@
   @version 1.0
   @date    7.10.2018
 
+  Testing serial communication with select and multithreading.
+
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
@@ -119,44 +121,36 @@ os_int osal_main(
             osal_console_write("timeout\n");
         }
 
-        if (selectdata.eventflags & OSAL_STREAM_READ_EVENT)
-        {
-            osal_console_write("read event: ");
-            os_memclear(buf, sizeof(buf));
-            status = osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT);
-            if (status) break;
-            osal_console_write(buf);
-            osal_console_write("\n");
+        os_memclear(buf, sizeof(buf));
+        status = osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT);
+        if (status) break;
+        osal_console_write(buf);
+        osal_console_write("\n");
 
-            if (n_read)
+        if (n_read)
+        {
+            switch (buf[0])
             {
-                switch (buf[0])
-                {
-                    case 'a':
-                    case 'A':
-                        mystr2 = "Abba";
-                        break;
+                case 'a':
+                case 'A':
+                    mystr2 = "Abba";
+                    break;
 
-                    case 'b':
-                    case 'B':
-                        mystr2 = "Bansku";
-                        break;
+                case 'b':
+                case 'B':
+                    mystr2 = "Bansku";
+                    break;
 
-                    default:
-                        mystr2 = "Duudeli";
-                        break;
-                }
-
-                status = osal_stream_write(handle, mystr2,
-                    os_strlen(mystr2)-1, &n_written, OSAL_STREAM_DEFAULT);
+                default:
+                    mystr2 = "Duudeli";
+                    break;
             }
+
+            status = osal_stream_write(handle, mystr2,
+                os_strlen(mystr2)-1, &n_written, OSAL_STREAM_DEFAULT);
         }
 
-        if (selectdata.eventflags & OSAL_STREAM_WRITE_EVENT)
-        {
-            osal_console_write("write event\n");
-            /* status = osal_stream_write(handle, mystr, os_strlen(mystr)-1, &n_written, OSAL_STREAM_DEFAULT); */
-        }
+        status = osal_stream_flush(handle, OSAL_STREAM_DEFAULT);
     }
 
     osal_stream_close(handle);
