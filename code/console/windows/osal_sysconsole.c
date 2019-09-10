@@ -18,10 +18,8 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-/* #include <windows.h> */
 #include <wchar.h>
 #include <conio.h>
-#include <stdio.h>
 
 #if OSAL_CONSOLE
 
@@ -109,9 +107,12 @@ THIS IS WINDOWS IMPLEMENTATION. DOESN'T WORK WELL AT LEAST ON WIN 10
 os_uint osal_sysconsole_read(
 	void)
 {
+    int c;
     if (_kbhit())
     {
-        return getchar();
+        c = _getch();
+        if (c == '\r') c ='\n';
+        return c;
     }
     return 0;
 #if 0

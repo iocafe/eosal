@@ -24,6 +24,8 @@
 
 #include "eosalx.h"
 
+/* Connection types.
+ */
 #define EXAMPLE_USE_TCP_SOCKET 0
 #define EXAMPLE_USE_TLS_SOCKET 1
 #define EXAMPLE_USE_SERIAL_PORT 2
@@ -31,6 +33,18 @@
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
  */
 #define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+
+/* Modify connection parameters here: These apply to different communication types
+   EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET sets TCP/IP address to connect to.
+   EXAMPLE_USE_TLS_SOCKET: Define EXAMPLE_TLS_SOCKET sets TCP/IP address to connect to for 
+   secure sockets.
+   EXAMPLE_USE_SERIAL_PORT, define EXAMPLE_SERIAL_PORT: Serial port can be selected using Windows
+   style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific 
+   manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
+ */
+#define EXAMPLE_TCP_SOCKET "192.168.1.221:6001"
+#define EXAMPLE_TLS_SOCKET "127.0.0.1:55555"
+#define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 
 /**
@@ -59,20 +73,20 @@ os_int osal_main(
 
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
-    stream = osal_stream_open(OSAL_SOCKET_IFACE, "192.168.1.221:6001", OS_NULL,
+    stream = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET, OS_NULL,
         OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
 #endif
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     osal_socket_initialize();
     osal_tls_initialize(OS_NULL);
-    stream = osal_stream_open(OSAL_TLS_IFACE, "127.0.0.1:55555", OS_NULL,
+    stream = osal_stream_open(OSAL_TLS_IFACE, EXAMPLE_TLS_SOCKET, OS_NULL,
         OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
 #endif
 
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
     osal_serial_initialize();
-    stream = osal_stream_open(OSAL_SERIAL_IFACE, "COM3:", OS_NULL,
+    stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
         OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
 #endif
 
