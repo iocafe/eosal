@@ -138,5 +138,9 @@ void osal_serial_shutdown(
 #define osal_serial_initialize()
 #define osal_serial_shutdown()
 
+/* No serial interface, allow build even if the define is used.
+ */
+#define OSAL_SERIAL_IFACE OS_NULL
+
 #endif
 #endif

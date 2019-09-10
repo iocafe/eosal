@@ -30,7 +30,7 @@
 
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
 
 /**
@@ -52,10 +52,10 @@ os_int osal_main(
     os_char *argv[])
 {
     osalStream stream;
-    os_uchar buf[64], *pos, testdata[] = "?-testdata*", c = 'a';
+    os_uchar buf[64];
     os_memsz n_read, n_written;
-    os_int n;
-    os_timer timer;
+    os_int bytes;
+    os_uint c;
 
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
@@ -83,52 +83,35 @@ os_int osal_main(
     }
     osal_trace("stream connected");
 
-    os_get_timer(&timer);
     while (OS_TRUE)
     {
-#if EXAMPLE_USE!=EXAMPLE_USE_SERIAL_PORT
         osal_socket_maintain();
-#endif
 
-        if (os_elapsed(&timer, 200))
+        if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
-            testdata[0] = c;
-            if (c++ == 'z') c = 'a';
-            pos = testdata;
-            n = os_strlen((os_char*)testdata) - 1;
-
-            while (n > 0)
-            {
-                if (osal_stream_write(stream, pos, n, &n_written, OSAL_STREAM_DEFAULT))
-                {
-                    osal_debug_error("connection broken");
-                    goto getout;
-                }
-
-                n -= n_written;
-                pos += n_written;
-                if (n == 0) break;
-                os_timeslice();
-            }
-            os_get_timer(&timer);
+            osal_debug_error("read: connection broken");
+            break;
         }
-
-        os_memclear(buf, sizeof(buf));
-        if (osal_stream_read(stream, buf, sizeof(buf)-1, &n_read, OSAL_STREAM_DEFAULT))
+        else if (n_read)
         {
-            osal_debug_error("connection broken");
-            goto getout;
-        }
-
-        if (n_read > 0)
-        {
+            buf[n_read] ='\0';
             osal_console_write((os_char*)buf);
+        }
+
+        c = osal_console_read();
+        if (c)
+        {
+            bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+            if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
+            {
+                osal_debug_error("write: connection broken");
+                break;
+            }
         }
 
         os_timeslice();
     }
 
-getout:
     osal_stream_close(stream);
     stream = OS_NULL;
 

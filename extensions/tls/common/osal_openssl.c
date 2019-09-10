@@ -43,20 +43,20 @@ typedef enum osalSSLStatus
 {
     OSAL_SSLSTATUS_OK,
     OSAL_SSLSTATUS_WANT_IO,
-    OSAL_SSLSTATUS_FAIL
+    OSAL_SSLSTATUS_FAIL,
 }
 osalSSLStatus;
 
-
-/* Global SSL context */
+/* Global SSL context.
+ */
 SSL_CTX *ctx;
 
-#define DEFAULT_BUF_SIZE 64
+#define OSAL_SSL_DEFAULT_BUF_SIZE 512
 
-#define OSAL_ENCRYPT_BUFFER_SZ 128
+#define OSAL_ENCRYPT_BUFFER_SZ 256
 
 
-#define OSAL_READ_BUF_SZ 128
+#define OSAL_READ_BUF_SZ 512
 
 
 /** OpenSSL specific socket data structure. OSAL functions cast their own stream structure
@@ -77,10 +77,6 @@ typedef struct osalSSLSocket
         function. 
 	 */
 	os_int open_flags;
-
-    /** Linux socket's file descriptor.
-     */
-    // int fd;
 
     SSL *ssl;
 
@@ -108,10 +104,6 @@ typedef struct osalSSLSocket
      */
     os_uchar read_buf[OSAL_READ_BUF_SZ];
     os_int read_buf_n;
-
-    /** Method to invoke when unencrypted bytes are available.
-     */
-//    void (*io_on_read)(char *buf, size_t len);
 }
 osalSSLSocket;
 
@@ -136,9 +128,6 @@ static osalStatus osal_openssl_client_init(
 static void osal_openssl_client_cleanup(
     osalSSLSocket *sslsocket);
 
-/* static os_boolean osal_openssl_client_want_write(
-    osalSSLSocket *sslsocket); */
-
 static osalSSLStatus osal_openssl_get_sslstatus(
     SSL* ssl,
     os_memsz n);
@@ -156,18 +145,10 @@ static void osal_openssl_queue_encrypted_bytes(
 static osalSSLStatus osal_openssl_do_ssl_handshake(
     osalSSLSocket *sslsocket);
 
-/* static int osal_openssl_on_read_cb(
-    osalSSLSocket *sslsocket,
-    char* src,
-    size_t len); */
-
-static int osal_openssl_do_encrypt(
+static osalStatus osal_openssl_do_encrypt(
     osalSSLSocket *sslsocket);
 
-/* static int osal_openssl_do_sock_read(
-    osalSSLSocket *sslsocket); */
-
-static int osal_openssl_do_sock_write(
+static osalStatus osal_openssl_do_sock_write(
     osalSSLSocket *sslsocket);
 
 
@@ -223,7 +204,7 @@ osalStream osal_openssl_open(
 {
     osalStream tcpsocket = OS_NULL;
     osalSSLSocket *sslsocket = OS_NULL;
-    osalStatus rval;
+    osalStatus s;
 
     /* Initialize TLS sockets library, if not already initialized. Here we have no certificate
        or key, so this may well not work (at least for a server).
@@ -243,7 +224,7 @@ osalStream osal_openssl_open(
     sslsocket = (osalSSLSocket*)os_malloc(sizeof(osalSSLSocket), OS_NULL);
     if (sslsocket == OS_NULL)
 	{
-		rval = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+        s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
 		goto getout;
 	}
     os_memclear(sslsocket, sizeof(osalSSLSocket));
@@ -260,12 +241,12 @@ osalStream osal_openssl_open(
 	{
         /* Initialize SSL client and memory BIOs.
         */
-        rval = osal_openssl_client_init(sslsocket, OSAL_SSLMODE_CLIENT);
-        if (rval) goto getout;
+        s = osal_openssl_client_init(sslsocket, OSAL_SSLMODE_CLIENT);
+        if (s) goto getout;
 
         if (osal_openssl_do_ssl_handshake(sslsocket) == OSAL_SSLSTATUS_FAIL)
         {
-            rval = OSAL_STATUS_FAILED;
+            s = OSAL_STATUS_FAILED;
             goto getout;
         }
 	}
@@ -295,7 +276,7 @@ getout:
 
 	/* Set status code and return NULL pointer.
 	 */
-    if (status) *status = rval;
+    if (status) *status = s;
 	return OS_NULL;
 }
 
@@ -378,7 +359,7 @@ osalStream osal_openssl_accept(
 {
     osalSSLSocket *sslsocket, *newsslsocket = OS_NULL;
     osalStream newtcpsocket = OS_NULL;
-    osalStatus rval = OSAL_STATUS_FAILED;
+    osalStatus s = OSAL_STATUS_FAILED;
 
     /* If called with NULL argument, do nothing.
      */
@@ -397,7 +378,7 @@ osalStream osal_openssl_accept(
     newsslsocket = (osalSSLSocket*)os_malloc(sizeof(osalSSLSocket), OS_NULL);
     if (newsslsocket == OS_NULL)
     {
-        rval = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+        s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
         goto getout;
     }
     os_memclear(newsslsocket, sizeof(osalSSLSocket));
@@ -410,8 +391,8 @@ osalStream osal_openssl_accept(
 
     /* Initialize SSL client and memory BIOs.
      */
-    rval = osal_openssl_client_init(newsslsocket, OSAL_SSLMODE_SERVER);
-    if (rval) goto getout;
+    s = osal_openssl_client_init(newsslsocket, OSAL_SSLMODE_SERVER);
+    if (s) goto getout;
 
     /* Success set status code and cast socket structure pointer to stream pointer
        and return it.
@@ -437,7 +418,7 @@ getout:
 
 	/* Set status code and return NULL pointer.
 	 */
-    if (status) *status = rval;
+    if (status) *status = s;
 	return OS_NULL;
 }
 
@@ -449,6 +430,11 @@ getout:
   @anchor osal_openssl_flush
 
   The osal_openssl_flush() function flushes data to be written to stream.
+
+  IMPORTANT, FLUSH MUST BE CALLED: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT) must
+  be called when select call returns even after writing or even if nothing was written, or
+  periodically in in single thread mode. This is necessary even if no data was written
+  previously, the socket may have previously buffered data to avoid blocking.
 
   @param   stream Stream pointer representing the socket.
   @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
@@ -462,15 +448,46 @@ osalStatus osal_openssl_flush(
     os_int flags)
 {
     osalSSLSocket *sslsocket;
+    osalStatus s;
+    os_boolean work_done;
 
     if (stream)
     {
         sslsocket = (osalSSLSocket*)stream;
         osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
 
-        osal_openssl_do_encrypt(sslsocket);
-        osal_openssl_do_sock_write(sslsocket);
-        osal_socket_flush(sslsocket->tcpsocket, flags);
+        /* While we have buffered data, encrypt it and move to SSL.
+         */
+        do
+        {
+            work_done = OS_FALSE;
+            if (sslsocket->encrypt_len > 0)
+            {
+                s = osal_openssl_do_encrypt(sslsocket);
+                switch (s)
+                {
+                    case OSAL_SUCCESS: work_done = OS_TRUE; break;
+                    case OSAL_STATUS_NOTHING_TO_DO: break;
+                    default: return s;
+                }
+            }
+            if (sslsocket->write_len > 0)
+            {
+                s = osal_openssl_do_sock_write(sslsocket);
+                switch (s)
+                {
+                    case OSAL_SUCCESS: work_done = OS_TRUE; break;
+                    case OSAL_STATUS_NOTHING_TO_DO: break;
+                    default: return s;
+                }
+            }
+        }
+        while (work_done);
+
+        /* Flush the underlying socket buffers.
+         */
+        s = osal_socket_flush(sslsocket->tcpsocket, flags);
+        return s;
     }
     return OSAL_SUCCESS;
 }
@@ -506,6 +523,7 @@ osalStatus osal_openssl_write(
 {
     osalSSLSocket *sslsocket;
     os_memsz n_now;
+    osalStatus s;
 
     *n_written = 0;
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
@@ -515,7 +533,7 @@ osalStatus osal_openssl_write(
     sslsocket = (osalSSLSocket*)stream;
     osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
 
-    /* While we have data left to write
+    /* While we have data left to write...
      */
     while (n > 0)
     {
@@ -527,7 +545,7 @@ osalStatus osal_openssl_write(
             n_now = OSAL_ENCRYPT_BUFFER_SZ - sslsocket->encrypt_len;
         }
 
-        /* Store n_now bytes to outgoing encrypt buffer.
+        /* Store n_now bytes to outgoing buffer to encrypt.
          */
         osal_openssl_send_unencrypted_bytes(sslsocket, (char*)buf, n_now);
 
@@ -543,8 +561,10 @@ osalStatus osal_openssl_write(
 
         /* Try to encrypt and send some to make space in buffer.
          */
-        osal_openssl_do_encrypt(sslsocket);
-        osal_openssl_do_sock_write(sslsocket);
+        s = osal_openssl_do_encrypt(sslsocket);
+        if (s != OSAL_SUCCESS && s != OSAL_STATUS_NOTHING_TO_DO) return s;
+        s = osal_openssl_do_sock_write(sslsocket);
+        if (s != OSAL_SUCCESS && s != OSAL_STATUS_NOTHING_TO_DO) return s;
 
         /* If we got nothing encrypted (buffer still full), then just return.
          */
@@ -590,7 +610,7 @@ osalStatus osal_openssl_read(
     osalSSLSocket *sslsocket;
     os_uchar *src;
     os_memsz freespace, nprocessed, something_done, bufferedbytes, nstored;
-    osalStatus rval;
+    osalStatus s;
     osalSSLStatus status;
 
     *n_read = 0;
@@ -602,8 +622,6 @@ osalStatus osal_openssl_read(
     sslsocket = (osalSSLSocket*)stream;
     osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
 
-osal_openssl_flush(stream, OSAL_STREAM_DEFAULT);
-
     do
     {
         something_done = 0;
@@ -613,10 +631,10 @@ osal_openssl_flush(stream, OSAL_STREAM_DEFAULT);
         freespace = OSAL_READ_BUF_SZ - sslsocket->read_buf_n;
         if (freespace > 0)
         {
-            rval = osal_socket_read(sslsocket->tcpsocket,
+            s = osal_socket_read(sslsocket->tcpsocket,
                 sslsocket->read_buf + sslsocket->read_buf_n,
                 freespace, &nprocessed, OSAL_STREAM_DEFAULT);
-            if (rval) return rval;
+            if (s) return s;
 
             sslsocket->read_buf_n += nprocessed;
             something_done += nprocessed;
@@ -679,16 +697,20 @@ osal_openssl_flush(stream, OSAL_STREAM_DEFAULT);
             nprocessed = SSL_read(sslsocket->ssl, buf, n);
             if (nprocessed == 0) break;
 
-            buf += nprocessed;
-            n -= nprocessed;
-            something_done += nprocessed;
-            *n_read = nprocessed;
-
-            status = osal_openssl_get_sslstatus(sslsocket->ssl, nprocessed);
+            /* If not error, advance
+             */
+            if (nprocessed > 0)
+            {
+                buf += nprocessed;
+                n -= nprocessed;
+                *n_read += nprocessed;
+            }
+            something_done = 1;
 
             /* Did SSL request to write bytes? This can happen if peer has requested SSL
                renegotiation.
              */
+            status = osal_openssl_get_sslstatus(sslsocket->ssl, nprocessed);
             if (status == OSAL_SSLSTATUS_WANT_IO)
             {
                 do {
@@ -775,13 +797,6 @@ osalStatus osal_openssl_select(
         osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
         tcpstreams[ntcpstreams++] = sslsocket->tcpsocket;
     }
-
-    /*
-     os_memclear(selectdata, sizeof(osalSelectData));
-    selectdata->eventflags = eventflags;
-    selectdata->stream_nr = socket_nr;
-    selectdata->errorcode = errorcode;
-    */
 
     return osal_socket_select(tcpstreams, ntcpstreams, evnt, selectdata, timeout_ms, flags);
 }
@@ -949,7 +964,7 @@ static osalStatus osal_openssl_client_init(
 //    int fd,
     osalSSLMode mode)
 {
-    osalStatus rval = OSAL_SUCCESS;
+    osalStatus s = OSAL_SUCCESS;
 
     // sslsocket->fd = fd;
 
@@ -960,18 +975,18 @@ static osalStatus osal_openssl_client_init(
     if (mode == OSAL_SSLMODE_SERVER)
     {
         SSL_set_accept_state(sslsocket->ssl);  /* ssl server mode */
-  //      rval = OSAL_STATUS_FAILED;
+  //      s = OSAL_STATUS_FAILED;
     }
     else if (mode == OSAL_SSLMODE_CLIENT)
     {
         SSL_set_connect_state(sslsocket->ssl); /* ssl client mode */
-//        rval = OSAL_STATUS_FAILED;
+//        s = OSAL_STATUS_FAILED;
     }
 
     SSL_set_bio(sslsocket->ssl, sslsocket->rbio, sslsocket->wbio);
 
 //    sslsocket->io_on_read = print_unencrypted_data; ???????????????????????????????????????????????????????????????????????
-    return rval;
+    return s;
 }
 
 
@@ -999,26 +1014,6 @@ static void osal_openssl_client_cleanup(
         free(sslsocket->encrypt_buf);
     }
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Is there something to write?
-  @anchor osal_openssl_client_want_write
-
-  The osal_openssl_client_want_write() function...
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  None.
-
-****************************************************************************************************
-*/
-/* static os_boolean osal_openssl_client_want_write(
-    osalSSLSocket *sslsocket)
-{
-    return (sslsocket->write_len > 0) ? OS_TRUE : OS_FALSE;
-} */
 
 
 /**
@@ -1127,7 +1122,7 @@ static void osal_openssl_queue_encrypted_bytes(
 static osalSSLStatus osal_openssl_do_ssl_handshake(
     osalSSLSocket *sslsocket)
 {
-    char buf[DEFAULT_BUF_SIZE];
+    char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
     osalSSLStatus status;
 
     int n = SSL_do_handshake(sslsocket->ssl);
@@ -1158,104 +1153,7 @@ static osalSSLStatus osal_openssl_do_ssl_handshake(
 /**
 ****************************************************************************************************
 
-  @brief Processes SSL bytes received from the peer.
-  @anchor osal_openssl_on_read_cb
-
-  The osal_openssl_on_read_cb() function processes SSL bytes received from the peer.
-  The data needs to be fed into the SSL object to be unencrypted.
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  On success, returns 0, on SSL error -1.
-
-****************************************************************************************************
-*/
-#if 0
-static osalSSLStatus osal_openssl_on_read_cb(
-    osalSSLSocket *sslsocket,
-    os_uchar *dst,
-    os_memsz src_len,
-    os_memsz *nread)
-{
-    char buf[DEFAULT_BUF_SIZE];
-    osalSSLStatus status;
-    int n;
-
-//    os_uchar *src,
-//    os_memsz src_len,
-
-
-    while (OS_TRUE)
-    {
-        while (src_len > 0)
-        {
-            n = BIO_write(sslsocket->rbio, src, src_len);
-            if (n == 0) break;
-
-            if (n <= 0)
-            {
-                /* Assume bio write failure is unrecoverable.
-                 */
-                return OSAL_SSLSTATUS_FAIL;
-            }
-
-            src += n;
-            len -= n;
-        }
-
-        if (!SSL_is_init_finished(sslsocket->ssl))
-        {
-            if (osal_openssl_do_ssl_handshake(sslsocket) == OSAL_SSLSTATUS_FAIL)
-                return -1;
-            if (!SSL_is_init_finished(sslsocket->ssl))
-            {
-                return 0;
-        }
-
-        /* The encrypted data is now in the input bio so now we can perform actual
-           read of unencrypted data.
-         */
-        wile (dst_len)
-        {
-            n = SSL_read(sslsocket->ssl, dst, dst_len);
-            if (n == 0) break;
-
-            dst += n;
-            dst_len -= n;
-
-            status = osal_openssl_get_sslstatus(sslsocket->ssl, n);
-
-            /* Did SSL request to write bytes? This can happen if peer has requested SSL
-               renegotiation.
-             */
-            if (status == OSAL_SSLSTATUS_WANT_IO)
-            {
-                do {
-                    n = BIO_read(sslsocket->wbio, buf, sizeof(buf));
-                    if (n > 0)
-                    {
-                        osal_openssl_queue_encrypted_bytes(sslsocket, buf, n);
-                    }
-                    else if (!BIO_should_retry(sslsocket->wbio))
-                    {
-                        return -1;
-                    }
-                }
-                while (n > 0);
-            }
-
-            if (status == OSAL_SSLSTATUS_FAIL)
-                return OSAL_SSLSTATUS_FAIL;
-        }
-    }
-
-    return OSAL_SSLSTATUS_OK;
-}
-#endif
-
-/**
-****************************************************************************************************
-
-  @brief Processes SSL bytes received from the peer.
+  @brief Encrypt data to SLL socket.
   @anchor osal_openssl_do_encrypt
 
   The osal_openssl_do_encrypt() function processes outbound unencrypted data that is waiting
@@ -1264,20 +1162,24 @@ static osalSSLStatus osal_openssl_on_read_cb(
   will be queued for later socket write.
 
   @param   sslsocket Stream pointer representing the SSL socket.
-  @return  X...
+  @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
+           Return value OSAL_STATUS_NOTHING_TO_DO indicates that there is nothing to
+           encrypt. Other return values indicate an error.
 
 ****************************************************************************************************
 */
-static int osal_openssl_do_encrypt(
+static osalStatus osal_openssl_do_encrypt(
     osalSSLSocket *sslsocket)
 {
-    char buf[DEFAULT_BUF_SIZE];
+    char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
     osalSSLStatus status;
+    osalStatus s;
     int n;
 
     if (!SSL_is_init_finished(sslsocket->ssl))
-        return 0;
+        return OSAL_STATUS_NOTHING_TO_DO;
 
+    s = OSAL_STATUS_NOTHING_TO_DO;
     while (sslsocket->encrypt_len > 0)
     {
         n = SSL_write(sslsocket->ssl, sslsocket->encrypt_buf, sslsocket->encrypt_len);
@@ -1285,6 +1187,8 @@ static int osal_openssl_do_encrypt(
 
         if (n > 0)
         {
+            s = OSAL_SUCCESS;
+
             /* Consume the waiting bytes that have been used by SSL.
              */
             if ((size_t) n < sslsocket->encrypt_len)
@@ -1305,60 +1209,20 @@ static int osal_openssl_do_encrypt(
                 }
                 else if (!BIO_should_retry(sslsocket->wbio))
                 {
-                    return -1;
+                    return OSAL_STATUS_FAILED;
                 }
             }
             while (n > 0);
         }
 
         if (status == OSAL_SSLSTATUS_FAIL)
-            return -1;
+            return OSAL_STATUS_FAILED;
 
         if (n==0)
             break;
     }
-    return 0;
+    return s;
 }
-
-
-/* Read bytes from stdin and queue for later encryption. */
-/* void do_stdin_read()
-{
-  char buf[DEFAULT_BUF_SIZE];
-  ssize_t n = read(STDIN_FILENO, buf, sizeof(buf));
-  if (n>0)
-    send_unencrypted_bytes(buf, (size_t)n);
-} */
-
-
-/**
-****************************************************************************************************
-
-  @brief Read encrypted bytes from socket.
-  @anchor osal_openssl_do_sock_read
-
-  The osal_openssl_do_sock_read() function...
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  0 if successfull, -1 if failed.
-
-****************************************************************************************************
-*/
-/* static int osal_openssl_do_sock_read(
-    osalSSLSocket *sslsocket)
-{
-    char buf[DEFAULT_BUF_SIZE];
-    os_memsz n;
-    osalStatus s;
-
-    s = osal_socket_read(sslsocket->tcpsocket, (os_uchar*)buf, sizeof(buf), &n, OSAL_STREAM_DEFAULT);
-    if (n > 0)
-    {
-        return osal_openssl_on_read_cb(sslsocket, buf, (size_t)n);
-
-    }
-    return -1;
-} */
 
 
 /**
@@ -1370,11 +1234,13 @@ static int osal_openssl_do_encrypt(
   The osal_openssl_do_sock_write() function...
 
   @param   sslsocket Stream pointer representing the SSL socket.
-  @return  0 if successfull, -1 if failed.
+  @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
+           Return value OSAL_STATUS_NOTHING_TO_DO indicates that there is nothing to
+           encrypt. Other return values indicate an error.
 
 ****************************************************************************************************
 */
-static int osal_openssl_do_sock_write(
+static osalStatus osal_openssl_do_sock_write(
     osalSSLSocket *sslsocket)
 {
     os_memsz n;
@@ -1392,10 +1258,10 @@ static int osal_openssl_do_sock_write(
 
         sslsocket->write_len -= n;
         sslsocket->write_buf = (char*)realloc(sslsocket->write_buf, sslsocket->write_len);
-        return 0;
+        return OSAL_SUCCESS;
     }
 
-    return -1;
+    return (s == OSAL_SUCCESS && n == 0) ? OSAL_STATUS_NOTHING_TO_DO : s;
 }
 
 

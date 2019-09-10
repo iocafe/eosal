@@ -59,9 +59,10 @@ void osal_sysconsole_write(
 ****************************************************************************************************
 */
 os_uint osal_sysconsole_read(
-	void)
+    void)
 {
     return 0;
 }
+
 
 #endif

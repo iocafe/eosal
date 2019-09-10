@@ -56,5 +56,9 @@ void osal_tls_shutdown(void);
 #define osal_tls_initialize(prm)
 #define osal_tls_shutdown()
 
+/* No TLS interface, allow build even if the define is used.
+ */
+#define OSAL_TLS_IFACE OS_NULL
+
 #endif
 #endif

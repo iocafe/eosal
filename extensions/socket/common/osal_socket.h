@@ -27,11 +27,6 @@ extern osalStreamInterface osal_socket_iface;
 #endif
 #endif
 
-/** Define to get socket interface pointer. The define is used so that this can 
-    be converted to function call.
- */
-#define OSAL_SOCKET_IFACE &osal_socket_iface
-
 /* Default socket port number.
  */
 #define OSAL_DEFAULT_SOCKET_PORT 4981
@@ -55,6 +50,11 @@ extern osalStreamInterface osal_socket_iface;
 
 
 #if OSAL_SOCKET_SUPPORT
+
+/** Define to get socket interface pointer. The define is used so that this can
+    be converted to function call.
+ */
+#define OSAL_SOCKET_IFACE &osal_socket_iface
 
 /* Simple network interface configuration structure.
  */
@@ -199,6 +199,10 @@ void osal_socket_get_host_name_and_port(
 #define osal_socket_initialize()
 #define osal_socket_shutdown()
 #define osal_socket_maintain()
+
+/* No socket interface, allow build even if the define is used.
+ */
+#define OSAL_SOCKET_IFACE OS_NULL
 
 #endif
 #endif

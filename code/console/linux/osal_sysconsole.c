@@ -22,6 +22,11 @@
 
 #if OSAL_CONSOLE
 
+#include <stdio.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+
+
 /**
 ****************************************************************************************************
 
@@ -52,16 +57,38 @@ void osal_sysconsole_write(
   @anchor osal_sysconsole_run
 
   The osal_sysconsole_read() function reads the input from system console. If there are any
-  input, the callbacks monitoring the input from this console will get called.
+  input, the callbacks monitoring the input from this console will get called. The function
+  always returns immediately.
+
+  Linux implementation works only on ASCII.
 
   @return  UTF32 character or 0 if none.
 
 ****************************************************************************************************
 */
 os_uint osal_sysconsole_read(
-	void)
+    void)
 {
-    return 0;
+    struct termios attr;
+    int nbytes;
+    static os_boolean line_buffering_disabled = OS_FALSE;
+    const int stdin_handle = 0;
+
+    if (!line_buffering_disabled)
+    {
+        line_buffering_disabled = OS_TRUE;
+
+        tcgetattr(stdin_handle, &attr);
+        attr.c_lflag &= ~ICANON;
+        tcsetattr(stdin_handle, TCSANOW, &attr);
+        setbuf(stdin, NULL);
+    }
+
+    ioctl(stdin_handle, FIONREAD, &nbytes);
+    if (nbytes <= 0) return 0;
+
+    return (os_uint)getchar();
 }
+
 
 #endif

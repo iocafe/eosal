@@ -24,15 +24,17 @@
 
 #include "eosalx.h"
 
+/* Communication types.
+ */
 #define EXAMPLE_USE_TCP_SOCKET 0
 #define EXAMPLE_USE_TLS_SOCKET 1
 #define EXAMPLE_USE_SERIAL_PORT 2
 
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
-static osalStream stream, accepted_socket, open_socket;
+static osalStream stream, open_socket;
 
 void example_setup(void);
 void example_cleanup(void);
@@ -87,7 +89,8 @@ void example_setup(void)
 {
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
-    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":6001", OS_NULL,
+    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":6368", OS_NULL,
+//    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":6001", OS_NULL,
         OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
 #endif
 
@@ -116,10 +119,50 @@ void example_setup(void)
     open_socket = OS_NULL;
 }
 
+#if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
 void example_loop(void)
 {
-    os_uchar buf[64], *pos;
+    os_uchar buf[64];
     os_memsz n_read, n_written;
+    os_uint c;
+    os_int bytes;
+
+    if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
+    {
+        osal_debug_error("read: serial port failed");
+        osal_stream_close(stream);
+        stream = OS_NULL;
+        return;
+    }
+    else if (n_read)
+    {
+        buf[n_read] ='\0';
+        osal_console_write((os_char*)buf);
+    }
+
+    c = osal_console_read();
+    if (c && stream)
+    {
+        bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+        if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
+        {
+            osal_debug_error("write: serial port failed");
+            osal_stream_close(stream);
+            stream = OS_NULL;
+            return;
+        }
+    }
+
+    osal_stream_flush(stream, OSAL_STREAM_DEFAULT);
+}
+#else
+void example_loop(void)
+{
+    os_uchar buf[64];
+    os_memsz n_read, n_written;
+    os_uint c;
+    os_int bytes;
+    osalStream accepted_socket;
 
     osal_socket_maintain();
 
@@ -140,31 +183,37 @@ void example_loop(void)
 
     if (open_socket)
     {
-        if (osal_stream_read(open_socket, buf, sizeof(buf), &n_read, OSAL_STREAM_DEFAULT))
+        if (osal_stream_read(open_socket, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
-            osal_debug_error("socket connection broken");
+            osal_debug_error("read: socket connection broken");
             osal_stream_close(open_socket);
             open_socket = OS_NULL;
         }
-        else
+        else if (n_read)
         {
-            pos = buf;
-            while (n_read > 0)
+            buf[n_read] ='\0';
+            osal_console_write((os_char*)buf);
+        }
+
+        c = osal_console_read();
+        if (c)
+        {
+            bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+            if (osal_stream_write(open_socket, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
             {
-                if (osal_stream_write(open_socket, pos, n_read, &n_written, OSAL_STREAM_DEFAULT))
-                {
-                    osal_stream_close(open_socket);
-                    open_socket = OS_NULL;
-                    break;
-                }
-                n_read -= n_written;
-                pos += n_written;
-                if (n_read == 0) break;
-                os_timeslice();
+                osal_debug_error("write: connection broken");
+                osal_stream_close(open_socket);
+                open_socket = OS_NULL;
             }
         }
     }
+
+    if (open_socket)
+    {
+        osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
+    }
 }
+#endif
 
 void example_cleanup(void)
 {
