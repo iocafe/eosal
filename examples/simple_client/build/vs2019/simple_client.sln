@@ -7,11 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eosal", "..\..\..\..\build\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "simple_client", "simple_client.vcxproj", "{723B258A-51C6-4B40-9CB9-B1D122AE157E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{19FB0104-F92B-4FF2-BD45-577449621E88} = {19FB0104-F92B-4FF2-BD45-577449621E88}
 		{E4A3C5EC-5D37-4EEF-8DE1-E2D597A0E31F} = {E4A3C5EC-5D37-4EEF-8DE1-E2D597A0E31F}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iocom", "..\..\..\..\..\iocom\build\vs2019\iocom.vcxproj", "{19FB0104-F92B-4FF2-BD45-577449621E88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +34,6 @@ Global
 		{723B258A-51C6-4B40-9CB9-B1D122AE157E}.Release|x64.Build.0 = Release|x64
 		{723B258A-51C6-4B40-9CB9-B1D122AE157E}.Release|x86.ActiveCfg = Release|Win32
 		{723B258A-51C6-4B40-9CB9-B1D122AE157E}.Release|x86.Build.0 = Release|Win32
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Debug|x64.ActiveCfg = Debug|x64
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Debug|x64.Build.0 = Debug|x64
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Debug|x86.ActiveCfg = Debug|Win32
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Debug|x86.Build.0 = Debug|Win32
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Release|x64.ActiveCfg = Release|x64
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Release|x64.Build.0 = Release|x64
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Release|x86.ActiveCfg = Release|Win32
-		{19FB0104-F92B-4FF2-BD45-577449621E88}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@
   @version 1.0
   @date    9.11.2011
 
-  Socket server using select.
+  Socket server using select. THIS EXAMPLE IS NO GOOD. DO NOT USE UNTIL REWRITE.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -48,7 +48,6 @@ os_int osal_main(
     os_memclear(handle, sizeof(handle));
 
     handle[0] = osal_stream_open(OSAL_SOCKET_IFACE, ":" OSAL_DEFAULT_SOCKET_PORT_STR,
-//    handle[0] = osal_stream_open(OSAL_SOCKET_IFACE, "[]:" OSAL_DEFAULT_SOCKET_PORT_STR,
         OS_NULL, &status, OSAL_STREAM_LISTEN|OSAL_STREAM_SELECT);
     if (status)
     {
@@ -123,6 +122,11 @@ os_int osal_main(
 
         if (selectdata.eventflags & OSAL_STREAM_WRITE_EVENT)
             osal_console_write("write event\n");
+
+        if (selectdata.stream_nr >= 0 && selectdata.stream_nr < OSAL_SOCKET_SELECT_MAX)
+        {
+            status = osal_stream_flush(handle[selectdata.stream_nr], OSAL_STREAM_DEFAULT);
+        }
     }
 
     osal_stream_close(handle[0]);

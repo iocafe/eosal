@@ -6,7 +6,8 @@
   @version 1.0
   @date    9.11.2011
 
-  This example is just a test code to test if eosal builds on target platform.
+  This example is just a test code to test if eosal builds on target platform and can write 
+  to console.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -40,10 +41,3 @@ os_int osal_main(
     return 0;
 }
 
-
-int main(
-    int argc,
-    char **argv)
-{
-    return osal_main(argc, argv);
-}
