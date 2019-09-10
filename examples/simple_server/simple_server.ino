@@ -2,9 +2,8 @@
 #include <eosalx.h>
 
 /*
-  simple_socket_server_example
-  Example to include simple app to build it within Arduino IDE. Here it is socket
-  echo server.
+  simple_server_example
+  Example to include simple server app to build it within Arduino IDE. 
  */
  
 #define N_LEDS 3
@@ -25,7 +24,7 @@ static void toggle_leds(void)
 
 
 // Include code for eacho server (at the time of writing IP 192.168.1.201, TCP port 6001)
-#include "/coderoot/eosal/examples/simple_socket_server/code/simple_socket_server_example.c"
+#include "/coderoot/eosal/examples/simple_server/code/simple_server_example.c"
 
 void setup() 
 {

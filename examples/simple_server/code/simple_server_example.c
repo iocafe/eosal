@@ -1,12 +1,12 @@
 /**
 
-  @file    eosal/examples/simple_socket_server/code/simple_socket_server_example.c
+  @file    eosal/examples/simple_server/code/simple_server_example.c
   @brief   Socket server example.
   @author  Pekka Lehtikoski
-  @version 1.0
-  @date    7.12.2017
+  @version 1.2
+  @date    9.9.2019
 
-  Echo back server. Extermely simple: No dynamic memory alloccation, multithreading, socket
+  Extermely simple communication server: No dynamic memory alloccation, multithreading, socket
   select, etc. Just bare bones.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
@@ -96,8 +96,8 @@ void example_setup(void)
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     static osalTLSParam prm = {
-       "/coderoot/eosal/examples/simple_socket_server/sllfiles/server.crt",
-       "/coderoot/eosal/examples/simple_socket_server/sllfiles/server.key"};
+       "/coderoot/eosal/examples/simple_server/sllfiles/server.crt",
+       "/coderoot/eosal/examples/simple_server/sllfiles/server.key"};
 
     osal_socket_initialize();
     osal_tls_initialize(&prm);
@@ -185,7 +185,7 @@ void example_loop(void)
     {
         if (osal_stream_read(open_socket, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
-            osal_debug_error("read: socket connection broken");
+            osal_debug_error("read: connection broken");
             osal_stream_close(open_socket);
             open_socket = OS_NULL;
         }

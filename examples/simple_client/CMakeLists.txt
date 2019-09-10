@@ -1,8 +1,8 @@
-# eosal/examples/simple_socket_server/build/cmake/CmakeLists.txt - Cmake build for simple socket server example.
+# eosal/examples/simple_client/build/cmake/CmakeLists.txt - Cmake build for simple communication client example.
 cmake_minimum_required(VERSION 2.8.11)
 
 # Set project name (= project root folder name).
-set(E_PROJECT "simple_socket_server")
+set(E_PROJECT "simple_client")
 project(${E_PROJECT})
 
 # include build information common to all projects.

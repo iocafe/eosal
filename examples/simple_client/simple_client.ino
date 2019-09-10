@@ -1,7 +1,7 @@
 #include <eosalx.h>
 
 /*
-  simple_socket_client.ino
+  simple_client.ino
   Include a simple client app to build it within Arduino IDE. 
  */
  
@@ -32,4 +32,4 @@ void loop()
 /* Include code for example client application (at the time of writing connects socket 
    to IP 192.168.1.220, TCP port 6001)
  */
-#include "/coderoot/eosal/examples/simple_socket_client/code/simple_socket_client_example.c"
+#include "/coderoot/eosal/examples/simple_client/code/simple_client_example.c"

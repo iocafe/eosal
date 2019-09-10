@@ -1,10 +1,10 @@
 /**
 
-  @file    eosal/examples/simple_socket_client/code/simple_socket_client_example.c
+  @file    eosal/examples/simple_client/code/simple_client_example.c
   @brief   Simple communication client example.
   @author  Pekka Lehtikoski
-  @version 1.1
-  @date    7.8.2019
+  @version 1.2
+  @date    9.9.2019
 
   Client to write something to socket or serial port and read from it. Extermely simple: No
   dynamic memory allocation, multithreading, socket select, etc. Just bare bones.
@@ -107,6 +107,12 @@ os_int osal_main(
                 osal_debug_error("write: connection broken");
                 break;
             }
+        }
+
+        if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
+        {
+            osal_debug_error("flush: connection broken");
+            break;
         }
 
         os_timeslice();
