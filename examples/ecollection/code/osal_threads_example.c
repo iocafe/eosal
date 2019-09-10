@@ -1,6 +1,6 @@
 /**
 
-  @file    examples/examplecollection/osal_threads_example.c
+  @file    eosal/examples/ecollection/code/osal_threads_example.c
   @brief   Example code about threads.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -15,8 +15,8 @@
 
 ****************************************************************************************************
 */
-#include "code/defs/osal_code.h"
-#include "eosal/examples/examplecollection/osal_threads_example.h"
+#include "eosal.h"
+#include "osal_threads_example.h"
 
 /** Parameter structure for creating thread.
  */
@@ -33,7 +33,6 @@ MyThreadParameters;
  */
 static void my_thread_1_func(
     void *prm,
-	volatile os_boolean *exit_requested,
 	osalEvent done);
 
 
@@ -83,17 +82,16 @@ os_int osal_threads_example_main(
 */
 static void my_thread_1_func(
     void *prm,
-	volatile os_boolean *exit_requested,
 	osalEvent done)
 {
     MyThreadParameters
         myprm;
 
-    /* Copy parameters to local stack
+    /* Copy parameters into local stack.
      */
     os_memcpy(&myprm, prm, sizeof(MyThreadParameters));
 
-    /* Let thread which created this one proceed
+    /* Let thread which created this one to proceed.
      */
     osal_event_set(done);
 }

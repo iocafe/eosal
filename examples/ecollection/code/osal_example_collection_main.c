@@ -1,6 +1,6 @@
 /**
 
-  @file    examples/examplecollection/osal_example_collection_main.c
+  @file    eosal/examples/ecollection/code/osal_example_collection_main.c
   @brief   Example code about threads.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -16,9 +16,10 @@
 
 ****************************************************************************************************
 */
-#include "code/defs/osal_code.h"
-#include "eosal/examples/examplecollection/osal_threads_example.h"
-#include "eosal/examples/examplecollection/osal_threads_example_2.h"
+#include "eosal.h"
+#include "osal_threads_example.h"
+#include "osal_threads_example_2.h"
+#include "osal_int64_test.h"
 
 
 /**
@@ -40,5 +41,6 @@ os_int osal_main(
     os_char *argv[])
 {
 	// return osal_threads_example_main(argc, argv);
-	return osal_threads_example_2_main(argc, argv);
+	// return osal_threads_example_2_main(argc, argv);
+    return osal_int64_test(argc, argv);
 }

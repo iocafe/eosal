@@ -1,6 +1,6 @@
 /**
 
-  @file    examples/examplecollection/osal_threads_example_2.c
+  @file    eosal/examples/ecollection/code/osal_threads_example_2.c
   @brief   Example code about threads.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -15,8 +15,8 @@
 
 ****************************************************************************************************
 */
-#include "code/defs/osal_code.h"
-#include "eosal/examples/examplecollection/osal_threads_example.h"
+#include "eosal.h"
+#include "osal_threads_example.h"
 #include <stdio.h>
 
 /** Parameter structure for creating thread.
@@ -26,6 +26,10 @@ typedef struct
 	/** A parameter for new thread.
 	*/
 	os_int some_parameter;
+
+	/** Flag to terminate the thread.
+	*/
+	os_boolean terminate;
 }
 MyThreadParameters;
 
@@ -33,9 +37,8 @@ MyThreadParameters;
 /* Forward referred static functions.
  */
 static void my_thread_2_func(
-    void *prm,
-	volatile os_boolean *exit_requested,
-	osalEvent done);
+	void *prm,
+    osalEvent done);
 
 
 /**
@@ -68,7 +71,7 @@ os_int osal_threads_example_2_main(
 
 	os_sleep(2000);
 
-	osal_thread_request_exit(handle);
+	myprm.terminate = OS_TRUE;
 	osal_thread_join(handle);
 
     return 0;
@@ -93,7 +96,6 @@ os_int osal_threads_example_2_main(
 */
 static void my_thread_2_func(
     void *prm,
-	volatile os_boolean *exit_requested,
 	osalEvent done)
 {
     MyThreadParameters
@@ -107,7 +109,7 @@ static void my_thread_2_func(
      */
     osal_event_set(done);
 
-	while (!osal_thread_exit_requested(exit_requested))
+	while (!myprm.terminate)
 	{
 		printf(".");
 		os_sleep(200);

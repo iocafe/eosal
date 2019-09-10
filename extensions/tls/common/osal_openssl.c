@@ -130,7 +130,7 @@ static void osal_openssl_client_cleanup(
 
 static osalSSLStatus osal_openssl_get_sslstatus(
     SSL* ssl,
-    os_memsz n);
+    os_int n);
 
 static void osal_openssl_send_unencrypted_bytes(
     osalSSLSocket *sslsocket,
@@ -609,7 +609,8 @@ osalStatus osal_openssl_read(
 {
     osalSSLSocket *sslsocket;
     os_uchar *src;
-    os_memsz freespace, nprocessed, something_done, bufferedbytes, nstored;
+    os_memsz freespace, nprocessed, something_done;
+    os_int bufferedbytes, nstored;
     osalStatus s;
     osalSSLStatus status;
 
@@ -636,7 +637,7 @@ osalStatus osal_openssl_read(
                 freespace, &nprocessed, OSAL_STREAM_DEFAULT);
             if (s) return s;
 
-            sslsocket->read_buf_n += nprocessed;
+            sslsocket->read_buf_n += (os_int)nprocessed;
             something_done += nprocessed;
         }
 
@@ -694,7 +695,7 @@ osalStatus osal_openssl_read(
          */
         while (n > 0)
         {
-            nprocessed = SSL_read(sslsocket->ssl, buf, n);
+            nprocessed = SSL_read(sslsocket->ssl, buf, (os_int)n);
             if (nprocessed == 0) break;
 
             /* If not error, advance
@@ -710,7 +711,7 @@ osalStatus osal_openssl_read(
             /* Did SSL request to write bytes? This can happen if peer has requested SSL
                renegotiation.
              */
-            status = osal_openssl_get_sslstatus(sslsocket->ssl, nprocessed);
+            status = osal_openssl_get_sslstatus(sslsocket->ssl, (os_int)nprocessed);
             if (status == OSAL_SSLSTATUS_WANT_IO)
             {
                 do {
@@ -1032,7 +1033,7 @@ static void osal_openssl_client_cleanup(
 */
 static osalSSLStatus osal_openssl_get_sslstatus(
     SSL* ssl,
-    os_memsz n)
+    os_int n)
 {
     switch (SSL_get_error(ssl, n))
     {
@@ -1182,7 +1183,7 @@ static osalStatus osal_openssl_do_encrypt(
     s = OSAL_STATUS_NOTHING_TO_DO;
     while (sslsocket->encrypt_len > 0)
     {
-        n = SSL_write(sslsocket->ssl, sslsocket->encrypt_buf, sslsocket->encrypt_len);
+        n = SSL_write(sslsocket->ssl, sslsocket->encrypt_buf, (int)sslsocket->encrypt_len);
         status = osal_openssl_get_sslstatus(sslsocket->ssl, n);
 
         if (n > 0)

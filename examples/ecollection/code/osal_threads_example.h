@@ -1,6 +1,6 @@
 /**
 
-  @file    examples/examplecollection/osal_threads_example.h
+  @file    eosal/examples/ecollection/code/osal_threads_example.h
   @brief   Example code about threads.
   @author  Pekka Lehtikoski
   @version 1.0
