@@ -547,7 +547,7 @@ osalStatus osal_openssl_write(
 
         /* Store n_now bytes to outgoing buffer to encrypt.
          */
-        osal_openssl_send_unencrypted_bytes(sslsocket, (char*)buf, n_now);
+        osal_openssl_send_unencrypted_bytes(sslsocket, (char*)buf, (size_t)n_now);
 
         /* Update number of bytes left to write, buffer position and total number
            of bytes written. If we are not using blocking mode and we still have
@@ -718,7 +718,7 @@ osalStatus osal_openssl_read(
                     n = BIO_read(sslsocket->wbio, buf, sizeof(buf));
                     if (n > 0)
                     {
-                        osal_openssl_queue_encrypted_bytes(sslsocket, (char*)buf, n);
+                        osal_openssl_queue_encrypted_bytes(sslsocket, (char*)buf, (size_t)n);
                     }
                     else if (!BIO_should_retry(sslsocket->wbio))
                     {
@@ -1254,10 +1254,10 @@ static osalStatus osal_openssl_do_sock_write(
     {
         if ((size_t)n < sslsocket->write_len)
         {
-            memmove(sslsocket->write_buf, sslsocket->write_buf+n, sslsocket->write_len - n);
+            memmove(sslsocket->write_buf, sslsocket->write_buf+n, sslsocket->write_len - (size_t)n);
         }
 
-        sslsocket->write_len -= n;
+        sslsocket->write_len -= (size_t)n;
         sslsocket->write_buf = (char*)realloc(sslsocket->write_buf, sslsocket->write_len);
         return OSAL_SUCCESS;
     }
