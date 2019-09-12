@@ -59,8 +59,6 @@ build CMakeFiles/eosald.dir/code/memory/common/osal_memcpy.c.o: C_COMPILER__eosa
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/memory/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/memory/common/osal_memmove.c.o: C_COMPILER__eosald ../code/memory/common/osal_memmove.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/memory/common/osal_memmove.c.o.d
@@ -68,8 +66,6 @@ build CMakeFiles/eosald.dir/code/memory/common/osal_memmove.c.o: C_COMPILER__eos
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/memory/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/memory/common/osal_memclear.c.o: C_COMPILER__eosald ../code/memory/common/osal_memclear.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/memory/common/osal_memclear.c.o.d
@@ -77,8 +73,6 @@ build CMakeFiles/eosald.dir/code/memory/common/osal_memclear.c.o: C_COMPILER__eo
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/memory/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/memory/common/osal_memory.c.o: C_COMPILER__eosald ../code/memory/common/osal_memory.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/memory/common/osal_memory.c.o.d
@@ -86,8 +80,6 @@ build CMakeFiles/eosald.dir/code/memory/common/osal_memory.c.o: C_COMPILER__eosa
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/memory/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/resmon/common/osal_resource_monitor.c.o: C_COMPILER__eosald ../code/resmon/common/osal_resource_monitor.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/resmon/common/osal_resource_monitor.c.o.d
@@ -95,8 +87,6 @@ build CMakeFiles/eosald.dir/code/resmon/common/osal_resource_monitor.c.o: C_COMP
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/resmon/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16.c.o: C_COMPILER__eosald ../code/utf16/common/osal_string_utf8_to_utf16.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16.c.o.d
@@ -104,8 +94,6 @@ build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16.c.o: C_C
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf16/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf32_to_utf16.c.o: C_COMPILER__eosald ../code/utf16/common/osal_char_utf32_to_utf16.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf32_to_utf16.c.o.d
@@ -113,8 +101,6 @@ build CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf32_to_utf16.c.o: C_CO
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf16/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8_malloc.c.o: C_COMPILER__eosald ../code/utf16/common/osal_string_utf16_to_utf8_malloc.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8_malloc.c.o.d
@@ -122,8 +108,6 @@ build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8_malloc.c
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf16/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf16_to_utf32.c.o: C_COMPILER__eosald ../code/utf16/common/osal_char_utf16_to_utf32.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf16_to_utf32.c.o.d
@@ -131,8 +115,6 @@ build CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf16_to_utf32.c.o: C_CO
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf16/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8.c.o: C_COMPILER__eosald ../code/utf16/common/osal_string_utf16_to_utf8.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8.c.o.d
@@ -140,8 +122,6 @@ build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8.c.o: C_C
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf16/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16_malloc.c.o: C_COMPILER__eosald ../code/utf16/common/osal_string_utf8_to_utf16_malloc.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16_malloc.c.o.d
@@ -149,8 +129,6 @@ build CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16_malloc.c
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf16/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/debugcode/common/osal_debug.c.o: C_COMPILER__eosald ../code/debugcode/common/osal_debug.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/debugcode/common/osal_debug.c.o.d
@@ -158,8 +136,6 @@ build CMakeFiles/eosald.dir/code/debugcode/common/osal_debug.c.o: C_COMPILER__eo
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/debugcode/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/initialize/common/osal_initialize.c.o: C_COMPILER__eosald ../code/initialize/common/osal_initialize.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/initialize/common/osal_initialize.c.o.d
@@ -167,8 +143,6 @@ build CMakeFiles/eosald.dir/code/initialize/common/osal_initialize.c.o: C_COMPIL
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/initialize/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/int64/common/osal_int64.c.o: C_COMPILER__eosald ../code/int64/common/osal_int64.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/int64/common/osal_int64.c.o.d
@@ -176,8 +150,6 @@ build CMakeFiles/eosald.dir/code/int64/common/osal_int64.c.o: C_COMPILER__eosald
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/int64/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf32_to_utf8.c.o: C_COMPILER__eosald ../code/utf32/common/osal_char_utf32_to_utf8.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf32_to_utf8.c.o.d
@@ -185,8 +157,6 @@ build CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf32_to_utf8.c.o: C_COM
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf32/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf8_to_utf32.c.o: C_COMPILER__eosald ../code/utf32/common/osal_char_utf8_to_utf32.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf8_to_utf32.c.o.d
@@ -194,8 +164,6 @@ build CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf8_to_utf32.c.o: C_COM
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/utf32/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strstr.c.o: C_COMPILER__eosald ../code/string/common/osal_strstr.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strstr.c.o.d
@@ -203,8 +171,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strstr.c.o: C_COMPILER__eosa
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strcmp.c.o: C_COMPILER__eosald ../code/string/common/osal_strcmp.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strcmp.c.o.d
@@ -212,8 +178,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strcmp.c.o: C_COMPILER__eosa
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strncpy.c.o: C_COMPILER__eosald ../code/string/common/osal_strncpy.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strncpy.c.o.d
@@ -221,8 +185,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strncpy.c.o: C_COMPILER__eos
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_int_to_string.c.o: C_COMPILER__eosald ../code/string/common/osal_int_to_string.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_int_to_string.c.o.d
@@ -230,8 +192,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_int_to_string.c.o: C_COMPILE
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strnicmp.c.o: C_COMPILER__eosald ../code/string/common/osal_strnicmp.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strnicmp.c.o.d
@@ -239,8 +199,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strnicmp.c.o: C_COMPILER__eo
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strncat.c.o: C_COMPILER__eosald ../code/string/common/osal_strncat.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strncat.c.o.d
@@ -248,8 +206,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strncat.c.o: C_COMPILER__eos
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strechr.c.o: C_COMPILER__eosald ../code/string/common/osal_strechr.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strechr.c.o.d
@@ -257,8 +213,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strechr.c.o: C_COMPILER__eos
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strchr.c.o: C_COMPILER__eosald ../code/string/common/osal_strchr.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strchr.c.o.d
@@ -266,8 +220,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strchr.c.o: C_COMPILER__eosa
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/string/common/osal_strlen.c.o: C_COMPILER__eosald ../code/string/common/osal_strlen.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/string/common/osal_strlen.c.o.d
@@ -275,8 +227,6 @@ build CMakeFiles/eosald.dir/code/string/common/osal_strlen.c.o: C_COMPILER__eosa
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/string/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/memory/linux/osal_sysmem.c.o: C_COMPILER__eosald ../code/memory/linux/osal_sysmem.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/memory/linux/osal_sysmem.c.o.d
@@ -284,8 +234,6 @@ build CMakeFiles/eosald.dir/code/memory/linux/osal_sysmem.c.o: C_COMPILER__eosal
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/memory/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/console/linux/osal_sysconsole.c.o: C_COMPILER__eosald ../code/console/linux/osal_sysconsole.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/console/linux/osal_sysconsole.c.o.d
@@ -293,8 +241,6 @@ build CMakeFiles/eosald.dir/code/console/linux/osal_sysconsole.c.o: C_COMPILER__
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/console/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/thread/linux/osal_thread_priority.c.o: C_COMPILER__eosald ../code/thread/linux/osal_thread_priority.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/thread/linux/osal_thread_priority.c.o.d
@@ -302,8 +248,6 @@ build CMakeFiles/eosald.dir/code/thread/linux/osal_thread_priority.c.o: C_COMPIL
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/thread/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/thread/linux/osal_thread.c.o: C_COMPILER__eosald ../code/thread/linux/osal_thread.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/thread/linux/osal_thread.c.o.d
@@ -311,8 +255,6 @@ build CMakeFiles/eosald.dir/code/thread/linux/osal_thread.c.o: C_COMPILER__eosal
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/thread/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/timer/linux/osal_timer.c.o: C_COMPILER__eosald ../code/timer/linux/osal_timer.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/timer/linux/osal_timer.c.o.d
@@ -320,8 +262,6 @@ build CMakeFiles/eosald.dir/code/timer/linux/osal_timer.c.o: C_COMPILER__eosald 
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/timer/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/event/linux/osal_event.c.o: C_COMPILER__eosald ../code/event/linux/osal_event.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/event/linux/osal_event.c.o.d
@@ -329,8 +269,6 @@ build CMakeFiles/eosald.dir/code/event/linux/osal_event.c.o: C_COMPILER__eosald 
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/event/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/initialize/linux/osal_os_initialize.c.o: C_COMPILER__eosald ../code/initialize/linux/osal_os_initialize.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/initialize/linux/osal_os_initialize.c.o.d
@@ -338,8 +276,6 @@ build CMakeFiles/eosald.dir/code/initialize/linux/osal_os_initialize.c.o: C_COMP
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/initialize/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/code/mutex/linux/osal_mutex.c.o: C_COMPILER__eosald ../code/mutex/linux/osal_mutex.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/code/mutex/linux/osal_mutex.c.o.d
@@ -347,8 +283,6 @@ build CMakeFiles/eosald.dir/code/mutex/linux/osal_mutex.c.o: C_COMPILER__eosald 
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/code/mutex/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_multiply.c.o: C_COMPILER__eosald ../extensions/int64x/common/osal_int64_multiply.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_multiply.c.o.d
@@ -356,8 +290,6 @@ build CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_multiply.c.o: C_
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/int64x/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o: C_COMPILER__eosald ../extensions/int64x/common/osal_int64_divide.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o.d
@@ -365,8 +297,6 @@ build CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o: C_CO
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/int64x/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_double.c.o: C_COMPILER__eosald ../extensions/int64x/common/osal_int64_double.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_double.c.o.d
@@ -374,8 +304,6 @@ build CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_double.c.o: C_CO
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/int64x/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stream/common/osal_queue.c.o: C_COMPILER__eosald ../extensions/stream/common/osal_queue.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stream/common/osal_queue.c.o.d
@@ -383,8 +311,6 @@ build CMakeFiles/eosald.dir/extensions/stream/common/osal_queue.c.o: C_COMPILER_
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stream/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stream/common/osal_stream.c.o: C_COMPILER__eosald ../extensions/stream/common/osal_stream.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stream/common/osal_stream.c.o.d
@@ -392,8 +318,6 @@ build CMakeFiles/eosald.dir/extensions/stream/common/osal_stream.c.o: C_COMPILER
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stream/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_value.c.o: C_COMPILER__eosald ../extensions/stringx/common/osal_string_get_item_value.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_value.c.o.d
@@ -401,8 +325,6 @@ build CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_value
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stringx/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stringx/common/osal_pattern.c.o: C_COMPILER__eosald ../extensions/stringx/common/osal_pattern.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stringx/common/osal_pattern.c.o.d
@@ -410,8 +332,6 @@ build CMakeFiles/eosald.dir/extensions/stringx/common/osal_pattern.c.o: C_COMPIL
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stringx/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_to_int.c.o: C_COMPILER__eosald ../extensions/stringx/common/osal_string_to_int.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_to_int.c.o.d
@@ -419,8 +339,6 @@ build CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_to_int.c.o: C_
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stringx/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stringx/common/osal_hex_string_to_int.c.o: C_COMPILER__eosald ../extensions/stringx/common/osal_hex_string_to_int.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stringx/common/osal_hex_string_to_int.c.o.d
@@ -428,8 +346,6 @@ build CMakeFiles/eosald.dir/extensions/stringx/common/osal_hex_string_to_int.c.o
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stringx/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_int.c.o: C_COMPILER__eosald ../extensions/stringx/common/osal_string_get_item_int.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_int.c.o.d
@@ -437,8 +353,6 @@ build CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_int.c
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/stringx/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/tls/common/osal_openssl.c.o: C_COMPILER__eosald ../extensions/tls/common/osal_openssl.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/tls/common/osal_openssl.c.o.d
@@ -446,8 +360,6 @@ build CMakeFiles/eosald.dir/extensions/tls/common/osal_openssl.c.o: C_COMPILER__
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/tls/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/typeid/common/osal_typeid.c.o: C_COMPILER__eosald ../extensions/typeid/common/osal_typeid.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/typeid/common/osal_typeid.c.o.d
@@ -455,8 +367,6 @@ build CMakeFiles/eosald.dir/extensions/typeid/common/osal_typeid.c.o: C_COMPILER
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/typeid/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/serialize/common/osal_intser.c.o: C_COMPILER__eosald ../extensions/serialize/common/osal_intser.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/serialize/common/osal_intser.c.o.d
@@ -464,8 +374,6 @@ build CMakeFiles/eosald.dir/extensions/serialize/common/osal_intser.c.o: C_COMPI
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/serialize/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/socket/common/osal_socket_util.c.o: C_COMPILER__eosald ../extensions/socket/common/osal_socket_util.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/socket/common/osal_socket_util.c.o.d
@@ -473,8 +381,6 @@ build CMakeFiles/eosald.dir/extensions/socket/common/osal_socket_util.c.o: C_COM
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/socket/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o: C_COMPILER__eosald ../extensions/rand/common/osal_rand.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o.d
@@ -482,8 +388,6 @@ build CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o: C_COMPILER__eo
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/rand/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_int64_to_string.c.o: C_COMPILER__eosald ../extensions/strcnv/common/osal_strcnv_int64_to_string.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_int64_to_string.c.o.d
@@ -491,8 +395,6 @@ build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_int64_to_string
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/strcnv/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_float_to_string.c.o: C_COMPILER__eosald ../extensions/strcnv/common/osal_strcnv_float_to_string.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_float_to_string.c.o.d
@@ -500,8 +402,6 @@ build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_float_to_string
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/strcnv/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_int64.c.o: C_COMPILER__eosald ../extensions/strcnv/common/osal_strcnv_string_to_int64.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_int64.c.o.d
@@ -509,8 +409,6 @@ build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_int64
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/strcnv/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_float.c.o: C_COMPILER__eosald ../extensions/strcnv/common/osal_strcnv_string_to_float.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_float.c.o.d
@@ -518,8 +416,6 @@ build CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_float
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/strcnv/common
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o: C_COMPILER__eosald ../extensions/main/linux/osal_main.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o.d
@@ -527,8 +423,6 @@ build CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o: C_COMPILER__eos
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/main/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/serial/linux/osal_serial.c.o: C_COMPILER__eosald ../extensions/serial/linux/osal_serial.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/serial/linux/osal_serial.c.o.d
@@ -536,8 +430,6 @@ build CMakeFiles/eosald.dir/extensions/serial/linux/osal_serial.c.o: C_COMPILER_
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/serial/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/filesys/linux/osal_filestat.c.o: C_COMPILER__eosald ../extensions/filesys/linux/osal_filestat.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/filesys/linux/osal_filestat.c.o.d
@@ -545,8 +437,6 @@ build CMakeFiles/eosald.dir/extensions/filesys/linux/osal_filestat.c.o: C_COMPIL
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/filesys/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/filesys/linux/osal_file.c.o: C_COMPILER__eosald ../extensions/filesys/linux/osal_file.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/filesys/linux/osal_file.c.o.d
@@ -554,8 +444,6 @@ build CMakeFiles/eosald.dir/extensions/filesys/linux/osal_file.c.o: C_COMPILER__
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/filesys/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/filesys/linux/osal_dir.c.o: C_COMPILER__eosald ../extensions/filesys/linux/osal_dir.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/filesys/linux/osal_dir.c.o.d
@@ -563,8 +451,6 @@ build CMakeFiles/eosald.dir/extensions/filesys/linux/osal_dir.c.o: C_COMPILER__e
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/filesys/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/time/linux/osal_time.c.o: C_COMPILER__eosald ../extensions/time/linux/osal_time.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/time/linux/osal_time.c.o.d
@@ -572,8 +458,6 @@ build CMakeFiles/eosald.dir/extensions/time/linux/osal_time.c.o: C_COMPILER__eos
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/time/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/serialize/linux/osal_float.c.o: C_COMPILER__eosald ../extensions/serialize/linux/osal_float.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/serialize/linux/osal_float.c.o.d
@@ -581,8 +465,6 @@ build CMakeFiles/eosald.dir/extensions/serialize/linux/osal_float.c.o: C_COMPILE
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/serialize/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 build CMakeFiles/eosald.dir/extensions/socket/linux/osal_socket.c.o: C_COMPILER__eosald ../extensions/socket/linux/osal_socket.c
   DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/eosald.dir/extensions/socket/linux/osal_socket.c.o.d
@@ -590,8 +472,6 @@ build CMakeFiles/eosald.dir/extensions/socket/linux/osal_socket.c.o: C_COMPILER_
   INCLUDES = -I../
   OBJECT_DIR = CMakeFiles/eosald.dir
   OBJECT_FILE_DIR = CMakeFiles/eosald.dir/extensions/socket/linux
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
 
 # =============================================================================
 # Link build statements for STATIC_LIBRARY target eosald
@@ -605,9 +485,8 @@ build /coderoot/lib/linux_gcc/libeosald.a: C_STATIC_LIBRARY_LINKER__eosald CMake
   OBJECT_DIR = CMakeFiles/eosald.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = CMakeFiles/eosald.dir/
   TARGET_FILE = /coderoot/lib/linux_gcc/libeosald.a
-  TARGET_PDB = /coderoot/lib/linux_gcc/libeosald.pdb
+  TARGET_PDB = eosald.a.dbg
 # =============================================================================
 # Target aliases.
 
@@ -635,13 +514,13 @@ default all
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | ../CMakeLists.txt /usr/share/cmake-3.5/Modules/CMakeCCompiler.cmake.in /usr/share/cmake-3.5/Modules/CMakeCCompilerABI.c /usr/share/cmake-3.5/Modules/CMakeCInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCXXCompiler.cmake.in /usr/share/cmake-3.5/Modules/CMakeCXXCompilerABI.cpp /usr/share/cmake-3.5/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.5/Modules/CMakeCompilerIdDetection.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCXXCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompileFeatures.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompilerABI.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompilerId.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineSystem.cmake /usr/share/cmake-3.5/Modules/CMakeFindBinUtils.cmake /usr/share/cmake-3.5/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.5/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.5/Modules/CMakeNinjaFindMake.cmake /usr/share/cmake-3.5/Modules/CMakeParseArguments.cmake /usr/share/cmake-3.5/Modules/CMakeParseImplicitLinkInfo.cmake /usr/share/cmake-3.5/Modules/CMakeSystem.cmake.in /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.5/Modules/CMakeTestCCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeTestCXXCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeTestCompilerCommon.cmake /usr/share/cmake-3.5/Modules/Compiler/ADSP-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/ARMCC-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/AppleClang-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Borland-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Clang-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /usr/share/cmake-3.5/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Cray-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/GHS-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-C-FeatureTests.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-CXX-FeatureTests.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU.cmake /usr/share/cmake-3.5/Modules/Compiler/HP-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/IAR-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /usr/share/cmake-3.5/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /usr/share/cmake-3.5/Modules/Compiler/Intel-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/MIPSpro-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/MSVC-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/PGI-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/PathScale-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SCO-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/TI-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Watcom-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/XL-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/zOS-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Internal/FeatureTesting.cmake /usr/share/cmake-3.5/Modules/MultiArchCross.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-CXX.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.5/Modules/Platform/Linux.cmake /usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.5.1/CMakeCCompiler.cmake CMakeFiles/3.5.1/CMakeCXXCompiler.cmake CMakeFiles/3.5.1/CMakeSystem.cmake CMakeFiles/feature_tests.c CMakeFiles/feature_tests.cxx cmakedefs/eosal-defs.txt
+build build.ninja: RERUN_CMAKE | ../CMakeLists.txt /usr/share/cmake-3.5/Modules/CMakeCInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.5/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.5/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.5/Modules/Platform/Linux.cmake /usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.5.1/CMakeCCompiler.cmake CMakeFiles/3.5.1/CMakeCXXCompiler.cmake CMakeFiles/3.5.1/CMakeSystem.cmake cmakedefs/eosal-defs.txt
   pool = console
 
 #############################################
 # A missing CMake input file is not an error.
 
-build ../CMakeLists.txt /usr/share/cmake-3.5/Modules/CMakeCCompiler.cmake.in /usr/share/cmake-3.5/Modules/CMakeCCompilerABI.c /usr/share/cmake-3.5/Modules/CMakeCInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCXXCompiler.cmake.in /usr/share/cmake-3.5/Modules/CMakeCXXCompilerABI.cpp /usr/share/cmake-3.5/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.5/Modules/CMakeCompilerIdDetection.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCXXCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompileFeatures.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompilerABI.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineCompilerId.cmake /usr/share/cmake-3.5/Modules/CMakeDetermineSystem.cmake /usr/share/cmake-3.5/Modules/CMakeFindBinUtils.cmake /usr/share/cmake-3.5/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.5/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.5/Modules/CMakeNinjaFindMake.cmake /usr/share/cmake-3.5/Modules/CMakeParseArguments.cmake /usr/share/cmake-3.5/Modules/CMakeParseImplicitLinkInfo.cmake /usr/share/cmake-3.5/Modules/CMakeSystem.cmake.in /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.5/Modules/CMakeTestCCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeTestCXXCompiler.cmake /usr/share/cmake-3.5/Modules/CMakeTestCompilerCommon.cmake /usr/share/cmake-3.5/Modules/Compiler/ADSP-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/ARMCC-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/AppleClang-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Borland-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Clang-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /usr/share/cmake-3.5/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Cray-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/GHS-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-C-FeatureTests.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-CXX-FeatureTests.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU.cmake /usr/share/cmake-3.5/Modules/Compiler/HP-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/IAR-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /usr/share/cmake-3.5/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /usr/share/cmake-3.5/Modules/Compiler/Intel-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/MIPSpro-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/MSVC-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/PGI-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/PathScale-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SCO-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/TI-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/Watcom-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/XL-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/zOS-C-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /usr/share/cmake-3.5/Modules/Internal/FeatureTesting.cmake /usr/share/cmake-3.5/Modules/MultiArchCross.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-CXX.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.5/Modules/Platform/Linux.cmake /usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.5.1/CMakeCCompiler.cmake CMakeFiles/3.5.1/CMakeCXXCompiler.cmake CMakeFiles/3.5.1/CMakeSystem.cmake CMakeFiles/feature_tests.c CMakeFiles/feature_tests.cxx cmakedefs/eosal-defs.txt: phony
+build ../CMakeLists.txt /usr/share/cmake-3.5/Modules/CMakeCInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.5/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.5/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.5/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Compiler/GNU.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.5/Modules/Platform/Linux.cmake /usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.5.1/CMakeCCompiler.cmake CMakeFiles/3.5.1/CMakeCXXCompiler.cmake CMakeFiles/3.5.1/CMakeSystem.cmake cmakedefs/eosal-defs.txt: phony
 
 #############################################
 # Clean all the built files.
