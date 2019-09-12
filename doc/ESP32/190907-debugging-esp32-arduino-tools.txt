@@ -42,6 +42,3 @@ https://visualgdb.com/tutorials/arduino/esp32/
 
 Attaching debuffer (no arduino)
 https://www.youtube.com/watch?v=p63VEYS7ZUw
-
-XXXXXXXXXXXXX I NEEDED TO PRESS BOOT PIN ON BOTH ESP32 AND ESP_PROG TO GET SOFTWARE LOADED 
-
