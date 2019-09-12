@@ -1,6 +1,0 @@
-{
-    "terminal.integrated.env.linux": {
-        "PATH": "/home/john/.platformio/penv/bin:/home/john/.platformio/penv:/home/john/esp/esp-idf/components/esptool_py/esptool:/home/john/esp/esp-idf/components/espcoredump:/home/john/esp/esp-idf/components/partition_table/:/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin:/home/john/.espressif/tools/esp32ulp-elf/2.28.51.20170517/esp32ulp-elf-binutils/bin:/home/john/.espressif/tools/openocd-esp32/v0.10.0-esp32-20190708/openocd-esp32/bin:/home/john/.espressif/python_env/idf4.1_py2.7_env/bin:/home/john/esp/esp-idf/tools:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/sbin:/usr/sbin",
-        "PLATFORMIO_CALLER": "vscode"
-    }
-}
