@@ -25,26 +25,16 @@ rule CUSTOM_COMMAND
 rule C_COMPILER__eosald
   depfile = $DEP_FILE
   deps = gcc
-  command = /home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out   -c $in
+  command = /bin/gcc-6 $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out   -c $in
   description = Building C object $out
 
 
 #############################################
-# Rule for compiling CXX files.
+# Rule for linking C static library.
 
-rule CXX_COMPILER__eosald
-  depfile = $DEP_FILE
-  deps = gcc
-  command = /usr/bin/c++  $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
-  description = Building CXX object $out
-
-
-#############################################
-# Rule for linking CXX static library.
-
-rule CXX_STATIC_LIBRARY_LINKER__eosald
-  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
-  description = Linking CXX static library $TARGET_FILE
+rule C_STATIC_LIBRARY_LINKER__eosald
+  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /bin/ranlib $TARGET_FILE && $POST_BUILD
+  description = Linking C static library $TARGET_FILE
   restat = $RESTAT
 
 
