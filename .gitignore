@@ -60,3 +60,4 @@ CMakeCache.txt
 *.log
 *.tlog
 *.ninja*
+c_cpp_properties.json
