@@ -55,12 +55,12 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 #############################################
 # Order-only phony target for simple_clientd
 
-build cmake_object_order_depends_target_simple_clientd: phony
+build cmake_object_order_depends_target_simple_clientd: phony || cmake_object_order_depends_target_eosald
 build CMakeFiles/simple_clientd.dir/code/simple_client_example.c.o: C_COMPILER__simple_clientd ../code/simple_client_example.c || cmake_object_order_depends_target_simple_clientd
-  DEFINES = -DE_OSVER_arduino -DE_OS_arduino
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
   DEP_FILE = CMakeFiles/simple_clientd.dir/code/simple_client_example.c.o.d
   FLAGS = -Wall -g
-  INCLUDES = -I/home/john/.arduino15/packages/esp32/hardware/esp32/1.0.2/cores/esp32 -I/home/john/.arduino15/packages/esp32/hardware/esp32/1.0.2/tools/sdk/include/freertos -I/home/john/.arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/1.22.0-80-g6c4433a-5.2.0/xtensa-esp32-elf/include/include -I/home/john/.arduino15/packages/esp32/hardware/esp32/1.0.2/tools/sdk/include/config -I/coderoot/eosal -I/coderoot/simple_client
+  INCLUDES = -I/coderoot/eosal -I/coderoot/simple_client
   OBJECT_DIR = CMakeFiles/simple_clientd.dir
   OBJECT_FILE_DIR = CMakeFiles/simple_clientd.dir/code
 
@@ -69,26 +69,501 @@ build CMakeFiles/simple_clientd.dir/code/simple_client_example.c.o: C_COMPILER__
 
 
 #############################################
-# Link the executable /coderoot/bin/arduino/simple_clientd
+# Link the executable /coderoot/bin/linux/simple_clientd
 
-build /coderoot/bin/arduino/simple_clientd: C_EXECUTABLE_LINKER__simple_clientd CMakeFiles/simple_clientd.dir/code/simple_client_example.c.o
+build /coderoot/bin/linux/simple_clientd: C_EXECUTABLE_LINKER__simple_clientd CMakeFiles/simple_clientd.dir/code/simple_client_example.c.o | /coderoot/lib/linux_gcc/libeosald.a || /coderoot/lib/linux_gcc/libeosald.a
   FLAGS = -Wall -g
   LINK_FLAGS = -rdynamic
-  LINK_LIBRARIES = -Wl,-rpath,/coderoot/lib/arduino_gcc -leosald
-  LINK_PATH = -L/coderoot/lib/arduino_gcc
+  LINK_LIBRARIES = -Wl,-rpath,/coderoot/lib/linux_gcc /coderoot/lib/linux_gcc/libeosald.a -lcrypto -lssl -lpthread
+  LINK_PATH = -L/coderoot/lib/linux_gcc
   OBJECT_DIR = CMakeFiles/simple_clientd.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = /coderoot/bin/arduino/simple_clientd
+  TARGET_FILE = /coderoot/bin/linux/simple_clientd
   TARGET_PDB = simple_clientd.dbg
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /coderoot/eosal/examples/simple_client/CMakeLists.txt
+# =============================================================================
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build eosal/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /coderoot/eosal/examples/simple_client/build/eosal && /usr/bin/cmake -H/coderoot/eosal/examples/simple_client -B/coderoot/eosal/examples/simple_client/build
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+build eosal/rebuild_cache: phony eosal/CMakeFiles/rebuild_cache.util
+
+#############################################
+# Utility command for edit_cache
+
+build eosal/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /coderoot/eosal/examples/simple_client/build/eosal && /usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+build eosal/edit_cache: phony eosal/CMakeFiles/edit_cache.util
+# =============================================================================
+# Object build statements for STATIC_LIBRARY target eosald
+
+
+#############################################
+# Order-only phony target for eosald
+
+build cmake_object_order_depends_target_eosald: phony
+build eosal/CMakeFiles/eosald.dir/code/debugcode/common/osal_debug.c.o: C_COMPILER__eosald /coderoot/eosal/code/debugcode/common/osal_debug.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/debugcode/common/osal_debug.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/debugcode/common
+build eosal/CMakeFiles/eosald.dir/code/initialize/common/osal_initialize.c.o: C_COMPILER__eosald /coderoot/eosal/code/initialize/common/osal_initialize.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/initialize/common/osal_initialize.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/initialize/common
+build eosal/CMakeFiles/eosald.dir/code/int64/common/osal_int64.c.o: C_COMPILER__eosald /coderoot/eosal/code/int64/common/osal_int64.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/int64/common/osal_int64.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/int64/common
+build eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memclear.c.o: C_COMPILER__eosald /coderoot/eosal/code/memory/common/osal_memclear.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memclear.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/memory/common
+build eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memcpy.c.o: C_COMPILER__eosald /coderoot/eosal/code/memory/common/osal_memcpy.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memcpy.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/memory/common
+build eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memmove.c.o: C_COMPILER__eosald /coderoot/eosal/code/memory/common/osal_memmove.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memmove.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/memory/common
+build eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memory.c.o: C_COMPILER__eosald /coderoot/eosal/code/memory/common/osal_memory.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memory.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/memory/common
+build eosal/CMakeFiles/eosald.dir/code/resmon/common/osal_resource_monitor.c.o: C_COMPILER__eosald /coderoot/eosal/code/resmon/common/osal_resource_monitor.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/resmon/common/osal_resource_monitor.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/resmon/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_int_to_string.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_int_to_string.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_int_to_string.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strchr.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strchr.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strchr.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strcmp.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strcmp.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strcmp.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strechr.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strechr.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strechr.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strlen.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strlen.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strlen.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strncat.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strncat.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strncat.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strncpy.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strncpy.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strncpy.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strnicmp.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strnicmp.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strnicmp.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/string/common/osal_strstr.c.o: C_COMPILER__eosald /coderoot/eosal/code/string/common/osal_strstr.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/string/common/osal_strstr.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/string/common
+build eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf16_to_utf32.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf16/common/osal_char_utf16_to_utf32.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf16_to_utf32.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf16/common
+build eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf32_to_utf16.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf16/common/osal_char_utf32_to_utf16.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf32_to_utf16.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf16/common
+build eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf16/common/osal_string_utf16_to_utf8.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf16/common
+build eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8_malloc.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf16/common/osal_string_utf16_to_utf8_malloc.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8_malloc.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf16/common
+build eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf16/common/osal_string_utf8_to_utf16.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf16/common
+build eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16_malloc.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf16/common/osal_string_utf8_to_utf16_malloc.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16_malloc.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf16/common
+build eosal/CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf32_to_utf8.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf32/common/osal_char_utf32_to_utf8.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf32_to_utf8.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf32/common
+build eosal/CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf8_to_utf32.c.o: C_COMPILER__eosald /coderoot/eosal/code/utf32/common/osal_char_utf8_to_utf32.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf8_to_utf32.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/utf32/common
+build eosal/CMakeFiles/eosald.dir/code/console/linux/osal_sysconsole.c.o: C_COMPILER__eosald /coderoot/eosal/code/console/linux/osal_sysconsole.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/console/linux/osal_sysconsole.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/console/linux
+build eosal/CMakeFiles/eosald.dir/code/event/linux/osal_event.c.o: C_COMPILER__eosald /coderoot/eosal/code/event/linux/osal_event.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/event/linux/osal_event.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/event/linux
+build eosal/CMakeFiles/eosald.dir/code/initialize/linux/osal_os_initialize.c.o: C_COMPILER__eosald /coderoot/eosal/code/initialize/linux/osal_os_initialize.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/initialize/linux/osal_os_initialize.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/initialize/linux
+build eosal/CMakeFiles/eosald.dir/code/memory/linux/osal_sysmem.c.o: C_COMPILER__eosald /coderoot/eosal/code/memory/linux/osal_sysmem.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/memory/linux/osal_sysmem.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/memory/linux
+build eosal/CMakeFiles/eosald.dir/code/mutex/linux/osal_mutex.c.o: C_COMPILER__eosald /coderoot/eosal/code/mutex/linux/osal_mutex.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/mutex/linux/osal_mutex.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/mutex/linux
+build eosal/CMakeFiles/eosald.dir/code/thread/linux/osal_thread.c.o: C_COMPILER__eosald /coderoot/eosal/code/thread/linux/osal_thread.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/thread/linux/osal_thread.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/thread/linux
+build eosal/CMakeFiles/eosald.dir/code/thread/linux/osal_thread_priority.c.o: C_COMPILER__eosald /coderoot/eosal/code/thread/linux/osal_thread_priority.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/thread/linux/osal_thread_priority.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/thread/linux
+build eosal/CMakeFiles/eosald.dir/code/timer/linux/osal_timer.c.o: C_COMPILER__eosald /coderoot/eosal/code/timer/linux/osal_timer.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/code/timer/linux/osal_timer.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/code/timer/linux
+build eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/int64x/common/osal_int64_divide.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/int64x/common
+build eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_double.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/int64x/common/osal_int64_double.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_double.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/int64x/common
+build eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_multiply.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/int64x/common/osal_int64_multiply.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_multiply.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/int64x/common
+build eosal/CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/rand/common/osal_rand.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/rand/common
+build eosal/CMakeFiles/eosald.dir/extensions/serialize/common/osal_intser.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/serialize/common/osal_intser.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/serialize/common/osal_intser.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/serialize/common
+build eosal/CMakeFiles/eosald.dir/extensions/socket/common/osal_socket_util.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/socket/common/osal_socket_util.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/socket/common/osal_socket_util.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/socket/common
+build eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_float_to_string.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/strcnv/common/osal_strcnv_float_to_string.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_float_to_string.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common
+build eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_int64_to_string.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/strcnv/common/osal_strcnv_int64_to_string.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_int64_to_string.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common
+build eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_float.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/strcnv/common/osal_strcnv_string_to_float.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_float.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common
+build eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_int64.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/strcnv/common/osal_strcnv_string_to_int64.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_int64.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/strcnv/common
+build eosal/CMakeFiles/eosald.dir/extensions/stream/common/osal_queue.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stream/common/osal_queue.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stream/common/osal_queue.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stream/common
+build eosal/CMakeFiles/eosald.dir/extensions/stream/common/osal_stream.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stream/common/osal_stream.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stream/common/osal_stream.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stream/common
+build eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_hex_string_to_int.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stringx/common/osal_hex_string_to_int.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_hex_string_to_int.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stringx/common
+build eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_pattern.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stringx/common/osal_pattern.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_pattern.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stringx/common
+build eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_int.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stringx/common/osal_string_get_item_int.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_int.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stringx/common
+build eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_value.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stringx/common/osal_string_get_item_value.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_value.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stringx/common
+build eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_to_int.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/stringx/common/osal_string_to_int.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_to_int.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/stringx/common
+build eosal/CMakeFiles/eosald.dir/extensions/tls/common/osal_openssl.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/tls/common/osal_openssl.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/tls/common/osal_openssl.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/tls/common
+build eosal/CMakeFiles/eosald.dir/extensions/typeid/common/osal_typeid.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/typeid/common/osal_typeid.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/typeid/common/osal_typeid.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/typeid/common
+build eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_dir.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/filesys/linux/osal_dir.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_dir.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/filesys/linux
+build eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_file.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/filesys/linux/osal_file.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_file.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/filesys/linux
+build eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_filestat.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/filesys/linux/osal_filestat.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_filestat.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/filesys/linux
+build eosal/CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/main/linux/osal_main.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/main/linux
+build eosal/CMakeFiles/eosald.dir/extensions/serial/linux/osal_serial.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/serial/linux/osal_serial.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/serial/linux/osal_serial.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/serial/linux
+build eosal/CMakeFiles/eosald.dir/extensions/serialize/linux/osal_float.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/serialize/linux/osal_float.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/serialize/linux/osal_float.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/serialize/linux
+build eosal/CMakeFiles/eosald.dir/extensions/socket/linux/osal_socket.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/socket/linux/osal_socket.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/socket/linux/osal_socket.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/socket/linux
+build eosal/CMakeFiles/eosald.dir/extensions/time/linux/osal_time.c.o: C_COMPILER__eosald /coderoot/eosal/extensions/time/linux/osal_time.c || cmake_object_order_depends_target_eosald
+  DEFINES = -DE_OSVER_linux -DE_OS_linux
+  DEP_FILE = eosal/CMakeFiles/eosald.dir/extensions/time/linux/osal_time.c.o.d
+  FLAGS = -Wall -g
+  INCLUDES = -I../../../ -I/coderoot/simple_client
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  OBJECT_FILE_DIR = eosal/CMakeFiles/eosald.dir/extensions/time/linux
+
+# =============================================================================
+# Link build statements for STATIC_LIBRARY target eosald
+
+
+#############################################
+# Link the static library /coderoot/lib/linux_gcc/libeosald.a
+
+build /coderoot/lib/linux_gcc/libeosald.a: C_STATIC_LIBRARY_LINKER__eosald eosal/CMakeFiles/eosald.dir/code/debugcode/common/osal_debug.c.o eosal/CMakeFiles/eosald.dir/code/initialize/common/osal_initialize.c.o eosal/CMakeFiles/eosald.dir/code/int64/common/osal_int64.c.o eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memclear.c.o eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memcpy.c.o eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memmove.c.o eosal/CMakeFiles/eosald.dir/code/memory/common/osal_memory.c.o eosal/CMakeFiles/eosald.dir/code/resmon/common/osal_resource_monitor.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_int_to_string.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strchr.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strcmp.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strechr.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strlen.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strncat.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strncpy.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strnicmp.c.o eosal/CMakeFiles/eosald.dir/code/string/common/osal_strstr.c.o eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf16_to_utf32.c.o eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_char_utf32_to_utf16.c.o eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8.c.o eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf16_to_utf8_malloc.c.o eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16.c.o eosal/CMakeFiles/eosald.dir/code/utf16/common/osal_string_utf8_to_utf16_malloc.c.o eosal/CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf32_to_utf8.c.o eosal/CMakeFiles/eosald.dir/code/utf32/common/osal_char_utf8_to_utf32.c.o eosal/CMakeFiles/eosald.dir/code/console/linux/osal_sysconsole.c.o eosal/CMakeFiles/eosald.dir/code/event/linux/osal_event.c.o eosal/CMakeFiles/eosald.dir/code/initialize/linux/osal_os_initialize.c.o eosal/CMakeFiles/eosald.dir/code/memory/linux/osal_sysmem.c.o eosal/CMakeFiles/eosald.dir/code/mutex/linux/osal_mutex.c.o eosal/CMakeFiles/eosald.dir/code/thread/linux/osal_thread.c.o eosal/CMakeFiles/eosald.dir/code/thread/linux/osal_thread_priority.c.o eosal/CMakeFiles/eosald.dir/code/timer/linux/osal_timer.c.o eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_double.c.o eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_multiply.c.o eosal/CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o eosal/CMakeFiles/eosald.dir/extensions/serialize/common/osal_intser.c.o eosal/CMakeFiles/eosald.dir/extensions/socket/common/osal_socket_util.c.o eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_float_to_string.c.o eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_int64_to_string.c.o eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_float.c.o eosal/CMakeFiles/eosald.dir/extensions/strcnv/common/osal_strcnv_string_to_int64.c.o eosal/CMakeFiles/eosald.dir/extensions/stream/common/osal_queue.c.o eosal/CMakeFiles/eosald.dir/extensions/stream/common/osal_stream.c.o eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_hex_string_to_int.c.o eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_pattern.c.o eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_int.c.o eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_get_item_value.c.o eosal/CMakeFiles/eosald.dir/extensions/stringx/common/osal_string_to_int.c.o eosal/CMakeFiles/eosald.dir/extensions/tls/common/osal_openssl.c.o eosal/CMakeFiles/eosald.dir/extensions/typeid/common/osal_typeid.c.o eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_dir.c.o eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_file.c.o eosal/CMakeFiles/eosald.dir/extensions/filesys/linux/osal_filestat.c.o eosal/CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o eosal/CMakeFiles/eosald.dir/extensions/serial/linux/osal_serial.c.o eosal/CMakeFiles/eosald.dir/extensions/serialize/linux/osal_float.c.o eosal/CMakeFiles/eosald.dir/extensions/socket/linux/osal_socket.c.o eosal/CMakeFiles/eosald.dir/extensions/time/linux/osal_time.c.o
+  LANGUAGE_COMPILE_FLAGS = -Wall -g
+  OBJECT_DIR = eosal/CMakeFiles/eosald.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = /coderoot/lib/linux_gcc/libeosald.a
+  TARGET_PDB = eosald.a.dbg
 # =============================================================================
 # Target aliases.
 
-build simple_clientd: phony /coderoot/bin/arduino/simple_clientd
+build eosald: phony /coderoot/lib/linux_gcc/libeosald.a
+build libeosald.a: phony /coderoot/lib/linux_gcc/libeosald.a
+build simple_clientd: phony /coderoot/bin/linux/simple_clientd
 # =============================================================================
 # Folder targets.
 
 # =============================================================================
+# =============================================================================
+
+#############################################
+# Folder: /coderoot/eosal/examples/simple_client/build/eosal
+
+build  eosal/all: phony eosald
 # =============================================================================
 # Unknown Build Time Dependencies.
 # Tell Ninja that they may appear as side effects of build rules
@@ -101,7 +576,7 @@ build simple_clientd: phony /coderoot/bin/arduino/simple_clientd
 #############################################
 # The main all target.
 
-build all: phony /coderoot/bin/arduino/simple_clientd
+build all: phony /coderoot/bin/linux/simple_clientd /coderoot/lib/linux_gcc/libeosald.a
 
 #############################################
 # Make the all target the default.
@@ -111,13 +586,13 @@ default all
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | ../CMakeLists.txt /coderoot/eosal/build/cmakedefs/eosal-defs.txt /usr/share/cmake-3.9/Modules/CMakeCInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.9/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.9/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.9/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux.cmake /usr/share/cmake-3.9/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.9.5/CMakeCCompiler.cmake CMakeFiles/3.9.5/CMakeCXXCompiler.cmake CMakeFiles/3.9.5/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | ../CMakeLists.txt /coderoot/eosal/CMakeLists.txt /coderoot/eosal/build/cmakedefs/eosal-defs.txt /usr/share/cmake-3.9/Modules/CMakeCInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.9/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.9/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.9/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux.cmake /usr/share/cmake-3.9/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.9.5/CMakeCCompiler.cmake CMakeFiles/3.9.5/CMakeCXXCompiler.cmake CMakeFiles/3.9.5/CMakeSystem.cmake
   pool = console
 
 #############################################
 # A missing CMake input file is not an error.
 
-build ../CMakeLists.txt /coderoot/eosal/build/cmakedefs/eosal-defs.txt /usr/share/cmake-3.9/Modules/CMakeCInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.9/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.9/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.9/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux.cmake /usr/share/cmake-3.9/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.9.5/CMakeCCompiler.cmake CMakeFiles/3.9.5/CMakeCXXCompiler.cmake CMakeFiles/3.9.5/CMakeSystem.cmake: phony
+build ../CMakeLists.txt /coderoot/eosal/CMakeLists.txt /coderoot/eosal/build/cmakedefs/eosal-defs.txt /usr/share/cmake-3.9/Modules/CMakeCInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.9/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.9/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.9/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.9/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.9/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Compiler/GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.9/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.9/Modules/Platform/Linux.cmake /usr/share/cmake-3.9/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.9.5/CMakeCCompiler.cmake CMakeFiles/3.9.5/CMakeCXXCompiler.cmake CMakeFiles/3.9.5/CMakeSystem.cmake: phony
 
 #############################################
 # Clean all the built files.

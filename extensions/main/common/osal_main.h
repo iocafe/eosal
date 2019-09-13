@@ -46,6 +46,30 @@ os_int osal_main(
     os_int argc,
     os_char *argv[]);
 
+/* Micro-controller specific: Prototype for application defined loop function.
+   This is implemented for micro-controller environment to process single thread model
+   loop calls.
+ */
+osalStatus osal_loop(
+    void *prm);
+
+/* Micro-controller specific: Prototype for application defined cleanup function to release
+ * resources allocated by osal_main().
+ */
+void osal_main_cleanup(
+    void *prm);
+
+/* The osal_simulated_loop() function is used to create repeated osal_loop function calls in PC
+   This function is not used in microcontroller environment, where loop is
+   called by the framework, and is defined as empty macro to allow build.
+ */
+#if OSAL_MAIN_SUPPORT
+    void osal_simulated_loop(
+        void *prm);
+#else
+    #define osal_simulated_loop(p)
+#endif
+
 /* If C++ compilation, end the undecorated code.
  */
 OSAL_C_HEADER_ENDS

@@ -217,6 +217,12 @@
 
 {
   "directory": "/coderoot/eosal/build",
+  "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/main/common/osal_simloop.c.o   -c /coderoot/eosal/extensions/main/common/osal_simloop.c",
+  "file": "/coderoot/eosal/extensions/main/common/osal_simloop.c"
+},
+
+{
+  "directory": "/coderoot/eosal/build",
   "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o   -c /coderoot/eosal/extensions/rand/common/osal_rand.c",
   "file": "/coderoot/eosal/extensions/rand/common/osal_rand.c"
 },

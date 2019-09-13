@@ -55,11 +55,6 @@
  */
 static osalStream stream, open_socket;
 
-/* Prototyped for forward referred static functions.
- */
-static void example_setup(void);
-static void example_cleanup(void);
-static void example_loop(void);
 
 
 /**
@@ -68,6 +63,9 @@ static void example_loop(void);
   @brief Process entry point.
 
   The osal_main() function is OS independent entry point.
+
+  The function initializes used stream library and either opens a serial port or creates 
+  listening TCP/TLS socket.
 
   @param   argc Number of command line arguments.
   @param   argv Array of string pointers, one for each command line argument. UTF8 encoded.
@@ -80,34 +78,8 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    os_sleep(4000);
+    return 0;
 
-    example_setup();
-
-    while (OS_TRUE)
-    {
-        example_loop();
-        os_timeslice();
-    }
-
-    example_cleanup();
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set up for communication.
-
-  The example_setup() function initializes used stream library and either opens a serial port
-  or creates listening TCP/TLS socket.
-
-  @return  None.
-
-****************************************************************************************************
-*/
-static void example_setup(void)
-{
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
     stream = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT, OS_NULL,
@@ -133,8 +105,14 @@ static void example_setup(void)
     {
         osal_debug_error("osal_stream_open failed");
     }
-    osal_trace("listening for socket connections");
+    osal_trace("listening for connections");
     open_socket = OS_NULL;
+
+    /* When emulating micro-controller on PC, run loop. Does nothing on real micro-controller.
+     */
+    osal_simulated_loop(OS_NULL);
+
+    return 0;
 }
 
 
@@ -144,7 +122,7 @@ static void example_setup(void)
 
   @brief Loop function to be called repeatedly.
 
-  The example_loop() function:
+  The osal_loop() function:
   - Reads data received from a serial port prints it to console. 
   - Check for user key pressess and writes those to serial port.
 
@@ -156,11 +134,13 @@ static void example_setup(void)
         <timeout_ms>) function, tough this would block to wait until there is space in outgoing
         buffer.
 
+  @param   prm Void pointer, reserved to pass context structure, etc. 
   @return  None.
 
 ****************************************************************************************************
 */
-static void example_loop(void)
+osalStatus osal_loop(
+    void *prm)
 {
     os_uchar buf[64];
     os_memsz n_read, n_written;
@@ -201,6 +181,8 @@ static void example_loop(void)
        implementetios buffers data internally and this moves buffered data.
      */
     osal_stream_flush(stream, OSAL_STREAM_DEFAULT);
+
+    return OSAL_SUCCESS;
 }
 
 #else
@@ -209,24 +191,35 @@ static void example_loop(void)
 
   @brief Loop function to be called repeatedly.
 
-  The example_loop() function:
+  The osal_loop() function:
   - Accepts incoming TCP/TLS socket connection. 
   - If we have a connection:
   -- Reads data received from socket and prints it to console. 
   -- Check for user key pressess and writes those to socket.
 
   Note: See note for serial communication, same applies here.
+
+  @param   prm Void pointer, reserved to pass context structure, etc. 
   @return  None.
 
 ****************************************************************************************************
 */
-static void example_loop(void)
+osalStatus osal_loop(
+    void *prm)
 {
     os_uchar buf[64];
     os_memsz n_read, n_written;
     os_uint c;
     os_int bytes;
     osalStream accepted_socket;
+
+static os_timer t;
+if (os_elapsed(&t, 1000))
+{
+osal_debug_error("Ukke");
+os_get_timer(&t);
+}
+return OSAL_SUCCESS;    
 
     osal_socket_maintain();
 
@@ -278,12 +271,14 @@ static void example_loop(void)
     }
 
     /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
-       implementetios buffers data internally and this moves buffered data.
+       implementetios buffers data internally and this moves buffered data. 
      */
     if (open_socket)
     {
         osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
     }
+
+    return OSAL_SUCCESS;
 }
 #endif
 
@@ -293,15 +288,17 @@ static void example_loop(void)
 
   @brief Finish with communication.
 
-  The example_cleanup() function closes listening socket port and connected socket port, then
+  The osal_main_cleanup() function closes listening socket port and connected socket port, then
   closes underlying stream library. Notice that the osal_stream_close() function does close does 
   nothing if it is called with NULL argument.
 
+  @param   prm Void pointer, reserved to pass context structure, etc. 
   @return  None.
 
 ****************************************************************************************************
 */
-static void example_cleanup(void)
+void osal_main_cleanup(
+    void *prm)
 {
     osal_stream_close(open_socket);
     osal_stream_close(stream);
