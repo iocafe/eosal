@@ -223,6 +223,12 @@
 
 {
   "directory": "/coderoot/eosal/examples/simple_client/build",
+  "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_client   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/main/common/osal_simloop.c.o   -c /coderoot/eosal/extensions/main/common/osal_simloop.c",
+  "file": "/coderoot/eosal/extensions/main/common/osal_simloop.c"
+},
+
+{
+  "directory": "/coderoot/eosal/examples/simple_client/build",
   "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_client   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/rand/common/osal_rand.c.o   -c /coderoot/eosal/extensions/rand/common/osal_rand.c",
   "file": "/coderoot/eosal/extensions/rand/common/osal_rand.c"
 },

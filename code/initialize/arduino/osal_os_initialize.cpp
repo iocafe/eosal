@@ -17,7 +17,21 @@
 */
 #include "eosal.h"
 
-void NVIC_SystemReset(void);
+#ifndef OSAL_NVIC_RESET
+  #ifdef STM32F4XX
+    #define OSAL_NVIC_RESET
+  #endif
+#endif
+
+#ifndef OSAL_NVIC_RESET
+  #ifdef STM32L4XX
+    #define OSAL_NVIC_RESET
+  #endif
+#endif
+
+#ifdef OSAL_NVIC_RESET
+  void NVIC_SystemReset(void);
+#endif
 
 /**
 ****************************************************************************************************
@@ -76,5 +90,12 @@ void osal_reboot(
     os_int flags)
 {
     os_sleep(200);
+
+#ifdef ESP_PLATFORM
+    ESP.restart();
+#endif
+
+#ifdef OSAL_NVIC_RESET
     NVIC_SystemReset();
+#endif
 }

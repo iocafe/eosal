@@ -1,8 +1,10 @@
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <eosalx.h>
 
 /*
-  simple_client.ino
-  Include a simple client app to build it within Arduino IDE. 
+  simple_client_visualstudiocode.ino
+  Example to build simple client app with Visual Studio Code + Platform IO + Arduino libraries. 
   The setup routine runs once when the device starts.
  */
 void setup() 
@@ -28,7 +30,3 @@ void loop()
     if (osal_loop(OS_NULL)) osal_reboot(0);
 }
 
-/* Include code for client application (at the time of writing connects socket 
-   to IP 192.168.1.220, TCP port 6001, but these are set in client app code)
- */
-#include "/coderoot/eosal/examples/simple_client/code/simple_client_example.c"

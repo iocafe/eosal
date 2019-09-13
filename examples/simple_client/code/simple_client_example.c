@@ -46,6 +46,8 @@
 #define EXAMPLE_TLS_SOCKET "192.168.1.220:55555"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
+static osalStream stream;
+
 
 /**
 ****************************************************************************************************
@@ -65,12 +67,6 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    osalStream stream;
-    os_uchar buf[64];
-    os_memsz n_read, n_written;
-    os_int bytes;
-    os_uint c;
-
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
     stream = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET, OS_NULL,
@@ -97,48 +93,94 @@ os_int osal_main(
     }
     osal_trace("stream connected");
 
-    while (OS_TRUE)
+    /* When emulating micro-controller on PC, run loop. Does nothing on real micro-controller.
+     */
+    osal_simulated_loop(OS_NULL);
+    return 0;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Loop function to be called repeatedly.
+
+  The osal_loop() function:
+  - If we have a connection:
+  -- Reads data received from socket and prints it to console.
+  -- Check for user key pressess and writes those to socket.
+
+  @param   prm Void pointer, reserved to pass context structure, etc.
+  @return  None.
+
+****************************************************************************************************
+*/
+osalStatus osal_loop(
+    void *prm)
+{
+    os_uchar buf[64];
+    os_memsz n_read, n_written;
+    os_int bytes;
+    os_uint c;
+
+    osal_socket_maintain();
+
+    /* Print data received from the stream to console.
+     */
+    if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
     {
-        osal_socket_maintain();
-
-        /* Print data received from the stream to console.
-         */
-        if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
-        {
-            osal_debug_error("read: connection broken");
-            break;
-        }
-        else if (n_read)
-        {
-            buf[n_read] ='\0';
-            osal_console_write((os_char*)buf);
-        }
-
-        /* And write user key presses to the stream.
-         */
-        c = osal_console_read();
-        if (c)
-        {
-            bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
-            if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
-            {
-                osal_debug_error("write: connection broken");
-                break;
-            }
-        }
-
-        /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
-           implementetios buffers data internally and this moves buffered data.
-         */
-        if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
-        {
-            osal_debug_error("flush: connection broken");
-            break;
-        }
-
-        os_timeslice();
+        osal_debug_error("read: connection broken");
+        return OSAL_STATUS_FAILED;
+    }
+    else if (n_read)
+    {
+        buf[n_read] ='\0';
+        osal_console_write((os_char*)buf);
     }
 
+    /* And write user key presses to the stream.
+     */
+    c = osal_console_read();
+    if (c)
+    {
+        bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+        if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
+        {
+            osal_debug_error("write: connection broken");
+            return OSAL_STATUS_FAILED;
+        }
+    }
+
+    /* Call flush to move data. This is necessary even nothing was written just now. Some stream
+       implementetios buffers data internally and this moves buffered data.
+     */
+    if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
+    {
+        osal_debug_error("flush: connection broken");
+        return OSAL_STATUS_FAILED;
+    }
+
+    return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Finish with communication.
+
+  The osal_main_cleanup() function closes the stream, then closes underlying stream library.
+  Notice that the osal_stream_close() function does close does nothing if it is called with NULL
+  argument.
+
+  @param   prm Void pointer, reserved to pass context structure, etc.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_main_cleanup(
+    void *prm)
+{
     osal_stream_close(stream);
     stream = OS_NULL;
 
@@ -154,6 +196,4 @@ os_int osal_main(
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
     osal_serial_shutdown();
 #endif
-
-    return 0;
 }
