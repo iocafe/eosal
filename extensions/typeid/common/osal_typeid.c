@@ -109,7 +109,7 @@ osalTypeId osal_typeid_from_name(
 os_char *osal_typeid_to_name(
     osalTypeId type_id)
 {
-    if (type_id < 0 || type_id >= OSAL_NRO_TYPE_INFO_ROWS)
+    if ((int)type_id < 0 || (int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
     {
         return "";
     }
@@ -133,7 +133,7 @@ os_char *osal_typeid_to_name(
 os_memsz osal_typeid_size(
     osalTypeId type_id)
 {
-    if (type_id < 0 || type_id >= OSAL_NRO_TYPE_INFO_ROWS)
+    if ((int)type_id < 0 || (int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
     {
         return 0;
     }

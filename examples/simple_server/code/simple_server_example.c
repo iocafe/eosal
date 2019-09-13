@@ -79,7 +79,7 @@ os_int osal_main(
     os_char *argv[])
 {
     osal_debug_error("here");
-return 0;
+
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
     stream = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT, OS_NULL,
@@ -153,7 +153,7 @@ osalStatus osal_loop(
         osal_debug_error("read: serial port failed");
         osal_stream_close(stream);
         stream = OS_NULL;
-        return;
+        return OSAL_STATUS_FAILED;
     }
     else if (n_read)
     {
@@ -172,7 +172,7 @@ osalStatus osal_loop(
             osal_debug_error("write: serial port failed");
             osal_stream_close(stream);
             stream = OS_NULL;
-            return;
+            return OSAL_STATUS_FAILED;
         }
     }
 
@@ -180,9 +180,9 @@ osalStatus osal_loop(
        implementetios buffers data internally and this moves buffered data.
      */
     osal_stream_flush(stream, OSAL_STREAM_DEFAULT);
-
-    return OSAL_SUCCESS;
+    return stream ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
+
 
 #else
 /**
@@ -211,14 +211,6 @@ osalStatus osal_loop(
     os_uint c;
     os_int bytes;
     osalStream accepted_socket;
-
-static os_timer t;
-if (os_elapsed(&t, 1000))
-{
-osal_debug_error("Ukke");
-os_get_timer(&t);
-}
-return OSAL_SUCCESS;    
 
     osal_socket_maintain();
 
@@ -272,12 +264,9 @@ return OSAL_SUCCESS;
     /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
        implementetios buffers data internally and this moves buffered data. 
      */
-    if (open_socket)
-    {
-        osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
-    }
+    osal_stream_flush(open_socket, OSAL_STREAM_DEFAULT);
 
-    return OSAL_SUCCESS;
+    return stream ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
 #endif
 
