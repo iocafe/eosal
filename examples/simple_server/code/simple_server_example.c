@@ -80,6 +80,8 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
+    os_sleep(4000);
+
     example_setup();
 
     while (OS_TRUE)

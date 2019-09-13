@@ -1,5 +1,42 @@
 # eosal-defs.txt - Set cmake build environment variables common to all projects.
-# 28.7.2017/pekka
+# 12.9.2019/pekka
+
+# Visual Studio Code for Arduino. This doesn't set everything, just some target dependent defines.
+if (1)  
+  # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.
+  if (NOT DEFINED ENV{E_OS})
+    set(ENV{E_OS} "arduino")
+  endif()
+
+  # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
+  # Used as name for banary folders and as part of installation package name. 
+  if (NOT DEFINED ENV{E_OSVER})
+    set(ENV{E_OSVER} "arduino")
+  endif()
+
+  # Compiler name, used as part of library and temporary folder name. 
+  # For example "vs2015", "mingw", "gcc", "gccarm9"...
+  if (NOT DEFINED ENV{E_COMPILER})
+    set(ENV{E_COMPILER} "gcc")
+  endif()
+
+  # Set arduino flag for code.
+  if (NOT DEFINED ENV{E_OS_arduino})
+    set(ENV{E_OS_arduino} 1)
+  endif()
+
+  # Disable subdir builds.
+  if (NOT DEFINED ENV{E_NO_SUBDIR_BUILDS})
+    set(ENV{E_NO_SUBDIR_BUILDS} 1)
+  endif()
+
+# UGLY, THIS IS NO GOOD. BUT WORKS FOR NOW.
+include_directories("/home/john/.arduino15/packages/esp32/hardware/esp32/1.0.2/cores/esp32")
+include_directories("/home/john/.arduino15/packages/esp32/hardware/esp32/1.0.2/tools/sdk/include/freertos")
+include_directories("/home/john/.arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/1.22.0-80-g6c4433a-5.2.0/xtensa-esp32-elf/include/include")
+include_directories("/home/john/.arduino15/packages/esp32/hardware/esp32/1.0.2/tools/sdk/include/config")
+endif()
+
 
 # Windows 
 if(WIN32)

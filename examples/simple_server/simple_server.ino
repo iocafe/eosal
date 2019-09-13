@@ -1,3 +1,7 @@
+#include <Arduino.h>
+#include <FreeRTOS.h>
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <eosal.h>
 #include <eosalx.h>
 
@@ -7,7 +11,8 @@
  */
  
 #define N_LEDS 3
-const int leds[N_LEDS] = {PB0, PB14, PB7};
+//const int leds[N_LEDS] = {PB0, PB14, PB7};
+ const int leds[N_LEDS] = {2,3, 4};
 os_timer ledtimer;
 
 static void toggle_leds(void)
@@ -24,7 +29,7 @@ static void toggle_leds(void)
 
 
 // Include code for eacho server (at the time of writing IP 192.168.1.201, TCP port 6001)
-#include "/coderoot/eosal/examples/simple_server/code/simple_server_example.c"
+// #include "/coderoot/eosal/examples/simple_server/code/simple_server_example.c"
 
 void setup() 
 {
@@ -37,7 +42,7 @@ void setup()
     }
 
     // Set up serial port for trace output.
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial)
     {
         toggle_leds();
@@ -46,12 +51,10 @@ void setup()
 
     // Start the very simple echo socket server.
     osal_initialize(OSAL_INIT_DEFAULT);
-    example_setup();
 }
 
 void loop()
 {
-    example_loop();
-    toggle_leds();
+    // toggle_leds();
+    // osal_main(0,0);
 }
-

@@ -20,8 +20,8 @@
 
 #if OSAL_MULTITHREAD_SUPPORT
 
-#include <FreeRTOS.h>
-
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
 
 /**
 ****************************************************************************************************

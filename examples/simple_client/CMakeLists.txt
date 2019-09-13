@@ -9,7 +9,9 @@ project(${E_PROJECT})
 include(../../build/cmakedefs/eosal-defs.txt)
 
 # Build individual library projects.
+if (NOT DEFINED ENV{E_NO_SUBDIR_BUILDS})
 add_subdirectory($ENV{E_ROOT}/eosal "${CMAKE_CURRENT_BINARY_DIR}/eosal")
+endif()
 
 # Set path to where to keep libraries.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $ENV{E_BIN})

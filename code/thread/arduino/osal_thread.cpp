@@ -30,7 +30,8 @@
 // #include "Arduino.h"
 #if OSAL_MULTITHREAD_SUPPORT
 
-#include <FreeRTOS.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 /** Intermediate parameter structure when creating a new Arduino thread.
  */

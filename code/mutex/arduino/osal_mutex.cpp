@@ -36,8 +36,8 @@
 #include "eosal.h"
 #if OSAL_MULTITHREAD_SUPPORT
 
-#include <FreeRTOS.h>
-
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
 
 #if OSAL_DEBUG
 static os_char osal_mutex_null_ptr_msg[] = "NULL mutex pointer";
