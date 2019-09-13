@@ -27,9 +27,12 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-// #include "Arduino.h"
-#if OSAL_MULTITHREAD_SUPPORT
 
+#if OSAL_MULTITHREAD_SUPPORT == 0
+#include <Arduino.h>
+#endif
+
+#if OSAL_MULTITHREAD_SUPPORT
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
@@ -377,7 +380,7 @@ void os_microsleep(
 #if OSAL_MULTITHREAD_SUPPORT
     vTaskDelay ((TickType_t)(time_us/(portTICK_PERIOD_MS *1000)));
 #else
-    HAL_Delay(time_us/1000);
+    delay(time_us/1000);
 #endif
 }
 

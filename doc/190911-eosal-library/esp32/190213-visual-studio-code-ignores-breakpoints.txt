@@ -1,0 +1,7 @@
+This seems to be bug in configuration or Visual Studio Code
+
+Problem:
+- The platformio debugging: Debugger ignores all break points.
+
+Fix: 
+- Start debugging. When debugger stops at entry to code, right click BREAKPOINTS pane and select "Reapply all breakpoints".

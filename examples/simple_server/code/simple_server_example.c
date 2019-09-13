@@ -78,8 +78,8 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    return 0;
-
+    osal_debug_error("here");
+return 0;
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
     stream = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT, OS_NULL,
@@ -88,7 +88,6 @@ os_int osal_main(
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     static osalTLSParam prm = {EXAMPLE_TLS_SERVER_CERT, EXAMPLE_TLS_SERVER_KEY};
-
     osal_socket_initialize();
     osal_tls_initialize(&prm);
     stream = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT, OS_NULL,
