@@ -97,6 +97,7 @@
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_divide.c" />
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_double.c" />
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_multiply.c" />
+    <ClCompile Include="..\..\extensions\main\common\osal_simloop.c" />
     <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
     <ClCompile Include="..\..\extensions\rand\common\osal_rand.c" />
     <ClCompile Include="..\..\extensions\serialize\common\osal_intser.c" />

@@ -609,8 +609,8 @@ osalStatus osal_openssl_read(
 {
     osalSSLSocket *sslsocket;
     os_uchar *src;
-    os_memsz freespace, nprocessed, something_done;
-    os_int bufferedbytes, nstored;
+    os_memsz nprocessed, something_done;
+    os_int freespace, bufferedbytes, nstored;
     osalStatus s;
     osalSSLStatus status;
 
