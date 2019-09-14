@@ -78,12 +78,11 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    osal_debug_error("here");
-
+    /* Initialize the underlying transport library.
+     */
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
 #endif
-
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     static osalTLSParam prm = {EXAMPLE_TLS_SERVER_CERT, EXAMPLE_TLS_SERVER_KEY};
     /* Never call boath osal_socket_initialize() and osal_tls_initialize().
@@ -91,7 +90,6 @@ os_int osal_main(
      */
     osal_tls_initialize(&prm);
 #endif
-
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
     osal_serial_initialize();
 #endif
@@ -149,6 +147,11 @@ osalStatus osal_loop(
             stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
+
+        if (stream == OS_NULL)
+        {
+            osal_debug_error("open: unable to open serial port or listening socket");
+        }
     }
 
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
