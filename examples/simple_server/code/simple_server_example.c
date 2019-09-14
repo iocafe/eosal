@@ -6,7 +6,7 @@
   @version 1.2
   @date    9.9.2019
 
-  Extermely simple communication server: No dynamic memory alloccation, multithreading, socket
+  Simple communication server: No dynamic memory alloccation, multithreading, socket
   select, etc. Uses single thread loop. Just bare bones. 
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
