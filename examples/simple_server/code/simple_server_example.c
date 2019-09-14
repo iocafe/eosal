@@ -94,6 +94,10 @@ os_int osal_main(
     osal_serial_initialize();
 #endif
 
+    /* All microcontroller do not clear memory at soft reboot.
+     */
+    stream = OS_NULL;
+
     /* When emulating micro-controller on PC, run loop. Does nothing on real micro-controller.
      */
     osal_simulated_loop(OS_NULL);
@@ -129,6 +133,8 @@ osalStatus osal_loop(
     os_int bytes;
     osalStream accepted_socket;
 
+    /* Some socket library implementations need this, for DHCP, etc.
+     */
     osal_socket_maintain();
 
     /* If we are not listening for socket connection or have serial port open, try to open now.
@@ -148,9 +154,9 @@ osalStatus osal_loop(
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
 
-        if (stream == OS_NULL)
+        if (stream)
         {
-            osal_debug_error("open: unable to open serial port or listening socket");
+            osal_trace("serial or listening socket port opened");
         }
     }
 
@@ -166,11 +172,13 @@ osalStatus osal_loop(
         {
             if (mystream)
             {
-                osal_debug_error("socket already open. this example allows only one socket. "
-                    "closing old connection");
                 osal_stream_close(mystream);
+
+                osal_debug_error("socket already open. this example allows only one socket. "
+                    "old connection closed");
             }
             mystream = accepted_socket;
+            osal_trace("socket accepted");
         }
     }
 #endif

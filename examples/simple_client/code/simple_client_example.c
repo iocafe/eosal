@@ -67,9 +67,6 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    os_timer t;
-    os_int trycount;
-
     /* Initialize underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
@@ -85,39 +82,9 @@ os_int osal_main(
         osal_serial_initialize();
     #endif
 
-    /* Connect. Give five seconds for network (wifi, etc) to start up
-       after boot and at least two tries.
+    /* All microcontroller do not clear memory at soft reboot.
      */
-    os_get_timer(&t);
-    trycount = 0;
-    while (OS_TRUE)
-    {
-        #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-            stream = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET, OS_NULL,
-                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
-        #endif
-        #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-            stream = osal_stream_open(OSAL_TLS_IFACE, EXAMPLE_TLS_SOCKET, OS_NULL,
-                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
-        #endif
-        #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
-            stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
-                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
-        #endif
-
-        /* If we dot the connect.
-         */
-        if (stream) break;
-
-        if (++trycount >= 2 && os_elapsed(&t, 5000))
-        {
-            osal_debug_error("osal_stream_open failed");
-            return 0;
-        }
-
-        os_timeslice();
-    }
-    osal_trace("stream connected");
+    stream = OS_NULL;
 
     /* When emulating micro-controller on PC, run loop. Does nothing on real micro-controller.
      */
@@ -149,19 +116,49 @@ osalStatus osal_loop(
     os_int bytes;
     os_uint c;
 
+    /* Some socket library implementations need this, for DHCP, etc.
+     */
     osal_socket_maintain();
+
+    /* Connect. Give five seconds for network (wifi, etc) to start up
+       after boot and at least two tries.
+     */
+    if (stream == OS_NULL)
+    {
+        #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+            stream = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET, OS_NULL,
+                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
+        #endif
+        #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+            stream = osal_stream_open(OSAL_TLS_IFACE, EXAMPLE_TLS_SOCKET, OS_NULL,
+                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
+        #endif
+        #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
+            stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
+                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
+        #endif
+
+        if (stream)
+        {
+            osal_trace("stream connected");
+        }
+    }
 
     /* Print data received from the stream to console.
      */
-    if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
+    if (stream)
     {
-        osal_debug_error("read: connection broken");
-        return OSAL_STATUS_FAILED;
-    }
-    else if (n_read)
-    {
-        buf[n_read] ='\0';
-        osal_console_write((os_char*)buf);
+        if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
+        {
+            osal_debug_error("read: connection broken");
+            osal_stream_close(stream);
+            stream = OS_NULL;
+        }
+        else if (n_read)
+        {
+            buf[n_read] ='\0';
+            osal_console_write((os_char*)buf);
+        }
     }
 
     /* And write user key presses to the stream.
@@ -173,17 +170,22 @@ osalStatus osal_loop(
         if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("write: connection broken");
-            return OSAL_STATUS_FAILED;
+            osal_stream_close(stream);
+            stream = OS_NULL;
         }
     }
 
     /* Call flush to move data. This is necessary even nothing was written just now. Some stream
        implementetios buffers data internally and this moves buffered data.
      */
-    if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
+    if (stream)
     {
-        osal_debug_error("flush: connection broken");
-        return OSAL_STATUS_FAILED;
+        if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
+        {
+            osal_debug_error("flush: connection broken");
+            osal_stream_close(stream);
+            stream = OS_NULL;
+        }
     }
 
     return OSAL_SUCCESS;
