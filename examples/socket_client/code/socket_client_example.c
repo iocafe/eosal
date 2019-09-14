@@ -85,7 +85,7 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    osalStream handle;
+    osalStream handle = OS_NULL;
     osalStatus status;
     osalSelectData selectdata;
     os_char buf[64], *p;
@@ -95,6 +95,8 @@ os_int osal_main(
     osalEvent  myevent;
     MyThreadParams mythreadprm;
     osalThreadHandle *mythread;
+    os_timer t;
+    os_int trycount;
 
     /* Initialize socket library and connect a socket. Notice flag OSAL_STREAM_TCP_NODELAY.
        If OSAL_STREAM_TCP_NODELAY is given, the nagle algorithm is disabled and writes
@@ -103,13 +105,6 @@ os_int osal_main(
        internet, like user interfaces.
      */
     osal_socket_initialize();
-    handle = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET,
-        OS_NULL, &status, OSAL_STREAM_CONNECT|OSAL_STREAM_SELECT|OSAL_STREAM_TCP_NODELAY);
-    if (status)
-    {
-	    osal_console_write("osal_stream_open failed\n");
-        return 0;
-    }
 
     /* Create an event. Select will react to this event.
      */
@@ -122,8 +117,33 @@ os_int osal_main(
     mythread = osal_thread_create(mythread_func, &mythreadprm,
 	    OSAL_THREAD_ATTACHED, 0, "mythread");
 
+    trycount = 0;
+    os_get_timer(&t);
+
     while (OS_TRUE)
     {
+        /* If we habe no connection, try to connect. Give five seconds for network (wifi, etc)
+           to start up after boot and at least two tries.
+         */
+        if (handle == OS_NULL)
+        {
+            handle = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET,
+                OS_NULL, &status, OSAL_STREAM_CONNECT|OSAL_STREAM_SELECT|OSAL_STREAM_TCP_NODELAY);
+            if (handle == OS_NULL && os_elapsed(&t, 5000) && ++trycount >= 2)
+            {
+                osal_console_write("osal_stream_open failed\n");
+                break;
+            }
+
+            /* If waithing for connection.
+             */
+            if (handle == OS_NULL)
+            {
+                os_timeslice();
+                continue;
+            }
+        }
+
         /* Block here until something needs attention. 
          */
         status = osal_stream_select(&handle, 1, myevent, &selectdata, 0, OSAL_STREAM_DEFAULT);
@@ -155,7 +175,7 @@ os_int osal_main(
                 if (n >= sizeof(buf) - 4) break;
             }
 
-            if (osal_stream_write(handle, buf, n, &n_written, OSAL_STREAM_DEFAULT))
+            if (osal_stream_write(handle, (os_uchar*)buf, n, &n_written, OSAL_STREAM_DEFAULT))
             {
                 osal_debug_error("write: connection broken");
                 break;
@@ -187,7 +207,7 @@ os_int osal_main(
 
         /* Print data received from the stream to console.
          */
-        if (osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
+        if (osal_stream_read(handle, (os_uchar*)buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("read: connection broken");
             break;
