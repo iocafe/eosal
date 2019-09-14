@@ -29,8 +29,8 @@ extern osalStreamInterface osal_socket_iface;
 
 /* Default socket port number.
  */
-#define OSAL_DEFAULT_SOCKET_PORT 4981
-#define OSAL_DEFAULT_SOCKET_PORT_STR "4981"
+#define OSAL_DEFAULT_SOCKET_PORT 6368
+#define OSAL_DEFAULT_SOCKET_PORT_STR "6368"
 
 /* Maximum number of socket streams to pass as an argument to osal_socket_select().
  */

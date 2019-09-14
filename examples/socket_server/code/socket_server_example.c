@@ -4,9 +4,14 @@
   @brief   Socket server example.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    14.9.2019
 
-  Socket server using select. THIS EXAMPLE IS NO GOOD. DO NOT USE UNTIL REWRITE.
+  Socket server using select.
+  This is written for system with multithreading support. Cannot be used with single thread model,
+  and not efficient without implemented select. So there is no loop function, etc.
+
+  Multiple sockets are supported. The worker thread accepts incoming sockets and handles
+  data transfer to/from the sockets.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -16,6 +21,212 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+
+/* Connection types.
+ */
+#define EXAMPLE_USE_TCP_SOCKET 0
+#define EXAMPLE_USE_TLS_SOCKET 1
+#define EXAMPLE_USE_SERIAL_PORT 2
+
+/* What kind of transport: TCP socket or TLS socket (OpenSSL, etc).
+   One of EXAMPLE_USE_TCP_SOCKET or EXAMPLE_USE_TLS_SOCKET.
+ */
+#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+
+#define EXAMPLE_TCP_SOCKET_PORT "6368"
+#define EXAMPLE_TLS_SOCKET_PORT "6369"
+#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/examples/simple_server/sllfiles/server.crt"
+#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/examples/simple_server/sllfiles/server.key"
+
+/* Parameters to start a worker thread.
+ */
+typedef struct MyThreadParams
+{
+    osalEvent myevent;
+    volatile os_boolean stopthread;
+}
+MyThreadParams;
+
+
+/**
+****************************************************************************************************
+
+  @brief Worker thread.
+
+  The worker thread function listens for socket connections osal_stream_select() to continue.
+
+  @param   prm Pointer to worker thread parameter structure.
+  @param   done Event to set when worker thread has started. Often used to indicate that
+           worker thread has made a local copy of parameters.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static void mythread_func(
+    void *prm,
+    osalEvent done)
+{
+    MyThreadParams *p;
+    osalStream handle[OSAL_SOCKET_SELECT_MAX], st;
+    osalStatus status;
+    osalSelectData selectdata;
+    os_int i;
+    os_uchar buf[64];
+    os_memsz n_read, n_written;
+    const char keypressedtext[] = "<server-key>";
+
+    /* Let thread which created this one proceed.
+     */
+    p = (MyThreadParams*)prm;
+    osal_event_set(done);
+
+    os_memclear(handle, sizeof(handle));
+
+    while (!p->stopthread)
+    {
+        /* If listening socket is not open, open it now.
+         */
+        if (handle[0] == OS_NULL)
+        {
+            #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+                handle[0] = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT,
+                    OS_NULL, &status, OSAL_STREAM_LISTEN|OSAL_STREAM_SELECT);
+            #endif
+            #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+                handle[0] = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT,
+                    OS_NULL, &status, OSAL_STREAM_LISTEN|OSAL_STREAM_SELECT);
+            #endif
+
+            if (handle[0])
+            {
+                osal_trace("listening socket");
+            }
+
+            else
+            {
+                osal_debug_error("unable to open listening socket");
+                os_sleep(100);
+                continue;
+            }
+        }
+
+        /* Select will block here until something worth while happens.
+           Like custom event by user key press or someting received from socket, etc.
+         */
+        status = osal_stream_select(handle, OSAL_SOCKET_SELECT_MAX, p->myevent,
+            &selectdata, 0, OSAL_STREAM_DEFAULT);
+        if (status)
+        {
+            osal_debug_error("osal_stream_select failed");
+        }
+
+        /* If accepting an incoming socket connection.
+         */
+        if (selectdata.eventflags & OSAL_STREAM_ACCEPT_EVENT)
+        {
+            osal_console_write("accept event\n");
+
+            /* Find free handle
+             */
+            for (i = 1; i < OSAL_SOCKET_SELECT_MAX; i++)
+            {
+                if (handle[i] == OS_NULL)
+                {
+                    handle[i] = osal_stream_accept(handle[0], 
+                        &status, OSAL_STREAM_DEFAULT);
+
+                    break;
+                }
+            }
+            if (i == OSAL_SOCKET_SELECT_MAX)
+            {
+                osal_debug_error("handle table full");
+            }
+        }
+
+        if (selectdata.eventflags & OSAL_STREAM_CUSTOM_EVENT)
+        {
+            osal_trace("custom event");
+
+            for (i = 1; i < OSAL_SOCKET_SELECT_MAX; i++)
+            {
+                st = handle[i];
+                if (st == OS_NULL) continue;
+                if (osal_stream_write(st, (os_uchar*)keypressedtext,
+                    os_strlen(keypressedtext)-1, &n_written, OSAL_STREAM_DEFAULT))
+                {
+                    osal_debug_error("write: connection broken");
+                    osal_stream_close(st);
+                    handle[i] = OS_NULL;
+                }
+            }
+        }
+
+        /* Show the event flags. For now, I do not recommend relying on these.
+           All socket wrapper implementations may not be complete.
+         */
+        if (selectdata.eventflags & OSAL_STREAM_CLOSE_EVENT)
+        {
+            osal_trace("close event");
+        }
+        if (selectdata.eventflags & OSAL_STREAM_CONNECT_EVENT)
+        {
+            osal_trace("connect event");
+        }
+        if (selectdata.eventflags & OSAL_STREAM_READ_EVENT)
+        {
+            osal_trace("read event");
+        }
+        if (selectdata.eventflags & OSAL_STREAM_WRITE_EVENT)
+        {
+            osal_console_write("write event\n");
+        }
+
+        /* Check for received data.
+         */
+        for (i = 1; i < OSAL_SOCKET_SELECT_MAX; i++)
+        {
+            st = handle[i];
+            if (st == OS_NULL) continue;
+
+            if (osal_stream_read(st,
+                buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
+            {
+                osal_debug_error("read: connection broken");
+                osal_stream_close(st);
+                handle[selectdata.stream_nr] = OS_NULL;
+            }
+            else if (n_read)
+            {
+                buf[n_read] ='\0';
+                osal_console_write((os_char*)buf);
+            }
+        }
+
+        /* Flush all sockets. This is "a must" even no data was written
+           just now. Internal stream buffers may hold data to be flushed.
+         */
+        for (i = 1; i < OSAL_SOCKET_SELECT_MAX; i++)
+        {
+            st = handle[i];
+            if (st == OS_NULL) continue;
+
+            if (osal_stream_flush(st, OSAL_STREAM_DEFAULT))
+            {
+                osal_stream_close(st);
+                handle[selectdata.stream_nr] = OS_NULL;
+            }
+        }
+    }
+
+    /* Close all sockets.
+     */
+    for (i = 0; i < OSAL_SOCKET_SELECT_MAX; i++)
+    {
+        if (handle[i]) osal_stream_close(handle[i]);
+    }
+}
 
 
 /**
@@ -36,102 +247,57 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    osalStream handle[OSAL_SOCKET_SELECT_MAX];
-    osalStatus status;
-    osalSelectData selectdata;
-    os_int i;
-    os_char mystr[] = "0.kepupas";
-    os_uchar buf[64];
-    os_memsz n_read;
-    // os_memsz n_written;
+    MyThreadParams mythreadprm;
+    osalThreadHandle *mythread;
+    os_uint c;
 
-    os_memclear(handle, sizeof(handle));
+    /* Initialize the underlying transport library.
+     */
+#if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+    osal_socket_initialize();
+#endif
+#if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+    static osalTLSParam prm = {EXAMPLE_TLS_SERVER_CERT, EXAMPLE_TLS_SERVER_KEY};
+    /* Never call boath osal_socket_initialize() and osal_tls_initialize().
+       These use the same underlying library
+     */
+    osal_tls_initialize(&prm);
+#endif
 
-    handle[0] = osal_stream_open(OSAL_SOCKET_IFACE, ":" OSAL_DEFAULT_SOCKET_PORT_STR,
-        OS_NULL, &status, OSAL_STREAM_LISTEN|OSAL_STREAM_SELECT);
-    if (status)
+    /* Create worker thread to do actual coommunication.
+     */
+    os_memclear(&mythreadprm, sizeof(mythreadprm));
+    mythreadprm.myevent = osal_event_create();;
+    mythread = osal_thread_create(mythread_func, &mythreadprm,
+        OSAL_THREAD_ATTACHED, 0, "mythread");
+
+    /* Read keyboard and set event if key pressed.
+     */
+    do
     {
-	    osal_console_write("osal_stream_open failed\n");
-        return 0;
+        c = osal_console_read();
+        if (c)
+        {
+            osal_event_set(mythreadprm.myevent);
+        }
+        os_timeslice();
     }
+    while (c != 27); /* ESC to quit */
 
-    while (OS_TRUE)
-    {
-        if (mystr[0]++ == '9') mystr[0] = '0';
+    /* Join worker thread to this thread.
+     */
+    mythreadprm.stopthread = OS_TRUE;
+    osal_event_set(mythreadprm.myevent);
+    osal_thread_join(mythread);
 
-        status = osal_stream_select(handle, OSAL_SOCKET_SELECT_MAX, OS_NULL,
-            &selectdata, 0, OSAL_STREAM_DEFAULT);
-        if (status)
-        {
-	        osal_console_write("osal_stream_select failed\n");
-            break;
-        }
-
-        if (selectdata.eventflags & OSAL_STREAM_ACCEPT_EVENT)
-        {
-            osal_console_write("accept event\n");
-            /* Find free handle
-             */
-            for (i = 1; i < OSAL_SOCKET_SELECT_MAX; i++)
-            {
-                if (handle[i] == OS_NULL)
-                {
-                    handle[i] = osal_stream_accept(handle[0], 
-                        &status, OSAL_STREAM_DEFAULT);
-
-//                   status = osal_stream_read(handle[i], 
-//                        buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT);
-                    break;
-                }
-            }
-            if (i == OSAL_SOCKET_SELECT_MAX)
-            {
-	            osal_console_write("Failed: handles table full\n");
-            }
-        }
-
-        if (selectdata.eventflags & OSAL_STREAM_CLOSE_EVENT)
-        {
-            osal_console_write("close event\n");
-            osal_stream_close(handle[selectdata.stream_nr]);
-            handle[selectdata.stream_nr] = OS_NULL;
-        }
-
-        if (selectdata.eventflags & OSAL_STREAM_CONNECT_EVENT)
-            osal_console_write("connect event\n");
-
-        if (selectdata.eventflags & OSAL_STREAM_READ_EVENT)
-        {
-            osal_console_write("read event\n");
-            os_memclear(buf, sizeof(buf));
-            status = osal_stream_read(handle[selectdata.stream_nr], 
-                buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT);
-            if (status)
-            {
-                osal_stream_close(handle[selectdata.stream_nr]);
-                handle[selectdata.stream_nr] = OS_NULL;
-            }
-            else
-            {
-                osal_console_write((os_char*)buf);
-                osal_console_write("\n");
-                /* status = osal_stream_write(handle[selectdata.stream_nr],
-                    mystr, os_strlen(mystr)-1, &n_written, OSAL_STREAM_DEFAULT); */
-            }
-        }
-
-        if (selectdata.eventflags & OSAL_STREAM_WRITE_EVENT)
-            osal_console_write("write event\n");
-
-        if (selectdata.stream_nr >= 0 && selectdata.stream_nr < OSAL_SOCKET_SELECT_MAX)
-        {
-            status = osal_stream_flush(handle[selectdata.stream_nr], OSAL_STREAM_DEFAULT);
-        }
-    }
-
-    osal_stream_close(handle[0]);
-
-	// osal_console_write("osal_console_example\npress any key... ");
-
+    /* Cleanup.
+     */
+    osal_event_delete(mythreadprm.myevent);
+#if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+    osal_socket_shutdown();
+#endif
+#if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+    osal_tls_shutdown();
+#endif
     return 0;
 }
