@@ -163,15 +163,18 @@ osalStatus osal_loop(
 
     /* And write user key presses to the stream.
      */
-    c = osal_console_read();
-    if (c)
+    if (stream)
     {
-        bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
-        if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
+        c = osal_console_read();
+        if (c)
         {
-            osal_debug_error("write: connection broken");
-            osal_stream_close(stream);
-            stream = OS_NULL;
+            bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+            if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
+            {
+                osal_debug_error("write: connection broken");
+                osal_stream_close(stream);
+                stream = OS_NULL;
+            }
         }
     }
 
