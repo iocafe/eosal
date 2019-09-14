@@ -227,10 +227,9 @@ osalStream osal_tls_open(
         goto getout;
     }
 
-w->client.println("GET https://www.howsmyssl.com/a/check HTTP/1.0");
-
     os_memclear(&w->hdr, sizeof(osalStreamHeader));
     w->used = OS_TRUE;
+    w->hdr.iface = &osal_tls_iface;
 
     osal_trace2("wifi: TLS socket connected.");
 
@@ -721,7 +720,7 @@ void osal_tls_initialize(
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
-    osal_trace("Commecting to Wifi network...");
+    osal_trace("Commecting to Wifi network");
     osal_trace(wifi_net_name);
     WiFi.begin(wifi_net_name, wifi_net_password);
 
@@ -749,6 +748,7 @@ void osal_tls_initialize(
 static os_boolean osal_is_wifi_initialized(
     void)
 {
+    if (!osal_tls_initialized) return OS_FALSE;
     if (!osal_wifi_initialized)
     {
         /* If WiFi is not connected, just return failure.
@@ -757,12 +757,12 @@ static os_boolean osal_is_wifi_initialized(
         {
             if (os_elapsed(&osal_wifi_init_timer, 500))
             {
-                osal_trace2(".");
+                osal_trace2("Waiting for wifi");
                 os_get_timer(&osal_wifi_init_timer);
             }
             return OS_FALSE;
         }
-        osal_trace("Wifi network connected.");
+        osal_trace("Wifi network connected");
 
         /* Here WE should convert IP address to string.
            ip_address = Ethernet.localIP(); */

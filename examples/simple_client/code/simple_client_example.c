@@ -43,7 +43,7 @@
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
 #define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
-#define EXAMPLE_TLS_SOCKET "192.168.1.221:6369"
+#define EXAMPLE_TLS_SOCKET "192.168.1.220:6369"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 static osalStream stream;
@@ -67,29 +67,56 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-#if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-    osal_socket_initialize();
-    stream = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET, OS_NULL,
-        OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
-#endif
+    os_timer t;
+    os_int try;
 
-#if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-    osal_socket_initialize();
-    osal_tls_initialize(OS_NULL);
-    stream = osal_stream_open(OSAL_TLS_IFACE, EXAMPLE_TLS_SOCKET, OS_NULL,
-        OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
-#endif
+    /* Initialize underlying transport library.
+     */
+    #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+        osal_socket_initialize();
+    #endif
+    #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+        /* Never call boath osal_socket_initialize() and
+            osal_tls_initialize(). These use same underlying library
+            */
+        osal_tls_initialize(OS_NULL); 
+    #endif
+    #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
+        osal_serial_initialize();
+    #endif
 
-#if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
-    osal_serial_initialize();
-    stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
-        OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
-#endif
-
-    if (stream == OS_NULL)
+    /* Connect. Give five seconds for network (wifi, etc) to start up
+       after boot and at least two tries.
+     */
+    os_get_timer(&t);
+    try = 0;
+    while (OS_TRUE)
     {
-        osal_debug_error("osal_stream_open failed");
-        return 0;
+        #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+            stream = osal_stream_open(OSAL_SOCKET_IFACE, EXAMPLE_TCP_SOCKET, OS_NULL,
+                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
+        #endif
+        #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+            stream = osal_stream_open(OSAL_TLS_IFACE, EXAMPLE_TLS_SOCKET, OS_NULL,
+                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
+        #endif
+        #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
+            stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
+                OS_NULL, OSAL_STREAM_CONNECT|OSAL_STREAM_NO_SELECT);
+        #endif
+
+        /* If we dot the connect.
+         */
+        if (stream) break;
+
+        if (++try >= 2 && os_elapsed(&t, 5000))
+        {
+            osal_debug_error("osal_stream_open failed");
+            return 0;
+        }
+
+        os_timeslice();
+        os_sleep(100);
     }
     osal_trace("stream connected");
 
@@ -190,7 +217,6 @@ void osal_main_cleanup(
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     osal_tls_shutdown();
-    osal_socket_shutdown();
 #endif
 
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT

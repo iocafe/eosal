@@ -7,7 +7,7 @@
   Example to build simple client app with Visual Studio Code + Platform IO + Arduino libraries. 
   The setup routine runs once when the device starts.
  */
-void xsetup() 
+void setup() 
 {
     /* Set up serial port for trace output.
      */
@@ -23,17 +23,19 @@ void xsetup()
 
 /* The loop function is called repeatedly while the device runs.
  */
-void xloop() 
+void loop() 
 {
     /* Start the included application.
      */
     if (osal_loop(OS_NULL)) osal_reboot(0);
 }
 
+#if 0
+
 const char* ssid     = "bean24";     // your network SSID (name of wifi network)
 const char* password = "talvi333"; // your network password
 
-const char*  server = "192.168.1.221";  // Server URL
+const char*  server = "192.168.1.220";  // Server URL
 
 // www.howsmyssl.com root certificate authority, to verify the server
 // change it to your server root CA
@@ -75,7 +77,7 @@ const char* test_root_ca= \
 
 static WiFiClientSecure client;
 
-void setup() {
+void setup2() {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
   delay(100);
@@ -94,7 +96,7 @@ void setup() {
   Serial.print("Connected to ");
   Serial.println(ssid);
 
-  client.setCACert(test_root_ca);
+  // client.setCACert(test_root_ca);
   //client.setCertificate(test_client_key); // for client verification
   //client.setPrivateKey(test_client_cert);	// for client verification
 
@@ -127,6 +129,7 @@ void setup() {
   }
 }
 
-void loop() {
+void loop2() {
   // do nothing
 }
+#endif
