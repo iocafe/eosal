@@ -40,7 +40,6 @@
 void osal_sysconsole_write(
 	const os_char *text)
 {
-    /* Should wide character version fputws be used? */
     Serial.write(text);
 }
 
@@ -61,6 +60,11 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
+    if (Serial.available())
+    {
+        return Serial.read();
+    }
+
     return 0;
 }
 
