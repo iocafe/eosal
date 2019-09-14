@@ -176,7 +176,7 @@ osalStatus osal_loop(
     }
 
     /* Call flush to move data. This is necessary even nothing was written just now. Some stream
-       implementetios buffers data internally and this moves buffered data.
+       implementations buffers data internally and this moves buffered data.
      */
     if (stream)
     {
