@@ -89,7 +89,9 @@ os_int osal_main(
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     static osalTLSParam prm = {EXAMPLE_TLS_SERVER_CERT, EXAMPLE_TLS_SERVER_KEY};
-    osal_socket_initialize();
+    /* Never call boath osal_socket_initialize() and osal_tls_initialize().
+       These use the same underlying library
+     */
     osal_tls_initialize(&prm);
     stream = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT, OS_NULL,
         OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);

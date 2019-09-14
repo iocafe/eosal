@@ -824,6 +824,8 @@ void osal_tls_initialize(
         *certfile = OS_NULL,
         *keyfile = OS_NULL;
 
+    osal_socket_initialize();
+
     if (prm)
     {
         certfile = prm->certfile;

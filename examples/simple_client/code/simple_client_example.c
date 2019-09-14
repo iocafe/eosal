@@ -68,7 +68,7 @@ os_int osal_main(
     os_char *argv[])
 {
     os_timer t;
-    os_int try;
+    os_int trycount;
 
     /* Initialize underlying transport library.
      */
@@ -76,9 +76,9 @@ os_int osal_main(
         osal_socket_initialize();
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-        /* Never call boath osal_socket_initialize() and
-            osal_tls_initialize(). These use same underlying library
-            */
+        /* Never call boath osal_socket_initialize() and osal_tls_initialize().
+           These use the same underlying library
+         */
         osal_tls_initialize(OS_NULL); 
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
@@ -89,7 +89,7 @@ os_int osal_main(
        after boot and at least two tries.
      */
     os_get_timer(&t);
-    try = 0;
+    trycount = 0;
     while (OS_TRUE)
     {
         #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
@@ -109,14 +109,13 @@ os_int osal_main(
          */
         if (stream) break;
 
-        if (++try >= 2 && os_elapsed(&t, 5000))
+        if (++trycount >= 2 && os_elapsed(&t, 5000))
         {
             osal_debug_error("osal_stream_open failed");
             return 0;
         }
 
         os_timeslice();
-        os_sleep(100);
     }
     osal_trace("stream connected");
 
