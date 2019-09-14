@@ -31,8 +31,9 @@
 #define EXAMPLE_USE_SERIAL_PORT 2
 
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
+ * EXAMPLE_USE_TCP_SOCKET, EXAMPLE_USE_TLS_SOCKET or EXAMPLE_USE_SERIAL_PORT
  */
-#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
 
 /* Modify connection parameters here: These apply to different communication types
    EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET_PORT sets unsecured TCP socket port number 
@@ -46,7 +47,7 @@
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
 #define EXAMPLE_TCP_SOCKET_PORT "6368"
-#define EXAMPLE_TLS_SOCKET_PORT "55555"
+#define EXAMPLE_TLS_SOCKET_PORT "6369"
 #define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/examples/simple_server/sllfiles/server.crt"
 #define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/examples/simple_server/sllfiles/server.key"
 #define EXAMPLE_SERIAL_PORT "COM3,baud=115200"

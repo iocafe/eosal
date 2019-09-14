@@ -11,7 +11,7 @@ it under the terms of the MIT license. See LICENSE for details.
 int main(int argc, char **argv)
 {
   char str[INET_ADDRSTRLEN];
-  int port = (argc>1)? atoi(argv[1]):55555;
+  int port = (argc>1)? atoi(argv[1]):6369;
 
   int servfd = socket(AF_INET, SOCK_STREAM, 0);
   if (servfd < 0)

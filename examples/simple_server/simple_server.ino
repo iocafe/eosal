@@ -31,6 +31,6 @@ void loop()
 }
 
 /* Include code for server (at the time of writing IP 192.168.1.201,
-   TCP port 6001, but these are set in client app code)
+   TCP port 6368, but these are set in client app code)
  */
 #include "/coderoot/eosal/examples/simple_server/code/simple_server_example.c"

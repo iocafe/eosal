@@ -29,6 +29,6 @@ void loop()
 }
 
 /* Include code for client application (at the time of writing connects socket 
-   to IP 192.168.1.220, TCP port 6001, but these are set in client app code)
+   to IP 192.168.1.220, TCP port 6368, but these are set in client app code)
  */
 #include "/coderoot/eosal/examples/simple_client/code/simple_client_example.c"

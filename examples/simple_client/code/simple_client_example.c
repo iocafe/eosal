@@ -43,7 +43,7 @@
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
 #define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
-#define EXAMPLE_TLS_SOCKET "192.168.1.221:55555"
+#define EXAMPLE_TLS_SOCKET "192.168.1.221:6369"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 static osalStream stream;
