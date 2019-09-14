@@ -804,7 +804,6 @@ osalStatus osal_openssl_select(
 #endif
 
 
-
 /**
 ****************************************************************************************************
 
@@ -859,6 +858,7 @@ void osal_tls_shutdown(
     {
         osal_openssl_cleanup();
         osal_tls_initialized = OS_FALSE;
+        osal_socket_shutdown();
     }
 }
 

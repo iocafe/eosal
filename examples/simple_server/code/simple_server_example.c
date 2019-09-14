@@ -79,12 +79,13 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
+    os_timer t;
+    os_int trycount;
+
     osal_debug_error("here");
 
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_initialize();
-    stream = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT, OS_NULL,
-        OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
 #endif
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
@@ -93,20 +94,47 @@ os_int osal_main(
        These use the same underlying library
      */
     osal_tls_initialize(&prm);
-    stream = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT, OS_NULL,
-        OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
 #endif
 
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
     osal_serial_initialize();
-    stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
-        OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
 #endif
 
-    if (stream == OS_NULL)
+    /* Listen. Give five seconds for network (wifi, etc) to start up
+       after boot and at least two tries.
+     */
+    os_get_timer(&t);
+    trycount = 0;
+    while (OS_TRUE)
     {
-        osal_debug_error("osal_stream_open failed");
+        #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
+            stream = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT, OS_NULL,
+                OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
+        #endif
+        #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
+            stream = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT, OS_NULL,
+                OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
+        #endif
+        #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
+            stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
+                OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
+        #endif
+
+        /* If we dot the connect.
+         */
+        if (stream) break;
+
+        if (++trycount >= 2 && os_elapsed(&t, 5000))
+        {
+            osal_debug_error("osal_stream_open failed");
+            return 0;
+        }
+
+        os_timeslice();
     }
+    osal_trace("stream connected");
+
+
     osal_trace("listening for connections");
     open_socket = OS_NULL;
 
@@ -300,7 +328,6 @@ void osal_main_cleanup(
 
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
     osal_tls_shutdown();
-    osal_socket_shutdown();
 #endif
 
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
