@@ -23,7 +23,7 @@ void setup()
  */
 void loop() 
 {
-    /* Start the included application.
+    /* Forward loop call to osal_loop(). Reboot if osal_loop returns "no success".
      */
     if (osal_loop(osal_application_context)) osal_reboot(0);
 }
