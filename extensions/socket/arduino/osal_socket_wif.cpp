@@ -866,6 +866,14 @@ static void osal_mac_from_str(
 #endif
 }
 
+static String DisplayAddress(IPAddress address)
+{
+ return String(address[0]) + "." +
+        String(address[1]) + "." +
+        String(address[2]) + "." +
+        String(address[3]);
+}
+
 
 /**
 ****************************************************************************************************
@@ -921,9 +929,12 @@ void osal_socket_initialize(
     }
     osal_trace("Wifi initialized ");
 
-    // ip_address = Ethernet.localIP();
-
 // Here WE should convert IP address to string.
+#if OSAL_TRACE
+        IPAddress ip = WiFi.localIP();
+        String strip = DisplayAddress(ip);
+        osal_trace(strip.c_str());
+#endif
 
     /* Set socket library initialized flag.
      */

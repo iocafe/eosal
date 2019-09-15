@@ -48,8 +48,8 @@
  */
 #define EXAMPLE_TCP_SOCKET_PORT "6368"
 #define EXAMPLE_TLS_SOCKET_PORT "6369"
-#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/server.crt"
-#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/server.key"
+#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/alice.crt"
+#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/alice.key"
 #define EXAMPLE_SERIAL_PORT "COM3,baud=115200"
 
 

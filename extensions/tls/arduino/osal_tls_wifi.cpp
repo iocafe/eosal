@@ -24,6 +24,7 @@
 #if OSAL_TLS_SUPPORT
 #if OSAL_OPENSSL_SUPPORT==0
 
+#include <Arduino.h>
 #include <WiFiClientSecure.h>
 
 /* Global network setup. Micro-controllers typically have one (or two)
@@ -42,8 +43,139 @@ static osalNetworkInterface osal_net_iface
 
 // www.howsmyssl.com root certificate authority, to verify the server
 // change it to your server root CA
-// SHA1 fingerprint is broken now!
-static const char* test_root_ca = \
+
+/* Certificate authority (trusted god) for Alice, Bob and Carol */
+static const os_char test_root_ca[] = \
+    "-----BEGIN CERTIFICATE-----\n"
+    "MIIGOTCCBCGgAwIBAgIJAOE/vJd8EB24MA0GCSqGSIb3DQEBBQUAMIGyMQswCQYD\n"
+    "VQQGEwJGUjEPMA0GA1UECAwGQWxzYWNlMRMwEQYDVQQHDApTdHJhc2JvdXJnMRgw\n"
+    "FgYDVQQKDA93d3cuZnJlZWxhbi5vcmcxEDAOBgNVBAsMB2ZyZWVsYW4xLTArBgNV\n"
+    "BAMMJEZyZWVsYW4gU2FtcGxlIENlcnRpZmljYXRlIEF1dGhvcml0eTEiMCAGCSqG\n"
+    "SIb3DQEJARYTY29udGFjdEBmcmVlbGFuLm9yZzAeFw0xMjA0MjcxMDE3NDRaFw0x\n"
+    "MjA1MjcxMDE3NDRaMIGyMQswCQYDVQQGEwJGUjEPMA0GA1UECAwGQWxzYWNlMRMw\n"
+    "EQYDVQQHDApTdHJhc2JvdXJnMRgwFgYDVQQKDA93d3cuZnJlZWxhbi5vcmcxEDAO\n"
+    "BgNVBAsMB2ZyZWVsYW4xLTArBgNVBAMMJEZyZWVsYW4gU2FtcGxlIENlcnRpZmlj\n"
+    "YXRlIEF1dGhvcml0eTEiMCAGCSqGSIb3DQEJARYTY29udGFjdEBmcmVlbGFuLm9y\n"
+    "ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAODp+8oQcK+MTuWPZVxJ\n"
+    "ZR75paK4zcUngupYXWSGWFXPTV7vssFk6vInePArTL+T9KwHfiZ29Pp3UbzDlysY\n"
+    "Kz9f9Ae50jGD6xVPwXgQ/VI979GyFXzhiEMtSYykF04tBJiDl2/FZxbHPpNxC39t\n"
+    "14kwuDqBin9N/ZbT5+45tbbS8ziXS+QgL5hD2q2eYCWayrGEt1Y+jDAdHDHmGnZ8\n"
+    "d4hbgILJAs3IInOCDjC4c1gwHFb8G4QHHTwVhjhqpkq2hQHgzWBC1l2Dku/oDYev\n"
+    "Zu/pfpTo3z6+NOYBrUWseQmIuG+DGMQA9KOuSQveyTywBm4G4vZKn0sCu1/v2+9T\n"
+    "BGv41tgS/Yf6oeeQVrbS4RFY1r9qTK6DW9wkTTesa4xoDKQrWjSJ7+aa8tvBXLGX\n"
+    "x2xdRNWLeRMuGBSOihwXmDr+rCJRauT7pItN5X+uWNTX1ofNksQSUMaFJ5K7L0LU\n"
+    "iQqU2Yyt/8UphdVZL4EFkGSA13UDWtb9mM1hY0h65LlSYwCchEphrtI9cuV+ITrS\n"
+    "NcN6cP/dqDx1/jWd6dqjNu7+dugwX5elQS9uUYCFmugR5s1m2eeBg3QuC7gZLE0N\n"
+    "NbgS7oSxKJe9KeOcw68jHWfBKsCfBfQ4fU2t/ntMybT3hCdEMQu4dgM5Tyw/UeFq\n"
+    "0SaJyTl+G1bTzS0FW6uUp6NLAgMBAAGjUDBOMB0GA1UdDgQWBBQjbC09PildeLhs\n"
+    "Pqriuy4ebIfyUzAfBgNVHSMEGDAWgBQjbC09PildeLhsPqriuy4ebIfyUzAMBgNV\n"
+    "HRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4ICAQCwRJpJCgp7S+k9BT6X3kBefonE\n"
+    "EOYtyWXBPpuyG3Qlm1rdhc66DCGForDmTxjMmHYtNmAVnM37ILW7MoflWrAkaY19\n"
+    "gv88Fzwa5e6rWK4fTSpiEOc5WB2A3HPN9wJnhQXt1WWMDD7jJSLxLIwFqkzpDbDE\n"
+    "9122TtnIbmKNv0UQpzPV3Ygbqojy6eZHUOT05NaOT7vviv5QwMAH5WeRfiCys8CG\n"
+    "Sno/o830OniEHvePTYswLlX22LyfSHeoTQCCI8pocytl7IwARKCvBgeFqvPrMiqP\n"
+    "ch16FiU9II8KaMgpebrUSz3J1BApOOd1LBd42BeTAkNSxjRvbh8/lDWfnE7ODbKc\n"
+    "b6Ad3V9flFb5OBZH4aTi6QfrDnBmbLgLL8o/MLM+d3Kg94XRU9LjC2rjivQ6MC53\n"
+    "EnWNobcJFY+soXsJokGtFxKgIx8XrhF5GOsT2f1pmMlYL4cjlU0uWkPOOkhq8tIp\n"
+    "R8cBYphzXu1v6h2AaZLRq184e30ZO98omKyQoQ2KAm5AZayRrZZtjvEZPNamSuVQ\n"
+    "iPe3o/4tyQGq+jEMAEjLlDECu0dEa6RFntcbBPMBP3wZwE2bI9GYgvyaZd63DNdm\n"
+    "Xd65m0mmfOWYttfrDT3Q95YP54nHpIxKBw1eFOzrnXOqbKVmJ/1FDP2yWeooKVLf\n"
+    "KvbxUcDaVvXB0EU0bg==\n"
+    "-----END CERTIFICATE-----\n";
+
+/* Bob's key */
+static const os_char bobs_key[] = \
+    "-----BEGIN RSA PRIVATE KEY-----\n"
+    "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\n"
+    "-----END RSA PRIVATE KEY-----\n";
+
+/* Bob's key */
+static const os_char bobs_certificate[] = 
+    "-----BEGIN CERTIFICATE-----\n"
+    "MIIGJTCCBA2gAwIBAgIBAjANBgkqhkiG9w0BAQUFADCBsjELMAkGA1UEBhMCRlIx\n"
+    "DzANBgNVBAgMBkFsc2FjZTETMBEGA1UEBwwKU3RyYXNib3VyZzEYMBYGA1UECgwP\n"
+    "d3d3LmZyZWVsYW4ub3JnMRAwDgYDVQQLDAdmcmVlbGFuMS0wKwYDVQQDDCRGcmVl\n"
+    "bGFuIFNhbXBsZSBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkxIjAgBgkqhkiG9w0BCQEW\n"
+    "E2NvbnRhY3RAZnJlZWxhbi5vcmcwHhcNMTIwNDI3MTA1NDQwWhcNMjIwNDI1MTA1\n"
+    "NDQwWjB8MQswCQYDVQQGEwJGUjEPMA0GA1UECAwGQWxzYWNlMRgwFgYDVQQKDA93\n"
+    "d3cuZnJlZWxhbi5vcmcxEDAOBgNVBAsMB2ZyZWVsYW4xDDAKBgNVBAMMA2JvYjEi\n"
+    "MCAGCSqGSIb3DQEJARYTY29udGFjdEBmcmVlbGFuLm9yZzCCAiIwDQYJKoZIhvcN\n"
+    "AQEBBQADggIPADCCAgoCggIBAMI/QxRK1N1DWrlDXi27iaEXGPeuR0t69NTco+G3\n"
+    "hToQIOu8URjYiyXGBJVPgOkFXAD0fCN70a2BWPGdQ8M37n9hA7X/KbsQGvuod5eb\n"
+    "3kx9P8r/U4w3MLaI8g6+fNySdslfIpYZC5HqnBiWn0PRnSKe2cMSn4AFhR9wu4dd\n"
+    "Y8FaUT1+aT12bbBW6ts/rvDNDBlIsfLVLuf6Et0VvIzcCcImnNwiUo7IHMHNAb0a\n"
+    "JMW+TxgI895ZHI9jpmMdT1qSaHpJlCZU0YO+FuRej3MvgTo6MID9V6l/G3vlD2wB\n"
+    "aPcfRUn+BjwIV2QnpQtVGLcwvghFcIvNQ+r8gB4DXMNSjalVU1X0YS6LUGRqMKdv\n"
+    "vbiAEu5mmNh4X6D1ZWpt9QnMYk1VVoAhdUhzTbnj+R2WySxdeU08xXqehP+dx5SH\n"
+    "Cj5pgdJ/wF9nnAaMM1yjn1LnBMfTge+ydx7QVx8fkKVpwA1DxfamfvfqRXxgtmgf\n"
+    "ZFncYDPCE4y3BsIqzcwrAt6i6XAM23n+zutewAbrdkMJ4CrH7h5qr2BJczyoU4zh\n"
+    "OSznnv79RCDwhZof68dAyFuQQ+ahagBQS3NzcsU5dxMePJW+qTdq0U40PTTsh/ge\n"
+    "bOfci3+O0Tx4wuIJk9fAaK5wgbnw0PcmpOLAEh0vAWPrUwXLqttmsPsWm+fnvsNm\n"
+    "2lzJAgMBAAGjezB5MAkGA1UdEwQCMAAwLAYJYIZIAYb4QgENBB8WHU9wZW5TU0wg\n"
+    "R2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBSc0nFQNfcQQ93oznUpo1Nd\n"
+    "EaeoOzAfBgNVHSMEGDAWgBQjbC09PildeLhsPqriuy4ebIfyUzANBgkqhkiG9w0B\n"
+    "AQUFAAOCAgEAw7CkgvVk5U6g5XRexD3QnPdO942viy6AWWO1bi8QW2bWKSrK4gEg\n"
+    "aOEr/9bh4fKm4Mz1j59ccrj6gXZ9XO5gKeXX3o9KnFU+5Sccdrw15xaAbzJ3/Veu\n"
+    "UYf7vsKhzHaaYQHJ/4YA/9GWzf8sD0ieroPY39R4HUw3h/VYXSbGyhbN+hYdb0Ku\n"
+    "V0qZRVKAXBx2Qqj48xWcGz42AeAJXtgZse2g7zvHCaeqX7YtwSCEmyyHGis13p6c\n"
+    "DNkMXs9RONbWgK6RFbXGIt9+F5/D67/91TtL6mYAcqC1t2WoWtmo8WfBQdh53cwv\n"
+    "eHqeXgqddw5ZUknSEJQc6/Q8BA48HBp1pugj1fBzFJCxcVoyV40012ph3HMa2h0f\n"
+    "Vqcu7w2k9fuUC/TPHdIQDwfNup14h+gEY2rlemsgvb0pwjlb/IaEdwvj+Cw3rK8b\n"
+    "7U+51gijrC8xB0r4js8R3ZIcyarHpbdipHduWCB4F8te721B67bCH3+h3vq7cZIg\n"
+    "3rFeNIRs7WzhQ4YT8D/XLcW6wN43jUi838dPs6al5cLb8e/bDCVp5liNunK9Xj/P\n"
+    "gTa2q+6oZ4/uu/5vyR+KH+/pyXpSQK2gPyNFemOVmD0SuOLzC4gQOARosPGni9Bh\n"
+    "1w8vzxdRIet2aS0Z6AHFM/1hzUZkh4lD6THQvoigooIMf59mQTqaWmo=\n"
+    "-----END CERTIFICATE-----\n";
+
+/* static const char* test_root_ca = \
      "-----BEGIN CERTIFICATE-----\n" \
      "MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/\n" \
      "MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\n" \
@@ -71,6 +203,7 @@ static const char* test_root_ca = \
      "PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6\n" \
      "KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==\n" \
      "-----END CERTIFICATE-----\n";
+*/
 
 // You can use x.509 client certificates if you want
 //const char* test_client_key = "";   //to verify the client
@@ -212,12 +345,15 @@ osalStream osal_tls_open(
 
     /* Set up client certificate, if we use one.
      */
-    // w->client.setCACert(test_root_ca);  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
-     //w->client.setCertificate(test_client_key); // for client verification
-     //w->client.setPrivateKey(test_client_cert);	// for client verification
+      w->client.setCACert(test_root_ca);  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
+      w->client.setCertificate(bobs_key); // for client verification
+      w->client.setPrivateKey(bobs_certificate);	// for client verification
 
     osal_trace2_int("Connecting to TLS socket port ", port_nr);
     osal_trace2(host);
+
+//os_strncpy(host,  "www.howsmyssl.com", sizeof(host));
+//port_nr = 443;
 
     /* Connect the socket.
      */
