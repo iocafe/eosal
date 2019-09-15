@@ -345,21 +345,19 @@ osalStream osal_tls_open(
 
     /* Set up client certificate, if we use one.
      */
-      w->client.setCACert(test_root_ca);  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
-      w->client.setCertificate(bobs_key); // for client verification
-      w->client.setPrivateKey(bobs_certificate);	// for client verification
+      // w->client.setCACert(test_root_ca);  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
+      // w->client.setCertificate(bobs_key); // for client verification
+      // w->client.setPrivateKey(bobs_certificate);	// for client verification
 
     osal_trace2_int("Connecting to TLS socket port ", port_nr);
     osal_trace2(host);
-
-//os_strncpy(host,  "www.howsmyssl.com", sizeof(host));
-//port_nr = 443;
 
     /* Connect the socket.
      */
     if (!w->client.connect(host, port_nr))
     {
         osal_trace("Wifi: TLS socket connect failed");
+        w->client.stop();
         goto getout;
     }
 
