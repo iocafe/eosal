@@ -34,6 +34,7 @@
 #endif
 
 #if OSAL_SOCKET_WIFI
+  #include <Arduino.h>
   #include <WiFi.h>
 #endif
 
