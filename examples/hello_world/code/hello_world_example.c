@@ -18,6 +18,10 @@
 */
 #include "eosalx.h"
 
+static os_timer t;
+static os_int count;
+
+
 
 /**
 ****************************************************************************************************
@@ -37,7 +41,66 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    osal_console_write("hello world");
+    osal_console_write("hello world starts\n");
+    os_get_timer(&t);
+    count = 10;
+
+    /* When emulating micro-controller on PC, run loop. Does nothing on real micro-controller.
+     */
+    osal_simulated_loop(OS_NULL);
     return 0;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Loop function to be called repeatedly.
+
+  The osal_loop() function...
+
+  @param   prm Void pointer, reserved to pass context structure, etc.
+  @return  None.
+
+****************************************************************************************************
+*/
+osalStatus osal_loop(
+    void *prm)
+{
+    os_char buf[32];
+
+    /* Show count once per second.
+     */
+    if (os_elapsed(&t, 1000))
+    {
+        osal_int_to_string(buf, sizeof(buf), count--);
+        osal_console_write("howdy ");
+        osal_console_write(buf);
+        osal_console_write("\n");
+        os_get_timer(&t);
+    }
+
+    /* When count reaches zero: Reboot micro-controller or quit the program in PC computer.
+     */
+    return count >= 0 ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Finish with communication.
+
+  The osal_main_cleanup() function closes the stream, then closes underlying stream library.
+  Notice that the osal_stream_close() function does close does nothing if it is called with NULL
+  argument.
+
+  @param   prm Void pointer, reserved to pass context structure, etc.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_main_cleanup(
+    void *prm)
+{
+}

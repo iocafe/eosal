@@ -133,15 +133,17 @@ static void mythread_func(
             {
                 if (handle[i] == OS_NULL)
                 {
-                    handle[i] = osal_stream_accept(handle[0], 
-                        &status, OSAL_STREAM_DEFAULT);
-
+                    handle[i] = osal_stream_accept(handle[0], &status, OSAL_STREAM_DEFAULT);
                     break;
                 }
             }
             if (i == OSAL_SOCKET_SELECT_MAX)
             {
+                /* Handle table full. Accept and close the sockets.
+                 */
                 osal_debug_error("handle table full");
+                st = osal_stream_accept(handle[0], &status, OSAL_STREAM_DEFAULT);
+                osal_stream_close(st);
             }
         }
 

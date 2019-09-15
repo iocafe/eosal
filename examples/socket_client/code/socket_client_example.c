@@ -10,7 +10,7 @@
   - Create worker thread to trigger custom event once per two seconds.
   - Block in select, print asterix '*' when select is unblocked.
   - Print characters received from the socket to console.
-  - Write characters typed by use to socket at custom event.
+  - Write to socket at key press (trough custom event).
   
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -81,7 +81,6 @@ static void mythread_func(
     os_char buf[64];
     os_memsz n_read, n_written;
     const char keypressedtext[] = "<client-key>";
-
 
     mythreadprm = (MyThreadParams*)prm;
     osal_event_set(done);
