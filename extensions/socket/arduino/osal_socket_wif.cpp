@@ -22,21 +22,10 @@
 
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT
-
-#if OSAL_SOCKET_WIZNET
-  #include <SPI.h>
-  #include <Ethernet.h>
-#endif
-
-#if OSAL_SOCKET_LWIP
-  #include <LwIP.h>
-  #include <STM32Ethernet.h>
-#endif
-
 #if OSAL_SOCKET_WIFI
-  #include <Arduino.h>
-  #include <WiFi.h>
-#endif
+
+#include <Arduino.h>
+#include <WiFi.h>
 
 /* Global network setup. Micro-controllers typically have one (or two)
    network interfaces. The network interface configuration is managed
@@ -55,15 +44,9 @@ osalNetworkInterface osal_net_iface
  */
 os_boolean osal_sockets_initialized = OS_FALSE;
 
-#if OSAL_SOCKET_WIFI
-  #define OSAL_MYCLIENT WiFiClient
-  #define OSAL_MYSERVER WiFiServer
-  #define OSAL_MYUDP WiFiUDP
-#else
-  #define OSAL_MYCLIENT EthernetClient
-  #define OSAL_MYSERVER EthernetServer
-  #define OSAL_MYUDP EthernetUDP
-#endif
+#define OSAL_MYCLIENT WiFiClient
+#define OSAL_MYSERVER WiFiServer
+#define OSAL_MYUDP WiFiUDP
 
 /* Client sockets.
  */
@@ -106,11 +89,7 @@ typedef enum
 }
 osalSocketUse;
 
-#if OSAL_SOCKET_WIFI
-  #define MY_SOCKIX_TYPE int
-#else
-  #define MY_SOCKIX_TYPE os_uchar
-#endif
+#define MY_SOCKIX_TYPE int
 
 
 /** Arduino specific socket structure to store information.
@@ -263,7 +242,7 @@ osalStream osal_socket_open(
          * needs to be added to EthernetServer class.
          * Note: Same for WiFi
          */
-        osal_server[ix].setport((uint16_t)port_nr);
+        /* osal_server[ix].setport((uint16_t)port_nr); XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
         osal_server[ix].begin();
 
         osal_server_used[ix] = OS_TRUE;
@@ -294,11 +273,8 @@ osalStream osal_socket_open(
         osal_client_used[ix] = OS_TRUE;
         mysocket->use = OSAL_SOCKET_CLIENT;
         mysocket->index = ix;
-#if OSAL_SOCKET_WIFI
         mysocket->sockindex = osal_client[ix].fd();
-#else
-        mysocket->sockindex = osal_client[ix].getSocketNumber();
-#endif
+
         osal_trace2("Connecting socket");
         osal_trace2(host);
     }
@@ -431,11 +407,8 @@ osalStream osal_socket_accept(
            with data to read. This may be a socket which is already in use,
            this we must skip the used ones using sockindex.
          */
-#if OSAL_SOCKET_WIFI
         sockindex = osal_client[cix].fd();
-#else
-        sockindex = osal_client[cix].getSocketNumber();
-#endif
+
         for (j = 0; j<OSAL_MAX_SOCKETS; j++)
         {
            if (osal_socket[j].use == OSAL_SOCKET_UNUSED) continue;
@@ -894,89 +867,6 @@ static void osal_mac_from_str(
 }
 
 
-#ifndef OSAL_SOCKET_WIFI
-/**
-****************************************************************************************************
-
-  @brief Initialize sockets LWIP/WizNet.
-  @anchor osal_socket_initialize
-
-  The osal_socket_initialize() initializes the underlying sockets library. This used either DHCP,
-  or statical configuration parameters.
-
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_initialize(
-	void)
-{
-    /* Initialize only once.
-     */
-    IPAddress
-        ip_address(192, 168, 1, 201),
-        dns_address(8, 8, 8, 8),
-        gateway_address(192, 168, 1, 254),
-        subnet_mask(255, 255, 255, 0);
-
-    byte
-        mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
-
-    osal_sockets_initialized = OS_TRUE;
-    os_memclear(osal_client_used, sizeof(osal_client_used));
-    os_memclear(osal_server_used, sizeof(osal_server_used));
-
-    osal_mac_from_str(mac, osal_net_iface.mac);
-
-    /* Initialize Ethernet with DHCP.
-     */
-    if (osal_net_iface.dhcp)
-    {
-        if (Ethernet.begin(mac))
-        {
-            osal_trace2("Ethernet initialized, DHCP");
-            return;
-        }
-
-        /* DHCP failed... continue to static configuration.
-         */
-    }
-
-    /* Initialize using static configuration.
-     */
-    osal_ip_from_str(ip_address, osal_net_iface.ip_address);
-    osal_ip_from_str(dns_address, osal_net_iface.dns_address);
-    osal_ip_from_str(gateway_address, osal_net_iface.gateway_address);
-    osal_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
-
-    /* Start the ethernet connection.
-     */
-    Ethernet.begin(mac, ip_address, dns_address, gateway_address, subnet_mask);
-    osal_trace2("Ethernet initialized ");
-
-  // Check for Ethernet hardware present
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
-    while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
-    }
-  }
-  if (Ethernet.linkStatus() == LinkOFF) {
-    Serial.println("Ethernet cable is not connected.");
-  }
-
-    ip_address = Ethernet.localIP();
-
-// Here WE should convert IP address to string.
-
-    /* Set socket library initialized flag.
-     */
-    osal_sockets_initialized = OS_TRUE;
-}
-#endif
-
-
-#ifdef OSAL_SOCKET_WIFI
 /**
 ****************************************************************************************************
 
@@ -1039,7 +929,6 @@ void osal_socket_initialize(
      */
     osal_sockets_initialized = OS_TRUE;
 }
-#endif
 
 
 
@@ -1058,13 +947,11 @@ void osal_socket_initialize(
 void osal_socket_shutdown(
 	void)
 {
-#if OSAL_SOCKET_WIFI
     if (osal_sockets_initialized)
     {
         WiFi.disconnect();
         osal_sockets_initialized = OS_FALSE;
     }
-#endif
 }
 
 
@@ -1084,9 +971,6 @@ void osal_socket_shutdown(
 void osal_socket_maintain(
     void)
 {
-#if OSAL_SOCKET_WIFI == 0
-    Ethernet.maintain();
-#endif
 }
 
 
@@ -1111,4 +995,5 @@ osalStreamInterface osal_socket_iface
 
 #endif
 
+#endif
 #endif

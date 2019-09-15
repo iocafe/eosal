@@ -167,7 +167,7 @@
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifdef ESP_PLATFORM
-#define OSAL_MULTITHREAD_SUPPORT 1
+#define OSAL_MULTITHREAD_SUPPORT 0
 #endif
 #ifndef OSAL_MULTITHREAD_SUPPORT
 #define OSAL_MULTITHREAD_SUPPORT 0
