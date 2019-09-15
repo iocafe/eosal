@@ -25,7 +25,7 @@ void loop()
 {
     /* Start the included application.
      */
-    if (osal_loop(OS_NULL)) osal_reboot(0);
+    if (osal_loop(osal_application_context)) osal_reboot(0);
 }
 
 /* Include code for client application (at the time of writing connects socket 

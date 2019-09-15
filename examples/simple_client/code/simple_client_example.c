@@ -87,7 +87,8 @@ os_int osal_main(
      */
     stream = OS_NULL;
 
-    /* When emulating micro-controller on PC, run loop. Does nothing on real micro-controller.
+    /* When emulating micro-controller on PC, run loop. Just save context pointer on
+       real micro-controller.
      */
     osal_simulated_loop(OS_NULL);
     return 0;
@@ -104,13 +105,14 @@ os_int osal_main(
   -- Reads data received from socket and prints it to console.
   -- Check for user key pressess and writes those to socket.
 
-  @param   prm Void pointer, reserved to pass context structure, etc.
-  @return  None.
+  @param   app_context Void pointer, reserved to pass context structure, etc.
+  @return  The function returns OSAL_SUCCESS to continue running. Other return values are
+           to be interprened as reboot on micro-controller or quit the program on PC computer.
 
 ****************************************************************************************************
 */
 osalStatus osal_loop(
-    void *prm)
+    void *app_context)
 {
     os_uchar buf[64];
     os_memsz n_read, n_written;
@@ -199,19 +201,19 @@ osalStatus osal_loop(
 /**
 ****************************************************************************************************
 
-  @brief Finish with communication.
+  @brief Finished with the application, clean up.
 
   The osal_main_cleanup() function closes the stream, then closes underlying stream library.
   Notice that the osal_stream_close() function does close does nothing if it is called with NULL
   argument.
 
-  @param   prm Void pointer, reserved to pass context structure, etc.
+  @param   app_context Void pointer, reserved to pass context structure, etc.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_main_cleanup(
-    void *prm)
+    void *app_context)
 {
     osal_stream_close(stream);
     stream = OS_NULL;

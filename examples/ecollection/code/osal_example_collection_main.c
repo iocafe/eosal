@@ -49,7 +49,7 @@ os_int osal_main(
 /*  Empty function implementation needed to build for microcontroller.
  */
 osalStatus osal_loop(
-    void *prm)
+    void *app_context)
 {
     return OSAL_SUCCESS;
 }
@@ -57,7 +57,7 @@ osalStatus osal_loop(
 /*  Empty function implementation needed to build for microcontroller.
  */
 void osal_main_cleanup(
-    void *prm)
+    void *app_context)
 {
 
 }

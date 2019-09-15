@@ -48,9 +48,10 @@
  */
 #define EXAMPLE_TCP_SOCKET_PORT "6368"
 #define EXAMPLE_TLS_SOCKET_PORT "6369"
-#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/examples/simple_server/sllfiles/server.crt"
-#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/examples/simple_server/sllfiles/server.key"
+#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/server.crt"
+#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/server.key"
 #define EXAMPLE_SERIAL_PORT "COM3,baud=115200"
+
 
 /* Handle for connected stream, and for the stream listening for connections.
  */
@@ -119,13 +120,14 @@ os_int osal_main(
 
   Note: See note for serial communication, same applies here.
 
-  @param   prm Void pointer, reserved to pass context structure, etc. 
-  @return  None.
+  @param   app_context Void pointer, reserved to pass context structure, etc.
+  @return  The function returns OSAL_SUCCESS to continue running. Other return values are
+           to be interprened as reboot on micro-controller or quit the program on PC computer.
 
 ****************************************************************************************************
 */
 osalStatus osal_loop(
-    void *prm)
+    void *app_context)
 {
     os_uchar buf[64];
     os_memsz n_read, n_written;
@@ -242,13 +244,13 @@ osalStatus osal_loop(
   closes underlying stream library. Notice that the osal_stream_close() function does close does 
   nothing if it is called with NULL argument.
 
-  @param   prm Void pointer, reserved to pass context structure, etc. 
+  @param   app_context Void pointer, reserved to pass context structure, etc.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_main_cleanup(
-    void *prm)
+    void *app_context)
 {
     osal_stream_close(mystream);
     osal_stream_close(stream);

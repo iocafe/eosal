@@ -14,7 +14,11 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_MAIN_SUPPORT
+
+/** Context pointer is given to osal_simulated_loop() is saved here.
+ */
+void *osal_application_context;
+
 
 /**
 ****************************************************************************************************
@@ -26,20 +30,25 @@
   environment. This function is not used in microcontroller environment, where loop is
   called by the framework.
 
-  @param   prm Void pointer, reserved to pass context structure, etc.
+  @param   app_context Void pointer, reserved to pass context structure, etc.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_simulated_loop(
-    void *prm)
+    void *app_context)
 {
-    while (!osal_loop(prm))
+    /* Save application context pointer.
+     */
+    osal_application_context = app_context;
+
+#if OSAL_MAIN_SUPPORT
+    while (!osal_loop(app_context))
     {
         os_timeslice();
     }
 
-    osal_main_cleanup(prm);
+    osal_main_cleanup(app_context);
+#endif
 }
 
-#endif
