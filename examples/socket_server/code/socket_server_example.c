@@ -35,8 +35,8 @@
 
 #define EXAMPLE_TCP_SOCKET_PORT "6368"
 #define EXAMPLE_TLS_SOCKET_PORT "6369"
-#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/examples/simple_server/sllfiles/server.crt"
-#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/examples/simple_server/sllfiles/server.key"
+#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/server.crt"
+#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/server.key"
 
 /* Parameters to start a worker thread.
  */

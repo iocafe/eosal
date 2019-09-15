@@ -59,13 +59,14 @@ os_int osal_main(
 
   The osal_loop() function...
 
-  @param   prm Void pointer, reserved to pass context structure, etc.
-  @return  None.
+  @param   app_context Void pointer, reserved to pass context structure, etc.
+  @return  The function returns OSAL_SUCCESS to continue running. Other return values are
+           to be interprened as reboot on micro-controller or quit the program on PC computer.
 
 ****************************************************************************************************
 */
 osalStatus osal_loop(
-    void *prm)
+    void *app_context)
 {
     os_char buf[32];
 
@@ -95,12 +96,12 @@ osalStatus osal_loop(
   Notice that the osal_stream_close() function does close does nothing if it is called with NULL
   argument.
 
-  @param   prm Void pointer, reserved to pass context structure, etc.
+  @param   app_context Void pointer, reserved to pass context structure, etc.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_main_cleanup(
-    void *prm)
+    void *app_context)
 {
 }

@@ -27,7 +27,7 @@ void setup()
  */
 void loop()
 {
-    if (osal_loop(OS_NULL)) osal_reboot(0);
+    if (osal_loop(osal_application_context)) osal_reboot(0);
 }
 
 /* Include code for server (at the time of writing IP 192.168.1.201,
