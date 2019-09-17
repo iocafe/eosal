@@ -45,6 +45,8 @@
   #define EOSAL_TARGET_HDRS_INCLUDED
 #endif
 
+/* If target operating system is unspecified, include headers by build environment.
+ */
 #ifndef EOSAL_TARGET_HDRS_INCLUDED
   #ifdef ARDUINO
     #include "code/defs/arduino/osal_defs.h"
@@ -54,8 +56,6 @@
   #endif
 #endif
 
-/* If target operating system is unknown, include headers by build environment.
- */
 #ifndef EOSAL_TARGET_HDRS_INCLUDED
   #ifdef _WIN32
     #include "code/defs/windows/osal_defs.h"

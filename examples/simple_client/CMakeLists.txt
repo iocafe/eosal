@@ -1,4 +1,4 @@
-# eosal/examples/simple_client/build/cmake/CmakeLists.txt - Cmake build for simple communication client example.
+# eosal/examples/simple_client/CmakeLists.txt - Cmake build for simple communication client example.
 cmake_minimum_required(VERSION 2.8.11)
 
 # Set project name (= project root folder name).

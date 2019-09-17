@@ -61,7 +61,7 @@ extern osalGlobalStruct *osal_global;
 void osal_initialize(
     os_int flags);
 
-/* Shut down OSAL libeary, clean up.
+/* Shut down OSAL library, clean up.
  */
 void osal_shutdown(
     void);
