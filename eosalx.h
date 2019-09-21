@@ -75,7 +75,7 @@ OSAL_C_HEADER_BEGINS
 #endif
 
 #if OSAL_OSAL_PERSISTENT_SUPPORT
-  #include "extensions/persistent/common/osal_persistent.h
+  #include "extensions/persistent/common/osal_persistent.h"
 #endif
 
 /* If C++ compilation, end the undecorated code.

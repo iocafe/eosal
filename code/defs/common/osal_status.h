@@ -118,7 +118,11 @@ typedef enum
 
     /** End of file has been reached.
      */
-    OSAL_END_OF_FILE
+    OSAL_END_OF_FILE,
+
+    /** Run out of user given buffer.
+     */
+    OSAL_OUT_OF_BUFFER
 }
 osalStatus;
 
