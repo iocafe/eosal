@@ -1,19 +1,10 @@
 /**
 
-  @file    persistent/common/osal_persistent.h
-  @brief   Store persistent parameters.
+  @file    persistent/common/osal_fsys_persistent.c
+  @brief   Save persistent parameters on Linux/Windows.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
-
-  Micro-controllers store persistent parameters in EEPROM or flash. These are typically static
-  board configuration. Do not use flash to save any data which changes during normal operation,
-  it will eventually destroy the flags (and thus the micro-controller).
-
-  In PC simulation the data is saved in files in folder given as path.
-
-  This file defines just function prototypes. Actual implementations differ by a lot depending
-  wether persistant data is stored on EEPROM, micro-controller's flash or in file system.
+  @date    21.9.2019
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -22,68 +13,77 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_PERSISTENT_INCLUDED
-#define OSAL_PERSISTENT_INCLUDED
-#if OSAL_OSAL_PERSISTENT_SUPPORT
+#include "eosalx.h"
+#if OSAL_PERSISTENT_SUPPORT
 
+#define OSAL_PERSISTENT_MAX_PATH 128
 
-/* Parameters structure for os_persistent_initialze() function.
- */
-typedef struct
-{
-    /* Path where to save persistent data during PC simulation.
-     */
-    os_char8 *path;
-}
-osPersistentParams;
-
-/* Reserved persistent blocks. We need to have uniques persistant block number for each
-   parameter block which can be saved.
- */
- typedef enum
- {
-    OS_FIRST_CONFIG_PRM_BLK = 10,
-    OS_LAST_CONFIG_PRM_BLK = OS_FIRST_CONFIG_PRM_BLK + 10 - 1,
-
-    OS_FIRST_SOCKET_PRM_BLK = 10,
-    OS_LAST_SOCKET_PRM_BLK = OS_FIRST_SOCKET_PRM_BLK + 10 - 1,
-
-    OS_FIRST_TLS_PRM_BLK = 10,
-    OS_LAST_TLS_PRM_BLK = OS_FIRST_SOCKET_TLS_BLK + 10 - 1,
-
-    OS_FIRST_APPL_PRM_BLK = 1000,
- }
- oePersistentBlockNr;
-
-
-/**
-****************************************************************************************************
-
-  @brief Initialize persistent storage access.
-
-  The os_persistent_initialze() initializes the the persistent storage.
-/* Parameters for os_persistent_initialze() function. Clear struture, set parameters and call
- * os_persistent_initialze():
-   - osPersistentParams prm;
-   - os_memclear(&prm, sizeof(prm));
-   - os_persistent_initialze(&prm);
-
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_persistent_initialze(
-    osPersistentParams *prm);
-
-os_memsz os_persistent_load_block(
-    os_int block_nr,
-    os_uchar *block,
-    os_memsz block_sz);
-
-osalStatus os_persistent_save_block(
-    os_int block_nr,
-    os_uchar *block,
-    os_memsz block_sz);
-
+#ifdef OSAL_WIN32
+static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "c:\\tmp";
+#else
+static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/tmp";
 #endif
+
+static void os_persistent_make_path(
+    os_int block_nr,
+    os_char *path,
+    os_memsz path_sz);
+
+
+void os_persistent_initialze(
+    osPersistentParams *prm)
+{
+    if (prm) {
+        if (prm->path) {
+            os_strncpy(rootpath, prm->path, sizeof(rootpath));
+        }
+    }
+}
+
+
+/* Load parameter structure identified by block number from persistant storage. Load all
+   parameters when micro controller starts, not during normal operation. If data cannot
+   be loaded, leaves the block as is. Returned value maxes at block_sz.
+ */
+os_memsz os_persistent_load(
+    os_int block_nr,
+    os_uchar *block,
+    os_memsz block_sz)
+{
+    os_char path[OSAL_PERSISTENT_MAX_PATH];
+    os_memsz n_read;
+
+    os_persistent_make_path(block_nr, path, sizeof(path));
+    os_read_file(path, block, block_sz, &n_read, 0);
+    return n_read;
+}
+
+/* Save parameter structure to persistent storage and identigy it by block number.
+ */
+osalStatus os_persistent_save(
+    os_int block_nr,
+    os_uchar *block,
+    os_memsz block_sz)
+{
+    os_char path[OSAL_PERSISTENT_MAX_PATH];
+
+    os_persistent_make_path(block_nr, path, sizeof(path));
+    return os_write_file(path, block, block_sz, 0);
+}
+
+static void os_persistent_make_path(
+    os_int block_nr,
+    os_char *path,
+    os_memsz path_sz)
+{
+    os_char buf[16];
+
+    osal_int_to_string(buf, sizeof(buf), block_nr);
+
+    os_strncpy(path, rootpath, path_sz);
+    os_strncat(path, "-", path_sz);
+    os_strncat(path, buf, path_sz);
+    os_strncat(path, ".dat", path_sz);
+}
+
 #endif

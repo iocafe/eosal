@@ -1,13 +1,13 @@
 /**
 
-  @file    persistent/linux/osal_select_persistent.c
+  @file    persistent/windows/osal_select_persistent.c
   @brief   Select persistent storage implementation.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    21.9.2019
 
-  The linux/osal_select_persistent.c selects persistent storage implementation to use with
-  linux platform, by including the implementation code.
+  The windows/osal_select_persistent.c selects persistent storage implementation to use with
+  Windows platform, by including the implementation code.
 
   Micro-controllers store parameters persistent storage. We emulate this on linux and Windows by
   saving persistent parameters into files. Since multiple platforms may use the same file

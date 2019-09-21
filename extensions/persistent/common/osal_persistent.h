@@ -41,7 +41,7 @@
 */
 #ifndef OSAL_PERSISTENT_INCLUDED
 #define OSAL_PERSISTENT_INCLUDED
-#if OSAL_OSAL_PERSISTENT_SUPPORT
+#if OSAL_PERSISTENT_SUPPORT
 
 
 /* Parameters structure for os_persistent_initialze() function.
@@ -50,7 +50,7 @@ typedef struct
 {
     /* Path where to save persistent data during PC simulation.
      */
-    os_char8 *path;
+    os_char *path;
 }
 osPersistentParams;
 
@@ -66,7 +66,7 @@ osPersistentParams;
     OS_LAST_SOCKET_PRM_BLK = OS_FIRST_SOCKET_PRM_BLK + 10 - 1,
 
     OS_FIRST_TLS_PRM_BLK = 10,
-    OS_LAST_TLS_PRM_BLK = OS_FIRST_SOCKET_TLS_BLK + 10 - 1,
+    OS_LAST_TLS_PRM_BLK = OS_FIRST_TLS_PRM_BLK + 10 - 1,
 
     OS_FIRST_APP_PRM_BLK = 101
  }
