@@ -54,23 +54,31 @@ typedef struct
 }
 osPersistentParams;
 
-/* Reserved persistent blocks. We need to have uniques persistant block number for each
-   parameter block which can be saved.
+/* Reserved persistent parameter block numbers. We need to have and unique persistant block
+   number for each parameter block which can be saved.
  */
  typedef enum
  {
-    OS_FIRST_CONFIG_PRM_BLK = 10,
-    OS_LAST_CONFIG_PRM_BLK = OS_FIRST_CONFIG_PRM_BLK + 10 - 1,
+    OS_PBNR_IO_DEVICE = 0,
+    OS_PBNR_NIC_1 = 1,
+    OS_PBNR_NIC_2 = 2,
+    OS_PBNR_NIC_3_= 3,
+    OS_PBNR_CON_1 = 4,
+    OS_PBNR_CON_2 = 5,
+    OS_PBNR_CON_3 = 6,
+    OS_PBNR_SRV_1 = 7,
+    OS_PBNR_SRV_2 = 8,
+    OS_PBNR_UDP_1 = 9,
+    OS_PBNR_APP_1 = 10,
+    OS_PBNR_APP_2 = 11,
+    OS_PBNR_APP_3 = 12,
+    OS_PBNR_RESERVE_1 = 13,
+    OS_PBNR_RESERVE_2 = 14,
+    OS_PBNR_RESERVE_3 = 15,
 
-    OS_FIRST_SOCKET_PRM_BLK = 10,
-    OS_LAST_SOCKET_PRM_BLK = OS_FIRST_SOCKET_PRM_BLK + 10 - 1,
-
-    OS_FIRST_TLS_PRM_BLK = 10,
-    OS_LAST_TLS_PRM_BLK = OS_FIRST_TLS_PRM_BLK + 10 - 1,
-
-    OS_FIRST_APP_PRM_BLK = 101
+    OS_N_PBNR = 16
  }
- oePersistentBlockNr;
+ osPersistentBlockNr;
 
 
 /**
@@ -82,6 +90,9 @@ osPersistentParams;
 
 ****************************************************************************************************
 */
+
+/* Initialize persistent storage for use.
+ */
 void os_persistent_initialze(
     osPersistentParams *prm);
 
@@ -90,14 +101,14 @@ void os_persistent_initialze(
    be loaded, leaves the block as is. Returned value maxes at block_sz.
  */
 os_memsz os_persistent_load(
-    os_int block_nr,
+    osPersistentBlockNr block_nr,
     os_uchar *block,
     os_memsz block_sz);
 
-/* Save parameter structure to persistent storage and identigy it by block number.
+/* Save parameter structure to persistent storage and identify it by block number.
  */
 osalStatus os_persistent_save(
-    os_int block_nr,
+    osPersistentBlockNr block_nr,
     os_uchar *block,
     os_memsz block_sz);
 

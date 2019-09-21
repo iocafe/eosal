@@ -1,10 +1,13 @@
 /**
 
-  @file    persistent/shared/filesystem/osal_fsys_persistent.c
-  @brief   Save persistent parameters on Linux/Windows.
+  @file    persistent/arduino/osal_arduino_persistent.c
+  @brief   Save persistent parameters on Arduino EEPROM.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    21.9.2019
+
+  Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash,
+  in case EEPROM omulation.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -15,21 +18,12 @@
 */
 #include "eosalx.h"
 #if OSAL_PERSISTENT_SUPPORT
+#include <Arduino.h>
+#include <EEPROM.h>
 
-#define OSAL_PERSISTENT_MAX_PATH 128
-
-#ifdef OSAL_WIN32
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "c:\\tmp";
-#else
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/tmp";
-#endif
 
 /* Forward referred static functions.
  */
-static void os_persistent_make_path(
-    osPersistentBlockNr block_nr,
-    os_char *path,
-    os_memsz path_sz);
 
 
 /**
@@ -38,7 +32,7 @@ static void os_persistent_make_path(
   @brief Initialize persistent storage for use.
   @anchor os_persistent_initialze
 
-  The os_persistent_initialze() function...
+  The os_persistent_initialze() function.
 
   @param   prm Pointer to parameters for persistent storage. For this implementation path
            member sets path to folder where to keep parameter files. Can be OS_NULL if not
@@ -50,11 +44,6 @@ static void os_persistent_make_path(
 void os_persistent_initialze(
     osPersistentParams *prm)
 {
-    if (prm) {
-        if (prm->path) {
-            os_strncpy(rootpath, prm->path, sizeof(rootpath));
-        }
-    }
 }
 
 
@@ -80,12 +69,7 @@ os_memsz os_persistent_load(
     os_uchar *block,
     os_memsz block_sz)
 {
-    os_char path[OSAL_PERSISTENT_MAX_PATH];
-    os_memsz n_read;
-
-    os_persistent_make_path(block_nr, path, sizeof(path));
-    os_read_file(path, block, block_sz, &n_read, 0);
-    return n_read;
+    return 0;
 }
 
 
@@ -110,47 +94,9 @@ osalStatus os_persistent_save(
     os_uchar *block,
     os_memsz block_sz)
 {
-    os_char path[OSAL_PERSISTENT_MAX_PATH];
-
-    os_persistent_make_path(block_nr, path, sizeof(path));
-    return os_write_file(path, block, block_sz, 0);
+    return OSAL_SUCCESS;
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Make path to parameter file.
-  @anchor os_persistent_make_path
-
-  The os_persistent_make_path() function generates path from root path given as argument
-  and block number.
-
-  @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to save.
-  @param   block_sz Block size in bytes.
-  @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
-
-****************************************************************************************************
-*/
-static void os_persistent_make_path(
-    osPersistentBlockNr block_nr,
-    os_char *path,
-    os_memsz path_sz)
-{
-    os_char buf[16];
-
-    os_strncpy(path, rootpath, path_sz);
-    if (buf[os_strlen(buf)-1] != '/')
-    {
-        os_strncat(path, "/", path_sz);
-    }
-
-    os_strncat(path, "iodevprm-", path_sz);
-    os_strncat(path, "-", path_sz);
-    osal_int_to_string(buf, sizeof(buf), block_nr);
-    os_strncat(path, buf, path_sz);
-    os_strncat(path, ".dat", path_sz);
-}
 
 #endif
