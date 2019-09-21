@@ -281,4 +281,14 @@
 #define OSAL_TYPEID_SUPPORT 1
 #endif
 
+/** OSAL extensions: Define 0 if there is no perststant storage support. Define 1 to use the
+    default persistant storage implemetation for the platform. Values >= 2 select alternate
+    persistant storage implemetations, for example if we have EEPROM chip on STM32F407 board.
+    The alternate implementation numbers are platform specific and the C implemetations may
+    be board specific.
+ */
+#ifndef OSAL_PERSISTENT_SUPPORT
+#define OSAL_PERSISTENT_SUPPORT 1
+#endif
+
 #endif
