@@ -19,10 +19,12 @@
 #define OSAL_PERSISTENT_MAX_PATH 128
 
 #ifdef OSAL_WIN32
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "c:\\tmp";
+static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "c:\\coderoot\\tmp";
 #else
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/tmp";
+static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/coderoot/tmp";
 #endif
+
+static os_boolean initialized = OS_FALSE;
 
 /* Forward referred static functions.
  */
@@ -55,6 +57,9 @@ void os_persistent_initialze(
             os_strncpy(rootpath, prm->path, sizeof(rootpath));
         }
     }
+
+    osal_mkdir(rootpath, 0);
+    initialized = OS_TRUE;
 }
 
 
@@ -77,11 +82,13 @@ void os_persistent_initialze(
 */
 os_memsz os_persistent_load(
     osPersistentBlockNr block_nr,
-    os_uchar *block,
+    void *block,
     os_memsz block_sz)
 {
     os_char path[OSAL_PERSISTENT_MAX_PATH];
     os_memsz n_read;
+
+    if (!initialized) os_persistent_initialze(OS_NULL);
 
     os_persistent_make_path(block_nr, path, sizeof(path));
     os_read_file(path, block, block_sz, &n_read, 0);
@@ -107,11 +114,13 @@ os_memsz os_persistent_load(
 */
 osalStatus os_persistent_save(
     osPersistentBlockNr block_nr,
-    os_uchar *block,
+    const void *block,
     os_memsz block_sz,
     os_boolean commit)
 {
     os_char path[OSAL_PERSISTENT_MAX_PATH];
+
+    if (!initialized) os_persistent_initialze(OS_NULL);
 
     os_persistent_make_path(block_nr, path, sizeof(path));
     return os_write_file(path, block, block_sz, 0);
@@ -158,7 +167,7 @@ static void os_persistent_make_path(
     os_char *path,
     os_memsz path_sz)
 {
-    os_char buf[16];
+    os_char buf[OSAL_NBUF_SZ];
 
     os_strncpy(path, rootpath, path_sz);
     if (buf[os_strlen(buf)-1] != '/')

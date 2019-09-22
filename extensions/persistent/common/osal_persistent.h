@@ -102,14 +102,14 @@ void os_persistent_initialze(
  */
 os_memsz os_persistent_load(
     osPersistentBlockNr block_nr,
-    os_uchar *block,
+    void *block,
     os_memsz block_sz);
 
 /* Save parameter structure to persistent storage and identify it by block number.
  */
 osalStatus os_persistent_save(
     osPersistentBlockNr block_nr,
-    os_uchar *block,
+    const void *block,
     os_memsz block_sz,
     os_boolean commit);
 

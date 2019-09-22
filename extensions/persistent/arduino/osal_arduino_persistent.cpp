@@ -24,7 +24,18 @@
 
 typedef struct
 {
-    os_ushort pos, sz;
+    /* Block address in EEPROM
+     */
+    os_ushort pos;
+
+    /* Number of bytes reserved for the block.
+     */
+    os_ushort sz;
+
+    /* Number of bytes currently used.
+     */
+    os_ushort data_sz;
+
     os_ushort checksum;
 }
 myEEPROMBlock;
@@ -42,6 +53,8 @@ myEEPROMHeader;
 /* Some random number to mark initialized header.
  */
 #define MY_HEADER_INITIALIZED 0xB3
+
+#define MY_EEPROM_MIN_SIZE 1024
 
 static myEEPROMHeader hdr;
 static os_ushort eeprom_sz;
@@ -87,8 +100,24 @@ void os_persistent_initialze(
     osPersistentParams *prm)
 {
     os_ushort checksum;
+    os_char buf[OSAL_NBUF_SZ];
+
+    /* Do not initialized again by load or save call.
+     */
+    os_persistent_lib_initialized = OS_TRUE;
+
+    EEPROM.begin(MY_EEPROM_MIN_SIZE);
 
     eeprom_sz = EEPROM.length();
+    if (eeprom_sz == 0)
+    {
+        osal_console_write("EEPROM length 0 reported, using default: ");
+        eeprom_sz = MY_EEPROM_MIN_SIZE;
+    }
+    osal_console_write("EEPROM size = ");
+    osal_int_to_string(buf, sizeof(buf), eeprom_sz);
+    osal_console_write(buf);
+    osal_console_write("\n");
 
     /* Read header.
      */
@@ -100,7 +129,6 @@ void os_persistent_initialze(
     if (checksum == hdr.checksum && hdr.initialized == MY_HEADER_INITIALIZED) return;
 
     os_memclear(&hdr, sizeof(hdr));
-    os_persistent_lib_initialized = OS_TRUE;
 }
 
 
@@ -123,11 +151,11 @@ void os_persistent_initialze(
 */
 os_memsz os_persistent_load(
     osPersistentBlockNr block_nr,
-    os_uchar *block,
+    void *block,
     os_memsz block_sz)
 {
     os_uchar *tmp;
-    os_ushort saved_pos, saved_sz;
+    os_ushort saved_pos, data_sz;
 
     if (!os_persistent_lib_initialized)
     {
@@ -137,19 +165,19 @@ os_memsz os_persistent_load(
     if (block_nr < 0 || block_nr >= OS_N_PBNR || hdr.initialized != MY_HEADER_INITIALIZED) return 0;
 
     saved_pos = hdr.blk[block_nr].pos;
-    saved_sz = hdr.blk[block_nr].sz;
-    if (saved_pos < sizeof(hdr) || saved_pos + (os_uint)saved_sz > eeprom_sz
-        || saved_sz == 0 || block_sz <= 0)
+    data_sz = hdr.blk[block_nr].sz;
+    if (saved_pos < sizeof(hdr) || saved_pos + (os_uint)data_sz > eeprom_sz
+        || data_sz == 0 || block_sz <= 0)
     {
         return 0;
     }
-    if (block_sz > saved_sz) block_sz = saved_sz;
+    if (block_sz > data_sz) block_sz = data_sz;
 
-    tmp = (os_uchar*)os_malloc(saved_sz, OS_NULL);
+    tmp = (os_uchar*)os_malloc(data_sz, OS_NULL);
     if (tmp == OS_NULL) return 0;
-    os_persistent_read(tmp, saved_pos, saved_sz);
+    os_persistent_read(tmp, saved_pos, data_sz);
 
-    if (os_checksum(tmp, block_sz) != hdr.blk[block_nr].checksum)
+    if (os_checksum(tmp, data_sz) != hdr.blk[block_nr].checksum)
     {
         block_sz = 0;
         goto getout;
@@ -158,7 +186,7 @@ os_memsz os_persistent_load(
     os_memcpy(block, tmp, block_sz);
 
 getout:
-    os_free(tmp, saved_sz);
+    os_free(tmp, data_sz);
     return block_sz;
 }
 
@@ -182,7 +210,7 @@ getout:
 */
 osalStatus os_persistent_save(
     osPersistentBlockNr block_nr,
-    os_uchar *block,
+    const void *block,
     os_memsz block_sz,
     os_boolean commit)
 {
@@ -196,6 +224,8 @@ osalStatus os_persistent_save(
     }
 
     if (block_nr < 0 || block_nr >= (os_memsz)OS_N_PBNR) return OSAL_STATUS_FAILED;
+
+    hdr.touched = OS_TRUE;
 
     /* If the block has gotten larger, delete old one.
      */
@@ -216,13 +246,12 @@ osalStatus os_persistent_save(
         first_free = (os_ushort)sizeof(hdr);
         for (i = 0; i< OS_N_PBNR; i++)
         {
-            pos = hdr.blk[block_nr].pos + hdr.blk[block_nr].sz;
+            pos = hdr.blk[i].pos + hdr.blk[i].sz;
             if (pos > first_free) first_free = pos;
         }
 
-        hdr.blk[block_nr].pos = block_sz;
-        hdr.blk[block_nr].sz = first_free;
-        hdr.touched = OS_TRUE;
+        hdr.blk[block_nr].pos = first_free;
+        hdr.blk[block_nr].sz = block_sz;
 
         if (first_free + block_sz > eeprom_sz)
         {
@@ -231,7 +260,10 @@ osalStatus os_persistent_save(
         }
     }
 
-    os_persistent_write(block, hdr.blk[block_nr].pos, block_sz);
+    hdr.blk[block_nr].data_sz = block_sz;
+    hdr.blk[block_nr].checksum = os_checksum((os_uchar*)block, block_sz);
+
+    os_persistent_write((os_uchar*)block, hdr.blk[block_nr].pos, block_sz);
 
 getout:
     if (commit)
@@ -265,6 +297,8 @@ osalStatus os_persistent_commit(
     hdr.touched = OS_FALSE;
 
     os_persistent_write((os_uchar*)&hdr, 0, sizeof(hdr));
+
+    EEPROM.commit();
     return OSAL_SUCCESS;
 }
 
@@ -288,7 +322,7 @@ static osalStatus os_persistent_delete_block(
 {
     os_ushort saved_pos, saved_sz, sz, pos, utmp;
     os_ushort bpos[OS_N_PBNR], bsz[OS_N_PBNR], bnr[OS_N_PBNR];
-    int i, j, n, last_block_nr;
+    int i, j, n;
 
     saved_pos = hdr.blk[block_nr].pos;
     saved_sz = hdr.blk[block_nr].sz;
@@ -301,7 +335,6 @@ static osalStatus os_persistent_delete_block(
 
     /* Find out blocks in bigger addresses.
      */
-    last_block_nr = 0;
     n = 0;
 
     for (i = 0; i<OS_N_PBNR; i++)
@@ -402,7 +435,7 @@ static void os_persistent_write(
 {
     while (n--)
     {
-       EEPROM.write(addr++, *(buf++));
+        EEPROM.write(addr++, *(buf++));
     }
 }
 
@@ -432,7 +465,7 @@ static void os_persistent_move(
     while (n--)
     {
         c = EEPROM.read(srcaddr++);
-       EEPROM.write(dstaddr++, c);
+        EEPROM.write(dstaddr++, c);
     }
 }
 

@@ -1,13 +1,10 @@
 /**
 
-  @file    eosal/examples/hello_world/code/hello_world_example.c
-  @brief   Just make sure it builds.
+  @file    eosal/examples/persistent/code/persistent_example.c
+  @brief   Test persistent storage.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
-
-  This example is just a test code to test if eosal builds on target platform and can write 
-  to console.
+  @date    22.9.2019
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -18,9 +15,16 @@
 */
 #include "eosalx.h"
 
+#define TXT_SZ 64
+typedef struct
+{
+    os_char txt1[TXT_SZ], txt2[TXT_SZ];
+}
+MyParams;
+
+static MyParams prm_a, prm_b;
 static os_timer t;
 static os_int count;
-
 
 
 /**
@@ -41,7 +45,7 @@ os_int osal_main(
     os_int argc,
     os_char *argv[])
 {
-    osal_console_write("hello world starts\n");
+    osal_console_write("persistent test started\n");
     os_get_timer(&t);
     count = 10;
 
@@ -69,15 +73,41 @@ osalStatus osal_loop(
     void *app_context)
 {
     os_char buf[OSAL_NBUF_SZ];
+    // os_memsz sz;
 
     /* Show count once per second.
      */
-    if (os_elapsed(&t, 1000))
+    if (os_elapsed(&t, 3000))
     {
-        osal_int_to_string(buf, sizeof(buf), count--);
-        osal_console_write("howdy ");
-        osal_console_write(buf);
+        os_memclear(&prm_a, sizeof(prm_a));
+        os_persistent_load(OS_PBNR_APP_1, (void*)&prm_a, sizeof(prm_a));
+        osal_console_write("A = ");
+        osal_console_write(prm_a.txt1);
+        osal_console_write(", ");
+        osal_console_write(prm_a.txt2);
         osal_console_write("\n");
+
+        os_memclear(&prm_b, sizeof(prm_b));
+        os_persistent_load(OS_PBNR_APP_2, (void*)&prm_b, sizeof(prm_b));
+        osal_console_write("B = ");
+        osal_console_write(prm_b.txt1);
+        osal_console_write(", ");
+        osal_console_write(prm_b.txt2);
+        osal_console_write("\n");
+
+        osal_int_to_string(buf, sizeof(buf), count--);
+        os_strncpy(prm_a.txt1, "txt a1: ", TXT_SZ);
+        os_strncat(prm_a.txt1, buf, TXT_SZ);
+        os_strncpy(prm_a.txt2, "txt a2: ", TXT_SZ);
+        os_strncat(prm_a.txt2, buf, TXT_SZ);
+        os_persistent_save(OS_PBNR_APP_1, (void*)&prm_a, sizeof(prm_a), OS_TRUE);
+
+        os_strncpy(prm_b.txt1, "txt b1: ", TXT_SZ);
+        os_strncat(prm_b.txt1, buf, TXT_SZ);
+        os_strncpy(prm_b.txt2, "txt b2: ", TXT_SZ);
+        os_strncat(prm_b.txt2, buf, TXT_SZ);
+        os_persistent_save(OS_PBNR_APP_2, (void*)&prm_b, sizeof(prm_b), OS_TRUE);
+
         os_get_timer(&t);
     }
 
