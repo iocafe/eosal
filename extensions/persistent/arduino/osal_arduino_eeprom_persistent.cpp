@@ -101,18 +101,26 @@ void os_persistent_initialze(
 {
     os_ushort checksum;
     os_char buf[OSAL_NBUF_SZ];
+    os_memsz min_eeprom_sz = MY_EEPROM_MIN_SIZE;
+
+    /* Get minimum eerom size from parameters.
+     */
+    if (prm) if (prm->min_eeprom_sz)
+    {
+        min_eeprom_sz = prm->min_eeprom_sz;
+    }
 
     /* Do not initialized again by load or save call.
      */
     os_persistent_lib_initialized = OS_TRUE;
 
-    EEPROM.begin(MY_EEPROM_MIN_SIZE);
+    EEPROM.begin(min_eeprom_sz);
 
     eeprom_sz = EEPROM.length();
     if (eeprom_sz == 0)
     {
         osal_console_write("EEPROM length 0 reported, using default: ");
-        eeprom_sz = MY_EEPROM_MIN_SIZE;
+        eeprom_sz = min_eeprom_sz;
     }
     osal_console_write("EEPROM size = ");
     osal_int_to_string(buf, sizeof(buf), eeprom_sz);

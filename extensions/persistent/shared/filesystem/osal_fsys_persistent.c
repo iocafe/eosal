@@ -170,7 +170,7 @@ static void os_persistent_make_path(
     os_char buf[OSAL_NBUF_SZ];
 
     os_strncpy(path, rootpath, path_sz);
-    if (buf[os_strlen(buf)-1] != '/')
+    if (path[os_strlen(path)-1] != '/')
     {
         os_strncat(path, "/", path_sz);
     }

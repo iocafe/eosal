@@ -51,6 +51,10 @@ typedef struct
     /* Path where to save persistent data during PC simulation.
      */
     os_char *path;
+
+    /* If set (nonzero) sets minimum required EEPROM size.
+     */
+    os_memsz min_eeprom_sz;
 }
 osPersistentParams;
 

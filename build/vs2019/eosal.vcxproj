@@ -42,10 +42,13 @@
     <ClInclude Include="..\..\code\utf32\common\osal_utf32.h" />
     <ClInclude Include="..\..\eosal.h" />
     <ClInclude Include="..\..\eosalx.h" />
+    <ClInclude Include="..\..\extensions\checksum\common\osal_checksum.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_dir.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_file.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_filestat.h" />
+    <ClInclude Include="..\..\extensions\filesys\common\osal_fileutil.h" />
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
+    <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
     <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
     <ClInclude Include="..\..\extensions\serialize\common\osal_serialize.h" />
     <ClInclude Include="..\..\extensions\serial\common\osal_serial.h" />
@@ -91,6 +94,8 @@
     <ClCompile Include="..\..\code\utf16\common\osal_string_utf8_to_utf16_malloc.c" />
     <ClCompile Include="..\..\code\utf32\common\osal_char_utf32_to_utf8.c" />
     <ClCompile Include="..\..\code\utf32\common\osal_char_utf8_to_utf32.c" />
+    <ClCompile Include="..\..\extensions\checksum\common\osal_checksum.c" />
+    <ClCompile Include="..\..\extensions\filesys\common\osal_fileutil.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_dir.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_file.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_filestat.c" />
@@ -99,6 +104,7 @@
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_multiply.c" />
     <ClCompile Include="..\..\extensions\main\common\osal_simloop.c" />
     <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
+    <ClCompile Include="..\..\extensions\persistent\windows\osal_select_persistent.c" />
     <ClCompile Include="..\..\extensions\rand\common\osal_rand.c" />
     <ClCompile Include="..\..\extensions\serialize\common\osal_intser.c" />
     <ClCompile Include="..\..\extensions\serialize\windows\osal_float.c" />
