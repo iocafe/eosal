@@ -15,7 +15,7 @@
 */
 #include "eosalx.h"
 
-#define TXT_SZ 64
+#define TXT_SZ 32
 typedef struct
 {
     os_char txt1[TXT_SZ], txt2[TXT_SZ];
@@ -77,7 +77,7 @@ osalStatus osal_loop(
 
     /* Show count once per second.
      */
-    if (os_elapsed(&t, 3000))
+    if (os_elapsed(&t, 10000))
     {
         os_memclear(&prm_a, sizeof(prm_a));
         os_persistent_load(OS_PBNR_APP_1, (void*)&prm_a, sizeof(prm_a));

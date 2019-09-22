@@ -8,6 +8,7 @@
             "includePath": [
                 "/coderoot/eosal/examples/simple_client/code",
                 "/home/john/Arduino/libraries/eosal-master",
+                "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "/coderoot/eosal",
@@ -70,7 +71,6 @@
                 "/home/john/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/variants/doitESP32devkitV1",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
-                "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                 "/home/john/Arduino/libraries/iocom-master",
                 "/home/john/Arduino/libraries/pins-master",
@@ -103,6 +103,7 @@
                 "path": [
                     "/coderoot/eosal/examples/simple_client/code",
                     "/home/john/Arduino/libraries/eosal-master",
+                    "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "/coderoot/eosal",
@@ -165,7 +166,6 @@
                     "/home/john/.platformio/packages/framework-arduinoespressif32/cores/esp32",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/variants/doitESP32devkitV1",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
-                    "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                     "/home/john/Arduino/libraries/iocom-master",
                     "/home/john/Arduino/libraries/pins-master",

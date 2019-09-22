@@ -1,6 +1,6 @@
 /**
 
-  @file    persistent/arduino/osal_arduino_persistent.c
+  @file    persistent/arduino/osal_arduino_eeprom_persistent.c
   @brief   Save persistent parameters on Arduino EEPROM.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -154,7 +154,6 @@ os_memsz os_persistent_load(
     void *block,
     os_memsz block_sz)
 {
-    os_uchar *tmp;
     os_ushort saved_pos, data_sz;
 
     if (!os_persistent_lib_initialized)
@@ -165,7 +164,7 @@ os_memsz os_persistent_load(
     if (block_nr < 0 || block_nr >= OS_N_PBNR || hdr.initialized != MY_HEADER_INITIALIZED) return 0;
 
     saved_pos = hdr.blk[block_nr].pos;
-    data_sz = hdr.blk[block_nr].sz;
+    data_sz = hdr.blk[block_nr].data_sz;
     if (saved_pos < sizeof(hdr) || saved_pos + (os_uint)data_sz > eeprom_sz
         || data_sz == 0 || block_sz <= 0)
     {
@@ -173,8 +172,8 @@ os_memsz os_persistent_load(
     }
     if (block_sz > data_sz) block_sz = data_sz;
 
-    tmp = (os_uchar*)os_malloc(data_sz, OS_NULL);
-    if (tmp == OS_NULL) return 0;
+    /* tmp = (os_uchar*)os_malloc(data_sz, OS_NULL); */
+    os_uchar tmp[data_sz];
     os_persistent_read(tmp, saved_pos, data_sz);
 
     if (os_checksum(tmp, data_sz) != hdr.blk[block_nr].checksum)
@@ -186,7 +185,7 @@ os_memsz os_persistent_load(
     os_memcpy(block, tmp, block_sz);
 
 getout:
-    os_free(tmp, data_sz);
+    /* os_free(tmp, data_sz); */
     return block_sz;
 }
 
@@ -351,7 +350,7 @@ static osalStatus os_persistent_delete_block(
 
         bpos[n] = pos;
         bsz[n] = sz;
-        bnr[i] = i;
+        bnr[n] = i;
         n++;
     }
 
