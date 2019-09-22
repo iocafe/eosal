@@ -1,5 +1,7 @@
+#include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
+#include <EEPROM.h>
 #include <eosalx.h>
 
 /*
