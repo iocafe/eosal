@@ -79,6 +79,8 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/persistent/common/osal_persistent.h"
 #endif
 
+#include "extensions/checksum/common/osal_checksum.h"
+
 /* If C++ compilation, end the undecorated code.
  */
 OSAL_C_HEADER_ENDS

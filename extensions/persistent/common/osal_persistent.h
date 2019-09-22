@@ -110,7 +110,13 @@ os_memsz os_persistent_load(
 osalStatus os_persistent_save(
     osPersistentBlockNr block_nr,
     os_uchar *block,
-    os_memsz block_sz);
+    os_memsz block_sz,
+    os_boolean commit);
+
+/* Commit changes to persistent storage.
+ */
+osalStatus os_persistent_commit(
+    void);
 
 #endif
 #endif

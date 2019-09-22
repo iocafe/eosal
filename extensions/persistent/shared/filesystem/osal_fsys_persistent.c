@@ -108,12 +108,32 @@ os_memsz os_persistent_load(
 osalStatus os_persistent_save(
     osPersistentBlockNr block_nr,
     os_uchar *block,
-    os_memsz block_sz)
+    os_memsz block_sz,
+    os_boolean commit)
 {
     os_char path[OSAL_PERSISTENT_MAX_PATH];
 
     os_persistent_make_path(block_nr, path, sizeof(path));
     return os_write_file(path, block, block_sz, 0);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Commit changes to persistent storage.
+  @anchor os_persistent_commit
+
+  The os_os_persistent_commit() function commit unsaved changed to persistent storage.
+
+  @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
+
+****************************************************************************************************
+*/
+osalStatus os_persistent_commit(
+    void)
+{
+    return OSAL_SUCCESS;
 }
 
 
