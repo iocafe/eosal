@@ -199,6 +199,18 @@
 
 {
   "directory": "/coderoot/eosal/build",
+  "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/checksum/common/osal_checksum.c.o   -c /coderoot/eosal/extensions/checksum/common/osal_checksum.c",
+  "file": "/coderoot/eosal/extensions/checksum/common/osal_checksum.c"
+},
+
+{
+  "directory": "/coderoot/eosal/build",
+  "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/filesys/common/osal_fileutil.c.o   -c /coderoot/eosal/extensions/filesys/common/osal_fileutil.c",
+  "file": "/coderoot/eosal/extensions/filesys/common/osal_fileutil.c"
+},
+
+{
+  "directory": "/coderoot/eosal/build",
   "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o   -c /coderoot/eosal/extensions/int64x/common/osal_int64_divide.c",
   "file": "/coderoot/eosal/extensions/int64x/common/osal_int64_divide.c"
 },
@@ -339,6 +351,12 @@
   "directory": "/coderoot/eosal/build",
   "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o   -c /coderoot/eosal/extensions/main/linux/osal_main.c",
   "file": "/coderoot/eosal/extensions/main/linux/osal_main.c"
+},
+
+{
+  "directory": "/coderoot/eosal/build",
+  "command": "/bin/gcc-6 -DE_OSVER_linux -DE_OS_linux -I../   -Wall -g   -o CMakeFiles/eosald.dir/extensions/persistent/linux/osal_select_persistent.c.o   -c /coderoot/eosal/extensions/persistent/linux/osal_select_persistent.c",
+  "file": "/coderoot/eosal/extensions/persistent/linux/osal_select_persistent.c"
 },
 
 {

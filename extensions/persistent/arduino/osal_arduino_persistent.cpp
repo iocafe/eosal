@@ -9,9 +9,9 @@
   Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash,
   in case EEPROM omulation.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -20,7 +20,6 @@
 #if OSAL_PERSISTENT_SUPPORT
 #include <Arduino.h>
 #include <EEPROM.h>
-
 
 
 typedef struct
@@ -43,7 +42,6 @@ myEEPROMHeader;
 /* Some random number to mark initialized header.
  */
 #define MY_HEADER_INITIALIZED 0xB3
-
 
 static myEEPROMHeader hdr;
 static os_ushort eeprom_sz;
@@ -90,18 +88,17 @@ void os_persistent_initialze(
 {
     os_ushort checksum;
 
-    eeprom_sz = EEPROM.Length();
+    eeprom_sz = EEPROM.length();
 
     /* Read header.
      */
-    if (read(&hdr, HDR_ADDR, sizeof(hdr))) goto getout;
+    os_persistent_read((os_uchar*)&hdr, 0, sizeof(hdr));
 
     /* Validate header checksum and that header is initialized.
      */
-    checksum = os_checksum(hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock));
+    checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock));
     if (checksum == hdr.checksum && hdr.initialized == MY_HEADER_INITIALIZED) return;
 
-getout:
     os_memclear(&hdr, sizeof(hdr));
     os_persistent_lib_initialized = OS_TRUE;
 }
@@ -140,7 +137,7 @@ os_memsz os_persistent_load(
     if (block_nr < 0 || block_nr >= OS_N_PBNR || hdr.initialized != MY_HEADER_INITIALIZED) return 0;
 
     saved_pos = hdr.blk[block_nr].pos;
-    saved_sz = hdr.blk[block_nr].len;
+    saved_sz = hdr.blk[block_nr].sz;
     if (saved_pos < sizeof(hdr) || saved_pos + (os_uint)saved_sz > eeprom_sz
         || saved_sz == 0 || block_sz <= 0)
     {
@@ -148,11 +145,11 @@ os_memsz os_persistent_load(
     }
     if (block_sz > saved_sz) block_sz = saved_sz;
 
-    tmp = os_malloc(saved_sz, OS_NULL);
+    tmp = (os_uchar*)os_malloc(saved_sz, OS_NULL);
     if (tmp == OS_NULL) return 0;
     os_persistent_read(tmp, saved_pos, saved_sz);
 
-    if (checksum(tmp, block_sz) != block[block_nr].checksum)
+    if (os_checksum(tmp, block_sz) != hdr.blk[block_nr].checksum)
     {
         block_sz = 0;
         goto getout;
@@ -189,7 +186,7 @@ osalStatus os_persistent_save(
     os_memsz block_sz,
     os_boolean commit)
 {
-    os_ushort saved_pos, saved_sz;
+    os_ushort first_free, pos;
     osalStatus s = OSAL_SUCCESS;
     int i;
 
@@ -198,13 +195,14 @@ osalStatus os_persistent_save(
         os_persistent_initialze(OS_NULL);
     }
 
-    if (block_nr < 0 || block_nr >= OS_N_PBNR) return 0;
+    if (block_nr < 0 || block_nr >= (os_memsz)OS_N_PBNR) return OSAL_STATUS_FAILED;
 
     /* If the block has gotten larger, delete old one.
      */
     if (block_sz > hdr.blk[block_nr].sz)
     {
-        if (os_persistent_delete_block(block_nr))
+        s = os_persistent_delete_block(block_nr);
+        if (s)
         {
             os_memclear(&hdr, sizeof(hdr));
             goto getout;
@@ -215,16 +213,16 @@ osalStatus os_persistent_save(
      */
     if (hdr.blk[block_nr].sz == 0)
     {
-        first_free = sizeof(hdr);
+        first_free = (os_ushort)sizeof(hdr);
         for (i = 0; i< OS_N_PBNR; i++)
         {
-            pos = hdr.blk[block_nr].pos + hdr.blk[block_nr].len;
+            pos = hdr.blk[block_nr].pos + hdr.blk[block_nr].sz;
             if (pos > first_free) first_free = pos;
         }
 
         hdr.blk[block_nr].pos = block_sz;
         hdr.blk[block_nr].sz = first_free;
-        touched = OS_TRUE;
+        hdr.touched = OS_TRUE;
 
         if (first_free + block_sz > eeprom_sz)
         {
@@ -261,12 +259,13 @@ getout:
 osalStatus os_persistent_commit(
     void)
 {
-    if (!hdr.touched || !os_persistent_lib_initialized) return;
-    hdr.checksum = os_checksum(hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock));
+    if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
+    hdr.checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock));
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 
-    return write(&hdr, sizeof(hdr));
+    os_persistent_write((os_uchar*)&hdr, 0, sizeof(hdr));
+    return OSAL_SUCCESS;
 }
 
 
@@ -287,15 +286,15 @@ osalStatus os_persistent_commit(
 static osalStatus os_persistent_delete_block(
     osPersistentBlockNr block_nr)
 {
-    os_ushort saved_pos, saved_sz;
-    os_ushort bpos[OS_N_PBNR], blen[OS_N_PBNR], bnr[OS_N_PBNR];
-    int i, j, n;
+    os_ushort saved_pos, saved_sz, sz, pos, utmp;
+    os_ushort bpos[OS_N_PBNR], bsz[OS_N_PBNR], bnr[OS_N_PBNR];
+    int i, j, n, last_block_nr;
 
     saved_pos = hdr.blk[block_nr].pos;
-    saved_sz = hdr.blk[block_nr].len;
+    saved_sz = hdr.blk[block_nr].sz;
 
     if (saved_pos < sizeof(hdr) || saved_pos + (os_uint)saved_sz > eeprom_sz
-        || saved_sz == 0 || block_sz <= 0)
+        || saved_sz == 0)
     {
         return saved_pos ? OSAL_STATUS_FAILED : OSAL_SUCCESS;
     }
@@ -303,14 +302,13 @@ static osalStatus os_persistent_delete_block(
     /* Find out blocks in bigger addresses.
      */
     last_block_nr = 0;
-    first_free = 0;
     n = 0;
 
     for (i = 0; i<OS_N_PBNR; i++)
     {
-        sz = blk[i].sz;
+        sz = hdr.blk[i].sz;
         if (sz == 0) continue;
-        pos = blk[i].pos;
+        pos = hdr.blk[i].pos;
         if (pos < sizeof(hdr) || pos + (os_uint)sz > eeprom_sz || sz == 0)
         {
             return OSAL_STATUS_FAILED;
@@ -351,6 +349,7 @@ static osalStatus os_persistent_delete_block(
      */
     os_memclear(hdr.blk + block_nr, sizeof(myEEPROMBlock));
     hdr.touched = 1;
+    return OSAL_SUCCESS;
 }
 
 
