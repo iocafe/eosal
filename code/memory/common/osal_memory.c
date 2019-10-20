@@ -170,6 +170,7 @@ void osal_memory_initialize(
     osal_global->memstate.max_block_sz = block_sz[n-1];
 }
 
+
 #if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************

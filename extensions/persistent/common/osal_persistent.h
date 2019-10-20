@@ -44,22 +44,22 @@
 #if OSAL_PERSISTENT_SUPPORT
 
 
-/* Parameters structure for os_persistent_initialze() function.
+/** Parameters structure for os_persistent_initialze() function.
  */
 typedef struct
 {
-    /* Path where to save persistent data during PC simulation.
+    /** Path where to save persistent data during PC simulation.
      */
     os_char *path;
 
-    /* If set (nonzero) sets minimum required EEPROM size.
+    /** If set (nonzero) sets minimum required EEPROM size.
      */
     os_memsz min_eeprom_sz;
 }
 osPersistentParams;
 
-/* Reserved persistent parameter block numbers. We need to have and unique persistant block
-   number for each parameter block which can be saved.
+/** Reserved persistent parameter block numbers. We need to have and unique persistant block
+    number for each parameter block which can be saved.
  */
  typedef enum
  {
