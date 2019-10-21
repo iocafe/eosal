@@ -196,7 +196,7 @@ osalStream osal_socket_open(
      */
     if (!osal_sockets_initialized)
     {
-        osal_socket_initialize();
+        osal_socket_initialize(OS_NULL, 0);
     }
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
@@ -883,12 +883,15 @@ static void osal_mac_from_str(
   The osal_socket_initialize() initializes the underlying sockets library. This used either DHCP,
   or statical configuration parameters.
 
+  @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
+  @param   n_nics Number of network interfaces in nic array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-	void)
+    osalNetworkInterface *nic,
+    os_int n_nics)
 {
     /* Initialize only once.
      */

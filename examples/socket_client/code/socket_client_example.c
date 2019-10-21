@@ -91,7 +91,7 @@ static void mythread_func(
        called. This is very useful for fast IO, etc, but not so for data transfer over
        internet, like user interfaces.
      */
-    osal_socket_initialize();
+//    osal_socket_initialize(OS_NULL, 0);
 
     while (!mythreadprm->stopthread)
     {
@@ -233,13 +233,13 @@ os_int osal_main(
     /* Initialize the underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-        osal_socket_initialize();
+        osal_socket_initialize(OS_NULL, 0);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
         /* Never call boath osal_socket_initialize() and osal_tls_initialize().
            These use the same underlying library
          */
-        osal_tls_initialize(OS_NULL);
+        osal_tls_initialize(OS_NULL, 0, OS_NULL);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
         osal_serial_initialize();

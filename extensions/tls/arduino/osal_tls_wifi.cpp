@@ -315,7 +315,7 @@ osalStream osal_tls_open(
      */
     if (!osal_tls_initialized)
     {
-        osal_tls_initialize(0);
+        osal_tls_initialize(OS_NULL, 0, OS_NULL);
     }
 
     /* If WiFi network is not connected, we can do nothing.
@@ -802,11 +802,17 @@ static osalSocket *osal_get_unused_socket(void)
   The osal_tls_initialize() initializes the underlying sockets library. This used either DHCP,
   or statical configuration parameters.
 
+  @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
+  @param   n_nics Number of network interfaces in nic array.
+  @param   prm Parameters related to TLS. Can OS_NULL for client if not needed.
+
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_tls_initialize(
+    osalNetworkInterface *nic,
+    os_int n_nics,
     osalTLSParam *prm)
 {
     const os_char *wifi_net_name = "bean24";

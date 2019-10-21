@@ -48,6 +48,10 @@ extern osalStreamInterface osal_socket_iface;
  */
 #define OSAL_MAC_SZ 18
 
+/* Size for WiFi network name and password.
+ */
+#define OSAL_WIFI_PRM_SZ 16
+
 
 #if OSAL_SOCKET_SUPPORT
 
@@ -74,8 +78,15 @@ typedef struct
     */
     os_char mac[OSAL_MAC_SZ];
     os_char dhcp;
+
+    os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
 }
 osalNetworkInterface;
+
+/* Number of network interfaces that should be supported troughout the code.
+ */
+#define OSAL_DEFAULT_NRO_NICS 2
 
 
 /* Socket library initialized flag.
@@ -166,7 +177,9 @@ osalStatus osal_socket_select(
 
 /* Initialize OSAL sockets library.
  */
-void osal_socket_initialize(void);
+void osal_socket_initialize(
+    osalNetworkInterface *nic,
+    os_int n_nics);
 
 /* Shut down OSAL sockets library.
  */
@@ -196,7 +209,7 @@ void osal_socket_get_host_name_and_port(
 
 /* No socket support, define empty macros that we do not need to #ifdef code.
  */
-#define osal_socket_initialize()
+#define osal_socket_initialize(n,c)
 #define osal_socket_shutdown()
 #define osal_socket_maintain()
 

@@ -216,7 +216,7 @@ osalStream osal_socket_open(
      */
     if (!osal_sockets_initialized)
     {
-        osal_socket_initialize();
+        osal_socket_initialize(OS_NULL, 0);
     }
 
     /* Initialize Wiznet w5500 chip and set the MAC address.
@@ -854,12 +854,15 @@ static void osal_mac_from_str(
   The osal_socket_initialize() initializes the underlying sockets library. This used either DHCP,
   or statical configuration parameters.
 
+  @param   nic Pointer to array of network interface structures. Ignored in Linux.
+  @param   n_nics Number of network interfaces in nic array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-	void)
+    osalNetworkInterface *nic,
+    os_int n_nics)
 {
     /* Clear memory. Necessary, many micro-controller systems do not clear memory at soft reboot.
      */

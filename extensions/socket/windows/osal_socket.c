@@ -167,7 +167,7 @@ osalStream osal_socket_open(
      */
     if (!osal_sockets_initialized)
     {
-        osal_socket_initialize();
+        osal_socket_initialize(OS_NULL, 0);
     }
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
@@ -1238,12 +1238,15 @@ osalStatus osal_socket_select(
 
   The osal_socket_initialize() initializes the underlying sockets library.
 
+  @param   nic Pointer to array of network interface structures. Ignored in Windows.
+  @param   n_nics Number of network interfaces in nic array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-	void)
+    osalNetworkInterface *nic,
+    os_int n_nics)
 {
     /** Windows socket library version information.
      */

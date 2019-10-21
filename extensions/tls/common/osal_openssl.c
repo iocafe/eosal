@@ -211,7 +211,7 @@ osalStream osal_openssl_open(
      */
     if (!osal_tls_initialized)
     {
-        osal_tls_initialize(OS_NULL);
+        osal_tls_initialize(OS_NULL, 0, OS_NULL);
     }
 
     /* Connect or listen socket.
@@ -812,18 +812,24 @@ osalStatus osal_openssl_select(
 
   The osal_tls_initialize() initializes the underlying sockets library.
 
+  @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
+  @param   n_nics Number of network interfaces in nic array.
+  @param   prm Parameters related to TLS. Can OS_NULL for client if not needed.
+
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_tls_initialize(
+    osalNetworkInterface *nic,
+    os_int n_nics,
     osalTLSParam *prm)
 {
     const os_char
         *certfile = OS_NULL,
         *keyfile = OS_NULL;
 
-    osal_socket_initialize();
+    osal_socket_initialize(nic, n_nics);
 
     if (prm)
     {

@@ -143,6 +143,23 @@ void os_persistent_initialze(
 /**
 ****************************************************************************************************
 
+  @brief Release any resources allocated for the persistent storage.
+  @anchor os_persistent_shutdown
+
+  The os_persistent_shutdown() function is just place holder for future implementations.
+  @return  None.
+
+****************************************************************************************************
+*/
+void os_persistent_shutdown(
+    void)
+{
+}
+
+
+/**
+****************************************************************************************************
+
   @brief Load parameter block (usually structure) from persistent storage.
   @anchor os_persistent_load
 

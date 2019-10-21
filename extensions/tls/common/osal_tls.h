@@ -43,7 +43,10 @@ extern os_boolean osal_tls_initialized;
 
 /* Initialize OSAL sockets library.
  */
-void osal_tls_initialize(osalTLSParam *prm);
+void osal_tls_initialize(
+    osalNetworkInterface *nic,
+    os_int n_nics,
+    osalTLSParam *prm);
 
 /* Shut down OSAL sockets library.
  */
@@ -53,7 +56,7 @@ void osal_tls_shutdown(void);
 
 /* No socket support, define empty macros that we do not need to #ifdef code.
  */
-#define osal_tls_initialize(prm)
+#define osal_tls_initialize(n,c,p)
 #define osal_tls_shutdown()
 
 /* No TLS interface, allow build even if the define is used.

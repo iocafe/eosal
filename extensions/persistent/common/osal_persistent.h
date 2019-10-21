@@ -100,6 +100,11 @@ osPersistentParams;
 void os_persistent_initialze(
     osPersistentParams *prm);
 
+/* Release any resources.
+ */
+void os_persistent_shutdown(
+    void);
+
 /* Load parameter structure identified by block number from persistant storage. Load all
    parameters when micro controller starts, not during normal operation. If data cannot
    be loaded, leaves the block as is. Returned value maxes at block_sz.
