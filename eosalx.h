@@ -63,6 +63,7 @@ OSAL_C_HEADER_BEGINS
 #include "extensions/socket/common/osal_socket.h"
 #include "extensions/tls/common/osal_tls.h"
 #include "extensions/serial/common/osal_serial.h"
+#include "extensions/bluetooth/common/osal_bluetooth.h"
 
 #if OSAL_FILESYS_SUPPORT
   #include "extensions/filesys/common/osal_file.h"

@@ -259,6 +259,12 @@
 #define OSAL_SERIAL_SELECT_SUPPORT 0
 #endif
 
+/** If bluetooth serial communication is supported and to be included, define 1.
+ */
+#ifndef OSAL_BLUETOOTH_SUPPORT
+#define OSAL_BLUETOOTH_SUPPORT 0
+#endif
+
 /** If low level serialization is supported for the platform, define 1.
  */
 #ifndef OSAL_SERIALIZE_SUPPORT

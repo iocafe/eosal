@@ -318,7 +318,7 @@ void osal_serial_close(
   @brief Flush data to the stream.
   @anchor osal_serial_flush
 
-  Some implemntations of the osal_serial_flush() function flushes data to be written to stream
+  Some implementations of the osal_serial_flush() function flushes data to be written to stream
   or clear the transmit/receive buffers. The Linux implementation can clear RX and TX buffers.
 
   IMPORTANT, GENERALLY FLUSH MUST BE CALLED: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT)
