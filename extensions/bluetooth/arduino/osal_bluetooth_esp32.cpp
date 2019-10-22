@@ -13,7 +13,7 @@
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -28,7 +28,6 @@
 static BluetoothSerial SerialBT;
 static osalStreamHeader bluetooth_handle;
 static os_boolean bluetooth_initialized;
-
 
 /**
 ****************************************************************************************************
@@ -60,9 +59,9 @@ static os_boolean bluetooth_initialized;
 */
 static osalStream osal_bluetooth_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     if (!bluetooth_initialized)
     {
@@ -71,7 +70,7 @@ static osalStream osal_bluetooth_open(
     }
 
     if (status) *status = OSAL_SUCCESS;
-    return (osalStream)bluetooth_handle;
+    return &bluetooth_handle;
 }
 
 
@@ -92,7 +91,7 @@ static osalStream osal_bluetooth_open(
 ****************************************************************************************************
 */
 static void osal_bluetooth_close(
-	osalStream stream)
+    osalStream stream)
 {
 }
 
@@ -113,8 +112,8 @@ static void osal_bluetooth_close(
 ****************************************************************************************************
 */
 static osalStatus osal_bluetooth_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
     /* If called with NULL argument, do nothing.
      */
@@ -130,7 +129,7 @@ static osalStatus osal_bluetooth_flush(
         }
     }
 
-	return OSAL_SUCCESS;
+    return OSAL_SUCCESS;
 }
 
 
@@ -157,30 +156,31 @@ static osalStatus osal_bluetooth_flush(
 ****************************************************************************************************
 */
 static osalStatus osal_bluetooth_write(
-	osalStream stream,
-	const os_uchar *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    osalStream stream,
+    const os_uchar *buf,
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     int nwr;
 
-	if (stream)
-	{
+    if (stream)
+    {
         /* See how much we have space in TX buffer. Write smaller number of bytes, either how
            many bytes can fit into TX buffer or buffer size n given as argument.
          */
-        nwr = SerialBT.availableForWrite();
-        if (n < nwr) nwr = n;
+        /* nwr = SerialBT.availableForWrite();
+        if (n < nwr) nwr = n; */
+        nwr = n;
         SerialBT.write(buf, nwr);
 
         /* Return number of bytes written.
          */
         *n_written = nwr;
         return OSAL_SUCCESS;
-	}
+    }
 
-	*n_written = 0;
+    *n_written = 0;
     return OSAL_STATUS_FAILED;
 }
 
@@ -209,11 +209,11 @@ static osalStatus osal_bluetooth_write(
 ****************************************************************************************************
 */
 static osalStatus osal_bluetooth_read(
-	osalStream stream,
-	os_uchar *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    osalStream stream,
+    os_uchar *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     int nrd;
 
@@ -249,7 +249,7 @@ static osalStatus osal_bluetooth_read(
 ****************************************************************************************************
 */
 void osal_bluetooth_initialize(
-	void)
+    void)
 {
     bluetooth_initialized = OS_FALSE;
 }
@@ -267,7 +267,7 @@ void osal_bluetooth_initialize(
 ****************************************************************************************************
 */
 void osal_bluetooth_shutdown(
-	void)
+    void)
 {
     if (bluetooth_initialized)
     {
@@ -277,8 +277,6 @@ void osal_bluetooth_shutdown(
 }
 
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 /** Stream interface for OSAL bluetooths. This is structure osalStreamInterface filled with
     function pointers to OSAL bluetooths implementation.
  */
@@ -287,15 +285,13 @@ osalStreamInterface osal_bluetooth_iface
     osal_bluetooth_close,
     osal_stream_default_accept,
     osal_bluetooth_flush,
-	osal_stream_default_seek,
+    osal_stream_default_seek,
     osal_bluetooth_write,
     osal_bluetooth_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
-    osal_bluetooth_get_parameter,
-    osal_bluetooth_set_parameter,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
+    osal_stream_default_get_parameter,
+    osal_stream_default_set_parameter,
     osal_stream_default_select};
-
-#endif
 
 #endif

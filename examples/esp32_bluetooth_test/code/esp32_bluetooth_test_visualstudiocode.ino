@@ -1,7 +1,4 @@
-#include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <EEPROM.h>
-#include <BluetoothSerial.h>
+#include <Arduino.h>
 #include <eosalx.h>
 
 /*

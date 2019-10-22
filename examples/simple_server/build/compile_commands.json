@@ -205,6 +205,18 @@
 
 {
   "directory": "/coderoot/eosal/examples/simple_server/build",
+  "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_server   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/checksum/common/osal_checksum.c.o   -c /coderoot/eosal/extensions/checksum/common/osal_checksum.c",
+  "file": "/coderoot/eosal/extensions/checksum/common/osal_checksum.c"
+},
+
+{
+  "directory": "/coderoot/eosal/examples/simple_server/build",
+  "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_server   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/filesys/common/osal_fileutil.c.o   -c /coderoot/eosal/extensions/filesys/common/osal_fileutil.c",
+  "file": "/coderoot/eosal/extensions/filesys/common/osal_fileutil.c"
+},
+
+{
+  "directory": "/coderoot/eosal/examples/simple_server/build",
   "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_server   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/int64x/common/osal_int64_divide.c.o   -c /coderoot/eosal/extensions/int64x/common/osal_int64_divide.c",
   "file": "/coderoot/eosal/extensions/int64x/common/osal_int64_divide.c"
 },
@@ -345,6 +357,12 @@
   "directory": "/coderoot/eosal/examples/simple_server/build",
   "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_server   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/main/linux/osal_main.c.o   -c /coderoot/eosal/extensions/main/linux/osal_main.c",
   "file": "/coderoot/eosal/extensions/main/linux/osal_main.c"
+},
+
+{
+  "directory": "/coderoot/eosal/examples/simple_server/build",
+  "command": "/home/john/.espressif/tools/xtensa-esp32-elf/esp32-2019r1-8.2.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc-8.2.0 -DE_OSVER_linux -DE_OS_linux -I../../../ -I/coderoot/simple_server   -Wall -g   -o eosal/CMakeFiles/eosald.dir/extensions/persistent/linux/osal_select_persistent.c.o   -c /coderoot/eosal/extensions/persistent/linux/osal_select_persistent.c",
+  "file": "/coderoot/eosal/extensions/persistent/linux/osal_select_persistent.c"
 },
 
 {

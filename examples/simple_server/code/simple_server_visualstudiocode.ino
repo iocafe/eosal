@@ -1,8 +1,4 @@
-// #include <Arduino.h>
-// #include <FreeRTOS.h>
-#include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <eosal.h>
+#include <Arduino.h>
 #include <eosalx.h>
 
 /*

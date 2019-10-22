@@ -231,13 +231,9 @@
   #define OSAL_SOCKET_WIFI 0
 #endif
 
-
 /** Generic TLS support on/off switch.
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
-#ifdef ESP_PLATFORM
-#define OSAL_TLS_SUPPORT 1
-#endif
 #ifndef OSAL_TLS_SUPPORT
 #define OSAL_TLS_SUPPORT 0
 #endif

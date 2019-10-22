@@ -803,6 +803,7 @@ static osalSocket *osal_get_unused_socket(void)
   or statical configuration parameters.
 
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
+           This implementation sets up only nic[0].
   @param   n_nics Number of network interfaces in nic array.
   @param   prm Parameters related to TLS. Can OS_NULL for client if not needed.
 
@@ -840,10 +841,11 @@ void osal_tls_initialize(
 
     /* Get parameters. Use defaults if not set.
      */
-    if (prm)
+    if (nic == OS_NULL) n_nics = 0;
+    if (n_nics >= 1)
     {
-        if (prm->wifi_net_name) wifi_net_name = prm->wifi_net_name;
-        if (prm->wifi_net_password) wifi_net_password = prm->wifi_net_password;
+        if (*nic->wifi_net_name != '\0') wifi_net_name = nic->wifi_net_name;
+        if (*nic->wifi_net_password != '\0') wifi_net_password = nic->wifi_net_password;
     }
 
     osal_tls_initialized = OS_TRUE;
