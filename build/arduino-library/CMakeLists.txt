@@ -52,8 +52,6 @@ foreach(E_FILE_NAME ${E_HDR_FILE_LIST})
   list(APPEND E_ABS_FILE_LIST ${E_ABS_FILE_NAME})
 endforeach(E_FILE_NAME)
 
-list(APPEND E_ABS_FILE_LIST ${E_ABS_FILE_NAME})
-
 # Add Arduino library info files.
 set(E_INFO_FILE_LIST)
 set (E_FILE_NAME "build/arduino-library/library.json")
