@@ -21,9 +21,6 @@ typedef struct osalTLSParam
 {
     const os_char *certfile;
     const os_char *keyfile;
-
-    const os_char *wifi_net_name;
-    const os_char *wifi_net_password;
 }
 osalTLSParam;
 

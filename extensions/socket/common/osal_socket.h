@@ -88,7 +88,6 @@ osalNetworkInterface;
  */
 #define OSAL_DEFAULT_NRO_NICS 2
 
-
 /* Socket library initialized flag.
  */
 extern os_boolean osal_sockets_initialized;
@@ -110,67 +109,67 @@ extern os_boolean osal_sockets_initialized;
  */
 osalStream osal_socket_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags);
+    void *option,
+    osalStatus *status,
+    os_int flags);
 
 /* Close socket.
  */
 void osal_socket_close(
-	osalStream stream);
+    osalStream stream);
 
 /* Accept connection from listening socket.
  */
 osalStream osal_socket_accept(
-	osalStream stream,
-	osalStatus *status,
-	os_int flags);
+    osalStream stream,
+    osalStatus *status,
+    os_int flags);
 
 /* Flush written data to socket.
  */
 osalStatus osal_socket_flush(
-	osalStream stream,
-	os_int flags);
+    osalStream stream,
+    os_int flags);
 
 /* Write data to socket.
  */
 osalStatus osal_socket_write(
-	osalStream stream,
-	const os_uchar *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags);
+    osalStream stream,
+    const os_uchar *buf,
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags);
 
 /* Read data from socket.
  */
 osalStatus osal_socket_read(
-	osalStream stream,
-	os_uchar *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags);
+    osalStream stream,
+    os_uchar *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags);
 
 /* Get socket parameter.
  */
 os_long osal_socket_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix);
+    osalStream stream,
+    osalStreamParameterIx parameter_ix);
 
 /* Set socket parameter.
  */
 void osal_socket_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value);
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value);
 
 /* Wait for new data to read, time to write or operating system event, etc.
  */
 #if OSAL_SOCKET_SELECT_SUPPORT
 osalStatus osal_socket_select(
-	osalStream *streams,
+    osalStream *streams,
     os_int nstreams,
-	osalEvent evnt,
-	osalSelectData *selectdata,
+    osalEvent evnt,
+    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags);
 #endif

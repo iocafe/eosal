@@ -196,7 +196,7 @@ static osalStatus osal_openssl_do_sock_write(
 
 ****************************************************************************************************
 */
-osalStream osal_openssl_open(
+static osalStream osal_openssl_open(
     const os_char *parameters,
 	void *option,
 	osalStatus *status,
@@ -297,7 +297,7 @@ getout:
 
 ****************************************************************************************************
 */
-void osal_openssl_close(
+static void osal_openssl_close(
 	osalStream stream)
 {
     osalSSLSocket *sslsocket;
@@ -352,7 +352,7 @@ void osal_openssl_close(
 
 ****************************************************************************************************
 */
-osalStream osal_openssl_accept(
+static osalStream osal_openssl_accept(
 	osalStream stream,
 	osalStatus *status,
 	os_int flags)
@@ -443,7 +443,7 @@ getout:
 
 ****************************************************************************************************
 */
-osalStatus osal_openssl_flush(
+static osalStatus osal_openssl_flush(
     osalStream stream,
     os_int flags)
 {
@@ -514,7 +514,7 @@ osalStatus osal_openssl_flush(
 
 ****************************************************************************************************
 */
-osalStatus osal_openssl_write(
+static osalStatus osal_openssl_write(
 	osalStream stream,
 	const os_uchar *buf,
 	os_memsz n,
@@ -600,7 +600,7 @@ osalStatus osal_openssl_write(
 
 ****************************************************************************************************
 */
-osalStatus osal_openssl_read(
+static osalStatus osal_openssl_read(
 	osalStream stream,
 	os_uchar *buf,
 	os_memsz n,
@@ -777,7 +777,7 @@ osalStatus osal_openssl_read(
 
 ****************************************************************************************************
 */
-osalStatus osal_openssl_select(
+static osalStatus osal_openssl_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,

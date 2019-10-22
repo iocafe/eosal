@@ -18,7 +18,6 @@
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT
 
-// #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
