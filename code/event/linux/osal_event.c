@@ -217,7 +217,10 @@ void osal_event_set(
      */
     if (pe->pipefd[0] != -1)
     {
-        write(pe->pipefd[1], "\n", 1);
+        if (write(pe->pipefd[1], "\n", 1) != 1)
+        {
+            osal_debug_error("pipe write failed");
+        }
     }
 
     /* Set condition variable.
@@ -344,7 +347,10 @@ int osal_event_pipefd(
             osal_debug_error("osal_event_pipefd: pipe2() failed");
             return -1;
         }
-        write(pe->pipefd[1], "\n", 1);
+        if (write(pe->pipefd[1], "\n", 1) != 1)
+        {
+            osal_debug_error("pipe2 write failed");
+        }
 
         printf ("OK\n");
     }
