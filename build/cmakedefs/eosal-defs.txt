@@ -112,7 +112,7 @@ endif()
 add_definitions(-DE_OS_$ENV{E_OS})
 add_definitions(-DE_OSVER_$ENV{E_OSVER})
 
-# Add gcc compiler warning flags.
+# Add gcc compiler warnings and -fPIC (position independent code) flags.
 if($ENV{E_COMPILER} MATCHES "gcc")
    if(NOT CMAKE_C_FLAGS MATCHES "-Wall")
      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
