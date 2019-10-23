@@ -25,6 +25,21 @@
  */
 #define OSAL_WINDOWS 1
 
+/** C compiler's debug build flag.
+ */
+#ifndef OSAL_CC_DEBUG
+  #ifdef _DEBUG
+    #define OSAL_CC_DEBUG 1
+  #endif
+  #else
+    #ifdef NDEBUG
+      #define OSAL_CC_DEBUG 0
+    #else
+      #define OSAL_CC_DEBUG 1
+    #endif
+  #endif
+#endif
+
 /** Generic include debug code in compilation. The debug code checks for programming errors.
  */
 #ifndef OSAL_DEBUG

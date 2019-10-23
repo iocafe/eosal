@@ -32,6 +32,16 @@
 #define OSAL_TRACE 1
 #endif
 
+/** C compiler's debug build flag.
+ */
+#ifndef OSAL_CC_DEBUG
+  #ifdef NDEBUG
+    #define OSAL_CC_DEBUG 0
+  #else
+    #define OSAL_CC_DEBUG 1
+  #endif
+#endif
+
 /** Generic include debug code in compilation. The debug code checks for programming errors.
  */
 #ifndef OSAL_DEBUG
