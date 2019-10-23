@@ -24,7 +24,7 @@
 /** Stream interface structure for serials.
  */
 #if OSAL_FUNCTION_POINTER_SUPPORT
-extern osalStreamInterface osal_serial_iface;
+extern const osalStreamInterface osal_serial_iface;
 #endif
 
 /** Define to get serial interface pointer. The define is used so that this can

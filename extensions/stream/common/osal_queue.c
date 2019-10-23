@@ -760,7 +760,7 @@ void osal_queue_set_parameter(
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
-osalStreamInterface osal_queue_iface
+const osalStreamInterface osal_queue_iface
  = {osal_queue_open,
 	osal_queue_close,
 	osal_stream_default_accept,

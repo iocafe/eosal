@@ -28,7 +28,7 @@ osalTLSParam;
 
 /** Stream interface structure for OpenSLL sockets.
  */
-extern osalStreamInterface osal_tls_iface;
+extern const osalStreamInterface osal_tls_iface;
 
 /** Define to get socket interface pointer.
  */

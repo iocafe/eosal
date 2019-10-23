@@ -23,7 +23,7 @@
  */
 #if OSAL_SOCKET_SUPPORT
 #if OSAL_FUNCTION_POINTER_SUPPORT
-extern osalStreamInterface osal_socket_iface;
+extern const osalStreamInterface osal_socket_iface;
 #endif
 #endif
 

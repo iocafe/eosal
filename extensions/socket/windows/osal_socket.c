@@ -1358,7 +1358,7 @@ static void osal_socket_setup_ring_buffer(
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
-osalStreamInterface osal_socket_iface
+const osalStreamInterface osal_socket_iface
  = {osal_socket_open,
 	osal_socket_close,
 	osal_socket_accept,

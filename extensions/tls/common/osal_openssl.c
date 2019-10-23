@@ -1277,7 +1277,7 @@ static osalStatus osal_openssl_do_sock_write(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-osalStreamInterface osal_tls_iface
+const osalStreamInterface osal_tls_iface
  = {osal_openssl_open,
     osal_openssl_close,
     osal_openssl_accept,

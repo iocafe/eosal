@@ -965,7 +965,7 @@ void osal_tls_maintain(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-osalStreamInterface osal_tls_iface
+const osalStreamInterface osal_tls_iface
  = {osal_tls_open,
     osal_tls_close,
     osal_tls_accept,

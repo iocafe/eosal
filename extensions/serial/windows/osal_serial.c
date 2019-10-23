@@ -981,7 +981,7 @@ void osal_serial_shutdown(void)
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
-osalStreamInterface osal_serial_iface 
+const osalStreamInterface osal_serial_iface
  = {osal_serial_open,
     osal_serial_close,
     osal_stream_default_accept,

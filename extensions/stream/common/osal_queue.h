@@ -23,7 +23,7 @@
 /** Stream interface structure for byte queues.
  */
 #if OSAL_FUNCTION_POINTER_SUPPORT
-extern osalStreamInterface osal_queue_iface;
+extern const osalStreamInterface osal_queue_iface;
 #endif
 
 

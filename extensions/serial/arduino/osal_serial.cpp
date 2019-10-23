@@ -562,7 +562,7 @@ void osal_serial_shutdown(
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
  */
-osalStreamInterface osal_serial_iface
+const osalStreamInterface osal_serial_iface
  = {osal_serial_open,
     osal_serial_close,
     osal_stream_default_accept,
