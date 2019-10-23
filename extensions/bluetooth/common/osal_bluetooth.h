@@ -23,7 +23,7 @@
 
 /** Stream interface structure for bluetooths.
  */
-extern osalStreamInterface osal_bluetooth_iface;
+extern const osalStreamInterface osal_bluetooth_iface;
 
 /** Define to get bluetooth interface pointer. The define is used so that this can
     be converted to function call.

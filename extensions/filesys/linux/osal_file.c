@@ -381,7 +381,7 @@ getout:
 /** Stream interface for OSAL files. This is structure osalStreamInterface filled with
     function pointers to OSAL files implementation.
  */
-osalStreamInterface osal_file_iface
+const osalStreamInterface osal_file_iface
  = {osal_file_open,
     osal_file_close,
     osal_stream_default_accept,

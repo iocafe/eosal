@@ -280,7 +280,7 @@ void osal_bluetooth_shutdown(
 /** Stream interface for OSAL bluetooths. This is structure osalStreamInterface filled with
     function pointers to OSAL bluetooths implementation.
  */
-osalStreamInterface osal_bluetooth_iface
+const osalStreamInterface osal_bluetooth_iface
  = {osal_bluetooth_open,
     osal_bluetooth_close,
     osal_stream_default_accept,

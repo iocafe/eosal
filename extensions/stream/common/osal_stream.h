@@ -135,8 +135,7 @@ typedef struct osalStreamHeader *osalStream;
 #define OSAL_STREAM_BLOCKING 0x4000
 
 
-
-/* Nore: bit 0x0100000 and larger are reserved to eStream
+/* Note: bit 0x0100000 and larger are reserved to eStream
  */
 
 
@@ -160,14 +159,6 @@ typedef struct osalStreamHeader *osalStream;
  */
 typedef enum
 {
-    /** Number of bytes which can be read immediately.
-     */
-//	OSAL_STREAM_IN_BYTES,
-
-    /** Number of bytes which can be written immediately.
-     */
-//	OSAL_STREAM_OUT_SPACE,
-
     /** Timeout for writing data, milliseconds.
      */
 	OSAL_STREAM_WRITE_TIMEOUT_MS,
@@ -326,7 +317,7 @@ typedef struct osalStreamHeader
 #if OSAL_FUNCTION_POINTER_SUPPORT
 	/** Pointer to stream interface is always first item of the handle
 	 */
-	osalStreamInterface *iface;
+    const osalStreamInterface *iface;
 #endif
 
     /** Timeout for writing data, milliseconds. Value -1 indicates infinite timeout.
@@ -358,7 +349,7 @@ osalStreamHeader;
 /*@{*/
 
 osalStream osal_stream_open(
-	osalStreamInterface *iface,
+    const osalStreamInterface *iface,
     const os_char *parameters,
 	void *option,
 	osalStatus *status,

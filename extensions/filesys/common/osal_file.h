@@ -23,7 +23,7 @@
 /** Stream interface structure for files.
  */
 #if OSAL_FUNCTION_POINTER_SUPPORT
-extern osalStreamInterface osal_file_iface;
+extern const osalStreamInterface osal_file_iface;
 #endif
 
 /** Define to get file interface pointer. The define is used so that this can

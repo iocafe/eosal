@@ -20,7 +20,7 @@
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
 osalStream osal_stream_open(
-	osalStreamInterface *iface,
+    const osalStreamInterface *iface,
     const os_char *parameters,
 	void *option,
 	osalStatus *status,
