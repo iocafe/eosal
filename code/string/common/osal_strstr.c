@@ -113,15 +113,10 @@ skipthis:
 		/* If we need to limit the search to the first line. Lines are separated
 		   wither by new line character or semicolon.
 		 */
-		if (flags & OSAL_STRING_SEARCH_LINE_ONLY /* || OSAL_STRING_SEARCH_ITEM_ONLY */)
+        if (flags & OSAL_STRING_SEARCH_LINE_ONLY)
 		{
 			if ((e == '\n' || e == ';') && !quoted) break;
 		}
-
-		/* if (flags & OSAL_STRING_SEARCH_ITEM_ONLY)
-		{
-			if ((e == '\t' || e == ',') && !quoted) break;
-		} */
 	} 
 	while (*(p++));
 

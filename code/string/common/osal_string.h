@@ -45,9 +45,7 @@
  */
 #define OSAL_STRING_SEARCH_LINE_ONLY 2
 
-/* #define OSAL_STRING_SEARCH_ITEM_ONLY 4 */
-
-/* Recommended number conversion buffer for osal_int_to_string(), etc.
+/** Recommended number conversion buffer for osal_int_to_string(), etc.
  */
 #define OSAL_NBUF_SZ 32
 
