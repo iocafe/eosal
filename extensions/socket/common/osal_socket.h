@@ -199,10 +199,22 @@ void osal_socket_maintain(void);
  */
 void osal_socket_get_host_name_and_port(
     const os_char *parameters,
-    os_int  *port,
+    os_int  *port_nr,
     os_char *buf,
     os_memsz buf_sz,
-    os_boolean *is_ipv6);
+    os_boolean *is_ipv6,
+    os_int default_use_flags,
+    os_int default_port_nr);
+
+/* If port number is not specified in "parameters" string, then embed defaut port number.
+ */
+void osal_socket_embed_default_port(
+    const os_char *parameters,
+    os_char *buf,
+    os_memsz buf_sz,
+    os_int default_use_flags,
+    os_int default_port_nr);
+
 
 /*@}*/
 

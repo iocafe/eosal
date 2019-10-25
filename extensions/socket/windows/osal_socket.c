@@ -171,11 +171,9 @@ osalStream osal_socket_open(
     }
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
-       The host buffer must be released by calling os_free() function,
-       unless if host is OS_NULL (unpecified).
 	 */
-    port_nr = IOC_DEFAULT_SOCKET_PORT;
-    osal_socket_get_host_name_and_port(parameters, &port_nr, host, sizeof(host), &is_ipv6);
+    osal_socket_get_host_name_and_port(parameters, &port_nr, host, sizeof(host),
+        &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
     udp = (flags & OSAL_STREAM_UDP_MULTICAST) ? OS_TRUE : OS_FALSE;
 
     af = is_ipv6 ? AF_INET6 : AF_INET;
