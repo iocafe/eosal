@@ -58,8 +58,8 @@ static os_boolean osal_client_used[OSAL_MAX_CLIENT_SOCKETS];
  */
 #define OSAL_MAX_SERVER_SOCKETS 2
 static OSAL_MYSERVER osal_server[OSAL_MAX_SERVER_SOCKETS]
-    = {OSAL_MYSERVER(OSAL_DEFAULT_SOCKET_PORT),
-       OSAL_MYSERVER(OSAL_DEFAULT_SOCKET_PORT+1)};
+    = {OSAL_MYSERVER(IOC_DEFAULT_SOCKET_PORT),
+       OSAL_MYSERVER(IOC_DEFAULT_SOCKET_PORT+1)};
 static os_boolean osal_server_used[OSAL_MAX_SERVER_SOCKETS];
 
 
@@ -196,7 +196,7 @@ osalStream osal_socket_open(
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
 	 */
-    port_nr = OSAL_DEFAULT_SOCKET_PORT;
+    port_nr = IOC_DEFAULT_SOCKET_PORT;
     osal_socket_get_host_name_and_port(parameters,
         &port_nr, host, sizeof(host), &is_ipv6);
 

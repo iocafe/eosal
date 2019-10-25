@@ -27,12 +27,12 @@ extern const osalStreamInterface osal_socket_iface;
 #endif
 #endif
 
-/* Default socket port number.
+/* Default socket port number for IOCOM.
  */
-#define OSAL_DEFAULT_SOCKET_PORT 6368
-#define OSAL_DEFAULT_SOCKET_PORT_STR "6368"
-#define OSAL_DEFAULT_TLS_PORT 6369
-#define OSAL_DEFAULT_TLS_PORT_STR "6369"
+#define IOC_DEFAULT_SOCKET_PORT 6368
+#define IOC_DEFAULT_SOCKET_PORT_STR "6368"
+#define IOC_DEFAULT_TLS_PORT 6369
+#define IOC_DEFAULT_TLS_PORT_STR "6369"
 
 /* Maximum number of socket streams to pass as an argument to osal_socket_select().
  */

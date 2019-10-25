@@ -219,7 +219,7 @@ static osalStream osal_openssl_open(
 
     /* Connect or listen socket. Make sure to use TLS default port if unspecified.
      */
-    port_nr = OSAL_DEFAULT_TLS_PORT;
+    port_nr = IOC_DEFAULT_TLS_PORT;
     osal_socket_get_host_name_and_port(parameters,
         &port_nr, host, sizeof(host), &is_ipv6);
     os_strncat(host, ":", sizeof(host));
