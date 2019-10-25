@@ -205,6 +205,9 @@ static osalStream osal_openssl_open(
     osalStream tcpsocket = OS_NULL;
     osalSSLSocket *sslsocket = OS_NULL;
     osalStatus s;
+    os_int port_nr;
+    os_char host[OSAL_HOST_BUF_SZ], nbuf[OSAL_NBUF_SZ];
+    os_boolean is_ipv6;
 
     /* Initialize TLS sockets library, if not already initialized. Here we have no certificate
        or key, so this may well not work (at least for a server).
@@ -214,9 +217,15 @@ static osalStream osal_openssl_open(
         osal_tls_initialize(OS_NULL, 0, OS_NULL);
     }
 
-    /* Connect or listen socket.
+    /* Connect or listen socket. Make sure to use TLS default port if unspecified.
      */
-    tcpsocket = osal_socket_open(parameters, option, status, flags);
+    port_nr = OSAL_DEFAULT_TLS_PORT;
+    osal_socket_get_host_name_and_port(parameters,
+        &port_nr, host, sizeof(host), &is_ipv6);
+    os_strncat(host, ":", sizeof(host));
+    osal_int_to_string(nbuf, sizeof(nbuf), port_nr);
+    os_strncat(host, nbuf, sizeof(host));
+    tcpsocket = osal_socket_open(host, option, status, flags);
     if (tcpsocket == OS_NULL) return OS_NULL;
 
     /* Allocate and clear socket structure.

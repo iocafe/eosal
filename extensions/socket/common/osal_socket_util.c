@@ -35,7 +35,7 @@
            for IP V6 addresses, which themselves may contain colons ':'.
            Marking like ":122" can be used just to specify port number to listen to.
   @param   port Pointer to integer into which to store the port number. If the
-		   parameters do not specify port number, the port will be set to zero.
+           parameters do not specify port number, the port will not be modified.
   @param   buf Pointer to buffer where to store the host name. Buffer of OSAL_HOST_BUF_SZ
            bytes is recommended. If the parameter does not specify the host name, the buffer
            wll be empty.
@@ -57,12 +57,11 @@ void osal_socket_get_host_name_and_port(
     const os_char *value_pos;
     os_char *port_pos;
 
-	*port = 0;
     *is_ipv6 = OS_FALSE;
 
 	/* Find newtwork address / port within parameter string. 
 	 */
-    if (parameters == OS_NULL) parameters = "127.0.0.1:" OSAL_DEFAULT_SOCKET_PORT_STR;
+    if (parameters == OS_NULL) parameters = "127.0.0.1";
 	value_pos = osal_string_get_item_value(parameters, "addr", 
 		&n_chars, OSAL_STRING_SEARCH_LINE_ONLY);
 	if (value_pos == OS_NULL) 
