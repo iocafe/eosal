@@ -122,7 +122,11 @@ typedef enum
 
     /** Run out of user given buffer.
      */
-    OSAL_OUT_OF_BUFFER
+    OSAL_OUT_OF_BUFFER,
+
+    /** Handle has been closed (object referred by handle doesn't exist)
+     */
+    OSAL_STATUS_HANDLE_CLOSED
 }
 osalStatus;
 
