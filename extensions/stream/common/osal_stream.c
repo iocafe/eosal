@@ -320,12 +320,20 @@ osalStream osal_stream_default_accept(
 }
 
 
-osalStatus osal_stream_default_seek(
+osalStatus osal_stream_default_flush(
 	osalStream stream,
 	os_long *pos,
 	os_int flags)
 {
-	return OSAL_STATUS_FAILED;
+    return OSAL_SUCCESS;
+}
+
+osalStatus osal_stream_default_seek(
+    osalStream stream,
+    os_long *pos,
+    os_int flags)
+{
+    return OSAL_STATUS_FAILED;
 }
 
 

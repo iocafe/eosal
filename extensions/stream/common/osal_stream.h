@@ -435,6 +435,11 @@ osalStream osal_stream_default_accept(
 	osalStatus *status,
 	os_int flags);
 
+osalStatus osal_stream_default_flush(
+    osalStream stream,
+    os_long *pos,
+    os_int flags);
+
 osalStatus osal_stream_default_seek(
 	osalStream stream,
 	os_long *pos,
