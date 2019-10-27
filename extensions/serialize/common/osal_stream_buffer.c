@@ -1,12 +1,12 @@
 /**
 
   @file    osal_stream_buffer.c
-  @brief   OSAL stream_buffers.
+  @brief   Stream buffer.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    25.10.2019
 
-  Implementation of OSAL stream_buffers.
+  Implementation of OSAL stream buffer class.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -23,8 +23,7 @@
  */
 typedef struct osalStreamBuffer
 {
-    /** A stream structure must start with this generic stream header structure, which contains
-        parameters common to every stream.
+    /** A stream structure must start with this generic stream header structure.
      */
     osalStreamHeader hdr;
 
@@ -36,34 +35,15 @@ typedef struct osalStreamBuffer
      */
     os_memsz sz;
 
-    /** Used buffer size for write.
+    /** Used buffer size for write (current write position).
      */
     os_memsz n;
+
+    /** Current read position.
+     */
+    os_memsz read_pos;
 }
 osalStreamBuffer;
-
-
-
-
-
-/* void osal_stream_append_long(
-    osalStreamBuffer *buf,
-    os_long value)
-{
-    os_char tmp[OSAL_INTSER_BUF_SZ];
-    os_int tmp_n;
-    os_memsz n_written;
-
-    tmp_n = osal_intser_writer(tmp, z);
-    osal_parse_json_append_buf(buf, tmp, tmp_sz);
-
-    return osal_stream_buffer_write(stream, tmp, tmp_n,
-    os_memsz n,
-    os_memsz *n_written,
-    os_int flags)
-}
-*/
-
 
 
 /**
@@ -77,13 +57,11 @@ osalStreamBuffer;
   @param  parameters Ignored, set OS_NULL or empty string.
   @param  option Not used for stream_buffers, set OS_NULL.
   @param  status Pointer to integer into which to store the function status code. Value
-		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
-          See @ref osalStatus "OSAL function return codes" for full list.
-		  This parameter can be OS_NULL, if no status code is needed. 
+          OSAL_SUCCESS (0) indicates success and OSAL_STATUS_MEMORY_ALLOCATION_FAILED
+          a memory allocation problem.
+  @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
-  @param  flags Ignored, set 0.
-
-  @return Stream pointer representing the stream_buffer.
+  @return Stream pointer representing the new stream buffer.
 
 ****************************************************************************************************
 */
@@ -103,6 +81,9 @@ osalStream osal_stream_buffer_open(
         goto getout;
     }
     os_memclear(sbuf, sizeof(sbuf));
+#if OSAL_FUNCTION_POINTER_SUPPORT
+    sbuf->hdr.iface = &osal_stream_buffer_iface;
+#endif
 
     s = osal_stream_buffer_realloc((osalStream)sbuf, 64);
     if (s)
@@ -120,15 +101,13 @@ getout:
 /**
 ****************************************************************************************************
 
-  @brief Close socket.
-  @anchor osal_socket_close
+  @brief Close stream buffer.
+  @anchor osal_stream_buffer_close
 
-  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
-  function. All resource related to the socket are freed. Any attemp to use the socket after
-  this call may result crash.
+  The osal_socket_close() function closes the stream buffer and releases memory allocated for it.
+  Any attemp to use the stream buffer after this call may result crash.
 
-  @param   stream Stream pointer representing the socket. After this call stream pointer will
-           point to invalid memory location.
+  @param   stream Pointer to the stream buffer object.
   @return  None.
 
 ****************************************************************************************************
@@ -151,25 +130,74 @@ void osal_stream_buffer_close(
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Get or set current read or write position.
+  @anchor osal_stream_buffer_seek
+
+  The osal_stream_buffer_seek() function gets or optionally sets current read or write position.
+
+  @param   stream Pointer to the stream buffer object.
+  @param   pos Pointer to integer which contains read/write position to get/set.
+  @param   flags OSAL_STREAM_SEEK_WRITE_POS to select write position, otherwise read position
+           is selected.
+           OSAL_STREAM_SEEK_SET to set seek position, without this flag the function only
+           returns the position.
+
+  @return  Function status code. OSAL_SUCCESS (0) indicates success and value
+           OSAL_STATUS_MEMORY_ALLOCATION_FAILED failed memory allocation.
+
+****************************************************************************************************
+*/
+osalStatus osal_stream_buffer_seek(
+    osalStream stream,
+    os_long *pos,
+    os_int flags)
+{
+    osalStreamBuffer *sbuf;
+
+    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
+    sbuf = (osalStreamBuffer*)stream;
+
+    if (flags & OSAL_STREAM_SEEK_WRITE_POS)
+    {
+        if (flags & OSAL_STREAM_SEEK_SET)
+        {
+            sbuf->n = *pos;
+        }
+
+        *pos = sbuf->n;
+    }
+    else
+    {
+        if (flags & OSAL_STREAM_SEEK_SET)
+        {
+            sbuf->read_pos = *pos;
+        }
+
+        *pos = sbuf->read_pos;
+    }
+
+    return OSAL_SUCCESS;
+}
+
 
 /**
 ****************************************************************************************************
 
-  @brief Write data to stream_buffer.
+  @brief Write data to stream buffer.
   @anchor osal_stream_buffer_write
 
-  The osal_stream_buffer_write() function writes up to n bytes of data from buffer to stream_buffer.
+  The osal_stream_buffer_write() function writes up to n bytes of data to stream_buffer.
 
-  @param   stream Stream pointer representing the stream_buffer.
+  @param   stream Pointer to the stream buffer object.
   @param   buf Pointer to the beginning of data to place into the stream_buffer.
   @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
-           actually written to stream_buffer,  which may be less than n if there is not enough space
-           left in the stream_buffer. If the function fails n_written is set to zero.
-  @param   flags Flags for the function.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+  @param   n_written Always set to n, unless memory allocation fails (set to 0).
+  @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
+  @return  Function status code. OSAL_SUCCESS (0) indicates success and value
+           OSAL_STATUS_MEMORY_ALLOCATION_FAILED failed memory allocation.
 
 ****************************************************************************************************
 */
@@ -203,22 +231,19 @@ osalStatus osal_stream_buffer_write(
 /**
 ****************************************************************************************************
 
-  @brief Read data from stream_buffer.
+  @brief Read data from stream buffer.
   @anchor osal_stream_buffer_read
 
-  The osal_stream_buffer_read() function reads up to n bytes of data from stream_buffer into buffer.
+  The osal_stream_buffer_read() function reads up to n bytes of data from stream buffer.
 
-  @param   stream Stream pointer representing the stream_buffer.
+  @param   stream Pointer to the stream buffer object.
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
            at least this many bytes.
   @param   n_read Pointer to integer into which the function stores the number of bytes read, 
            which may be less than n if there are fewer bytes available. If the function fails 
 		   n_read is set to zero.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation. 
-           The OSAL_STREAM_PEEK flag causes the function to return data in stream_buffer, but nothing
-           will be removed from the stream_buffer.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+  @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
 		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
@@ -246,7 +271,7 @@ osalStatus osal_stream_buffer_read(
   The osal_stream_buffer_realloc() function makes sure that buffer is at least request_sz bytes.
   Data in buffer is preserved (n bytes).
 
-  @param   stream Stream pointer representing the stream buffer.
+  @param   stream Pointer to the stream buffer object.
   @param   request_sz Minimum number of bytes required.
 
   @return  Function status code. OSAL_SUCCESS (0) indicates success and value
@@ -290,6 +315,34 @@ osalStatus osal_stream_buffer_realloc(
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Get pointer to buffer content.
+  @anchor osal_stream_buffer_content
+
+  The osal_stream_buffer_content() function returns pointer to stream buffer content and sets
+  n to content size in bytes.
+
+  @param   stream Pointer to the stream buffer object.
+  @param   n Pointer to integer where to store content size in bytes.
+
+  @return  Pointer to stream buffer content.
+
+****************************************************************************************************
+*/
+os_uchar *osal_stream_buffer_content(
+    osalStream stream,
+    os_memsz *n)
+{
+    osalStreamBuffer *sbuf;
+    sbuf = (osalStreamBuffer*)stream;
+
+    *n = sbuf->n;
+    return (os_uchar*)sbuf->ptr;
+}
+
+
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
 /** Stream interface for OSAL stream_buffers. This is structure osalStreamInterface filled with
@@ -300,7 +353,7 @@ const osalStreamInterface osal_stream_buffer_iface
     osal_stream_buffer_close,
     osal_stream_default_accept,
     osal_stream_default_flush,
-	osal_stream_default_seek,
+    osal_stream_buffer_seek,
     osal_stream_buffer_write,
     osal_stream_buffer_read,
 	osal_stream_default_write_value,

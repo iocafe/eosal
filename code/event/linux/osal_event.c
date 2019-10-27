@@ -253,13 +253,13 @@ void osal_event_set(
 
   @param   evnt Event pointer returned by osal_event_create() function.
   @param   timeout_ms Wait timeout. If event is not signaled within this time, then the
-           function will return OSAL_STATUS_EVENT_TIMEOUT. To wait infinetly give
+           function will return OSAL_STATUS_TIMEOUT. To wait infinetly give
            OSAL_EVENT_INFINITE (-1) here. To check event state or to reset event to non
            signaled state without waiting set timeout_ms to 0.
 
   @return  If the event was signaled, either before the osal_event_wait call or during
            wait interval, the function will return OSAL_SUCCESS (0). If the function timed
-           out and the event remained unsignaled, it will return OSAL_STATUS_EVENT_TIMEOUT.
+           out and the event remained unsignaled, it will return OSAL_STATUS_TIMEOUT.
            Other values indicate failure, typically OSAL_STATUS_EVENT_FAILED.
            See @ref osalStatus "OSAL function return codes" for full list.
 
@@ -284,11 +284,11 @@ osalStatus osal_event_wait(
     pthread_mutex_lock(&pe->mutex);
 
     /* If event is already signaled or immediate return regardless is requested,
-       set event to unsignald state and return OSAL SUCCESS or OSAL_STATUS_EVENT_TIMEOUT.
+       set event to unsignald state and return OSAL SUCCESS or OSAL_STATUS_TIMEOUT.
      */
     if (pe->signaled || timeout_ms == 0)
     {
-        s = (pe->signaled ? OSAL_SUCCESS : OSAL_STATUS_EVENT_TIMEOUT);
+        s = (pe->signaled ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
         pe->signaled = OS_FALSE;
         pthread_mutex_unlock(&pe->mutex);
         return s;

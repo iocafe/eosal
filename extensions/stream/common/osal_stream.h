@@ -134,6 +134,14 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_BLOCKING 0x4000
 
+/** We access write position (seek), not read position.
+ */
+#define OSAL_STREAM_SEEK_WRITE_POS 0x8000
+
+/** Set seek position, either read or write (depends on OSAL_STREAM_SEEK_WRITE_POS flag).
+ */
+#define OSAL_STREAM_SEEK_SET 0x8000
+
 
 /* Note: bit 0x0100000 and larger are reserved to eStream
  */
@@ -413,6 +421,13 @@ osalStatus osal_stream_select(
     os_int timeout_ms,
     os_int flags);
 
+#if OSAL_SERIALIZE_SUPPORT
+osalStatus osal_stream_write_long(
+    osalStream stream,
+    os_long x,
+    os_int flags);
+#endif
+
 /*@}*/
 
 #endif
@@ -437,7 +452,6 @@ osalStream osal_stream_default_accept(
 
 osalStatus osal_stream_default_flush(
     osalStream stream,
-    os_long *pos,
     os_int flags);
 
 osalStatus osal_stream_default_seek(

@@ -52,6 +52,11 @@ typedef enum
      */
     OSAL_STATUS_FAILED,
 
+    /** General time out. Among other things, used by osal_event_wait() function. If event
+        doesn't get signaled before timeout interval given as argument, this code is returned.
+     */
+    OSAL_STATUS_TIMEOUT,
+
     /** Creating thread failed.
      */
     OSAL_STATUS_THREAD_CREATE_FAILED,
@@ -63,11 +68,6 @@ typedef enum
     /** Creating an event failed.
      */
     OSAL_STATUS_EVENT_CREATE_EVENT_FAILED,
-
-    /** Timeout in osal_event_wait() function. If event doesn't get signaled before timeout
-        interval given as argument, this code is returned.
-     */
-    OSAL_STATUS_EVENT_TIMEOUT,
 
     /** General failure code for osal_event.c. This indicates a programming error.
      */

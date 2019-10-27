@@ -508,7 +508,7 @@ osalStatus osal_serial_write(
   				        /* The operation timed out, cancel the I/O operation. 
                          */
   				        CancelIo(h);
-  				        return OSAL_STATUS_EVENT_TIMEOUT;
+  				        return OSAL_STATUS_TIMEOUT;
   
   			        default:
   				        /* Failed, just quit.
@@ -632,7 +632,7 @@ osalStatus osal_serial_read(
   				        /* The operation timed out, cancel the I/O operation. 
                          */
   				        CancelIo(h);
-  				        return OSAL_STATUS_EVENT_TIMEOUT;
+  				        return OSAL_STATUS_TIMEOUT;
   
   			        default:
   				        /* Failed, just quit.

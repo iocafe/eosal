@@ -75,6 +75,7 @@ OSAL_C_HEADER_BEGINS
 #if OSAL_SERIALIZE_SUPPORT
   #include "extensions/serialize/common/osal_serialize.h"
   #include "extensions/serialize/common/osal_stream_buffer.h"
+  #include "extensions/serialize/common/osal_compress_json.h"
 #endif
 
 #if OSAL_PERSISTENT_SUPPORT

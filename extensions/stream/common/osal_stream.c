@@ -307,6 +307,25 @@ osalStatus osal_stream_select(
 	return OSAL_STATUS_FAILED;
 }
 
+#if OSAL_SERIALIZE_SUPPORT
+osalStatus osal_stream_write_long(
+    osalStream stream,
+    os_long x,
+    os_int flags)
+{
+    os_uchar tmp[OSAL_INTSER_BUF_SZ];
+    os_int tmp_n;
+    os_memsz n_written;
+    osalStatus s;
+
+    tmp_n = osal_intser_writer((os_char*)tmp, x);
+    s = osal_stream_write(stream, tmp, tmp_n, &n_written, flags);
+    if (s) return s;
+    return n_written == tmp_n ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
+
+}
+#endif
+
 #endif
 
 
@@ -321,9 +340,8 @@ osalStream osal_stream_default_accept(
 
 
 osalStatus osal_stream_default_flush(
-	osalStream stream,
-	os_long *pos,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
     return OSAL_SUCCESS;
 }

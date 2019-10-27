@@ -1,7 +1,7 @@
 /**
 
   @file    osal_stream_buffer.h
-  @brief   OSAL stream_buffers.
+  @brief   Stream buffer.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    25.10.2019
@@ -18,17 +18,17 @@
 #ifndef OSAL_STREAM_BUFFER_INCLUDED
 #define OSAL_STREAM_BUFFER_INCLUDED
 
-/** Stream interface structure for stream_buffers.
+/** Stream interface structure for the stream buffer class.
  */
 #if OSAL_SERIALIZE_SUPPORT
 #if OSAL_FUNCTION_POINTER_SUPPORT
 extern const osalStreamInterface osal_stream_buffer_iface;
-#endif
 
 /** Define to get stream_buffer interface pointer. The define is used so that this can
     be converted to function call.
  */
 #define OSAL_STREAM_BUFFER_IFACE &osal_stream_buffer_iface
+#endif
 
 
 /** 
@@ -43,7 +43,7 @@ extern const osalStreamInterface osal_stream_buffer_iface;
  */
 /*@{*/
 
-/* Open stream_buffer.
+/* Open stream buffer.
  */
 osalStream osal_stream_buffer_open(
     const os_char *parameters,
@@ -51,12 +51,19 @@ osalStream osal_stream_buffer_open(
     osalStatus *status,
     os_int flags);
 
-/* Close stream_buffer.
+/* Close stream buffer.
  */
 void osal_stream_buffer_close(
     osalStream stream);
 
-/* Write data to stream_buffer.
+/* Get or set current read or write position.
+ */
+osalStatus osal_stream_buffer_seek(
+    osalStream stream,
+    os_long *pos,
+    os_int flags);
+
+/* Write data to stream buffer.
  */
 osalStatus osal_stream_buffer_write(
     osalStream stream,
@@ -65,7 +72,7 @@ osalStatus osal_stream_buffer_write(
     os_memsz *n_written,
     os_int flags);
 
-/* Read data from stream_buffer.
+/* Read data from stream buffer.
  */
 osalStatus osal_stream_buffer_read(
     osalStream stream,
@@ -79,13 +86,21 @@ osalStatus osal_stream_buffer_read(
 osalStatus osal_stream_buffer_realloc(
     osalStream stream,
     os_memsz request_sz);
+
+/* Get pointer to buffer content.
+ */
+os_uchar *osal_stream_buffer_content(
+    osalStream stream,
+    os_memsz *n);
+
 /*@}*/
 
-#else
-
-/* No stream_buffer interface, allow build even if the define is used.
- */
-#define OSAL_STREAM_BUFFER_IFACE OS_NULL
-
 #endif
+
+/* No stream buffer interface, allow build even if the define is used.
+ */
+#ifndef OSAL_STREAM_BUFFER_IFACE
+#define OSAL_STREAM_BUFFER_IFACE OS_NULL
+#endif
+
 #endif
