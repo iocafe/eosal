@@ -59,11 +59,10 @@ os_int osal_json_compress_test(
     os_char *argv[])
 {
     osalStatus s;
-    osalStream compressed;
+    osalStream compressed, uncompressed;
     os_char nbuf[OSAL_NBUF_SZ];
     os_char *data;
     os_memsz data_sz;
-
 
     osal_console_write(json_text);
 
@@ -86,7 +85,14 @@ os_int osal_json_compress_test(
 
     osal_console_write("\n");
 
+    uncompressed = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
+
+    osal_uncompress_json(uncompressed, data, data_sz);
+
+
+    osal_stream_buffer_close(uncompressed);
     osal_stream_buffer_close(compressed);
+
     return 0;
 
 

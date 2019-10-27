@@ -450,6 +450,7 @@ static os_long osal_add_string_to_json_dict(
             }
         }
         pos += bytes + len;
+        ix++;
     }
 
     s = osal_stream_write_long(state->dictionary, newstr_sz, OSAL_STREAM_DEFAULT);
