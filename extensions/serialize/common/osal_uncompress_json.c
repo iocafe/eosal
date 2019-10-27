@@ -135,10 +135,12 @@ osalStatus osal_get_json_item(
             {
                 bytes = osal_intser_reader(jindex->read_pos, &e);
                 jindex->read_pos += bytes;
-
-                // make_doub;
+                osal_ints2double(&item->value.d, m, e);
             }
-
+            else
+            {
+                item->value.d = 0.0;
+            }
             break;
 
         default:
