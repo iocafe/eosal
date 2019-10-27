@@ -286,6 +286,7 @@ void osal_memory_free_static_block(
   #define OSAL_MEMORY_OS_CLR_AND_CPY
   #define os_memclear(d,c) memset((d),0,(size_t)(c))
   #define os_memcpy(d,s,c) memcpy((d),(s),(size_t)(c))
+  #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
   #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
 #endif
 
@@ -293,6 +294,7 @@ void osal_memory_free_static_block(
   #define OSAL_MEMORY_OS_CLR_AND_CPY
   #define os_memclear(d,c) memset((d),0,(size_t)(c))
   #define os_memcpy(d,s,c) memcpy((d),(s),(size_t)(c))
+  #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
   #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
 #endif
 
@@ -306,6 +308,13 @@ void os_memclear(
 /* Copy memory block.
  */
 void os_memcpy(
+    void *dst,
+    const void *src,
+    os_memsz count);
+
+/* Copy memory block.
+ */
+void os_memcmp(
     void *dst,
     const void *src,
     os_memsz count);

@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#include "osal_int64_test.h"
 
 
 /** Test data array size. To test embedded systems keep the array small because test time

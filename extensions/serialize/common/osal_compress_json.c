@@ -394,18 +394,67 @@ static osalStatus osal_parse_json_quoted_string(
 static osalStatus osal_parse_json_number(
     osalJsonCompressor *state)
 {
+    os_char *p, c;
     os_long seekzero = 0;
+    os_memsz n_written;
+    osalStatus s;
 
     osal_stream_buffer_seek(state->str, &seekzero,
         OSAL_STREAM_SEEK_WRITE_POS|OSAL_STREAM_SEEK_SET);
 
-    return OSAL_SUCCESS;
+    /* Skip the colon separating first double quote
+     */
+    p = state->pos;
+    while (OS_TRUE)
+    {
+        c = *p;
+        if (c == '\0') return OSAL_STATUS_FAILED;
+        if (osal_char_isspace(c) || c == ',' || c == '}') break;
+        p++;
+    }
+
+    s = osal_stream_buffer_write(state->str, (os_uchar*)state->pos, p - state->pos, &n_written, 0);
+    if (!s) s = osal_stream_buffer_write(state->str, (os_uchar*)"\0", 1, &n_written, 0);
+
+    state->pos = p;
+    return s;
 }
 
+/* Very inefficient loop trough whole list: switch to B-tree or hash tab
+ */
 static os_long osal_add_string_to_json_dict(
     osalJsonCompressor *state)
 {
-    return OSAL_SUCCESS;
+    os_char *data, *newstr;
+    os_memsz data_sz, newstr_sz, n_written;
+    os_int pos, ix, bytes;
+    os_long len;
+    osalStatus s;
+
+    newstr = (os_char*)osal_stream_buffer_content(state->str, &newstr_sz);
+    newstr_sz--;
+    data = (os_char*)osal_stream_buffer_content(state->dictionary, &data_sz);
+
+    /* Try to locate
+     */
+    pos = 0;
+    ix = 0;
+    while (pos < data_sz)
+    {
+        bytes = osal_intser_reader(data + pos, &len);
+        if (len == newstr_sz)
+        {
+            if (!os_memcmp(newstr, data + pos + bytes, newstr_sz))
+            {
+                return ix;
+            }
+        }
+        pos += bytes + len;
+    }
+
+    s = osal_stream_write_long(state->dictionary, newstr_sz, OSAL_STREAM_DEFAULT);
+    if (!s) s = osal_stream_buffer_write(state->dictionary, (os_uchar*)newstr, newstr_sz, &n_written, 0);
+    return s;
 }
 
 
