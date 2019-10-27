@@ -25,6 +25,7 @@ static osalStatus osal_test_double_value(
 static osalStatus osal_test_float_value(
     os_float x);
 
+
 /**
 ****************************************************************************************************
 
@@ -74,7 +75,9 @@ static osalStatus osal_test_double_value(
     os_long m, e;
 
     osal_double2ints(x, &m, &e);
+
     osal_ints2double(&y, m, e);
+
 
     if (x != y)
     {
