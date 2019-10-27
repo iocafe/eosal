@@ -1,7 +1,7 @@
 /**
 
-  @file    osal_json_compress_test.h
-  @brief   Test JSON compression to packed binary.
+  @file    eosal/examples/ecollection/code/osal_example_collection_main.h
+  @brief   Test code/example collection.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    25.10.2019
@@ -13,8 +13,28 @@
 
 ****************************************************************************************************
 */
-#include "eosal.h"
+#ifndef OSAL_EXAMPLE_COLLECTION_INCLUDED
+#define OSAL_EXAMPLE_COLLECTION_INCLUDED
+#include "eosalx.h"
+
+os_int osal_int64_test(
+    os_int argc,
+    os_char *argv[]);
+
+os_int osal_intser_test(
+    os_int argc,
+    os_char *argv[]);
 
 os_int osal_json_compress_test(
     os_int argc,
     os_char *argv[]);
+
+os_int osal_threads_example_main(
+    os_int argc,
+    os_char *argv[]);
+
+os_int osal_threads_example_2_main(
+    os_int argc,
+    os_char *argv[]);
+
+#endif

@@ -13,8 +13,7 @@
 
 ****************************************************************************************************
 */
-#include "eosalx.h"
-#include "osal_json_compress_test.h"
+#include "osal_example_collection_main.h"
 
 static os_char json_text[] = {
 "{\n"

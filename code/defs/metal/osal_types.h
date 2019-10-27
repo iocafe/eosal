@@ -71,6 +71,14 @@ typedef long long os_long;
 typedef long os_long;
 #endif
 
+/** The same as os_long, but unsigned.
+ */
+#if OSAL_LONG_IS_64_BITS
+typedef unsigned long long os_ulong;
+#else
+typedef unsigned long os_ulong;
+#endif
+
 /** Memory size type. Define os_int 32 if maximum process memory space is <= 2GB, or
     os_long if more.
  */

@@ -41,7 +41,30 @@ os_long osal_rand(
     os_long min_value,
     os_long max_value)
 {
-    return min_value + rand() % (max_value - min_value + 1);
+    os_long range;
+    os_ulong umax;
+
+#if OSAL_DEBUG
+    static os_boolean range_error_reported = OS_FALSE;
+#endif
+
+    range = max_value - min_value + 1;
+
+    if (range <= 0)
+    {
+#if OSAL_DEBUG
+        if (!range_error_reported)
+        {
+            osal_debug_error("osal_rand: Range cannot be used");
+            range_error_reported = OS_TRUE;
+        }
+#endif
+        umax = ~0;
+        umax >>= 1;
+        range = (os_long)umax;
+    }
+
+    return min_value + rand() % range;
 }
 
 #endif

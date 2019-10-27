@@ -6,7 +6,7 @@
   @version 1.0
   @date    9.11.2011
 
-  X...
+  Test 64 bit int artihmetic. Meaningfull only if compiler doesn't support 64 bit integern types.
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -15,8 +15,7 @@
 
 ****************************************************************************************************
 */
-#include "eosal.h"
-#include "osal_int64_test.h"
+#include "osal_example_collection_main.h"
 
 
 /** Test data array size. To test embedded systems keep the array small because test time
@@ -157,7 +156,7 @@ os_int osal_int64_test(
 			} 
 		} 
 	}
-	osal_console_write ("ok\n");
+    osal_console_write ("ok\n");
 
 #ifdef INT64_LARGE_DIV_TEXT
 	/* Large integer division test.

@@ -16,7 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#include "osal_threads_example.h"
+#include "osal_example_collection_main.h"
 
 /** Parameter structure for creating thread.
  */

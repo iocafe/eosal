@@ -17,10 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#include "osal_threads_example.h"
-#include "osal_threads_example_2.h"
-#include "osal_int64_test.h"
-#include "osal_json_compress_test.h"
+#include "osal_example_collection_main.h"
 
 
 /**
@@ -44,7 +41,8 @@ os_int osal_main(
 	// return osal_threads_example_main(argc, argv);
 	// return osal_threads_example_2_main(argc, argv);
     // return osal_int64_test(argc, argv);
-    return osal_json_compress_test(argc, argv);
+    return osal_intser_test(argc, argv);
+    //return osal_json_compress_test(argc, argv);
 }
 
 

@@ -48,42 +48,42 @@ os_int osal_intser_writer(
     os_int n;
     os_char *p;
 
-	if (x < 0x10)
+    if (x < 0x08)
 	{
 		if (x >= 0)
 		{
 			*buf = (os_char)x;
 			return 1;
-		}
+        }
 
-		x = -x;
-		if (x < 0x10)
-		{
-			*buf = (os_char)x | 0x10;
-			return 1;
-		}
+        x = -x;
+        if (x < 0x08)
+        {
+            *buf = (os_char)x | 0x08;
+            return 1;
+        }
 
-		*buf = (os_char)(x & 0xF) | 0x10;
+        *buf = (os_char)(x & 0xF) | 0x08;
 	}
 	else
 	{
-		*buf = (os_char)x & 0xF;
+        *buf = (os_char)x & 0x7;
 	}
 
 	p = buf;
-	x >>= 4;
+    x >>= 3;
 
 	do
 	{
 		*(++p) = (os_char)x;
 		x >>= 8;
 	}
-	while (x > 0);
+    while (x);
 
 	n = (os_int)(p - buf);
-	*buf |= ((os_char)n << 5);
+    *buf |= ((os_char)n << 4);
 
-	return n+1;
+    return n + 1;
 }
 
 
@@ -102,35 +102,45 @@ os_int osal_intser_writer(
 ****************************************************************************************************
 */
 os_int osal_intser_reader(
-	os_char *buf,
+    os_char *buf,
 	os_long *x)
 {
     os_int shift;
-    os_char c, count, *p;
-    os_long y;
+    os_uchar c, count, *p;
+    os_ulong y; /* signs are important here */
 
 	c = *buf;
-
-	if ((c & 0xE0) == 0)
+    if ((c & 0xF0) == 0)
 	{
-		*x = (c & 0x10) ? -(c & 0xF) : c;
-		return 1;
+        *x = (c & 0x07);
+        if (c & 0x08)
+        {
+            if (*x) { *x = -*x; }
+            else
+            {
+                y = ~0;
+                y >>= 1;
+                *x = (os_long)(y ^ ~0);
+            }
+        }
+
+        return 1;
 	}
 
-	y = c & 0xF;
-	count = c >> 5;
-	shift = 4;
-	p = buf;
+    y = c & 0x7;
+    count = c >> 4;
+    shift = 3;
+    p = (os_uchar*)buf;
 	while (count--)
 	{
-		y |= ((os_long)*(++p)) << shift;
+        y |= ((os_ulong)*(++p)) << shift;
 		shift += 8;
 	}
 
-	if (c & 0x10) *x = -y;
-	else *x = y;
+    if (c & 0x08) *x = -(os_long)y;
+    else *x = (os_long)y;
 
-	return (os_int)(p - buf + 1);
+    return (os_int)((os_char*)p - buf + 1);
 }
 
 #endif
