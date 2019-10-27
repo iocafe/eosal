@@ -33,13 +33,17 @@ typedef struct
      */
     osalStream content;
 
-    /* Buffer for dictionary.
+    /* Buffer for dictionary strings.
      */
     osalStream dictionary;
 
-    /* Block recursion depth.
+    /* Start string positions for dictionary.
      */
-  //  os_int depth;
+    osalStream dict_pos;
+
+    /* Number of strings in dictionary.
+     */
+    os_int dictionary_n;
 }
 osalJsonCompressor;
 
@@ -55,7 +59,8 @@ static osalStatus osal_parse_json_tag(
 
 static osalStatus parse_json_value(
     osalJsonCompressor *state,
-    os_long tag_dict_ix);
+    os_long tag_dict_ix,
+    os_boolean allow_null);
 
 static osalStatus osal_parse_json_quoted_string(
     osalJsonCompressor *state);
@@ -99,7 +104,9 @@ osalStatus osal_compress_json(
     state.str = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
     state.content = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
     state.dictionary = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
-    if (state.str == OS_NULL || state.content == OS_NULL || state.dictionary == OS_NULL)
+    state.dict_pos = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
+    if (state.str == OS_NULL || state.content == OS_NULL || state.dictionary == OS_NULL
+        || state.dict_pos == OS_NULL)
     {
         goto getout;
     }
@@ -151,6 +158,7 @@ getout:
     osal_stream_buffer_close(state.str);
     osal_stream_buffer_close(state.content);
     osal_stream_buffer_close(state.dictionary);
+    osal_stream_buffer_close(state.dict_pos);
     return s;
 }
 
@@ -201,13 +209,13 @@ static osalStatus osal_parse_json_recursive(
         {
             s = osal_parse_json_quoted_string(state);
             if (s) return s;
-            s = parse_json_value(state, tag_dict_ix);
+            s = parse_json_value(state, tag_dict_ix, OS_FALSE);
             if (s) return s;
         }
 
         else
         {
-            /* Back off first dhavarter of the number, etc.
+            /* Back off first chararter of the number, etc.
              */
             state->pos--;
 
@@ -215,7 +223,7 @@ static osalStatus osal_parse_json_recursive(
              */
             s = osal_parse_json_number(state);
             if (s) return s;
-            s = parse_json_value(state, tag_dict_ix);
+            s = parse_json_value(state, tag_dict_ix, OS_TRUE);
             if (s) return s;
         }
 
@@ -263,7 +271,8 @@ static osalStatus osal_parse_json_tag(
 
 static osalStatus parse_json_value(
     osalJsonCompressor *state,
-    os_long tag_dict_ix)
+    os_long tag_dict_ix,
+    os_boolean allow_null)
 {
     os_long ivalue, z, value_dict_ix, m, e;
     os_double dvalue;
@@ -336,8 +345,14 @@ static osalStatus parse_json_value(
         return s;
     }
 
+    if (allow_null) if (!os_strcmp(data, "null"))
+    {
+        s = osal_stream_write_long(state->content, OSAL_JSON_VALUE_EMPTY + tag_dict_ix, 0);
+        return s;
+    }
+
     s = osal_stream_write_long(state->content, OSAL_JSON_VALUE_STRING + tag_dict_ix, 0);
-   if (s) return s;
+    if (s) return s;
     value_dict_ix = osal_add_string_to_json_dict(state);
     s = osal_stream_write_long(state->content, value_dict_ix, 0);
     return s;
@@ -425,38 +440,33 @@ static osalStatus osal_parse_json_number(
 static os_long osal_add_string_to_json_dict(
     osalJsonCompressor *state)
 {
-    os_char *data, *newstr;
-    os_memsz data_sz, newstr_sz, n_written;
-    os_int pos, ix, bytes;
-    os_long len;
+    os_char *newstr, *dictionary, *dict_pos;
+    os_memsz dictionary_sz, dict_pos_sz, newstr_sz, n_written;
+    os_int pos, ix;
+    os_long endpos;
     osalStatus s;
 
     newstr = (os_char*)osal_stream_buffer_content(state->str, &newstr_sz);
-    newstr_sz--;
-    data = (os_char*)osal_stream_buffer_content(state->dictionary, &data_sz);
+    dictionary = (os_char*)osal_stream_buffer_content(state->dictionary, &dictionary_sz);
+    dict_pos = (os_char*)osal_stream_buffer_content(state->dict_pos, &dict_pos_sz);
 
     /* Try to locate
      */
-    pos = 0;
-    ix = 0;
-    while (pos < data_sz)
+    for (ix = 0; ix < state->dictionary_n; ix++)
     {
-        bytes = osal_intser_reader(data + pos, &len);
-        if (len == newstr_sz)
+        os_memcpy(&pos, dict_pos + ix * sizeof(os_int), sizeof(os_int));
+        if (!os_strcmp(newstr, dictionary + pos))
         {
-            if (!os_memcmp(newstr, data + pos + bytes, newstr_sz))
-            {
-                return ix;
-            }
+            return pos;
         }
-        pos += bytes + len;
-        ix++;
     }
 
-    s = osal_stream_write_long(state->dictionary, newstr_sz, OSAL_STREAM_DEFAULT);
+    osal_stream_buffer_seek(state->dictionary, &endpos, OSAL_STREAM_SEEK_WRITE_POS);
+    pos = (os_int)endpos;
+    s = osal_stream_write(state->dict_pos, (os_uchar*)&pos, sizeof(os_int), &n_written, OSAL_STREAM_DEFAULT);
     if (!s) s = osal_stream_buffer_write(state->dictionary, (os_uchar*)newstr, newstr_sz, &n_written, 0);
-    return s;
+    state->dictionary_n++;
+    return endpos;
 }
-
 
 #endif

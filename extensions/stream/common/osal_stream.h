@@ -140,7 +140,7 @@ typedef struct osalStreamHeader *osalStream;
 
 /** Set seek position, either read or write (depends on OSAL_STREAM_SEEK_WRITE_POS flag).
  */
-#define OSAL_STREAM_SEEK_SET 0x8000
+#define OSAL_STREAM_SEEK_SET 0x10000
 
 
 /* Note: bit 0x0100000 and larger are reserved to eStream

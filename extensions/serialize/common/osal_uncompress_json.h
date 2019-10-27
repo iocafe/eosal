@@ -31,18 +31,16 @@ typedef struct osalJsonIndex
     os_char *compressed;
     os_memsz compressed_sz;
 
-    /* Dictionary of strings.
-     */
-    osal_json_pos_t *dictionary;
 
     /* Number of items in dictionary
      */
-    os_int dictionary_n;
+    os_char *dict_start;
+    os_char *dict_end;
 
-    os_int data_start;
-    os_int data_size;
+    os_char *data_start;
+    os_char *data_end;
 
-    os_int read_pos;
+    os_char *read_pos;
     os_int depth;
 }
 osalJsonIndex;
