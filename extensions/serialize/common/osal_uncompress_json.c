@@ -89,7 +89,7 @@ osalStatus osal_get_json_item(
         return OSAL_SUCCESS;
     }
 
-    tag_dict_ix = code >> 4;
+    tag_dict_ix = (os_int)(code >> 4);
 //    if (tag_dict_ix < 0 || tag_dict_ix >= jindex->dictionary_n) return OSAL_STATUS_FAILED;
 
     item->tag_name = jindex->dict_start + tag_dict_ix;
@@ -108,7 +108,7 @@ osalStatus osal_get_json_item(
         case OSAL_JSON_VALUE_STRING:
             bytes = osal_intser_reader(jindex->read_pos, &l);
             jindex->read_pos += bytes;
-            value_dict_ix = l;
+            value_dict_ix = (os_int)l;
             // if (value_dict_ix < 0 || value_dict_ix >= jindex->dictionary_n) return OSAL_STATUS_FAILED;
             item->value.s = jindex->dict_start + value_dict_ix;
             break;

@@ -30,7 +30,6 @@
 #ifndef OSAL_CC_DEBUG
   #ifdef _DEBUG
     #define OSAL_CC_DEBUG 1
-  #endif
   #else
     #ifdef NDEBUG
       #define OSAL_CC_DEBUG 0

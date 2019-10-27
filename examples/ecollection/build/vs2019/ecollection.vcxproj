@@ -20,14 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\osal_example_collection_main.c" />
+    <ClCompile Include="..\..\code\osal_float_int_conv_test.c" />
     <ClCompile Include="..\..\code\osal_int64_test.c" />
+    <ClCompile Include="..\..\code\osal_intser_test.c" />
+    <ClCompile Include="..\..\code\osal_json_compress_test.c" />
     <ClCompile Include="..\..\code\osal_threads_example.c" />
     <ClCompile Include="..\..\code\osal_threads_example_2.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\code\osal_int64_test.h" />
-    <ClInclude Include="..\..\code\osal_threads_example.h" />
-    <ClInclude Include="..\..\code\osal_threads_example_2.h" />
+    <ClInclude Include="..\..\code\osal_example_collection_main.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

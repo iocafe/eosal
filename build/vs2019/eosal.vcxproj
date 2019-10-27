@@ -50,7 +50,10 @@
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
     <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
     <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
+    <ClInclude Include="..\..\extensions\serialize\common\osal_compress_json.h" />
     <ClInclude Include="..\..\extensions\serialize\common\osal_serialize.h" />
+    <ClInclude Include="..\..\extensions\serialize\common\osal_stream_buffer.h" />
+    <ClInclude Include="..\..\extensions\serialize\common\osal_uncompress_json.h" />
     <ClInclude Include="..\..\extensions\serial\common\osal_serial.h" />
     <ClInclude Include="..\..\extensions\socket\common\osal_socket.h" />
     <ClInclude Include="..\..\extensions\strcnv\common\osal_strcnv.h" />
@@ -106,7 +109,10 @@
     <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
     <ClCompile Include="..\..\extensions\persistent\windows\osal_select_persistent.c" />
     <ClCompile Include="..\..\extensions\rand\common\osal_rand.c" />
+    <ClCompile Include="..\..\extensions\serialize\common\osal_compress_json.c" />
     <ClCompile Include="..\..\extensions\serialize\common\osal_intser.c" />
+    <ClCompile Include="..\..\extensions\serialize\common\osal_stream_buffer.c" />
+    <ClCompile Include="..\..\extensions\serialize\common\osal_uncompress_json.c" />
     <ClCompile Include="..\..\extensions\serialize\windows\osal_float.c" />
     <ClCompile Include="..\..\extensions\serial\windows\osal_serial.c" />
     <ClCompile Include="..\..\extensions\socket\common\osal_socket_util.c" />
