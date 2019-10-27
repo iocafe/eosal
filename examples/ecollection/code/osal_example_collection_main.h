@@ -25,6 +25,10 @@ os_int osal_intser_test(
     os_int argc,
     os_char *argv[]);
 
+os_int osal_float_int_conv_test(
+    os_int argc,
+    os_char *argv[]);
+
 os_int osal_json_compress_test(
     os_int argc,
     os_char *argv[]);
