@@ -133,7 +133,7 @@ void os_persistent_initialze(
 
     /* Validate header checksum and that header is initialized.
      */
-    checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock));
+    checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     if (checksum == hdr.checksum && hdr.initialized == MY_HEADER_INITIALIZED) return;
 
     os_memclear(&hdr, sizeof(hdr));
@@ -201,7 +201,7 @@ os_memsz os_persistent_load(
     os_uchar tmp[data_sz];
     os_persistent_read(tmp, saved_pos, data_sz);
 
-    if (os_checksum(tmp, data_sz) != hdr.blk[block_nr].checksum)
+    if (os_checksum(tmp, data_sz, OS_NULL) != hdr.blk[block_nr].checksum)
     {
         block_sz = 0;
         goto getout;
@@ -285,7 +285,7 @@ osalStatus os_persistent_save(
     }
 
     hdr.blk[block_nr].data_sz = block_sz;
-    hdr.blk[block_nr].checksum = os_checksum((os_uchar*)block, block_sz);
+    hdr.blk[block_nr].checksum = os_checksum((os_uchar*)block, block_sz, OS_NULL);
 
     os_persistent_write((os_uchar*)block, hdr.blk[block_nr].pos, block_sz);
 
@@ -316,7 +316,7 @@ osalStatus os_persistent_commit(
     void)
 {
     if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
-    hdr.checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock));
+    hdr.checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 

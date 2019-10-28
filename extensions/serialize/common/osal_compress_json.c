@@ -103,6 +103,9 @@ osalStatus osal_compress_json(
     os_uchar *data;
     os_memsz data_sz, n_written;
     osalStatus s = OSAL_STATUS_FAILED;
+    os_ushort checksum;
+    os_uchar tmp[OSAL_INTSER_BUF_SZ];
+    os_int tmp_n;
 
     os_memclear(&state, sizeof(state));
     state.pos = json_source;
@@ -137,29 +140,37 @@ osalStatus osal_compress_json(
 
     /* Write dictionary size and the dictionary.
      */
+    checksum = OSAL_CHECKSUM_INIT;
     data = osal_stream_buffer_content(state.dictionary, &data_sz);
-    s = osal_stream_write_long(compressed, data_sz, OSAL_STREAM_DEFAULT);
+    tmp_n = osal_intser_writer((os_char*)tmp, data_sz);
+    s = osal_stream_write(compressed, tmp, tmp_n, &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
+    if (tmp_n != n_written) goto timeout;
+    os_checksum(tmp, tmp_n, &checksum);
     s = osal_stream_write(compressed, data, data_sz, &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
-    if (data_sz != n_written)
-    {
-        s = OSAL_STATUS_TIMEOUT;
-        goto getout;
-    }
+    if (data_sz != n_written) goto timeout;
+    os_checksum(data, data_sz, &checksum);
 
     /* Write content size and the content.
      */
     data = osal_stream_buffer_content(state.content, &data_sz);
-    s = osal_stream_write_long(compressed, data_sz, OSAL_STREAM_DEFAULT);
+    tmp_n = osal_intser_writer((os_char*)tmp, data_sz);
+    s = osal_stream_write(compressed, tmp, tmp_n, &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
+    if (tmp_n != n_written) goto timeout;
+    os_checksum(tmp, tmp_n, &checksum);
     s = osal_stream_write(compressed, data, data_sz, &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
-    if (data_sz != n_written)
-    {
-        s = OSAL_STATUS_TIMEOUT;
-        goto getout;
-    }
+    if (data_sz != n_written) goto timeout;
+    os_checksum(data, data_sz, &checksum);
+
+    /* Write checksum.
+     */
+    s = osal_stream_write(compressed, (os_uchar*)&checksum, sizeof(os_ushort),
+        &n_written, OSAL_STREAM_DEFAULT);
+    if (s) goto getout;
+    if (sizeof(os_ushort) != n_written) goto timeout;
 
 getout:
     /* Release temporary buffers.
@@ -169,6 +180,10 @@ getout:
     osal_stream_buffer_close(state.dictionary);
     osal_stream_buffer_close(state.dict_pos);
     return s;
+
+timeout:
+    s = OSAL_STATUS_TIMEOUT;
+    goto getout;
 }
 
 

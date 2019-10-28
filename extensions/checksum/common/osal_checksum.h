@@ -24,11 +24,16 @@
  */
 #define OSAL_CHECKSUM_TEST 0
 
+/* Initialization value for the checksum calculation.
+ */
+#define OSAL_CHECKSUM_INIT 0xFFFF
+
 /* Calculates checksum for buffer.
  */
 os_ushort os_checksum(
     os_uchar *buf,
-    int n);
+    int n,
+    os_ushort *append_to_checksum);
 
 #if OSAL_CHECKSUM_TEST
 /* Test the checksum code.

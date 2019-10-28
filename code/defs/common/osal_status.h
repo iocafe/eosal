@@ -124,6 +124,10 @@ typedef enum
      */
     OSAL_OUT_OF_BUFFER,
 
+    /** Check sum doesn't match.
+     */
+    OSAL_CHECKSUM_ERROR,
+
     /** Handle has been closed (object referred by handle doesn't exist)
      */
     OSAL_STATUS_HANDLE_CLOSED

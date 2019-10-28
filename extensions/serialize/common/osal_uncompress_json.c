@@ -73,8 +73,19 @@ osalStatus osal_create_json_indexer(
 {
     os_long dict_size, data_size;
     os_int bytes;
+    os_ushort checksum;
+    os_memsz sz_without_checksum;
 
     os_memclear(jindex, sizeof(osalJsonIndex));
+
+    /* Must be at least four bytes. One for dictionary size, one byte for data
+       size and two for checksum.
+     */
+    if (compressed_sz < sizeof(os_ushort) + 2) return OSAL_STATUS_FAILED;
+    sz_without_checksum = compressed_sz - sizeof(os_short);
+    os_memcpy(&checksum, compressed + sz_without_checksum, sizeof(os_short));
+    if (checksum != os_checksum((os_uchar*)compressed, sz_without_checksum, OS_NULL))
+        return OSAL_CHECKSUM_ERROR;
 
     /* Calculate number of dictionary entries.
      */
@@ -90,7 +101,7 @@ osalStatus osal_create_json_indexer(
     jindex->data_end = jindex->data_start + (os_memsz)data_size;
     jindex->read_pos = jindex->data_start;
 
-    return compressed_sz == jindex->data_end - compressed ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
+    return sz_without_checksum == jindex->data_end - compressed ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
 
 osalStatus osal_get_json_item(
