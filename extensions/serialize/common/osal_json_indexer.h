@@ -60,8 +60,8 @@ typedef struct osalJsonItem
      */
     const os_char *tag_name;
 
-    /** Reursion level in JSON. Starts from 0 at top level and grows when going deeper into
-        JSON document os_int depth; All codes have depth.
+    /** Recursion level in JSON. Starts from 0 at top level and grows when going deeper into
+        JSON document os_int depth. All codes have depth set.
      */
     os_int depth;
 
@@ -80,7 +80,7 @@ osalJsonItem;
 
 
 /* Create indexer to access compressed data easily.
-*/
+ */
 osalStatus osal_create_json_indexer(
     osalJsonIndex *jindex,
     os_char *compressed,
@@ -88,7 +88,7 @@ osalStatus osal_create_json_indexer(
     os_int flags);
 
 /* Release indexer when no longer in use.
-*/
+ */
 void osal_release_json_indexer(
     osalJsonIndex *jindex);
 
