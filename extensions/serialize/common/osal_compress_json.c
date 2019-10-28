@@ -201,6 +201,8 @@ static osalStatus osal_parse_json_recursive(
             if (s) return s;
             s = osal_parse_json_recursive(state);
             if (s) return s;
+            s = osal_stream_write_long(state->content, OSAL_JSON_END_BLOCK, 0);
+            if (s) return s;
         }
 
         /* If this is a string
@@ -236,8 +238,7 @@ static osalStatus osal_parse_json_recursive(
         while (osal_char_isspace(c));
         if (c == '}')
         {
-            s = osal_stream_write_long(state->content, OSAL_JSON_END_BLOCK, 0);
-            return s;
+            return OSAL_SUCCESS;
         }
     }
     while (c == ',');

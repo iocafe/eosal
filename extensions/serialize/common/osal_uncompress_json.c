@@ -76,6 +76,8 @@ osalStatus osal_get_json_item(
     os_float f;
 
     os_memclear(item, sizeof(osalJsonItem));
+    if (jindex->read_pos >= jindex->data_end) return OSAL_END_OF_FILE;
+
     bytes = osal_intser_reader(jindex->read_pos, &code);
     jindex->read_pos += bytes;
 
@@ -87,7 +89,7 @@ osalStatus osal_get_json_item(
     {
         jindex->depth--;
         item->depth--;
-        return OSAL_SUCCESS;
+        return /* jindex->depth < 0 ? OSAL_END_OF_FILE : */ OSAL_SUCCESS;
     }
 
     tag_dict_ix = (os_int)(code >> 4);
@@ -202,8 +204,8 @@ osalStatus osal_uncompress_json(
     s = osal_create_json_index(&jindex, compressed, compressed_sz);
     if (s) return s;
 
-    prev_depth = -1
-    ;
+    prev_depth = -1;
+
     while (!osal_get_json_item(&jindex, &item))
     {
         if (item.depth == prev_depth)

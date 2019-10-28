@@ -80,7 +80,7 @@ osalStream osal_stream_buffer_open(
         s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
         goto getout;
     }
-    os_memclear(sbuf, sizeof(sbuf));
+    os_memclear(sbuf, sizeof(osalStreamBuffer));
 #if OSAL_FUNCTION_POINTER_SUPPORT
     sbuf->hdr.iface = &osal_stream_buffer_iface;
 #endif

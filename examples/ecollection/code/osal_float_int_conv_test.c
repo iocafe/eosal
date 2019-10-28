@@ -16,6 +16,7 @@
 */
 #include "osal_example_collection_main.h"
 #include <stdio.h>
+#include <math.h>
 
 /* Forward referred static functions.
  */
@@ -32,7 +33,7 @@ static osalStatus osal_test_float_value(
   @brief Process entry point.
 
   The osal_intser_test() function is OS independent entry point.
-
+   
   @param   argc Number of command line arguments.
   @param   argv Array of string pointers, one for each command line argument. UTF8 encoded.
 
@@ -45,19 +46,28 @@ os_int osal_float_int_conv_test(
     os_char *argv[])
 {
     osalStatus s;
-    os_long x;
+    os_long x, m;
     os_int i;
+    os_short e;
+    os_float f;
 
     s = osal_test_double_value(0);
     if (s) goto failed;
     s = osal_test_float_value(0);
     if (s) goto failed;
 
+    osal_double2ints(2.1, &m, &e);
+    osal_ints2float(&f, m, e);
+    if (fabs(f - 2.1) > 1.0e-5) 
+    {
+        printf ("FAILED, osal_double2ints -> osal_float2ints\n");
+    }
+
     for (i = 0; i<500000; i++)
     {
         x = osal_rand(-5000, 5000);
         s = osal_test_double_value(x * 0.7);
-        s = osal_test_float_value(x * 0.7);
+        s = osal_test_float_value((os_float)(x * 0.7));
         if (s) goto failed;
     }
 

@@ -88,7 +88,6 @@ os_int osal_json_compress_test(
 
     osal_uncompress_json(uncompressed, data, data_sz);
 
-
     osal_stream_buffer_close(uncompressed);
     osal_stream_buffer_close(compressed);
 
