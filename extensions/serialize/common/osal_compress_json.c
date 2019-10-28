@@ -44,6 +44,10 @@ typedef struct
     /* Number of strings in dictionary.
      */
     os_int dictionary_n;
+
+    os_char *skip_tags;
+
+    os_int skip_count;
 }
 osalJsonCompressor;
 
@@ -82,6 +86,7 @@ static os_long osal_add_string_to_json_dict(
 
   @param  compressed Stream where to write compressed output.
   @param  json_source JSON content as plain text.
+  @param  skip_tags List of tags to skip (not include in compressed data).
   @param  flags Reserved for future, set 0 for now.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
@@ -90,6 +95,7 @@ static os_long osal_add_string_to_json_dict(
 osalStatus osal_compress_json(
     osalStream compressed,
     os_char *json_source,
+    os_char *skip_tags,
     os_int flags)
 {
     osalJsonCompressor state;
@@ -100,6 +106,7 @@ osalStatus osal_compress_json(
 
     os_memclear(&state, sizeof(state));
     state.pos = json_source;
+    state.skip_tags = skip_tags;
 
     /* Allocate temporary buffers for parsing string, generating content and for dictionary.
      */
@@ -171,11 +178,22 @@ static osalStatus osal_parse_json_recursive(
 {
     os_char c;
     os_long tag_dict_ix;
-    osalStatus s;
+    osalStatus s, tag_s;
 
     do
     {
-        if (osal_parse_json_tag(state, &tag_dict_ix)) return OSAL_STATUS_FAILED;
+        /* Parse tag. If we need to ignore tag content.
+         */
+        tag_s = osal_parse_json_tag(state, &tag_dict_ix);
+        if (tag_s == OSAL_STATUS_NOTHING_TO_DO)
+        {
+            state->skip_count++;
+        }
+        else
+        {
+            if (tag_s) return tag_s;
+        }
+
         tag_dict_ix <<= OSAL_JSON_CODE_SHIFT;
 
         /* Skip the colon separating first double quote
@@ -199,12 +217,20 @@ static osalStatus osal_parse_json_recursive(
          */
         if (c == '{')
         {
-            s = osal_stream_write_long(state->content, OSAL_JSON_START_BLOCK + tag_dict_ix, 0);
-            if (s) return s;
+            if (!state->skip_count)
+            {
+                s = osal_stream_write_long(state->content, OSAL_JSON_START_BLOCK + tag_dict_ix, 0);
+                if (s) return s;
+            }
+
             s = osal_parse_json_recursive(state);
             if (s) return s;
-            s = osal_stream_write_long(state->content, OSAL_JSON_END_BLOCK, 0);
-            if (s) return s;
+
+            if (!state->skip_count)
+            {
+                s = osal_stream_write_long(state->content, OSAL_JSON_END_BLOCK, 0);
+                if (s) return s;
+            }
         }
 
         /* If this is a string
@@ -231,6 +257,13 @@ static osalStatus osal_parse_json_recursive(
             if (s) return s;
         }
 
+        /* End ignoring tag content.
+         */
+        if (tag_s == OSAL_STATUS_NOTHING_TO_DO)
+        {
+            state->skip_count--;
+        }
+
         /* Skip empty spaces until comma or '}'
          */
         do {
@@ -253,7 +286,8 @@ static osalStatus osal_parse_json_tag(
     osalJsonCompressor *state,
     os_long *dict_ix)
 {
-    os_char c;
+    os_char c, *data;
+    os_memsz data_n;
 
     /* Skip spaces and the first double quote
      */
@@ -265,6 +299,18 @@ static osalStatus osal_parse_json_tag(
     if (c != '\"') return OSAL_STATUS_FAILED;
 
     osal_parse_json_quoted_string(state);
+
+    /* If this tag is on the skip list
+     */
+    if (state->skip_tags)
+    {
+        data = (os_char*)osal_stream_buffer_content(state->str, &data_n);
+        if (os_strstr(state->skip_tags, data, OSAL_STRING_SEARCH_ITEM_NAME))
+        {
+            *dict_ix = 0;
+            return OSAL_STATUS_NOTHING_TO_DO;
+        }
+    }
 
     *dict_ix = osal_add_string_to_json_dict(state);
 
@@ -283,6 +329,10 @@ static osalStatus parse_json_value(
     os_char *data;
     os_memsz data_n, count;
     osalStatus s;
+
+    /* If we are ignoring the tag content.
+     */
+    if (state->skip_count) return OSAL_SUCCESS;
 
     data = (os_char*)osal_stream_buffer_content(state->str, &data_n);
     data_n--; /* -1 for terminating '\0'. */
@@ -448,6 +498,10 @@ static os_long osal_add_string_to_json_dict(
     os_int pos, ix;
     os_long endpos;
     osalStatus s;
+
+    /* If we are ignoring the tag content.
+     */
+    if (state->skip_count) return 0;
 
     newstr = (os_char*)osal_stream_buffer_content(state->str, &newstr_sz);
 

@@ -65,10 +65,9 @@ os_int osal_json_compress_test(
 
     osal_console_write(json_text);
 
-
     compressed = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
 
-    s = osal_compress_json(compressed, json_text, 0);
+    s = osal_compress_json(compressed, json_text, "title", 0);
     osal_int_to_string(nbuf, sizeof(nbuf), s);
     osal_console_write("\nstatus = ");
     osal_console_write(nbuf);
@@ -101,6 +100,4 @@ os_int osal_json_compress_test(
     osal_stream_buffer_close(compressed);
 
     return 0;
-
-
 }
