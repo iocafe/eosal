@@ -1,4 +1,4 @@
-# eosal/examples/ecollection/build/CmakeLists.txt - example collection build.
+# eosal/examples/ecollection/CmakeLists.txt - example collection build.
 cmake_minimum_required(VERSION 2.8.11)
 
 # Set project name (= project root folder name).

@@ -245,7 +245,7 @@ static void mythread_func(
 
 ****************************************************************************************************
 */
-os_int osal_main(
+osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {

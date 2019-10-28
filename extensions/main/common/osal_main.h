@@ -47,7 +47,7 @@ extern void *osal_application_context;
 /* Prototype for application's entry point function. We declare this prototype, even without
  * OSAL_MAIN_SUPPORT define set.
  */
-os_int osal_main(
+osalStatus osal_main(
     os_int argc,
     os_char *argv[]);
 

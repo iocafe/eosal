@@ -1,4 +1,4 @@
-# eosal/examples/persistent/build/CmakeLists.txt - persistent test
+# eosal/examples/persistent/CmakeLists.txt - persistent test
 cmake_minimum_required(VERSION 2.8.11)
 
 # Set project name (= project root folder name).

@@ -140,7 +140,7 @@ osalStatus os_persistent_save(
     if (!initialized) os_persistent_initialze(OS_NULL);
 
     os_persistent_make_path(block_nr, path, sizeof(path));
-    return os_write_file(path, block, block_sz, 0);
+    return os_write_file(path, block, block_sz, OS_FILE_DEFAULT);
 }
 
 

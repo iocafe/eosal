@@ -29,8 +29,8 @@
   @param   buf Pointer to the buffer.
   @param   n Maximum number of bytes to read.
   @param   n_read Pointer to integer where to store number of bytes read.
-  @param   flags Reserved for future, set 0 for now.
-
+  @param   flags OS_FILE_NULL_CHAR to terminate buffer with NULL character.
+           OS_FILE_DEFAULT for default operation.
   @return  OSAL_SUCCESS if all good. Value OSAL_OUT_OF_BUFFER indicates that the file is larger
            than the buffer (file content still read). Other values indicate an error.
 
@@ -50,6 +50,10 @@ osalStatus os_read_file(
 
     *n_read = 0;
 
+    /* If we want to have terminating NULL character, leave space for it.
+     */
+    if (flags & OS_FILE_NULL_CHAR) n--;
+
     /* Open file.
      */
     f = osal_file_open(path, OS_NULL, &s, OSAL_STREAM_READ);
@@ -66,6 +70,13 @@ osalStatus os_read_file(
     {
         osal_file_read(f, tmp, sizeof(tmp), &onemore, OSAL_STREAM_DEFAULT);
         if (onemore > 0) s = OSAL_OUT_OF_BUFFER;
+    }
+
+    /* Terminate with NULL character.
+     */
+    if (flags & OS_FILE_NULL_CHAR)
+    {
+        buf[(*n_read)++] = '\0';
     }
 
 getout:
@@ -85,7 +96,8 @@ getout:
 
   @param   path Path to the file.
   @param   n_read Pointer to integer where to store number of bytes read.
-  @param   flags Reserved for future, se 0 for now.
+  @param   flags OS_FILE_NULL_CHAR to terminate buffer with NULL character.
+           OS_FILE_DEFAULT for default operation.
 
   @return  Pointer to file content in memory, or OS_NULL if the function failed.
 
@@ -106,6 +118,10 @@ os_uchar *os_read_file_alloc(
      */
     s = osal_filestat(path, &filestat);
     if (s) return OS_NULL;
+
+    /* If we want to have terminating NULL character, reserve space for it.
+     */
+    if (flags & OS_FILE_NULL_CHAR) filestat.sz++;
 
     /* Allocate memory.
      */
@@ -136,7 +152,9 @@ os_uchar *os_read_file_alloc(
   @param   path Path to the file.
   @param   buf Pointer to buffer,
   @param   n Number of bytes to write.
-  @param   flags Reserved for future, set 0 for now.
+  @param   flags OS_FILE_NULL_CHAR to ignore n argument and get number of bytes to write by
+           length of string in buffer.
+           OS_FILE_DEFAULT for default operation.
 
   @return  OSAL_SUCCESS if all good, other values indicate an error.
 
@@ -151,6 +169,13 @@ osalStatus os_write_file(
     osalStream f;
     osalStatus s;
     os_memsz n_written;
+
+    /* If we want to have use os_strlen to determine number of bytes to write?
+     */
+    if (flags & OS_FILE_NULL_CHAR)
+    {
+        n = os_strlen((os_char*)buf) - 1;
+    }
 
     /* Open file.
      */
