@@ -15,6 +15,9 @@
 */
 #include "eosalx.h"
 
+#include "eosalx.h"
+#if OSAL_SERIALIZE_SUPPORT
+
 
 /**
 ****************************************************************************************************
@@ -36,12 +39,18 @@
 os_boolean osal_ints2double(
     os_double *x,
     os_long m,
-    os_long e)
+    os_short e)
 {
     os_long sign;
     os_boolean rval;
 
-    /* If mantissa is zero, the floating point value is zero.
+    union
+    {
+        os_long l;
+        os_double d;
+    } mu;
+
+    /* If this is zero (special case)
      */
     if (m == 0)
     {
@@ -49,12 +58,14 @@ os_boolean osal_ints2double(
         return OS_TRUE;
     }
 
+    mu.l = m;
+
     /* If mantissa is negative, set sign flag and turn mantissa to positive.
      */
-    if (m < 0)
+    if (mu.l < 0)
     {
         sign = 0x8000000000000000;
-        m = -m;
+        mu.l = -mu.l;
     }
     else
     {
@@ -67,10 +78,10 @@ os_boolean osal_ints2double(
 
     /* If underflow, use smallest possible value.
      */
-    if (e < -1023)
+    if (e < -1022)
     {
-        e = -1023;
-        m = 0x10000000000000;
+        e = -1022;
+        mu.l = 0x10000000000000;
     }
 
     /* If overflow, use biggest possible value and set return
@@ -79,23 +90,27 @@ os_boolean osal_ints2double(
     if (e > 1023)
     {
         e = 1023;
-        m = 0x1FFFFFFFFFFFFF;
+        mu.l = 0x1FFFFFFFFFFFFF;
         rval = OS_FALSE;
     }
 
     /* Move leading 1 to right position.
      */
-    while (m >= 0x20000000000000) m >>= 1;
-    while (m < 0x10000000000000) m <<= 1;
+    if (mu.l)
+    {
+        while (mu.l >= 0x20000000000000) mu.l >>= 1;
+        while (mu.l < 0x10000000000000) mu.l <<= 1;
+    }
+    mu.l &= ~0x10000000000000;
 
     /* Merge exponent and sign into mantissa.
      */
     e += 1023;
-    m |= ((os_long)e << 52) | sign;
+    mu.l |= (((os_long)e) << 52) | sign;
 
     /* Return the result.
      */
-    *x = *(os_double*)&m;
+    *x = mu.d;
     return rval;
 }
 
@@ -117,41 +132,49 @@ os_boolean osal_ints2double(
 ****************************************************************************************************
 */
 void osal_double2ints(
-	os_double x,
-	os_long *m,
-    os_long *e)
+    os_double x,
+    os_long *m,
+    os_short *e)
 {
-    os_long sign, v;
+    os_long sign;
 
-    v = *(os_long*)&x;
+    union
+    {
+        os_long l;
+        os_double d;
+    } mu;
+
+    mu.d = x;
 
     /* If this is zero?
      */
-    if (v == 0x10000000000000)
+    if (mu.l == 0)
     {
         *m = *e = 0;
         return;
     }
 
-    /* Get sign.
+    /* Get sign and remove sign from mu.
      */
-    sign = v & 0x8000000000000000;
-    v &= 0x7FFF000000000000;
+    sign = mu.l & 0x8000000000000000;
+    mu.l &= ~0x8000000000000000;
 
     /* Return exponent and mantissa
      */
-    *e = (v >> 52) - 1023;
+    *e = (os_short)((mu.l >> 52) - 1023);
 
-    /* Shift right, until rightmost bit is 1. We want the integer mantissa 
+    /* Shift right, until rightmost bit is 1. We want the integer mantissa
        to be as small as possible.
      */
-    v &= 0x000FFFFFFFFFFFFF;
-    while (v & 1) v >>= 1;
+    mu.l &= 0x000FFFFFFFFFFFFF;
+    mu.l |=   0x10000000000000;
+
+    while (!(mu.l & 1)) mu.l >>= 1;
 
     /* If we need to put sign back?
      */
-    if (sign) v = -v;
-    *m = v;
+    if (sign) mu.l = -mu.l;
+    *m = mu.l;
 }
 
 
@@ -175,16 +198,22 @@ void osal_double2ints(
 os_boolean osal_ints2float(
     os_float *x,
     os_long m,
-    os_long e)
+    os_short e)
 {
-    os_int sign, mm;
+    os_int sign;
     os_boolean rval;
 
-    /* If mantissa is zero, the floating point value is zero.
+    union
+    {
+        os_int i;
+        os_float f;
+    } mu;
+
+    /* If this is zero (special case)
      */
     if (m == 0)
     {
-        *x = 0.0;
+        *x = 0.0F;
         return OS_TRUE;
     }
 
@@ -206,9 +235,9 @@ os_boolean osal_ints2float(
 
     /* If underflow, use smallest possible value.
      */
-    if (e < -127)
+    if (e < -126)
     {
-        e = -127;
+        e = -126;
         m = 0x800000;
     }
 
@@ -224,17 +253,21 @@ os_boolean osal_ints2float(
 
     /* Move leading 1 to right position.
      */
-    while (m >= 0x1000000) m >>= 1;
-    while (m < 0x800000) m <<= 1;
+    if (m)
+    {
+        while (m >= 0x1000000) m >>= 1;
+        while (m < 0x800000) m <<= 1;
+    }
+    m &= ~0x800000;
 
     /* Merge exponent and sign into mantissa.
      */
     e += 127;
-    mm = (os_int)m | ((os_int)e << 23) | sign;
+    mu.i = (os_int)m | ((os_int)e << 23) | sign;
 
     /* Return the result.
      */
-    *x = *(os_float*)&mm;
+    *x = mu.f;
     return rval;
 }
 
@@ -258,37 +291,46 @@ os_boolean osal_ints2float(
 void osal_float2ints(
     os_float x,
     os_long *m,
-    os_long *e)
+    os_short *e)
 {
-    os_int sign, v;
+    os_int sign;
 
-    v = *(os_int*)&x;
+    union
+    {
+        os_int i;
+        os_float f;
+    } mu;
+
+    mu.f = x;
 
     /* If this is zero?
      */
-    if (v == 0x800000)
+    if (mu.i == 0)
     {
         *m = *e = 0;
         return;
     }
 
-    /* Get sign.
+    /* Get sign and remove it from mu.
      */
-    sign = v &0x80000000;
-    v &= 0x7FFF0000;
+    sign = mu.i & 0x80000000;
+    mu.i &= ~0x80000000;
 
     /* Return exponent and mantissa
      */
-    *e = (v >> 23) - 127;
+    *e = (mu.i >> 23) - 127;
 
-    /* Shift right, until rightmost bit is 1. We want the integer mantissa 
+    /* Shift right, until rightmost bit is 1. We want the integer mantissa
        to be as small as possible.
      */
-    v &= 0x007FFFFF;
-    while (v & 1) v >>= 1;
+    mu.i &= 0x007FFFFF;
+    mu.i |=  0x800000UL;
+    while (!(mu.i & 1)) mu.i >>= 1;
 
     /* If we need to put sign back?
      */
-    if (sign) v = -v;
-    *m = v;
+    if (sign) mu.i = -mu.i;
+    *m = mu.i;
 }
+
+#endif

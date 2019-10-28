@@ -1,6 +1,6 @@
 /**
 
-  @file    serialize/linux/osal_float.c
+  @file    serialize/arduino/osal_float.c
   @brief   Convert floating point number to two integers and vice versa.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#if OSAL_SERIALIZE_SUPPORT
 
 
 /**
@@ -36,7 +37,7 @@
 os_boolean osal_ints2double(
     os_double *x,
     os_long m,
-    os_long e)
+    os_short e)
 {
     os_long sign;
     os_boolean rval;
@@ -45,10 +46,9 @@ os_boolean osal_ints2double(
     {
         os_long l;
         os_double d;
-    }
-    mm;
+    } mu;
 
-    /* If mantissa is zero, the floating point value is zero.
+    /* If this is zero (special case)
      */
     if (m == 0)
     {
@@ -56,12 +56,14 @@ os_boolean osal_ints2double(
         return OS_TRUE;
     }
 
+    mu.l = m;
+
     /* If mantissa is negative, set sign flag and turn mantissa to positive.
      */
-    if (m < 0)
+    if (mu.l < 0)
     {
         sign = 0x8000000000000000;
-        m = -m;
+        mu.l = -mu.l;
     }
     else
     {
@@ -74,10 +76,10 @@ os_boolean osal_ints2double(
 
     /* If underflow, use smallest possible value.
      */
-    if (e < -1023)
+    if (e < -1022)
     {
-        e = -1023;
-        m = 0x10000000000000;
+        e = -1022;
+        mu.l = 0x10000000000000;
     }
 
     /* If overflow, use biggest possible value and set return
@@ -86,24 +88,27 @@ os_boolean osal_ints2double(
     if (e > 1023)
     {
         e = 1023;
-        m = 0x1FFFFFFFFFFFFF;
+        mu.l = 0x1FFFFFFFFFFFFF;
         rval = OS_FALSE;
     }
 
     /* Move leading 1 to right position.
      */
-    while (m >= 0x20000000000000) m >>= 1;
-    while (m < 0x10000000000000) m <<= 1;
+    if (mu.l)
+    {
+        while (mu.l >= 0x20000000000000) mu.l >>= 1;
+        while (mu.l < 0x10000000000000) mu.l <<= 1;
+    }
+    mu.l &= ~0x10000000000000;
 
     /* Merge exponent and sign into mantissa.
      */
     e += 1023;
-    m |= ((os_long)e << 52) | sign;
+    mu.l |= (((os_long)e) << 52) | sign;
 
     /* Return the result.
      */
-    mm.l = m;
-    *x = mm.d;
+    *x = mu.d;
     return rval;
 }
 
@@ -125,9 +130,9 @@ os_boolean osal_ints2double(
 ****************************************************************************************************
 */
 void osal_double2ints(
-	os_double x,
-	os_long *m,
-    os_long *e)
+    os_double x,
+    os_long *m,
+    os_short *e)
 {
     os_long sign;
 
@@ -135,37 +140,39 @@ void osal_double2ints(
     {
         os_long l;
         os_double d;
-    } v;
+    } mu;
 
-    v.d = x;
+    mu.d = x;
 
     /* If this is zero?
      */
-    if (v.l == 0x10000000000000)
+    if (mu.l == 0)
     {
         *m = *e = 0;
         return;
     }
 
-    /* Get sign.
+    /* Get sign and remove sign from mu.
      */
-    sign = v.l & 0x8000000000000000;
-    v.l &= 0x7FFF000000000000;
+    sign = mu.l & 0x8000000000000000;
+    mu.l &= ~0x8000000000000000;
 
     /* Return exponent and mantissa
      */
-    *e = (v.l >> 52) - 1023;
+    *e = (os_short)((mu.l >> 52) - 1023);
 
-    /* Shift right, until rightmost bit is 1. We want the integer mantissa 
+    /* Shift right, until rightmost bit is 1. We want the integer mantissa
        to be as small as possible.
      */
-    v.l &= 0x000FFFFFFFFFFFFF;
-    while (v.l & 1) v.l >>= 1;
+    mu.l &= 0x000FFFFFFFFFFFFF;
+    mu.l |=   0x10000000000000;
+
+    while (!(mu.l & 1)) mu.l >>= 1;
 
     /* If we need to put sign back?
      */
-    if (sign) v.l = -v.l;
-    *m = v.l;
+    if (sign) mu.l = -mu.l;
+    *m = mu.l;
 }
 
 
@@ -189,7 +196,7 @@ void osal_double2ints(
 os_boolean osal_ints2float(
     os_float *x,
     os_long m,
-    os_long e)
+    os_short e)
 {
     os_int sign;
     os_boolean rval;
@@ -198,14 +205,13 @@ os_boolean osal_ints2float(
     {
         os_int i;
         os_float f;
-    }
-    mm;
+    } mu;
 
-    /* If mantissa is zero, the floating point value is zero.
+    /* If this is zero (special case)
      */
     if (m == 0)
     {
-        *x = 0.0;
+        *x = 0.0F;
         return OS_TRUE;
     }
 
@@ -227,9 +233,9 @@ os_boolean osal_ints2float(
 
     /* If underflow, use smallest possible value.
      */
-    if (e < -127)
+    if (e < -126)
     {
-        e = -127;
+        e = -126;
         m = 0x800000;
     }
 
@@ -245,17 +251,21 @@ os_boolean osal_ints2float(
 
     /* Move leading 1 to right position.
      */
-    while (m >= 0x1000000) m >>= 1;
-    while (m < 0x800000) m <<= 1;
+    if (m)
+    {
+        while (m >= 0x1000000) m >>= 1;
+        while (m < 0x800000) m <<= 1;
+    }
+    m &= ~0x800000;
 
     /* Merge exponent and sign into mantissa.
      */
     e += 127;
-    mm.i = (os_int)m | ((os_int)e << 23) | sign;
+    mu.i = (os_int)m | ((os_int)e << 23) | sign;
 
     /* Return the result.
      */
-    *x = mm.f;
+    *x = mu.f;
     return rval;
 }
 
@@ -279,7 +289,7 @@ os_boolean osal_ints2float(
 void osal_float2ints(
     os_float x,
     os_long *m,
-    os_long *e)
+    os_short *e)
 {
     os_int sign;
 
@@ -287,35 +297,38 @@ void osal_float2ints(
     {
         os_int i;
         os_float f;
-    } v;
+    } mu;
 
-    v .f = x;
+    mu.f = x;
 
     /* If this is zero?
      */
-    if (v.i == 0x800000)
+    if (mu.i == 0)
     {
         *m = *e = 0;
         return;
     }
 
-    /* Get sign.
+    /* Get sign and remove it from mu.
      */
-    sign = v.i &0x80000000;
-    v.i &= 0x7FFF0000;
+    sign = mu.i & 0x80000000;
+    mu.i &= ~0x80000000;
 
     /* Return exponent and mantissa
      */
-    *e = (v.i >> 23) - 127;
+    *e = (mu.i >> 23) - 127;
 
-    /* Shift right, until rightmost bit is 1. We want the integer mantissa 
+    /* Shift right, until rightmost bit is 1. We want the integer mantissa
        to be as small as possible.
      */
-    v.i &= 0x007FFFFF;
-    while (v.i & 1) v.i >>= 1;
+    mu.i &= 0x007FFFFF;
+    mu.i |=  0x800000UL;
+    while (!(mu.i & 1)) mu.i >>= 1;
 
     /* If we need to put sign back?
      */
-    if (sign) v.i = -v.i;
-    *m = v.i;
+    if (sign) mu.i = -mu.i;
+    *m = mu.i;
 }
+
+#endif

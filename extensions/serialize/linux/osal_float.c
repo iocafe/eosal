@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#if OSAL_SERIALIZE_SUPPORT
 
 
 /**
@@ -329,3 +330,5 @@ void osal_float2ints(
     if (sign) mu.i = -mu.i;
     *m = mu.i;
 }
+
+#endif

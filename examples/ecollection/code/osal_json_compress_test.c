@@ -32,8 +32,8 @@ static os_char json_text[] = {
 "	  \"POTENTIOMETER\": {\"addr\": 25, \"speed\": 3, \"delay\": 11, \"max\": 4095}\n"
 "    },\n"
 "    \"pwm\": {\n"
-"	  \"SERVO\": {\"bank\": 0, \"addr\": 32, \"frequency\": 50.1, \"resolution\": null, \"init\": 2048, \"max\": 4095},\n"
-"	  \"DIMMER_LED\": {\"bank\": 1, \"addr\": 33, \"frequency\": 5000, \"resolution\": 12, \"init\": 0, \"max\": 4095}\n"
+"	  \"SERVO\": {\"bank\": 0, \"addr\": 32, \"frequency\": 50.1, \"resolution\": \"12\", \"init\": 2048, \"max\": 4095},\n"
+"	  \"DIMMER_LED\": {\"bank\": 1, \"addr\": 33, \"frequency\": 5000, \"resolution\": null, \"init\": 0, \"max\": 4095}\n"
 "    }\n"
 "  }\n"
 "}\n"};
@@ -73,7 +73,7 @@ os_int osal_json_compress_test(
     osal_console_write("\nstatus = ");
     osal_console_write(nbuf);
 
-    osal_console_write("\nogiginal size = ");
+    osal_console_write("\noriginal size = ");
     osal_int_to_string(nbuf, sizeof(nbuf), os_strlen(json_text));
     osal_console_write(nbuf);
 
