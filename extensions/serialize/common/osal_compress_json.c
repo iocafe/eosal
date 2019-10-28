@@ -274,7 +274,8 @@ static osalStatus parse_json_value(
     os_long tag_dict_ix,
     os_boolean allow_null)
 {
-    os_long ivalue, z, value_dict_ix, m, e;
+    os_long ivalue, z, value_dict_ix, m;
+    os_short e;
     os_double dvalue;
     os_char *data;
     os_memsz data_n, count;
@@ -334,7 +335,7 @@ static osalStatus parse_json_value(
         if (s) return s;
         if ((z & 15) == OSAL_JSON_VALUE_FLOAT)
         {
-            osal_double2ints(dvalue, &m, &e);
+            osal_float2ints((os_float)dvalue, &m, &e);
             s = osal_stream_write_long(state->content, m, 0);
             if (m && !s)
             {

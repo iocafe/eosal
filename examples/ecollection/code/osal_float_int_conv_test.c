@@ -48,16 +48,16 @@ os_int osal_float_int_conv_test(
     os_long x;
     os_int i;
 
-    osal_test_float_value(2);
-
-    s = osal_test_double_value(2.2);
+    s = osal_test_double_value(0);
     if (s) goto failed;
-
+    s = osal_test_float_value(0);
+    if (s) goto failed;
 
     for (i = 0; i<500000; i++)
     {
         x = osal_rand(-5000, 5000);
         s = osal_test_double_value(x * 0.7);
+        s = osal_test_float_value(x * 0.7);
         if (s) goto failed;
     }
 
@@ -72,12 +72,11 @@ static osalStatus osal_test_double_value(
     os_double x)
 {
     os_double y;
-    os_long m, e;
+    os_long m;
+    os_short e;
 
     osal_double2ints(x, &m, &e);
-
     osal_ints2double(&y, m, e);
-
 
     if (x != y)
     {
@@ -98,7 +97,8 @@ static osalStatus osal_test_float_value(
     os_float x)
 {
     os_float y;
-    os_long m, e;
+    os_long m;
+    os_short e;
 
     osal_float2ints(x, &m, &e);
     osal_ints2float(&y, m, e);

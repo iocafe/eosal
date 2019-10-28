@@ -73,6 +73,7 @@ osalStatus osal_get_json_item(
 {
     os_long code, m, e, l;
     os_int tag_dict_ix, value_dict_ix, bytes;
+    os_float f;
 
     os_memclear(item, sizeof(osalJsonItem));
     bytes = osal_intser_reader(jindex->read_pos, &code);
@@ -135,7 +136,8 @@ osalStatus osal_get_json_item(
             {
                 bytes = osal_intser_reader(jindex->read_pos, &e);
                 jindex->read_pos += bytes;
-                osal_ints2double(&item->value.d, m, e);
+                osal_ints2float(&f, m, e);
+                item->value.d = f;
             }
             else
             {

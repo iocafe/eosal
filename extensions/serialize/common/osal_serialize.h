@@ -72,28 +72,28 @@ inline os_int osal_intser_more_bytes(
 os_boolean osal_ints2double(
     os_double *x,
     os_long m,
-    os_long e);
+    os_short e);
 
 /* Split double to mantissa and exponent.
  */
 void osal_double2ints(
 	os_double x,
 	os_long *m,
-    os_long *e);
+    os_short *e);
 
 /* Convert integer mantissa and exponent to float.
  */
 os_boolean osal_ints2float(
     os_float *x,
     os_long m,
-    os_long e);
+    os_short e);
 
 /* Split float to mantissa and exponent.
  */
 void osal_float2ints(
     os_float x,
     os_long *m,
-    os_long *e);
+    os_short *e);
 
 /*@}*/
 
