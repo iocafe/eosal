@@ -6,6 +6,30 @@
   @version 1.0
   @date    25.10.2019
 
+  Example, access compressed JSON data
+
+      osalJsonIndex jindex;
+      osalJsonItem item;
+
+      s = osal_create_json_indexer(&jindex, ... )
+      if (s) error...
+
+      while (!(s = osal_get_json_item(&jindex, &item))
+      {
+        switch (item.code)
+        {
+            case OSAL_JSON_START_BLOCK:
+                printf ("%s\n", item.tag_name);
+                break;
+
+            ...
+        }
+        ....
+      }
+      osal_release_json_indexer(&jindex);
+
+  The osal_uncompress_json() function uncompresses JSON from binary data to plain text string.
+
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
@@ -18,22 +42,25 @@
 
 /* Forward referred static functions.
  */
-#include <stdio.h>
+static osalStatus osal_write_json_str(
+    osalStream uncompressed,
+    const os_char *str);
 
 
 /**
 ****************************************************************************************************
 
-  @brief Create index to access compressed data easily.
+  @brief Create indexer to access data in compressed JSON.
   @anchor osal_create_json_indexer
 
   The osal_create_json_indexer() function creates an index to access compressed json data from
-  C code. The generated index must be released by calling osal_release_json_indexer() and the
-  compressed data must remain in memory as long as index is used.
+  C code. The generated indexer should be released by calling osal_release_json_indexer() and the
+  compressed data must remain in memory as long as the indexer is used.
 
   @param  jindex JSON data index to set up.
   @param  compressed Compressed binary data.
   @param  compressed_sz Size of compressed data just for corruption check purposes.
+  @param  flags Reserved for future, set 0 for now.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -41,14 +68,13 @@
 osalStatus osal_create_json_indexer(
     osalJsonIndex *jindex,
     os_char *compressed,
-    os_memsz compressed_sz)
+    os_memsz compressed_sz,
+    os_int flags)
 {
     os_long dict_size, data_size;
     os_int bytes;
 
     os_memclear(jindex, sizeof(osalJsonIndex));
-    jindex->compressed = compressed;
-    jindex->compressed_sz = compressed_sz;
 
     /* Calculate number of dictionary entries.
      */
@@ -177,10 +203,11 @@ osalStatus osal_get_json_item(
 /**
 ****************************************************************************************************
 
-  @brief Release JSON index and memory allocated for it.
+  @brief Release JSON index and any resources for it.
   @anchor osal_release_json_indexer
 
-  The osal_release_json_indexer() function...
+  The osal_release_json_indexer() function does nothing for now. It should be anyhow called, in
+  case future versions of indexers allocate memory, etc ...
 
   @param  jindex JSON data index to release.
   @return none.
@@ -204,6 +231,7 @@ void osal_release_json_indexer(
   @param  ucompressed Stream where to write uncompressed JSON output.
   @param  compressed Compressed binary data.
   @param  compressed_sz Size of compressed data just for corruption check purposes.
+  @param  flags Reserved for future, set 0 for now.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -211,65 +239,114 @@ void osal_release_json_indexer(
 osalStatus osal_uncompress_json(
     osalStream uncompressed,
     os_char *compressed,
-    os_memsz compressed_sz)
+    os_memsz compressed_sz,
+    os_int flags)
 {
     osalJsonIndex jindex;
     osalJsonItem  item;
     osalStatus s;
-    os_int i, prev_depth;
+    os_int i, prev_depth, ddigs;
+    os_char nbuf[OSAL_NBUF_SZ];
+    os_double d;
+    os_memsz n_written;
 
-    s = osal_create_json_indexer(&jindex, compressed, compressed_sz);
+    s = osal_create_json_indexer(&jindex, compressed, compressed_sz, 0);
     if (s) return s;
 
     prev_depth = -1;
 
-    while (!osal_get_json_item(&jindex, &item))
+    while (!(s = osal_get_json_item(&jindex, &item)))
     {
         if (item.depth == prev_depth)
         {
-            printf (",");
+            s = osal_write_json_str(uncompressed, ",");
+            if (s) goto getout;
         }
         prev_depth = item.depth;
 
-        printf ("\n");
-        for (i = 0; i<item.depth; i++) printf (" \t");
+        s = osal_write_json_str(uncompressed, "\n");
+        if (s) goto getout;
+
+        for (i = 0; i<item.depth; i++)
+        {
+            s = osal_write_json_str(uncompressed, "\t");
+            if (s) goto getout;
+        }
 
         if (item.code == OSAL_JSON_END_BLOCK)
         {
-            printf ("}");
+            s = osal_write_json_str(uncompressed, "}");
+            if (s) goto getout;
             continue;
         }
 
-        printf ("%s", item.tag_name);
+        s = osal_write_json_str(uncompressed, item.tag_name);
+        if (s) goto getout;
 
         switch (item.code)
         {
             case OSAL_JSON_START_BLOCK:
-                printf (": {");
+                s = osal_write_json_str(uncompressed, ": {");
+                if (s) goto getout;
                 break;
 
             case OSAL_JSON_VALUE_STRING:
-                printf (": \"%s\"", item.value.s);
+                osal_int_to_string(nbuf, sizeof(nbuf), item.value.l);
+                s = osal_write_json_str(uncompressed, ": \"");
+                if (s) goto getout;
+                s = osal_write_json_str(uncompressed, item.value.s);
+                if (s) goto getout;
+                s = osal_write_json_str(uncompressed, "\"");
+                if (s) goto getout;
                 break;
 
             case OSAL_JSON_VALUE_INTEGER:
-                printf (": %lld", item.value.l);
+                osal_int_to_string(nbuf, sizeof(nbuf), item.value.l);
+                s = osal_write_json_str(uncompressed, ": ");
+                if (s) goto getout;
+                s = osal_write_json_str(uncompressed, nbuf);
+                if (s) goto getout;
                 break;
 
             case OSAL_JSON_VALUE_FLOAT:
-                printf (": %f", item.value.d);
+                d = item.value.d; if (d < 0) d = -d;
+                ddigs = 5; while (d >= 1.0 && ddigs > 1) {ddigs--; d *= 0.1; }
+                osal_double_to_string(nbuf, sizeof(nbuf),
+                    item.value.d, ddigs, OSAL_FLOAT_DEFAULT);
+                s = osal_write_json_str(uncompressed, ": ");
+                if (s) goto getout;
+                s = osal_write_json_str(uncompressed, nbuf);
+                if (s) goto getout;
                 break;
 
             default:
-                printf (": \"error\"");
-                break;
-
+                s = OSAL_STATUS_FAILED;
+                goto getout;
         }
     }
-    printf ("\n");
 
+    if (s == OSAL_END_OF_FILE)
+    {
+        /* Write terminating '\n' and '\0' characters.
+         */
+        s = osal_stream_write(uncompressed, (os_uchar*)"\n", 2,
+            &n_written, OSAL_STREAM_DEFAULT);
+    }
+
+getout:
     osal_release_json_indexer(&jindex);
-    return OSAL_SUCCESS;
+    return s;
 }
+
+static osalStatus osal_write_json_str(
+    osalStream uncompressed,
+    const os_char *str)
+{
+    os_memsz n_written;
+
+    return osal_stream_write(uncompressed, (os_uchar*)str, os_strlen(str)-1,
+        &n_written, OSAL_STREAM_DEFAULT);
+}
+
 
 #endif

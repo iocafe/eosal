@@ -81,14 +81,16 @@ static os_long osal_add_string_to_json_dict(
   The osal_compress_json() function compresses JSON strin to packed binary format.
 
   @param  compressed Stream where to write compressed output.
-  @param  x Integer to pack.
+  @param  json_source JSON content as plain text.
+  @param  flags Reserved for future, set 0 for now.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
 ****************************************************************************************************
 */
 osalStatus osal_compress_json(
     osalStream compressed,
-    os_char *json_source)
+    os_char *json_source,
+    os_int flags)
 {
     osalJsonCompressor state;
     os_char c;

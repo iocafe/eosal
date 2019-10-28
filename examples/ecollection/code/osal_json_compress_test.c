@@ -60,15 +60,15 @@ os_int osal_json_compress_test(
     osalStatus s;
     osalStream compressed, uncompressed;
     os_char nbuf[OSAL_NBUF_SZ];
-    os_char *data;
-    os_memsz data_sz;
+    os_char *data, *str;
+    os_memsz data_sz, str_sz;
 
     osal_console_write(json_text);
 
 
     compressed = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
 
-    s = osal_compress_json(compressed, json_text);
+    s = osal_compress_json(compressed, json_text, 0);
     osal_int_to_string(nbuf, sizeof(nbuf), s);
     osal_console_write("\nstatus = ");
     osal_console_write(nbuf);
@@ -86,7 +86,16 @@ os_int osal_json_compress_test(
 
     uncompressed = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
 
-    osal_uncompress_json(uncompressed, data, data_sz);
+    s = osal_uncompress_json(uncompressed, data, data_sz, 0);
+    if (s)
+    {
+        osal_console_write("osal_uncompress_json() failed\n");
+    }
+    else
+    {
+        str = (os_char*)osal_stream_buffer_content(uncompressed, &str_sz);
+        osal_console_write(str);
+    }
 
     osal_stream_buffer_close(uncompressed);
     osal_stream_buffer_close(compressed);
