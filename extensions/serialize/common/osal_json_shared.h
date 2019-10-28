@@ -61,7 +61,8 @@ typedef enum osalStaticJsonDictionary
     OSAL_JSON_DICT_RESOLUTION = 13,
     OSAL_JSON_DICT_DELAY = 14,
 
-    OSAL_JSON_DICT_NO_ENTRY = 20,
+    OSAL_JSON_DICT_N_DEFINED,
+    OSAL_JSON_DICT_NO_ENTRY = 40,
     OSAL_JSON_DICT_N_STATIC = OSAL_JSON_DICT_NO_ENTRY
 }
 osalStaticJsonDictionary;

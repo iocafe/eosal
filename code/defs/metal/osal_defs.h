@@ -281,6 +281,13 @@
 #define OSAL_SERIALIZE_SUPPORT 0
 #endif
 
+/** Support parsing and writing JSON as plain text. Compressed binary JSON support
+ *  is already included in OSAL_SERIALIZE_SUPPORT.
+ */
+#ifndef OSAL_JSON_TEXT_SUPPORT
+#define OSAL_JSON_TEXT_SUPPORT 0
+#endif
+
 /** OSAL extensions: If file system is supported for the platform, define 1.
  */
 #ifndef OSAL_FILESYS_SUPPORT

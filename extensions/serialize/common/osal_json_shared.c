@@ -16,7 +16,7 @@
 #include "eosalx.h"
 #if OSAL_SERIALIZE_SUPPORT
 
-const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_STATIC]
+const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
  = {"addr",  /* OSAL_JSON_DICT_ADDR = 0 */
     "bank",  /* OSAL_JSON_DICT_BANK = 1 */
     OS_NULL,
@@ -29,11 +29,10 @@ const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_STATIC]
     "digs",  /* OSAL_JSON_DICT_DIGS = 9 */
     OS_NULL,
     OS_NULL,
-    OS_NULL,
     "frequency",  /* OSAL_JSON_DICT_FREQUENCY = 12 */
-    "resolution",  /* OSAL_JSON_DICT_RESOLUTION = 13 */
-    "delay",  /* OSAL_JSON_DICT_DELAY = 14 */
-    OS_NULL};
+    "resolution", /* OSAL_JSON_DICT_RESOLUTION = 13 */
+    "delay"       /* OSAL_JSON_DICT_DELAY = 14 */
+   };
 
 /* Find static dictionary item number by string, OSAL_JSON_DICT_NO_ENTRY is none.
  */
@@ -42,7 +41,7 @@ osalStaticJsonDictionary osal_find_in_static_json_dict(
 {
     os_int i;
 
-    for (i = 0; i < OSAL_JSON_DICT_N_STATIC; i++)
+    for (i = 0; i < OSAL_JSON_DICT_N_DEFINED; i++)
     {
         if (osal_static_json_dict[i] == OS_NULL) continue;
         if (*str != *osal_static_json_dict[i]) continue;
@@ -60,7 +59,7 @@ osalStaticJsonDictionary osal_find_in_static_json_dict(
 const os_char *osal_get_static_json_dict_str(
     osalStaticJsonDictionary ix)
 {
-    if (ix < 0 || ix >= OSAL_JSON_DICT_N_STATIC) return OS_NULL;
+    if (ix < 0 || ix >= OSAL_JSON_DICT_N_DEFINED) return OS_NULL;
     return osal_static_json_dict[ix];
 }
 

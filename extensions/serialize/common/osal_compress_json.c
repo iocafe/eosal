@@ -14,7 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SERIALIZE_SUPPORT
+#if OSAL_JSON_TEXT_SUPPORT
 
 
 /** JSON compression state structure.
@@ -86,7 +86,8 @@ static os_long osal_add_string_to_json_dict(
 
   @param  compressed Stream where to write compressed output.
   @param  json_source JSON content as plain text.
-  @param  skip_tags List of tags to skip (not include in compressed data).
+  @param  skip_tags List of tags to skip (not include in compressed data). For example
+          "title,help" to exclude title and help texts from compressed binary JSON.
   @param  flags Reserved for future, set 0 for now.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
@@ -187,7 +188,20 @@ timeout:
 }
 
 
+/**
+****************************************************************************************************
 
+  @brief Parse a JSON block.
+  @anchor osal_parse_json_recursive
+
+  The osal_parse_json_recursive() function recursively parses a block within {} from plain
+  JSON text into compression state.
+
+  @param  state JSON compression state.
+  @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
+
+****************************************************************************************************
+*/
 static osalStatus osal_parse_json_recursive(
     osalJsonCompressor *state)
 {
@@ -297,6 +311,22 @@ static osalStatus osal_parse_json_recursive(
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Parse a JSON tag name.
+  @anchor osal_parse_json_tag
+
+  The osal_parse_json_tag() function parses a quoted tag name from JSON text.
+
+  @param  state JSON compression state.
+  @param  dict_ix Pointer to integer where to store tag position in dictionary. This can be
+          static dictionary item (values 0 ... OSAL_JSON_DICT_N_STATIC - 1), or byte index
+          within dictionary + OSAL_JSON_DICT_N_STATIC.
+  @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
+
+****************************************************************************************************
+*/
 static osalStatus osal_parse_json_tag(
     osalJsonCompressor *state,
     os_long *dict_ix)
@@ -333,6 +363,24 @@ static osalStatus osal_parse_json_tag(
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Parse a JSON value.
+  @anchor parse_json_value
+
+  The parse_json_value() function parses a value from JSON. The value may be quoted or unquoted
+  string, integer, float, or null to indicate empty value.
+
+  @param  state JSON compression state.
+  @param  tag_dict_ix Tag position in dictionary. This can be static dictionary item (values 0 ...
+          OSAL_JSON_DICT_N_STATIC - 1), or byte index within dictionary + OSAL_JSON_DICT_N_STATIC.
+  @param  allow_null Allow null word to mean empty value flag. This flag is true when parsing
+          unquoted value and false when parsing a value within quotes.
+  @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
+
+****************************************************************************************************
+*/
 static osalStatus parse_json_value(
     osalJsonCompressor *state,
     os_long tag_dict_ix,
@@ -427,6 +475,20 @@ static osalStatus parse_json_value(
     return s;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Parse a JSON string in quotes.
+  @anchor osal_parse_json_quoted_string
+
+  The osal_parse_json_quoted_string() function parses a quoted string value from JSON.
+
+  @param  state JSON compression state.
+  @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
+
+****************************************************************************************************
+*/
 static osalStatus osal_parse_json_quoted_string(
     osalJsonCompressor *state)
 {
@@ -474,6 +536,20 @@ static osalStatus osal_parse_json_quoted_string(
     return s;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Parse a number.
+  @anchor osal_parse_json_number
+
+  The osal_parse_json_number() function parses a number (or null) string as value.
+
+  @param  state JSON compression state.
+  @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
+
+****************************************************************************************************
+*/
 static osalStatus osal_parse_json_number(
     osalJsonCompressor *state)
 {
@@ -503,8 +579,28 @@ static osalStatus osal_parse_json_number(
     return s;
 }
 
-/* Very inefficient loop trough whole list: switch to B-tree or hash tab
- */
+
+/**
+****************************************************************************************************
+
+  @brief Make sure that a string is in dictionary.
+  @anchor osal_add_string_to_json_dict
+
+  The osal_add_string_to_json_dict() function checks first if this is static dictionary item,
+  if so returns the static dictionary index.
+  Then the dictonary for this document is checked. If found there, the function returns
+  position in dictionary as offset from beginning of dictionary plus OSAL_JSON_DICT_N_STATIC
+  offset.
+
+  Note: Very inefficient loop trough whole list if dictionary is large: switch to B-tree or
+  to hash table.
+
+  @param  state JSON compression state.
+  @return String position in dictionary. This can be static dictionary item (values 0 ...
+          OSAL_JSON_DICT_N_STATIC - 1), or byte index within dictionary + OSAL_JSON_DICT_N_STATIC.
+
+****************************************************************************************************
+*/
 static os_long osal_add_string_to_json_dict(
     osalJsonCompressor *state)
 {

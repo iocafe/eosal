@@ -76,6 +76,10 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/serialize/common/osal_serialize.h"
   #include "extensions/serialize/common/osal_stream_buffer.h"
   #include "extensions/serialize/common/osal_json_shared.h"
+  #include "extensions/serialize/common/osal_json_indexer.h"
+#endif
+
+#if OSAL_JSON_TEXT_SUPPORT
   #include "extensions/serialize/common/osal_compress_json.h"
   #include "extensions/serialize/common/osal_uncompress_json.h"
 #endif

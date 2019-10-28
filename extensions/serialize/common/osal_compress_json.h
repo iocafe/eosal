@@ -16,7 +16,7 @@
 #ifndef OSAL_COMPRESS_JSON_INCLUDED
 #define OSAL_COMPRESS_JSON_INCLUDED
 #include "eosalx.h"
-#if OSAL_SERIALIZE_SUPPORT
+#if OSAL_JSON_TEXT_SUPPORT
 
 /* Compress JSON from normal string presentation to binary format.
  */
