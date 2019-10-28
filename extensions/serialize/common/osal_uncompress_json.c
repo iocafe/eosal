@@ -25,10 +25,10 @@
 ****************************************************************************************************
 
   @brief Create index to access compressed data easily.
-  @anchor osal_create_json_index
+  @anchor osal_create_json_indexer
 
-  The osal_create_json_index() function creates an index to access compressed json data from
-  C code. The generated index must be released by calling osal_release_json_index() and the
+  The osal_create_json_indexer() function creates an index to access compressed json data from
+  C code. The generated index must be released by calling osal_release_json_indexer() and the
   compressed data must remain in memory as long as index is used.
 
   @param  jindex JSON data index to set up.
@@ -38,7 +38,7 @@
 
 ****************************************************************************************************
 */
-osalStatus osal_create_json_index(
+osalStatus osal_create_json_indexer(
     osalJsonIndex *jindex,
     os_char *compressed,
     os_memsz compressed_sz)
@@ -81,7 +81,7 @@ osalStatus osal_get_json_item(
     bytes = osal_intser_reader(jindex->read_pos, &code);
     jindex->read_pos += bytes;
 
-    item->code = code & 15;
+    item->code = code & OSAL_JSON_CODE_MASK;
 
     item->depth = jindex->depth;
 
@@ -92,12 +92,24 @@ osalStatus osal_get_json_item(
         return /* jindex->depth < 0 ? OSAL_END_OF_FILE : */ OSAL_SUCCESS;
     }
 
-    tag_dict_ix = (os_int)(code >> 4);
-//    if (tag_dict_ix < 0 || tag_dict_ix >= jindex->dictionary_n) return OSAL_STATUS_FAILED;
+    tag_dict_ix = (os_int)(code >> OSAL_JSON_CODE_SHIFT);
+    /* if (tag_dict_ix < 0 || tag_dict_ix >= jindex->dictionary_n)
+    {
+        return OSAL_STATUS_FAILED;
+    } */
 
-    item->tag_name = jindex->dict_start + tag_dict_ix;
+    item->tag_name = osal_get_static_json_dict_str(tag_dict_ix);
+    if (item->tag_name == OS_NULL)
+    {
+        if (tag_dict_ix < OSAL_JSON_DICT_N_STATIC /* ||
+            tag_dict_ix > jindex->dictionary_n + OSAL_JSON_DICT_N_STATIC */)
+        {
+            return OSAL_STATUS_FAILED;
+        }
+        item->tag_name = jindex->dict_start + tag_dict_ix - OSAL_JSON_DICT_N_STATIC;
+    }
 
-    switch (code & 15)
+    switch (code & OSAL_JSON_CODE_MASK)
     {
         case OSAL_JSON_START_BLOCK:
             jindex->depth++;
@@ -113,7 +125,13 @@ osalStatus osal_get_json_item(
             jindex->read_pos += bytes;
             value_dict_ix = (os_int)l;
             // if (value_dict_ix < 0 || value_dict_ix >= jindex->dictionary_n) return OSAL_STATUS_FAILED;
-            item->value.s = jindex->dict_start + value_dict_ix;
+
+            item->value.s = osal_get_static_json_dict_str(value_dict_ix);
+            if (item->value.s == OS_NULL)
+            {
+                if (value_dict_ix < OSAL_JSON_DICT_N_STATIC) return OSAL_STATUS_FAILED;
+                item->value.s = jindex->dict_start + value_dict_ix - OSAL_JSON_DICT_N_STATIC;
+            }
             break;
 
         case OSAL_JSON_VALUE_INTEGER_ZERO:
@@ -160,17 +178,16 @@ osalStatus osal_get_json_item(
 ****************************************************************************************************
 
   @brief Release JSON index and memory allocated for it.
-  @anchor osal_create_json_index
+  @anchor osal_release_json_indexer
 
-  The osal_create_json_index() function creates an index to access compressed json data from
-  C code. The inde
+  The osal_release_json_indexer() function...
 
   @param  jindex JSON data index to release.
   @return none.
 
 ****************************************************************************************************
 */
-void osal_release_json_index(
+void osal_release_json_indexer(
     osalJsonIndex *jindex)
 {
 }
@@ -180,7 +197,7 @@ void osal_release_json_index(
 ****************************************************************************************************
 
   @brief Uncompress JSON from binary data to text.
-  @anchor osal_compress_json
+  @anchor osal_uncompress_json
 
   The osal_uncompress_json() function compresses JSON strin to packed binary format.
 
@@ -201,7 +218,7 @@ osalStatus osal_uncompress_json(
     osalStatus s;
     os_int i, prev_depth;
 
-    s = osal_create_json_index(&jindex, compressed, compressed_sz);
+    s = osal_create_json_indexer(&jindex, compressed, compressed_sz);
     if (s) return s;
 
     prev_depth = -1;
@@ -249,8 +266,9 @@ osalStatus osal_uncompress_json(
 
         }
     }
+    printf ("\n");
 
-    osal_release_json_index(&jindex);
+    osal_release_json_indexer(&jindex);
     return OSAL_SUCCESS;
 }
 

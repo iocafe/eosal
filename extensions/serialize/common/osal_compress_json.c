@@ -174,7 +174,7 @@ static osalStatus osal_parse_json_recursive(
     do
     {
         if (osal_parse_json_tag(state, &tag_dict_ix)) return OSAL_STATUS_FAILED;
-        tag_dict_ix <<= 4;
+        tag_dict_ix <<= OSAL_JSON_CODE_SHIFT;
 
         /* Skip the colon separating first double quote
          */
@@ -309,7 +309,7 @@ static osalStatus parse_json_value(
             z = OSAL_JSON_VALUE_INTEGER + tag_dict_ix;
         }
         s = osal_stream_write_long(state->content, z, 0);
-        if ((z & 15) == OSAL_JSON_VALUE_INTEGER && !s)
+        if ((z & OSAL_JSON_CODE_MASK) == OSAL_JSON_VALUE_INTEGER && !s)
         {
             s = osal_stream_write_long(state->content, ivalue, 0);
         }
@@ -334,7 +334,7 @@ static osalStatus parse_json_value(
         }
         s = osal_stream_write_long(state->content, z, 0);
         if (s) return s;
-        if ((z & 15) == OSAL_JSON_VALUE_FLOAT)
+        if ((z & OSAL_JSON_CODE_MASK) == OSAL_JSON_VALUE_FLOAT)
         {
             osal_float2ints((os_float)dvalue, &m, &e);
             s = osal_stream_write_long(state->content, m, 0);
@@ -359,7 +359,6 @@ static osalStatus parse_json_value(
     s = osal_stream_write_long(state->content, value_dict_ix, 0);
     return s;
 }
-
 
 static osalStatus osal_parse_json_quoted_string(
     osalJsonCompressor *state)
@@ -449,6 +448,10 @@ static os_long osal_add_string_to_json_dict(
     osalStatus s;
 
     newstr = (os_char*)osal_stream_buffer_content(state->str, &newstr_sz);
+
+    ix = osal_find_in_static_json_dict(newstr);
+    if (ix != OSAL_JSON_DICT_NO_ENTRY) return ix;
+
     dictionary = (os_char*)osal_stream_buffer_content(state->dictionary, &dictionary_sz);
     dict_pos = (os_char*)osal_stream_buffer_content(state->dict_pos, &dict_pos_sz);
 
@@ -459,7 +462,7 @@ static os_long osal_add_string_to_json_dict(
         os_memcpy(&pos, dict_pos + ix * sizeof(os_int), sizeof(os_int));
         if (!os_strcmp(newstr, dictionary + pos))
         {
-            return pos;
+            return pos + OSAL_JSON_DICT_N_STATIC;
         }
     }
 
@@ -468,7 +471,7 @@ static os_long osal_add_string_to_json_dict(
     s = osal_stream_write(state->dict_pos, (os_uchar*)&pos, sizeof(os_int), &n_written, OSAL_STREAM_DEFAULT);
     if (!s) s = osal_stream_buffer_write(state->dictionary, (os_uchar*)newstr, newstr_sz, &n_written, 0);
     state->dictionary_n++;
-    return endpos;
+    return endpos + OSAL_JSON_DICT_N_STATIC;
 }
 
 #endif

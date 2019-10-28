@@ -31,9 +31,6 @@ typedef struct osalJsonIndex
     os_char *compressed;
     os_memsz compressed_sz;
 
-
-    /* Number of items in dictionary
-     */
     os_char *dict_start;
     os_char *dict_end;
 
@@ -48,7 +45,7 @@ osalJsonIndex;
 
 typedef struct osalJsonItem
 {
-    os_char *tag_name;
+    const os_char *tag_name;
 
     osalJsonElementCode code;
 
@@ -58,7 +55,7 @@ typedef struct osalJsonItem
     {
         os_long l;
         os_double d;
-        os_char *s;
+        const os_char *s;
     }
     value;
 }
@@ -67,14 +64,14 @@ osalJsonItem;
 
 /* Create index to access compressed data easily.
 */
-osalStatus osal_create_json_index(
+osalStatus osal_create_json_indexer(
     osalJsonIndex *jindex,
     os_char *compressed,
     os_memsz compressed_sz);
 
 /* Release JSON index and memory allocated for it.
 */
-void osal_release_json_index(
+void osal_release_json_indexer(
     osalJsonIndex *jindex);
 
 /* Uncompress JSON from binary data to text.
