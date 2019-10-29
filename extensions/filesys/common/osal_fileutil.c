@@ -184,7 +184,7 @@ os_uchar *os_read_file_alloc(
     os_char *data;
     os_memsz data_sz;
 
-    if (!strcmp(path, ".stdin"))
+    if (!os_strcmp(path, ".stdin"))
     {
         stream = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
         if (stream == OS_NULL) return OS_NULL;

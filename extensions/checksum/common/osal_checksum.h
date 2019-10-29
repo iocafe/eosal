@@ -32,7 +32,7 @@
  */
 os_ushort os_checksum(
     os_uchar *buf,
-    int n,
+    os_memsz n,
     os_ushort *append_to_checksum);
 
 #if OSAL_CHECKSUM_TEST

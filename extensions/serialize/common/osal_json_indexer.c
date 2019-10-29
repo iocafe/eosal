@@ -217,7 +217,7 @@ osalStatus osal_get_json_item(
             {
                 bytes = osal_intser_reader(jindex->read_pos, &e);
                 jindex->read_pos += bytes;
-                osal_ints2float(&f, m, e);
+                osal_ints2float(&f, m, (os_short)e);
                 item->value.d = f;
             }
             else

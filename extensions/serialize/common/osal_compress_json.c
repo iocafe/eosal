@@ -629,7 +629,7 @@ static os_long osal_add_string_to_json_dict(
         os_memcpy(&pos, dict_pos + ix * sizeof(os_int), sizeof(os_int));
         if (!os_strcmp(newstr, dictionary + pos))
         {
-            return pos + OSAL_JSON_DICT_N_STATIC;
+            return (os_long)pos + OSAL_JSON_DICT_N_STATIC;
         }
     }
 

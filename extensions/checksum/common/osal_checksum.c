@@ -85,15 +85,17 @@ static const os_ushort crc_table[] = {
 */
 os_ushort os_checksum(
     os_uchar *buf,
-    int n,
+    os_memsz n,
     os_ushort *append_to_checksum)
 {
     os_uchar tmp;
     os_ushort w = OSAL_CHECKSUM_INIT;
+    register os_int count;
 
     if (append_to_checksum) w = *append_to_checksum;
 
-    while (n--)
+    count = (os_int)n;
+    while (count--)
     {
         tmp = *buf++ ^ w;
         w >>= 8;
