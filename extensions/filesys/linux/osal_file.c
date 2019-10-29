@@ -47,6 +47,12 @@ typedef struct osalFile
     /** Flags which were given to osal_file_open() function.
 	 */
 	os_int open_flags;
+
+#if OSAL_MAIN_SUPPORT
+    /** Flag indicating that we are using standard input or output.
+     */
+    os_boolean is_std_stream;
+#endif
 }
 osalFile;
 
@@ -93,6 +99,10 @@ osalStream osal_file_open(
     osalFile *myfile;
     osalStatus rval = OSAL_STATUS_FAILED;
 
+#if OSAL_MAIN_SUPPORT
+    os_boolean is_std_stream;
+#endif
+
     /* Sekect fopen mode by flags.
      */
     if ((flags & OSAL_STREAM_RW) == OSAL_STREAM_RW)
@@ -108,31 +118,48 @@ osalStream osal_file_open(
         mode = "r";
     }
 
-    /* Open the file.
-     */
-    handle = fopen(parameters, mode);
-
-    /* If opening file failed, and we are opening file for
-       reading, try case insensitive open.
-     */
-    if (handle == NULL)
+#if OSAL_MAIN_SUPPORT
+    is_std_stream = OS_FALSE;
+    if (!os_strcmp(parameters, ".stdin"))
     {
-        switch (errno)
-        {
-            case EACCES:
-                rval = OSAL_STATUS_NO_ACCESS_RIGHT;
-                break;
-
-            case ENOSPC:
-               rval = OSAL_STATUS_DISC_FULL;
-               break;
-
-            case ENOENT:
-                rval = OSAL_FILE_DOES_NOT_EXIST;
-                break;
-        }
-        goto getout;
+        handle = stdin;
     }
+    else if (!os_strcmp(parameters, ".stdout"))
+    {
+        handle = stdout;
+    }
+    else
+    {
+#endif
+        /* Open the file.
+         */
+        handle = fopen(parameters, mode);
+
+        /* If opening file failed, and we are opening file for
+           reading, try case insensitive open.
+         */
+        if (handle == NULL)
+        {
+            switch (errno)
+            {
+                case EACCES:
+                    rval = OSAL_STATUS_NO_ACCESS_RIGHT;
+                    break;
+
+                case ENOSPC:
+                   rval = OSAL_STATUS_DISC_FULL;
+                   break;
+
+                case ENOENT:
+                    rval = OSAL_FILE_DOES_NOT_EXIST;
+                    break;
+            }
+            goto getout;
+        }
+
+#if OSAL_MAIN_SUPPORT
+    }
+#endif
 
     /* Allocate and clear file structure.
 	 */
@@ -147,6 +174,10 @@ osalStream osal_file_open(
 	/* Save interface pointer.
 	 */
     myfile->hdr.iface = &osal_file_iface;
+
+#if OSAL_MAIN_SUPPORT
+    myfile->is_std_stream = is_std_stream;
+#endif
 
     /* Success set status code and cast file structure pointer to stream pointer and return it.
 	 */
@@ -194,8 +225,11 @@ void osal_file_close(
 
     /* If file operating system file is not already closed, close now.
 	 */
-    if (handle != NULL)
-	{
+    if (handle != NULL
+#if OSAL_MAIN_SUPPORT
+        && !myfile->is_std_stream
+#endif
+    ) {
         /* Close the file.
 		 */
         if (fclose(handle))

@@ -15,10 +15,18 @@
 */
 #include "eosalx.h"
 
+/* Forward referred static functions.
+ */
 static osalStatus osal_json_from_text_to_binary(
     os_char *src_path,
     os_char *dst_path,
     os_char *skip_tags);
+
+static osalStatus osal_json_from_binary_to_text(
+    os_char *src_path,
+    os_char *dst_path);
+
+static void osal_json_util_help(void);
 
 
 /**
@@ -39,17 +47,96 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
+    os_char *src_path, *dst_path, *extras;
+    os_memsz extras_sz, n_written;
     osalStatus s;
+    osalStream extra_args = OS_NULL;
+    os_int i, path_nr = 0;
 
-    s = osal_json_from_text_to_binary("/tmp/nuke.json", "/tmp/nuke.json-bin", "title");
-    if (!s)
-        osal_console_write("SUKSET");
+    enum
+    {
+        JSON_T2B,
+        JSON_B2T
+    }
+    op;
 
+    op = JSON_T2B;
+    src_path = ".stdin";
+    dst_path = ".stdout";
+    path_nr = 0;
 
-    return OSAL_SUCCESS;
+    for (i = 1; i < argc; i++)
+    {
+        if (argv[i][0] == '-')
+        {
+            if (!os_strnicmp(argv[i], "-t2b", -1))
+            {
+                op = JSON_T2B;
+            }
+            else if (!os_strnicmp(argv[i], "-b2t", -1))
+            {
+                op = JSON_B2T;
+            }
+            else if (!os_strcmp(argv[i], "-?") ||
+                !os_strnicmp(argv[i], "-h", -1) ||
+                !os_strnicmp(argv[i], "--help", -1))
+            {
+                osal_json_util_help();
+                goto getout;
+            }
+            else
+            {
+                if (extra_args == OS_NULL)
+                {
+                    extra_args = osal_stream_buffer_open(OS_NULL,
+                        OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
+                }
+                else
+                {
+                    osal_stream_write_str(extra_args, ",", 0);
+                }
+                osal_stream_write_str(extra_args, argv[i]+1, 0);
+                osal_stream_write(extra_args, (os_uchar*)"\0", 1, &n_written, 0);
+            }
+        }
+        else
+        {
+            switch (path_nr++)
+            {
+                case 0: src_path = argv[i]; break;
+                case 1: dst_path = argv[i]; break;
+            }
+        }
+    }
+
+    switch (op)
+    {
+        default:
+        case JSON_T2B:
+            extras = OS_NULL;
+            if (extra_args)
+            {
+                extras = (os_char*)osal_stream_buffer_content(extra_args, &extras_sz);
+            }
+            s = osal_json_from_text_to_binary(src_path, dst_path, extras);
+            break;
+
+        case JSON_B2T:
+            s = osal_json_from_binary_to_text(src_path, dst_path);
+            break;
+    }
+
+    if (path_nr > 1 || s)
+        osal_console_write(s ? "\nFAILED\n" : "\nsuccess\n");
+
+getout:
+    if (extra_args)
+    {
+        osal_stream_close(extra_args);
+    }
+
+    return s;
 }
-
-
 
 
 /**
@@ -93,10 +180,64 @@ getout:
     return s;
 }
 
-/*
+
+/**
+****************************************************************************************************
+
+  @brief Conver packed binary JSON file to plain JSON text.
+
+  The osal_json_from_binary_to_text() function..
+
+  @param   src_path Path to input file.
+  @param   dst_path Path to output file.
+
+  @return  OSAL_SUCCESS (0) is all is fine. Other values indicate an error.
+
+****************************************************************************************************
+*/
+static osalStatus osal_json_from_binary_to_text(
+    os_char *src_path,
+    os_char *dst_path)
+{
+    os_char *json_binary = OS_NULL;
+    os_memsz json_binary_sz = 0;
+    osalStream uncompressed = OS_NULL;
+    osalStatus s = OSAL_STATUS_FAILED;
+
+    json_binary = (os_char*)os_read_file_alloc(src_path, &json_binary_sz, OS_FILE_DEFAULT);
+    if (json_binary == OS_NULL) goto getout;
+
     uncompressed = osal_file_open(dst_path, OS_NULL, OS_NULL, OSAL_STREAM_WRITE);
     if (uncompressed == OS_NULL) goto getout;
 
-    s = osal_uncompress_json(uncompressed, data, data_sz, 0);
-    if (s) goto getout;
+    s = osal_uncompress_json(uncompressed, json_binary, json_binary_sz, 0);
+
+getout:
+    os_free(json_binary, json_binary_sz);
+    osal_stream_close(uncompressed);
+
+    return s;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Show brief command line help.
+
+  The osal_json_util_help() function.
+  @return  None.
+
+****************************************************************************************************
 */
+static void osal_json_util_help(void)
+{
+    static os_char text[] = {
+        "json [-t2b] [-b2t] [-title] [infile] [outfile]\n"
+        "Convert: JSON file/binary file/C source file\n"
+        "-t2b JSON fom text file to packed binary format (default)\n"
+        "-b2t Packed binary JSON to plain text JSON\n"
+        "-title With -t2b skips \"title\" tags (other tags can be skipped the same way)\n"};
+
+    osal_console_write(text);
+}

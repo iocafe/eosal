@@ -314,8 +314,8 @@ osalStatus osal_stream_write_long(
     os_int flags)
 {
     os_uchar tmp[OSAL_INTSER_BUF_SZ];
-    os_int tmp_n;
     os_memsz n_written;
+    os_int tmp_n;
     osalStatus s;
 
     tmp_n = osal_intser_writer((os_char*)tmp, x);
@@ -324,8 +324,23 @@ osalStatus osal_stream_write_long(
     return n_written == tmp_n ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
 
 }
-#endif
 
+osalStatus osal_stream_write_str(
+    osalStream stream,
+    os_char *str,
+    os_int flags)
+{
+    os_memsz n_written, str_sz;
+
+    str_sz = os_strlen(str)-1;
+    osalStatus s;
+
+    s = osal_stream_write(stream, (os_uchar*)str, str_sz, &n_written, flags);
+    if (s) return s;
+    return n_written == str_sz ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
+}
+
+#endif
 #endif
 
 

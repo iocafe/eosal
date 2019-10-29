@@ -85,6 +85,73 @@ getout:
 }
 
 
+#if OSAL_MAIN_SUPPORT
+/**
+****************************************************************************************************
+
+  @brief Append whole file to stream.
+  @anchor os_read_file
+
+  The os_append_file_to_stream() function reads a whole file into user given buffer.
+
+  @param   path Path to the file.
+  @param   buf Pointer to the buffer.
+  @param   n Maximum number of bytes to read.
+  @param   n_read Pointer to integer where to store number of bytes read.
+  @param   flags OS_FILE_NULL_CHAR to terminate buffer with NULL character.
+           OS_FILE_DEFAULT for default operation.
+  @return  OSAL_SUCCESS if all good. Value OSAL_OUT_OF_BUFFER indicates that the file is larger
+           than the buffer (file content still read). Other values indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus os_append_file_to_stream(
+    const os_char *path,
+    osalStream stream,
+    os_int flags)
+{
+    osalStream f;
+    osalStatus s;
+    os_uchar buf[256];
+    os_memsz n_read, n_written;
+
+    /* Open file.
+     */
+    f = osal_file_open(path, OS_NULL, &s, OSAL_STREAM_READ);
+    if (f == OS_NULL) return s;
+
+    do
+    {
+        /* Read up to n bytes.
+         */
+        s = osal_file_read(f, buf, sizeof(buf), &n_read, OSAL_STREAM_DEFAULT);
+        if (s) goto getout;
+
+        s = osal_stream_write(stream, buf, n_read, &n_written, OSAL_STREAM_DEFAULT);
+        if (s) goto getout;
+        if (n_read != n_written)
+        {
+            s = OSAL_STATUS_TIMEOUT;
+            goto getout;
+        }
+    }
+    while (n_read == sizeof(buf));
+
+    /* Terminate with NULL character.
+     */
+    if (flags & OS_FILE_NULL_CHAR)
+    {
+        s = osal_stream_write(stream, (os_uchar*)"\0", 1, &n_written, OSAL_STREAM_DEFAULT);
+        if (!s) if (n_written != 1) s = OSAL_STATUS_TIMEOUT;
+    }
+
+getout:
+    osal_file_close(f);
+    return s;
+}
+#endif
+
+
 /**
 ****************************************************************************************************
 
@@ -112,10 +179,34 @@ os_uchar *os_read_file_alloc(
     osalStatus s;
     os_uchar *buf;
 
-    *n_read = 0;
+#if OSAL_MAIN_SUPPORT
+    osalStream stream;
+    os_char *data;
+    os_memsz data_sz;
+
+    if (!strcmp(path, ".stdin"))
+    {
+        stream = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
+        if (stream == OS_NULL) return OS_NULL;
+        s = os_append_file_to_stream(path, stream, flags);
+        if (s) goto failed;
+        data = (os_char*)osal_stream_buffer_content(stream, &data_sz);
+        buf = (os_uchar*)os_malloc(data_sz, OS_NULL);
+        if (buf == OS_NULL) goto failed;
+        os_memcpy(buf, data, data_sz);
+        osal_stream_close(stream);
+        *n_read = data_sz;
+        return buf;
+failed:
+        osal_stream_close(stream);
+        *n_read = 0;
+        return OS_NULL;
+    }
+#endif
 
     /* Get file size
      */
+    *n_read = 0;
     s = osal_filestat(path, &filestat);
     if (s) return OS_NULL;
 

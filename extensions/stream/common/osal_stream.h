@@ -426,6 +426,11 @@ osalStatus osal_stream_write_long(
     osalStream stream,
     os_long x,
     os_int flags);
+
+osalStatus osal_stream_write_str(
+    osalStream stream,
+    os_char *str,
+    os_int flags);
 #endif
 
 /*@}*/
