@@ -96,7 +96,7 @@ osalStatus osal_main(
                     osal_stream_write_str(extra_args, ",", 0);
                 }
                 osal_stream_write_str(extra_args, argv[i]+1, 0);
-                osal_stream_write(extra_args, (os_uchar*)"\0", 1, &n_written, 0);
+                osal_stream_write(extra_args, "\0", 1, &n_written, 0);
             }
         }
         else
@@ -116,7 +116,7 @@ osalStatus osal_main(
             extras = OS_NULL;
             if (extra_args)
             {
-                extras = (os_char*)osal_stream_buffer_content(extra_args, &extras_sz);
+                extras = osal_stream_buffer_content(extra_args, &extras_sz);
             }
             s = osal_json_from_text_to_binary(src_path, dst_path, extras);
             break;

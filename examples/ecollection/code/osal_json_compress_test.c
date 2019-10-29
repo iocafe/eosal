@@ -77,7 +77,7 @@ os_int osal_json_compress_test(
     osal_console_write(nbuf);
 
     osal_console_write("\ncompressed size = ");
-    data = (os_char*)osal_stream_buffer_content(compressed, &data_sz);
+    data = osal_stream_buffer_content(compressed, &data_sz);
     osal_int_to_string(nbuf, sizeof(nbuf), data_sz);
     osal_console_write(nbuf);
 
@@ -92,7 +92,7 @@ os_int osal_json_compress_test(
     }
     else
     {
-        str = (os_char*)osal_stream_buffer_content(uncompressed, &str_sz);
+        str = osal_stream_buffer_content(uncompressed, &str_sz);
         osal_console_write(str);
     }
 

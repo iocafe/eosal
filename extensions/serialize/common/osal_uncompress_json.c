@@ -138,7 +138,7 @@ osalStatus osal_uncompress_json(
     {
         /* Write terminating '\n' and '\0' characters.
          */
-        s = osal_stream_write(uncompressed, (os_uchar*)"\n", 2,
+        s = osal_stream_write(uncompressed, "\n", 2,
             &n_written, OSAL_STREAM_DEFAULT);
     }
 
@@ -171,7 +171,7 @@ static osalStatus osal_write_json_str(
     osalStatus s;
 
     sz = os_strlen(str) - 1;
-    s = osal_stream_write(uncompressed, (os_uchar*)str, sz,
+    s = osal_stream_write(uncompressed, str, sz,
         &n_written, OSAL_STREAM_DEFAULT);
     if (s) return s;
 

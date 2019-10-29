@@ -38,7 +38,7 @@
 */
 osalStatus os_read_file(
     const os_char *path,
-    os_uchar *buf,
+    os_char *buf,
     os_memsz n,
     os_memsz *n_read,
     os_int flags)
@@ -46,7 +46,7 @@ osalStatus os_read_file(
     osalStream f;
     osalStatus s;
     os_memsz onemore;
-    os_uchar tmp[1];
+    os_char tmp[1];
 
     *n_read = 0;
 
@@ -112,7 +112,7 @@ osalStatus os_append_file_to_stream(
 {
     osalStream f;
     osalStatus s;
-    os_uchar buf[256];
+    os_char buf[256];
     os_memsz n_read, n_written;
 
     /* Open file.
@@ -141,7 +141,7 @@ osalStatus os_append_file_to_stream(
      */
     if (flags & OS_FILE_NULL_CHAR)
     {
-        s = osal_stream_write(stream, (os_uchar*)"\0", 1, &n_written, OSAL_STREAM_DEFAULT);
+        s = osal_stream_write(stream, "\0", 1, &n_written, OSAL_STREAM_DEFAULT);
         if (!s) if (n_written != 1) s = OSAL_STATUS_TIMEOUT;
     }
 
@@ -170,14 +170,14 @@ getout:
 
 ****************************************************************************************************
 */
-os_uchar *os_read_file_alloc(
+os_char *os_read_file_alloc(
     const os_char *path,
     os_memsz *n_read,
     os_int flags)
 {
     osalFileStat filestat;
     osalStatus s;
-    os_uchar *buf;
+    os_char *buf;
 
 #if OSAL_MAIN_SUPPORT
     osalStream stream;
@@ -190,8 +190,8 @@ os_uchar *os_read_file_alloc(
         if (stream == OS_NULL) return OS_NULL;
         s = os_append_file_to_stream(path, stream, flags);
         if (s) goto failed;
-        data = (os_char*)osal_stream_buffer_content(stream, &data_sz);
-        buf = (os_uchar*)os_malloc(data_sz, OS_NULL);
+        data = osal_stream_buffer_content(stream, &data_sz);
+        buf = os_malloc(data_sz, OS_NULL);
         if (buf == OS_NULL) goto failed;
         os_memcpy(buf, data, data_sz);
         osal_stream_close(stream);
@@ -216,7 +216,7 @@ failed:
 
     /* Allocate memory.
      */
-    buf = (os_uchar*)os_malloc(filestat.sz, OS_NULL);
+    buf = os_malloc(filestat.sz, OS_NULL);
     if (buf == OS_NULL) return OS_NULL;
 
     /* Read the file.
@@ -253,7 +253,7 @@ failed:
 */
 osalStatus os_write_file(
     const os_char *path,
-    const os_uchar *buf,
+    const os_char *buf,
     os_memsz n,
     os_int flags)
 {
@@ -265,7 +265,7 @@ osalStatus os_write_file(
      */
     if (flags & OS_FILE_NULL_CHAR)
     {
-        n = os_strlen((os_char*)buf) - 1;
+        n = os_strlen(buf) - 1;
     }
 
     /* Open file.

@@ -102,7 +102,7 @@ typedef struct osalSSLSocket
 
     /** Read buffer
      */
-    os_uchar read_buf[OSAL_READ_BUF_SZ];
+    os_char read_buf[OSAL_READ_BUF_SZ];
     os_int read_buf_n;
 }
 osalSSLSocket;
@@ -519,7 +519,7 @@ static osalStatus osal_openssl_flush(
 */
 static osalStatus osal_openssl_write(
 	osalStream stream,
-	const os_uchar *buf,
+    const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags)
@@ -605,13 +605,13 @@ static osalStatus osal_openssl_write(
 */
 static osalStatus osal_openssl_read(
 	osalStream stream,
-	os_uchar *buf,
+    os_char *buf,
 	os_memsz n,
 	os_memsz *n_read,
 	os_int flags)
 {
     osalSSLSocket *sslsocket;
-    os_uchar *src;
+    os_char *src;
     os_memsz nprocessed, something_done;
     os_int freespace, bufferedbytes, nstored;
     osalStatus s;
@@ -1258,7 +1258,7 @@ static osalStatus osal_openssl_do_sock_write(
     os_memsz n;
     osalStatus s;
 
-    s = osal_socket_write(sslsocket->tcpsocket, (os_uchar*)sslsocket->write_buf,
+    s = osal_socket_write(sslsocket->tcpsocket, sslsocket->write_buf,
         sslsocket->write_len, &n, OSAL_STREAM_DEFAULT);
 
     if (n > 0)

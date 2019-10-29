@@ -76,7 +76,7 @@ osalStatus osal_create_json_indexer(
     if (compressed_sz < sizeof(os_ushort) + 2) return OSAL_STATUS_FAILED;
     sz_without_checksum = compressed_sz - sizeof(os_short);
     os_memcpy(&checksum, compressed + sz_without_checksum, sizeof(os_short));
-    if (checksum != os_checksum((os_uchar*)compressed, sz_without_checksum, OS_NULL))
+    if (checksum != os_checksum(compressed, sz_without_checksum, OS_NULL))
         return OSAL_CHECKSUM_ERROR;
 
     /* Calculate number of dictionary entries.

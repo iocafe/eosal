@@ -101,11 +101,11 @@ osalStatus osal_compress_json(
 {
     osalJsonCompressor state;
     os_char c;
-    os_uchar *data;
+    os_char *data;
     os_memsz data_sz, n_written;
     osalStatus s = OSAL_STATUS_FAILED;
     os_ushort checksum;
-    os_uchar tmp[OSAL_INTSER_BUF_SZ];
+    os_char tmp[OSAL_INTSER_BUF_SZ];
     os_int tmp_n;
 
     os_memclear(&state, sizeof(state));
@@ -143,7 +143,7 @@ osalStatus osal_compress_json(
      */
     checksum = OSAL_CHECKSUM_INIT;
     data = osal_stream_buffer_content(state.dictionary, &data_sz);
-    tmp_n = osal_intser_writer((os_char*)tmp, data_sz);
+    tmp_n = osal_intser_writer(tmp, data_sz);
     s = osal_stream_write(compressed, tmp, tmp_n, &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
     if (tmp_n != n_written) goto timeout;
@@ -156,7 +156,7 @@ osalStatus osal_compress_json(
     /* Write content size and the content.
      */
     data = osal_stream_buffer_content(state.content, &data_sz);
-    tmp_n = osal_intser_writer((os_char*)tmp, data_sz);
+    tmp_n = osal_intser_writer(tmp, data_sz);
     s = osal_stream_write(compressed, tmp, tmp_n, &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
     if (tmp_n != n_written) goto timeout;
@@ -168,7 +168,7 @@ osalStatus osal_compress_json(
 
     /* Write checksum.
      */
-    s = osal_stream_write(compressed, (os_uchar*)&checksum, sizeof(os_ushort),
+    s = osal_stream_write(compressed, (os_char*)&checksum, sizeof(os_ushort),
         &n_written, OSAL_STREAM_DEFAULT);
     if (s) goto getout;
     if (sizeof(os_ushort) != n_written) goto timeout;
@@ -349,7 +349,7 @@ static osalStatus osal_parse_json_tag(
      */
     if (state->skip_tags)
     {
-        data = (os_char*)osal_stream_buffer_content(state->str, &data_n);
+        data = osal_stream_buffer_content(state->str, &data_n);
         if (os_strstr(state->skip_tags, data, OSAL_STRING_SEARCH_ITEM_NAME))
         {
             *dict_ix = 0;
@@ -397,7 +397,7 @@ static osalStatus parse_json_value(
      */
     if (state->skip_count) return OSAL_SUCCESS;
 
-    data = (os_char*)osal_stream_buffer_content(state->str, &data_n);
+    data = osal_stream_buffer_content(state->str, &data_n);
     data_n--; /* -1 for terminating '\0'. */
 
     /* If empty value.
@@ -515,7 +515,7 @@ static osalStatus osal_parse_json_quoted_string(
          */
         else if (c == '\"')
         {
-            s = osal_stream_buffer_write(state->str, (os_uchar*)"\0", 1, &n_written, 0);
+            s = osal_stream_buffer_write(state->str, "\0", 1, &n_written, 0);
             return s;
         }
 
@@ -529,7 +529,7 @@ static osalStatus osal_parse_json_quoted_string(
         /* Store the character. Make sure that we have room
          * in buffer for this character and terminating '\0'.
          */
-        s = osal_stream_buffer_write(state->str, (os_uchar*)&c, 1, &n_written, 0);
+        s = osal_stream_buffer_write(state->str, &c, 1, &n_written, 0);
     }
     while (!s);
 
@@ -572,8 +572,8 @@ static osalStatus osal_parse_json_number(
         p++;
     }
 
-    s = osal_stream_buffer_write(state->str, (os_uchar*)state->pos, p - state->pos, &n_written, 0);
-    if (!s) s = osal_stream_buffer_write(state->str, (os_uchar*)"\0", 1, &n_written, 0);
+    s = osal_stream_buffer_write(state->str, state->pos, p - state->pos, &n_written, 0);
+    if (!s) s = osal_stream_buffer_write(state->str, "\0", 1, &n_written, 0);
 
     state->pos = p;
     return s;
@@ -614,13 +614,13 @@ static os_long osal_add_string_to_json_dict(
      */
     if (state->skip_count) return 0;
 
-    newstr = (os_char*)osal_stream_buffer_content(state->str, &newstr_sz);
+    newstr = osal_stream_buffer_content(state->str, &newstr_sz);
 
     ix = osal_find_in_static_json_dict(newstr);
     if (ix != OSAL_JSON_DICT_NO_ENTRY) return ix;
 
-    dictionary = (os_char*)osal_stream_buffer_content(state->dictionary, &dictionary_sz);
-    dict_pos = (os_char*)osal_stream_buffer_content(state->dict_pos, &dict_pos_sz);
+    dictionary = osal_stream_buffer_content(state->dictionary, &dictionary_sz);
+    dict_pos = osal_stream_buffer_content(state->dict_pos, &dict_pos_sz);
 
     /* Try to locate
      */
@@ -635,8 +635,8 @@ static os_long osal_add_string_to_json_dict(
 
     osal_stream_buffer_seek(state->dictionary, &endpos, OSAL_STREAM_SEEK_WRITE_POS);
     pos = (os_int)endpos;
-    s = osal_stream_write(state->dict_pos, (os_uchar*)&pos, sizeof(os_int), &n_written, OSAL_STREAM_DEFAULT);
-    if (!s) s = osal_stream_buffer_write(state->dictionary, (os_uchar*)newstr, newstr_sz, &n_written, 0);
+    s = osal_stream_write(state->dict_pos, (os_char*)&pos, sizeof(os_int), &n_written, OSAL_STREAM_DEFAULT);
+    if (!s) s = osal_stream_buffer_write(state->dictionary, newstr, newstr_sz, &n_written, 0);
     state->dictionary_n++;
     return endpos + OSAL_JSON_DICT_N_STATIC;
 }

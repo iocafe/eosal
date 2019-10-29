@@ -76,7 +76,7 @@ osalStatus osal_stream_seek(
 
 osalStatus osal_stream_write(
 	osalStream stream,
-	const os_uchar *buf,
+    const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags)
@@ -128,7 +128,7 @@ osalStatus osal_stream_write(
 
 osalStatus osal_stream_read(
 	osalStream stream,
-	os_uchar *buf,
+    os_char *buf,
 	os_memsz n,
 	os_memsz *n_read,
 	os_int flags)
@@ -313,12 +313,12 @@ osalStatus osal_stream_write_long(
     os_long x,
     os_int flags)
 {
-    os_uchar tmp[OSAL_INTSER_BUF_SZ];
+    os_char tmp[OSAL_INTSER_BUF_SZ];
     os_memsz n_written;
     os_int tmp_n;
     osalStatus s;
 
-    tmp_n = osal_intser_writer((os_char*)tmp, x);
+    tmp_n = osal_intser_writer(tmp, x);
     s = osal_stream_write(stream, tmp, tmp_n, &n_written, flags);
     if (s) return s;
     return n_written == tmp_n ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
@@ -335,7 +335,7 @@ osalStatus osal_stream_write_str(
     str_sz = os_strlen(str)-1;
     osalStatus s;
 
-    s = osal_stream_write(stream, (os_uchar*)str, str_sz, &n_written, flags);
+    s = osal_stream_write(stream, str, str_sz, &n_written, flags);
     if (s) return s;
     return n_written == str_sz ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
 }
@@ -375,8 +375,8 @@ osalStatus osal_stream_default_write_value(
 	os_ushort c,
 	os_int flags)
 {
-	os_uchar 
-		u;
+    os_char
+        c8;
 
 	os_memsz 
 		n_written;
@@ -384,9 +384,9 @@ osalStatus osal_stream_default_write_value(
 	osalStatus 
 		status;
 
-	u = (os_uchar)c;
+    c8 = (os_char)c;
 
-	status = stream->iface->stream_write(stream, &u, 1, &n_written, flags);
+    status = stream->iface->stream_write(stream, &c8, 1, &n_written, flags);
 	if (status) return status;
 
 	return n_written ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
@@ -407,7 +407,7 @@ osalStatus osal_stream_default_read_value(
 	osalStatus 
 		status;
 
-	status = stream->iface->stream_read(stream, &u, 1, &n_read, flags);
+    status = stream->iface->stream_read(stream, (os_char*)&u, 1, &n_read, flags);
 	*c = u;
 
 	if (status) return status;

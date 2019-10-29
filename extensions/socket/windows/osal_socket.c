@@ -83,7 +83,7 @@ os_boolean osal_sockets_initialized = OS_FALSE;
  */
 static osalStatus osal_socket_write2(
 	osalSocket *mysocket,
-	const os_uchar *buf,
+    const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags);
@@ -759,7 +759,7 @@ getout:
 */
 static osalStatus osal_socket_write2(
 	osalSocket *mysocket,
-	const os_uchar *buf,
+    const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags)
@@ -819,7 +819,7 @@ static osalStatus osal_socket_write2(
 */
 osalStatus osal_socket_write(
 	osalStream stream,
-	const os_uchar *buf,
+    const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags)
@@ -955,7 +955,7 @@ getout:
 */
 osalStatus osal_socket_read(
 	osalStream stream,
-	os_uchar *buf,
+    os_char *buf,
 	os_memsz n,
 	os_memsz *n_read,
 	os_int flags)

@@ -36,74 +36,78 @@ typedef enum
 	 */
 	OS_UNDEFINED_TYPE = 0,
 
-	/** 8 bit signed character. In practise this is always same as char, one byte.
+    /** 8 bit signed character. In practise this is always same as char, one byte.
+     */
+    OS_BOOLEAN = 1,
+
+    /** 8 bit signed character. In practise this is always same as char, one byte.
 	 */
-	OS_CHAR = 1,
+    OS_CHAR = 2,
 
 	/** @brief 8 bit unsigned character. In practise this is always same as unsigned char.
 	 */
-	OS_UCHAR = 2,
+    OS_UCHAR = 3,
 
 	/** 16 bit signed integer. In practise os_short is always same as short.
 	 */
-	OS_SHORT = 3,
+    OS_SHORT = 4,
 
 	/** 16 bit unsigned integer. In practise os_ushort is always same as unsigned short.
 	 */
-	OS_USHORT = 4,
+    OS_USHORT = 5,
 
 	/** 32 bit signed integer. The os_int is ususally same as int, if platform's int is 32 bit.
 		If platforms integer is only 16 bit, this is defined as long.
 	 */
-	OS_INT = 5, 
+    OS_INT = 6,
 
 	/** 32 bit unsigned integer. The os_uint is ususally same as unsigned int, if platform's 
 		integers are 32 bit. If platforms integer is only 16 bit, this is defined as unsigned 
 		long.
 	 */
-	OS_UINT = 6,
+    OS_UINT = 7,
 
 	/** Guaranteed 64 bit integer on all operating systems. If operating system supports 
 	    64 bit integers, the operating system type is used. Otherwise implemented as structure. 
 	 */
-	OS_INT64 = 7,
+    OS_INT64 = 8,
 
 	/** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then 32 bit integer.
 		For Microsoft compilers this is "__int64" and for GNU compilers "long long". The
 		OSAL_LONG_IS_64_BITS define is checked so that embedded code without 64 bit support
 		can be tested on Windows by setting the define to zero.
 	 */
-	OS_LONG = 8,
+    OS_LONG = 9,
 
 	/** Single precision floating point number. In most cases this is same as float, 
 		typically 4 bytes.
 	 */
-	OS_FLOAT = 9,
+    OS_FLOAT = 10,
 
 	/** Double precision floating point number. In most cases this is same as double, 
 		typically 4 bytes.
 	 */
-	OS_DOUBLE = 10,
+    OS_DOUBLE = 11,
 
 	/** Fixed point decimal number with one decimal digit. From -3276.8 to 3276.7.
 	 */
-	OS_DEC01 = 11,
+    OS_DEC01 = 12,
 
 	/** Fixed point decimal number with two decimal digits. From -327.68 to 327.67.
 	 */
-	OS_DEC001 = 12,
+    OS_DEC001 = 13,
 
 	/** String type.
 	 */
-	OS_STRING = 13,
+    OS_STRING = 14,
 
 	/** Object type.
 	 */
-	OS_OBJECT = 14,
+    OS_OBJECT = 15,
 
 	/** Pointer type.
 	 */
-	OS_POINTER = 15
+    OS_POINTER = 16
 }
 osalTypeId;
 
@@ -114,7 +118,7 @@ osalTypeId osal_typeid_from_name(
 
 /* Convert type identifier to type name string.
  */
-os_char *osal_typeid_to_name(
+const os_char *osal_typeid_to_name(
     osalTypeId type_id);
 
 /* Get type size in bytes.

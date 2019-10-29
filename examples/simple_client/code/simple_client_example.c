@@ -114,7 +114,7 @@ osalStatus osal_main(
 osalStatus osal_loop(
     void *app_context)
 {
-    os_uchar buf[64];
+    os_char buf[64];
     os_memsz n_read, n_written;
     os_int bytes;
     os_uint c;
@@ -171,7 +171,7 @@ osalStatus osal_loop(
         c = osal_console_read();
         if (c)
         {
-            bytes = osal_char_utf32_to_utf8((os_char*)buf, sizeof(buf), c);
+            bytes = osal_char_utf32_to_utf8(buf, sizeof(buf), c);
             if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
             {
                 osal_debug_error("write: connection broken");

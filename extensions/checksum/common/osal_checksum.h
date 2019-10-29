@@ -31,7 +31,7 @@
 /* Calculates checksum for buffer.
  */
 os_ushort os_checksum(
-    os_uchar *buf,
+    os_char *buf,
     os_memsz n,
     os_ushort *append_to_checksum);
 

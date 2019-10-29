@@ -37,23 +37,24 @@ osalTypeInfo;
 
 /** Type names and sizes.
  */
-static osalTypeInfo osal_typeinfo[] = {
+static const osalTypeInfo osal_typeinfo[] = {
     {"undef", 0},					  /* OS_UNDEFINED_TYPE = 0 */
-	{"char", sizeof(os_char)},		  /* OS_CHAR = 1 */
-	{"uchar", sizeof(os_uchar)},	  /* OS_UCHAR = 2 */
-	{"short", sizeof(os_short)},	  /* OS_SHORT = 3 */
-	{"ushort", sizeof(os_ushort)},	  /* OS_USHORT = 4 */
-	{"int", sizeof(os_int)},		  /* OS_INT = 5 */
-	{"uint", sizeof(os_uint)},		  /* OS_UINT = 6 */
-	{"int64", sizeof(os_int64)},	  /* OS_INT64 = 7 */
-	{"long", sizeof(os_long)},		  /* OS_LONG = 8 */
-	{"float", sizeof(os_float)},	  /* OS_FLOAT = 9 */
-	{"double", sizeof(os_double)},	  /* OS_DOUBLE = 10 */
-	{"dec01", sizeof(os_short)},	  /* OS_DEC01 = 11 */
-	{"dec001", sizeof(os_short)},	  /* OS_DEC001 = 12 */
-	{"str", 0},	                      /* OS_STRING = 13 */
-    {"object", 0},	                  /* OS_OBJECT = 14 */
-    {"pointer", sizeof(os_pointer)}}; /* OS_POINTER = 15 */
+    {"boolean", sizeof(os_boolean)},  /* OS_BOOLEAN = 1 */
+    {"char", sizeof(os_char)},		  /* OS_CHAR = 2 */
+    {"uchar", sizeof(os_uchar)},	  /* OS_UCHAR = 3 */
+    {"short", sizeof(os_short)},	  /* OS_SHORT = 4 */
+    {"ushort", sizeof(os_ushort)},	  /* OS_USHORT = 5 */
+    {"int", sizeof(os_int)},		  /* OS_INT = 6 */
+    {"uint", sizeof(os_uint)},		  /* OS_UINT = 7 */
+    {"int64", sizeof(os_int64)},	  /* OS_INT64 = 8 */
+    {"long", sizeof(os_long)},		  /* OS_LONG = 9 */
+    {"float", sizeof(os_float)},	  /* OS_FLOAT = 10 */
+    {"double", sizeof(os_double)},	  /* OS_DOUBLE = 11 */
+    {"dec01", sizeof(os_short)},	  /* OS_DEC01 = 12 */
+    {"dec001", sizeof(os_short)},	  /* OS_DEC001 = 13 */
+    {"str", 0},	                      /* OS_STRING = 14 */
+    {"object", 0},	                  /* OS_OBJECT = 15 */
+    {"pointer", sizeof(os_pointer)}}; /* OS_POINTER = 16 */
 
 /** Number of rows in osal_typeinfo table.
  */
@@ -80,12 +81,25 @@ osalTypeId osal_typeid_from_name(
     os_int
         i;
 
+    os_char
+        name0;
+
+    const osalTypeInfo
+        *tinfo;
+
+    name0 = name[0];
+    tinfo = osal_typeinfo;
+
     for (i = 0; i < OSAL_NRO_TYPE_INFO_ROWS; i++)
     {
-        if (!os_strcmp(name, osal_typeinfo[i].name))
+        if (*tinfo->name == name0)
         {
-            return (osalTypeId)i;
+            if (!os_strcmp(name, tinfo->name))
+            {
+                return (osalTypeId)i;
+            }
         }
+        tinfo++;
     }
 
     return OS_UNDEFINED_TYPE;
@@ -106,7 +120,7 @@ osalTypeId osal_typeid_from_name(
 
 ****************************************************************************************************
 */
-os_char *osal_typeid_to_name(
+const os_char *osal_typeid_to_name(
     osalTypeId type_id)
 {
     if ((int)type_id < 0 || (int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)

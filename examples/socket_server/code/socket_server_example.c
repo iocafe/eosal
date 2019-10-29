@@ -155,7 +155,7 @@ static void mythread_func(
             {
                 st = handle[i];
                 if (st == OS_NULL) continue;
-                if (osal_stream_write(st, (os_uchar*)keypressedtext,
+                if (osal_stream_write(st, keypressedtext,
                     os_strlen(keypressedtext)-1, &n_written, OSAL_STREAM_DEFAULT))
                 {
                     osal_debug_error("write: connection broken");

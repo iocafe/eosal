@@ -497,7 +497,7 @@ osalStatus osal_tls_flush(
 */
 osalStatus osal_tls_write(
     osalStream stream,
-    const os_uchar *buf,
+    const os_char *buf,
     os_memsz n,
     os_memsz *n_written,
     os_int flags)
@@ -561,7 +561,7 @@ osalStatus osal_tls_write(
 */
 osalStatus osal_tls_read(
     osalStream stream,
-    os_uchar *buf,
+    os_char *buf,
     os_memsz n,
     os_memsz *n_read,
     os_int flags)

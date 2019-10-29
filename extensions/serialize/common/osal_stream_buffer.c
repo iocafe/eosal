@@ -203,7 +203,7 @@ osalStatus osal_stream_buffer_seek(
 */
 osalStatus osal_stream_buffer_write(
 	osalStream stream,
-	const os_uchar *buf,
+    const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags)
@@ -252,7 +252,7 @@ osalStatus osal_stream_buffer_write(
 */
 osalStatus osal_stream_buffer_read(
 	osalStream stream,
-	os_uchar *buf,
+    os_char *buf,
 	os_memsz n,
 	os_memsz *n_read,
 	os_int flags)
@@ -331,7 +331,7 @@ osalStatus osal_stream_buffer_realloc(
 
 ****************************************************************************************************
 */
-os_uchar *osal_stream_buffer_content(
+os_char *osal_stream_buffer_content(
     osalStream stream,
     os_memsz *n)
 {
@@ -339,7 +339,7 @@ os_uchar *osal_stream_buffer_content(
     sbuf = (osalStreamBuffer*)stream;
 
     *n = sbuf->n;
-    return (os_uchar*)sbuf->ptr;
+    return sbuf->ptr;
 }
 
 
