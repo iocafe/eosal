@@ -45,6 +45,12 @@ typedef struct osalFile
     /** Flags which were given to osal_file_open() function.
 	 */
 	os_int open_flags;
+
+#if OSAL_MAIN_SUPPORT
+    /** Flag indicating that we are using standard input or output.
+     */
+    os_boolean is_std_stream;
+#endif
 }
 osalFile;
 
@@ -93,6 +99,10 @@ osalStream osal_file_open(
     osalStatus rval = OSAL_STATUS_FAILED;
     errno_t  err;
 
+#if OSAL_MAIN_SUPPORT
+    os_boolean is_std_stream;
+#endif
+
     /* Select fopen mode by flags. NOTE "c" could be added to commit writes to disc on fflush
      */
     if ((flags & OSAL_STREAM_RW) == OSAL_STREAM_RW)
@@ -108,6 +118,19 @@ osalStream osal_file_open(
         mode = L"rb";
     }
 
+#if OSAL_MAIN_SUPPORT
+    is_std_stream = OS_FALSE;
+    if (!os_strcmp(parameters, ".stdin"))
+    {
+        handle = stdin;
+    }
+    else if (!os_strcmp(parameters, ".stdout"))
+    {
+        handle = stdout;
+    }
+    else
+    {
+#endif
     /* Open the file. Convert path from UTF8 to UTF16 string, allocate new buffer.
        Release buffer after open.
      */
@@ -137,6 +160,10 @@ osalStream osal_file_open(
         goto getout;
     }
 
+#if OSAL_MAIN_SUPPORT
+    }
+#endif
+
     /* Allocate and clear file structure.
 	 */
     myfile = (osalFile*)os_malloc(sizeof(osalFile), OS_NULL);
@@ -150,6 +177,10 @@ osalStream osal_file_open(
 	/* Save interface pointer.
 	 */
     myfile->hdr.iface = &osal_file_iface;
+
+#if OSAL_MAIN_SUPPORT
+    myfile->is_std_stream = is_std_stream;
+#endif
 
     /* Success set status code and cast file structure pointer to stream pointer and return it.
 	 */
@@ -197,8 +228,11 @@ void osal_file_close(
 
     /* If file operating system file is not already closed, close now.
 	 */
-    if (handle != NULL)
-	{
+    if (handle != NULL
+#if OSAL_MAIN_SUPPORT
+        && !myfile->is_std_stream
+#endif
+    ) {
         /* Close the file.
 		 */
         if (fclose(handle))

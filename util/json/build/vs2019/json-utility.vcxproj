@@ -19,16 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\code\osal_example_collection_main.c" />
-    <ClCompile Include="..\..\code\osal_float_int_conv_test.c" />
-    <ClCompile Include="..\..\code\osal_int64_test.c" />
-    <ClCompile Include="..\..\code\osal_intser_test.c" />
-    <ClCompile Include="..\..\code\osal_json_compress_test.c" />
-    <ClCompile Include="..\..\code\osal_threads_example.c" />
-    <ClCompile Include="..\..\code\osal_threads_example_2.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\code\osal_example_collection_main.h" />
+    <ClCompile Include="..\..\code\json_utility.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -90,10 +81,18 @@
     <Import Project="..\..\..\..\..\eosal\build\vs2019\release-vs2019.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>jsond</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>jsond</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>json</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>json</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>

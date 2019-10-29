@@ -51,7 +51,7 @@ void osal_sysconsole_write(
        and release allocated buffer.
 	 */
 	utf16_str = osal_string_utf8_to_utf16_malloc(text, &sz);
-    wprintf(L"%s", utf16_str); 
+    wprintf(L"%ls", utf16_str); 
 	os_free(utf16_str, sz);
 
 #if 0

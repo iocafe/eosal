@@ -131,31 +131,31 @@ osalStream osal_file_open(
     else
     {
 #endif
-        /* Open the file.
-         */
-        handle = fopen(parameters, mode);
+    /* Open the file.
+        */
+    handle = fopen(parameters, mode);
 
-        /* If opening file failed, and we are opening file for
-           reading, try case insensitive open.
-         */
-        if (handle == NULL)
+    /* If opening file failed, and we are opening file for
+        reading, try case insensitive open.
+        */
+    if (handle == NULL)
+    {
+        switch (errno)
         {
-            switch (errno)
-            {
-                case EACCES:
-                    rval = OSAL_STATUS_NO_ACCESS_RIGHT;
-                    break;
+            case EACCES:
+                rval = OSAL_STATUS_NO_ACCESS_RIGHT;
+                break;
 
-                case ENOSPC:
-                   rval = OSAL_STATUS_DISC_FULL;
-                   break;
+            case ENOSPC:
+                rval = OSAL_STATUS_DISC_FULL;
+                break;
 
-                case ENOENT:
-                    rval = OSAL_FILE_DOES_NOT_EXIST;
-                    break;
-            }
-            goto getout;
+            case ENOENT:
+                rval = OSAL_FILE_DOES_NOT_EXIST;
+                break;
         }
+        goto getout;
+    }
 
 #if OSAL_MAIN_SUPPORT
     }
