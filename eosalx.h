@@ -38,6 +38,8 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/rand/common/osal_rand.h"
 #endif
 
+#include "extensions/math/common/osal_round.h"
+
 /* Include osal_main.h header regardless of OSAL_MAIN_SUPPORT define. Needed for micro controller
    environments.
  */
