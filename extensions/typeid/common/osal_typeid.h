@@ -111,6 +111,10 @@ typedef enum
 }
 osalTypeId;
 
+/** Mask for getting type ID only, in case some other bits are stored in same integer.
+ */
+#define OSAL_TYPEID_MASK 31
+
 /* Convert type name string to type identifier (integer).
  */
 osalTypeId osal_typeid_from_name(
