@@ -24,6 +24,7 @@
     <ClInclude Include="..\..\code\debugcode\common\osal_debug.h" />
     <ClInclude Include="..\..\code\defs\common\osal_common_defs.h" />
     <ClInclude Include="..\..\code\defs\common\osal_global.h" />
+    <ClInclude Include="..\..\code\defs\common\osal_state_bits.h" />
     <ClInclude Include="..\..\code\defs\common\osal_status.h" />
     <ClInclude Include="..\..\code\defs\windows\osal_defs.h" />
     <ClInclude Include="..\..\code\defs\windows\osal_types.h" />
@@ -48,6 +49,7 @@
     <ClInclude Include="..\..\extensions\filesys\common\osal_filestat.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_fileutil.h" />
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
+    <ClInclude Include="..\..\extensions\math\common\osal_round.h" />
     <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
     <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
     <ClInclude Include="..\..\extensions\serialize\common\osal_compress_json.h" />
