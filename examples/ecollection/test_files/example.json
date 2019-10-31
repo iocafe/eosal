@@ -1,0 +1,51 @@
+{
+  "mblk": [
+  {
+    "name": "EXPORT",
+    "title": "Exported by 'gina' IO device",
+    "groups": [
+      {
+	    "name": "inputs",
+         "signals": [
+           {"name": "DIP_SWITCH_3", "addr": 30, "type": "boolean"},
+           {"name": "DIP_SWITCH_4"},
+           {"name": "TOUCH_SENSOR"}
+         ]
+       },
+       {
+	     "name": "analog_inputs",
+	     "signals": [
+           {"name": "POTENTIOMETER"}
+         ]
+       }
+    ]
+  },
+
+  {
+    "name": "IMPORT",
+    "title": "Imported by 'gina' IO device",
+    "groups": [
+      {
+	    "name": "pwm",
+	    "signals": [
+          {"name": "SERVO", "type": "short"},
+	      {"name": "DIMMER_LED"}
+        ]
+      },
+      {
+	    "name": "outputs",
+        "signals": [
+          {"name": "LED_BUILTIN", "type": "boolean"} 
+        ]
+      },
+      {
+	    "name": "controls",
+	  "  signals": [
+           {"name": "SEVEN_SEGMENT", "type": "boolean", "array": 8}
+         ]
+      }
+    ]
+  }
+  ]
+}
+

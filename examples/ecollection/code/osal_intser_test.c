@@ -37,7 +37,7 @@ static osalStatus osal_intser_test_value(
 
 ****************************************************************************************************
 */
-os_int osal_intser_test(
+osalStatus osal_intser_test(
     os_int argc,
     os_char *argv[])
 {

@@ -55,7 +55,8 @@ osalJsonCompressor;
 /* Forward referred static functions.
  */
 static osalStatus osal_parse_json_recursive(
-    osalJsonCompressor *state);
+    osalJsonCompressor *state,
+    os_boolean expect_array);
 
 static osalStatus osal_parse_json_tag(
     osalJsonCompressor *state,
@@ -136,7 +137,7 @@ osalStatus osal_compress_json(
 
     /* Parse the JSON recursively.
      */
-    s = osal_parse_json_recursive(&state);
+    s = osal_parse_json_recursive(&state, OS_FALSE);
     if (s) goto getout;
 
     /* Write dictionary size and the dictionary.
@@ -198,12 +199,14 @@ timeout:
   JSON text into compression state.
 
   @param  state JSON compression state.
+  @param  expect_array OS_TRUE if we are parsing array within []
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
 ****************************************************************************************************
 */
 static osalStatus osal_parse_json_recursive(
-    osalJsonCompressor *state)
+    osalJsonCompressor *state,
+    os_boolean expect_array)
 {
     os_char c;
     os_long tag_dict_ix;
@@ -211,28 +214,36 @@ static osalStatus osal_parse_json_recursive(
 
     do
     {
-        /* Parse tag. If we need to ignore tag content.
-         */
-        tag_s = osal_parse_json_tag(state, &tag_dict_ix);
-        if (tag_s == OSAL_STATUS_NOTHING_TO_DO)
+        if (!expect_array)
         {
-            state->skip_count++;
+            /* Parse tag. If we need to ignore tag content.
+             */
+            tag_s = osal_parse_json_tag(state, &tag_dict_ix);
+            if (tag_s == OSAL_STATUS_NOTHING_TO_DO)
+            {
+                state->skip_count++;
+            }
+            else
+            {
+                if (tag_s) return tag_s;
+            }
+
+            tag_dict_ix <<= OSAL_JSON_CODE_SHIFT;
+
+            /* Skip the colon separating first double quote
+             */
+            do {
+                c = *(state->pos++);
+                if (c == '\0') return OSAL_STATUS_FAILED;
+            }
+            while (osal_char_isspace(c));
+            if (c != ':') return OSAL_STATUS_FAILED;
         }
         else
         {
-            if (tag_s) return tag_s;
+            tag_s = OSAL_SUCCESS;
+            tag_dict_ix = OSAL_JSON_DICT_NONE;
         }
-
-        tag_dict_ix <<= OSAL_JSON_CODE_SHIFT;
-
-        /* Skip the colon separating first double quote
-         */
-        do {
-            c = *(state->pos++);
-            if (c == '\0') return OSAL_STATUS_FAILED;
-        }
-        while (osal_char_isspace(c));
-        if (c != ':') return OSAL_STATUS_FAILED;
 
         /* Skip spaces until beginning of value
          */
@@ -252,12 +263,32 @@ static osalStatus osal_parse_json_recursive(
                 if (s) return s;
             }
 
-            s = osal_parse_json_recursive(state);
+            s = osal_parse_json_recursive(state, OS_FALSE);
             if (s) return s;
 
             if (!state->skip_count)
             {
                 s = osal_stream_write_long(state->content, OSAL_JSON_END_BLOCK, 0);
+                if (s) return s;
+            }
+        }
+
+        /* If this is an array
+         */
+        else if (c == '[')
+        {
+            if (!state->skip_count)
+            {
+                s = osal_stream_write_long(state->content, OSAL_JSON_START_ARRAY + tag_dict_ix, 0);
+                if (s) return s;
+            }
+
+            s = osal_parse_json_recursive(state, OS_TRUE);
+            if (s) return s;
+
+            if (!state->skip_count)
+            {
+                s = osal_stream_write_long(state->content, OSAL_JSON_END_ARRAY, 0);
                 if (s) return s;
             }
         }
@@ -300,7 +331,7 @@ static osalStatus osal_parse_json_recursive(
             if (c == '\0') return OSAL_STATUS_FAILED;
         }
         while (osal_char_isspace(c));
-        if (c == '}')
+        if (c == '}' || c == ']')
         {
             return OSAL_SUCCESS;
         }

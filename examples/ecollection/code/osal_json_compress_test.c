@@ -15,28 +15,8 @@
 */
 #include "osal_example_collection_main.h"
 
-static os_char json_text[] = {
-"{\n"
-"  \"pins\": {\n"
-"    \"name\": \"jane\",\n"
-"    \"title\": \"IO pin setup for 'jane' application on 'carol' hardware\",\n"
-"    \"inputs\": {\n"
-"	  \"DIP_SWITCH_3\": {\"addr\": 34, \"pull-up\": 1},\n"
-"	  \"DIP_SWITCH_4\": {\"addr\": 35},\n"
-"	  \"TOUCH_SENSOR\": {\"addr\": 4, \"touch\": 1}\n"
-"    },\n"
-"    \"outputs\": {\n"
-"	  \"LED_BUILTIN\": {\"addr\": 2}\n"
-"    },\n"
-"    \"analog_inputs\": {\n"
-"	  \"POTENTIOMETER\": {\"addr\": 25, \"speed\": 3, \"delay\": 11, \"max\": 4095}\n"
-"    },\n"
-"    \"pwm\": {\n"
-"	  \"SERVO\": {\"bank\": 0, \"addr\": 32, \"frequency\": 50.1, \"resolution\": \"12\", \"init\": 2048, \"max\": 4095},\n"
-"	  \"DIMMER_LED\": {\"bank\": 1, \"addr\": 33, \"frequency\": 5000, \"resolution\": null, \"init\": 0, \"max\": 4095}\n"
-"    }\n"
-"  }\n"
-"}\n"};
+
+const char example_json_path[] = "/coderoot/eosal/examples/ecollection/test_files/example.json";
 
 
 /**
@@ -53,21 +33,33 @@ static os_char json_text[] = {
 
 ****************************************************************************************************
 */
-os_int osal_json_compress_test(
+osalStatus osal_json_compress_test(
     os_int argc,
     os_char *argv[])
 {
     osalStatus s;
-    osalStream compressed, uncompressed;
+    osalStream compressed = OS_NULL, uncompressed = OS_NULL;
     os_char nbuf[OSAL_NBUF_SZ];
-    os_char *data, *str;
-    os_memsz data_sz, str_sz;
+    os_char *data, *str, *json_text;
+    os_memsz data_sz, str_sz, json_text_sz;
 
-    osal_console_write(json_text);
+    json_text = os_read_file_alloc(example_json_path, &json_text_sz, OS_FILE_DEFAULT);
+    if (json_text == OS_NULL)
+    {
+        osal_console_write("reading file failed: ");
+        osal_console_write(example_json_path);
+        return OSAL_STATUS_FAILED;
+    }
 
     compressed = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
 
     s = osal_compress_json(compressed, json_text, "title", 0);
+    if (s)
+    {
+        osal_console_write("osal_compress_json() failed\n");
+        goto getout;
+    }
+
     osal_int_to_string(nbuf, sizeof(nbuf), s);
     osal_console_write("\nstatus = ");
     osal_console_write(nbuf);
@@ -96,8 +88,10 @@ os_int osal_json_compress_test(
         osal_console_write(str);
     }
 
+getout:
     osal_stream_buffer_close(uncompressed);
     osal_stream_buffer_close(compressed);
 
-    return 0;
+    os_free(json_text, json_text_sz);
+    return s;
 }

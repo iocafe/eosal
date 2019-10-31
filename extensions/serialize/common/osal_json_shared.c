@@ -17,21 +17,39 @@
 #if OSAL_SERIALIZE_SUPPORT
 
 const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
- = {"addr",  /* OSAL_JSON_DICT_ADDR = 0 */
-    "bank",  /* OSAL_JSON_DICT_BANK = 1 */
+ = {"-",        /* OSAL_JSON_DICT_NONE = 0, NONE must be "-" indicating array item */
+    "groups",   /* OSAL_JSON_DICT_GROUPS = 1  */
+    "signals",  /* OSAL_JSON_DICT_SIGNALS = 2  */
+    "name",     /* OSAL_JSON_DICT_NAME = 3  */
+    "value",    /* OSAL_JSON_DICT_VALUE = 4  */
+    "type",     /* OSAL_JSON_DICT_TYPE = 5  */
+    "addr",     /* OSAL_JSON_DICT_ADDR = 6  */
+    "bank",     /* OSAL_JSON_DICT_BANK = 7  */
+    "unit",     /* OSAL_JSON_DICT_UNIT = 8  */
+    "min",      /* OSAL_JSON_DICT_MIN = 9 */
+    "max",      /* OSAL_JSON_DICT_MAX = 10 */
+    "digs",     /* OSAL_JSON_DICT_DIGS = 11 */
     OS_NULL,
-    "name",  /* OSAL_JSON_DICT_NAME = 3 */
-    "value", /* OSAL_JSON_DICT_VALUE = 4 */
-    "type",  /* OSAL_JSON_DICT_TYPE = 5 */
-    "unit",  /* OSAL_JSON_DICT_UNIT = 6 */
-    "min",   /* OSAL_JSON_DICT_MIN = 7 */
-    "max",   /* OSAL_JSON_DICT_MAX = 8 */
-    "digs",  /* OSAL_JSON_DICT_DIGS = 9 */
+    OS_NULL,
+    "boolean",  /* OSAL_JSON_DICT_BOOLEAN = 14 */
+    "char",     /* OSAL_JSON_DICT_CHAR = 15 */
+    "uchar",    /* OSAL_JSON_DICT_UCHAR = 16 */
+    "short",    /* OSAL_JSON_DICT_SHORT = 17 */
+    "ushort",   /* OSAL_JSON_DICT_USHORT = 18 */
+    "int",      /* OSAL_JSON_DICT_INT = 19 */
+    "uint",     /* OSAL_JSON_DICT_UINT = 20 */
+    "long",     /* OSAL_JSON_DICT_LONG = 21 */
+    "float",    /* OSAL_JSON_DICT_FLOAT = 22 */
+    "double",   /* OSAL_JSON_DICT_DOUBLE = 23 */
+    "str",      /* OSAL_JSON_DICT_STR = 24 */
     OS_NULL,
     OS_NULL,
-    "frequency",  /* OSAL_JSON_DICT_FREQUENCY = 12 */
-    "resolution", /* OSAL_JSON_DICT_RESOLUTION = 13 */
-    "delay"       /* OSAL_JSON_DICT_DELAY = 14 */
+    "pins",     /* OSAL_JSON_DICT_PINS = 27 */
+    "inputs",   /* OSAL_JSON_DICT_INPUTS = 28 */
+    "outputs",  /* OSAL_JSON_DICT_OUTPUTS = 29 */
+    "controls",   /* OSAL_JSON_DICT_CONTROLS = 30 */
+    "frequency",  /* OSAL_JSON_DICT_FREQUENCY = 31 */
+    "resolution"  /* OSAL_JSON_DICT_RESOLUTION = 32 */
    };
 
 /* Find static dictionary item number by string, OSAL_JSON_DICT_NO_ENTRY is none.

@@ -17,27 +17,27 @@
 #define OSAL_EXAMPLE_COLLECTION_INCLUDED
 #include "eosalx.h"
 
-os_int osal_int64_test(
+osalStatus osal_int64_test(
     os_int argc,
     os_char *argv[]);
 
-os_int osal_intser_test(
+osalStatus osal_intser_test(
     os_int argc,
     os_char *argv[]);
 
-os_int osal_float_int_conv_test(
+osalStatus osal_float_int_conv_test(
     os_int argc,
     os_char *argv[]);
 
-os_int osal_json_compress_test(
+osalStatus osal_json_compress_test(
     os_int argc,
     os_char *argv[]);
 
-os_int osal_threads_example_main(
+osalStatus osal_threads_example_main(
     os_int argc,
     os_char *argv[]);
 
-os_int osal_threads_example_2_main(
+osalStatus osal_threads_example_2_main(
     os_int argc,
     os_char *argv[]);
 

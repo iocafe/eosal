@@ -54,7 +54,7 @@ static void my_thread_2_func(
 
 ****************************************************************************************************
 */
-os_int osal_threads_example_2_main(
+osalStatus osal_threads_example_2_main(
     os_int argc,
     os_char *argv[])
 {
@@ -73,7 +73,7 @@ os_int osal_threads_example_2_main(
 	myprm.terminate = OS_TRUE;
 	osal_thread_join(handle);
 
-    return 0;
+    return OSAL_SUCCESS;
 }
 
 

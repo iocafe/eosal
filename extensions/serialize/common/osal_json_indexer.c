@@ -139,7 +139,8 @@ osalStatus osal_get_json_item(
 
     item->depth = jindex->depth;
 
-    if (item->code == OSAL_JSON_END_BLOCK)
+    if (item->code == OSAL_JSON_END_BLOCK ||
+        item->code == OSAL_JSON_END_ARRAY)
     {
         jindex->depth--;
         item->depth--;
@@ -166,6 +167,7 @@ osalStatus osal_get_json_item(
     switch (code & OSAL_JSON_CODE_MASK)
     {
         case OSAL_JSON_START_BLOCK:
+        case OSAL_JSON_START_ARRAY:
             jindex->depth++;
             break;
 

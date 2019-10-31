@@ -41,7 +41,7 @@ static osalStatus osal_test_float_value(
 
 ****************************************************************************************************
 */
-os_int osal_float_int_conv_test(
+osalStatus osal_float_int_conv_test(
     os_int argc,
     os_char *argv[])
 {

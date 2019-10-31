@@ -54,6 +54,7 @@ osalStatus osal_uncompress_json(
     os_char nbuf[OSAL_NBUF_SZ];
     os_double d;
     os_memsz n_written;
+    os_boolean is_array_item;
 
     s = osal_create_json_indexer(&jindex, compressed, compressed_sz, 0);
     if (s) return s;
@@ -85,17 +86,33 @@ osalStatus osal_uncompress_json(
             continue;
         }
 
-        s = osal_write_json_str(uncompressed, "\"");
-        if (s) goto getout;
-        s = osal_write_json_str(uncompressed, item.tag_name);
-        if (s) goto getout;
-        s = osal_write_json_str(uncompressed, "\"");
-        if (s) goto getout;
+        if (item.code == OSAL_JSON_END_ARRAY)
+        {
+            s = osal_write_json_str(uncompressed, "]");
+            if (s) goto getout;
+            continue;
+        }
+
+        is_array_item = (os_boolean)!os_strcmp(item.tag_name, "-");
+        if (!is_array_item)
+        {
+            s = osal_write_json_str(uncompressed, "\"");
+            if (s) goto getout;
+            s = osal_write_json_str(uncompressed, item.tag_name);
+            if (s) goto getout;
+            s = osal_write_json_str(uncompressed, "\"");
+            if (s) goto getout;
+        }
 
         switch (item.code)
         {
             case OSAL_JSON_START_BLOCK:
-                s = osal_write_json_str(uncompressed, ": {");
+                s = osal_write_json_str(uncompressed, is_array_item ? "{" : " : {");
+                if (s) goto getout;
+                break;
+
+            case OSAL_JSON_START_ARRAY:
+                s = osal_write_json_str(uncompressed, ": [");
                 if (s) goto getout;
                 break;
 

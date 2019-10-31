@@ -50,7 +50,7 @@ static void my_thread_1_func(
 
 ****************************************************************************************************
 */
-os_int osal_threads_example_main(
+osalStatus osal_threads_example_main(
     os_int argc,
     os_char *argv[])
 {
@@ -60,7 +60,7 @@ os_int osal_threads_example_main(
 
     osal_thread_create(my_thread_1_func, &myprm, OSAL_THREAD_DETACHED, 0, "mythread1");
 
-    return 0;
+    return OSAL_SUCCESS;
 }
 
 

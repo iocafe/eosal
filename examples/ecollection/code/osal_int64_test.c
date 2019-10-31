@@ -42,7 +42,7 @@ os_int64 int64_test_data[INT64_TEST_N_DATA];
 
 ****************************************************************************************************
 */
-os_int osal_int64_test(
+osalStatus osal_int64_test(
     os_int argc,
     os_char *argv[])
 {
@@ -195,5 +195,5 @@ os_int osal_int64_test(
 #endif
 
 getout:
-    return 0;
+    return OSAL_SUCCESS;
 }
