@@ -52,7 +52,7 @@ static const osalTypeInfo osal_typeinfo[] = {
     {"double", sizeof(os_double)},	  /* OS_DOUBLE = 11 */
     {"dec01", sizeof(os_short)},	  /* OS_DEC01 = 12 */
     {"dec001", sizeof(os_short)},	  /* OS_DEC001 = 13 */
-    {"str", 0},	                      /* OS_STRING = 14 */
+    {"str", 0},	                      /* OS_STR = 14 */
     {"object", 0},	                  /* OS_OBJECT = 15 */
     {"pointer", sizeof(os_pointer)}}; /* OS_POINTER = 16 */
 

@@ -99,7 +99,7 @@ typedef enum
 
 	/** String type.
 	 */
-    OS_STRING = 14,
+    OS_STR = 14,
 
 	/** Object type.
 	 */

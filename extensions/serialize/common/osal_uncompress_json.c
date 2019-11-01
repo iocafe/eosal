@@ -273,7 +273,7 @@ static osalStatus osal_write_escaped_json_str(
 
             escape_str[0] = '\\';
             escape_str[1] = escape_c;
-            escape_str[3] = '\0';
+            escape_str[2] = '\0';
 
             s = osal_write_json_str(uncompressed, escape_str);
             if (s) return s;
