@@ -24,6 +24,9 @@ static osalStatus osal_write_json_str(
     osalStream uncompressed,
     const os_char *str);
 
+static osalStatus osal_write_escaped_json_str(
+    osalStream uncompressed,
+    const os_char *str);
 
 /**
 ****************************************************************************************************
@@ -51,7 +54,7 @@ osalStatus osal_uncompress_json(
     osalJsonItem  item;
     osalStatus s;
     os_int i, prev_depth, ddigs;
-    os_char nbuf[OSAL_NBUF_SZ];
+    os_char nbuf[OSAL_NBUF_SZ], *p;
     os_double d;
     os_memsz n_written;
     os_boolean is_array_item;
@@ -120,7 +123,7 @@ osalStatus osal_uncompress_json(
                 osal_int_to_string(nbuf, sizeof(nbuf), item.value.l);
                 s = osal_write_json_str(uncompressed, ": \"");
                 if (s) goto getout;
-                s = osal_write_json_str(uncompressed, item.value.s);
+                s = osal_write_escaped_json_str(uncompressed, item.value.s);
                 if (s) goto getout;
                 s = osal_write_json_str(uncompressed, "\"");
                 if (s) goto getout;
@@ -142,6 +145,27 @@ osalStatus osal_uncompress_json(
                 s = osal_write_json_str(uncompressed, ": ");
                 if (s) goto getout;
                 s = osal_write_json_str(uncompressed, nbuf);
+                if (s) goto getout;
+                break;
+
+            /* Handling OSAL_JSON_VALUE_NULL, OSAL_JSON_VALUE_TRUE, and
+               OSAL_JSON_VALUE_FALSE is needed only if compressed with
+               OSAL_JSON_KEEP_QUIRKS flag.
+             */
+            case OSAL_JSON_VALUE_NULL:
+                p = "null";
+                goto print_quirk;
+
+            case OSAL_JSON_VALUE_TRUE:
+                p = "true";
+                goto print_quirk;
+
+            case OSAL_JSON_VALUE_FALSE:
+                p = "false";
+print_quirk:
+                s = osal_write_json_str(uncompressed, ": ");
+                if (s) goto getout;
+                s = osal_write_json_str(uncompressed, p);
                 if (s) goto getout;
                 break;
 
@@ -171,8 +195,7 @@ getout:
   @brief Helper string to write a string to uncompressed stream.
   @anchor osal_write_json_str
 
-  The osal_write_json_str() function does nothing for now. It should be anyhow called, in
-  case future versions of indexers allocate memory, etc ...
+  The osal_write_json_str() function writes NULL terminated string to stream.
 
   @param   uncompressed Stream to write to.
   @param   str NULL terminated string to write.
@@ -195,5 +218,74 @@ static osalStatus osal_write_json_str(
     return n_written == sz ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Helper string to write a string with escape marks, like \n.
+  @anchor osal_write_escaped_json_str
+
+  The osal_write_escaped_json_str() function extends escapes in string and writes it
+  to stream.
+
+  @param   uncompressed Stream to write to.
+  @param   str NULL terminated string to write.
+  @return  none.
+
+****************************************************************************************************
+*/
+static osalStatus osal_write_escaped_json_str(
+    osalStream uncompressed,
+    const os_char *str)
+{
+    os_char escape_c, escape_str[3];
+    const os_char *p;
+    os_memsz sz, n_written;
+    osalStatus s;
+
+    p = str;
+    while (*p)
+    {
+        switch (*p)
+        {
+            /* case '/': We do not want to escape this, would break paths */
+            case '\"':
+            case '\\': escape_c = *p; break;
+            case '\n': escape_c = 'n'; break;
+            case '\r': escape_c = 'r'; break;
+            case '\b': escape_c = 'b'; break;
+            case '\f': escape_c = 'f'; break;
+            case '\t': escape_c = 't'; break;
+            default: escape_c = 0; p++; break;
+        }
+
+        if (escape_c)
+        {
+            if (p > str)
+            {
+                sz = p - str;
+                s = osal_stream_write(uncompressed, str, sz,
+                    &n_written, OSAL_STREAM_DEFAULT);
+                if (s) return s;
+                if (n_written != sz) return OSAL_STATUS_TIMEOUT;
+                str = ++p;
+            }
+
+            escape_str[0] = '\\';
+            escape_str[1] = escape_c;
+            escape_str[3] = '\0';
+
+            s = osal_write_json_str(uncompressed, escape_str);
+            if (s) return s;
+        }
+    }
+
+    if (p > str)
+    {
+        s = osal_write_json_str(uncompressed, str);
+        if (s) return s;
+    }
+    return OSAL_SUCCESS;
+}
 
 #endif

@@ -21,33 +21,42 @@
  */
 typedef struct
 {
-    /* Current position in JSON source.
+    /** Current position in JSON source.
      */
     os_char *pos;
 
-    /* Buffer for string being parsed
+    /** Buffer for string being parsed
      */
     osalStream str;
 
-    /* Buffer for content being created.
+    /** Buffer for content being created.
      */
     osalStream content;
 
-    /* Buffer for dictionary strings.
+    /** Buffer for dictionary strings.
      */
     osalStream dictionary;
 
-    /* Start string positions for dictionary.
+    /** Start string positions for dictionary.
      */
     osalStream dict_pos;
 
-    /* Number of strings in dictionary.
+    /** Number of strings in dictionary.
      */
     os_int dictionary_n;
 
+    /** List of tags to skip.
+     */
     os_char *skip_tags;
 
+    /** How deep we have recursed into skipped tags.
+     */
     os_int skip_count;
+
+    /** OSAL_JSON_KEEP_QUIRKS not keep compressed JSON
+        as much as original without simplifying it.
+     */
+    os_int flags;
 }
 osalJsonCompressor;
 
@@ -89,7 +98,8 @@ static os_long osal_add_string_to_json_dict(
   @param  json_source JSON content as plain text.
   @param  skip_tags List of tags to skip (not include in compressed data). For example
           "title,help" to exclude title and help texts from compressed binary JSON.
-  @param  flags Reserved for future, set 0 for now.
+  @param  flags OSAL_JSON_KEEP_QUIRKS not keep compressed JSON as much as original without
+           Set 0 for default operation.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -112,6 +122,7 @@ osalStatus osal_compress_json(
     os_memclear(&state, sizeof(state));
     state.pos = json_source;
     state.skip_tags = skip_tags;
+    state.flags = flags;
 
     /* Allocate temporary buffers for parsing string, generating content and for dictionary.
      */
@@ -422,6 +433,7 @@ static osalStatus parse_json_value(
     os_double dvalue;
     os_char *data;
     os_memsz data_n, count;
+    os_int flags;
     osalStatus s;
 
     /* If we are ignoring the tag content.
@@ -493,10 +505,28 @@ static osalStatus parse_json_value(
         return s;
     }
 
-    if (allow_null) if (!os_strcmp(data, "null"))
+    if (allow_null)
     {
-        s = osal_stream_write_long(state->content, OSAL_JSON_VALUE_EMPTY + tag_dict_ix, 0);
-        return s;
+        flags = state->flags;
+
+        if (!os_strcmp(data, "null"))
+        {
+            s = osal_stream_write_long(state->content,
+                ((flags & OSAL_JSON_KEEP_QUIRKS) ? OSAL_JSON_VALUE_NULL : OSAL_JSON_VALUE_EMPTY) + tag_dict_ix, 0);
+            return s;
+        }
+        else if (!os_strcmp(data, "true"))
+        {
+            s = osal_stream_write_long(state->content,
+                ((flags & OSAL_JSON_KEEP_QUIRKS) ? OSAL_JSON_VALUE_TRUE : OSAL_JSON_VALUE_INTEGER_ONE) + tag_dict_ix, 0);
+            return s;
+        }
+        else if (!os_strcmp(data, "false"))
+        {
+            s = osal_stream_write_long(state->content,
+                ((flags & OSAL_JSON_KEEP_QUIRKS) ? OSAL_JSON_VALUE_FALSE: OSAL_JSON_VALUE_INTEGER_ZERO) + tag_dict_ix, 0);
+            return s;
+        }
     }
 
     s = osal_stream_write_long(state->content, OSAL_JSON_VALUE_STRING + tag_dict_ix, 0);
@@ -527,6 +557,12 @@ static osalStatus osal_parse_json_quoted_string(
     os_memsz n_written;
     osalStatus s;
     os_char c;
+#if OSAL_UTF8
+    os_long c32;
+    os_char ubuf[5], substr[6];
+    os_memsz count;
+    os_int n;
+#endif
 
     osal_stream_buffer_seek(state->str, &seekzero,
         OSAL_STREAM_SEEK_WRITE_POS|OSAL_STREAM_SEEK_SET);
@@ -535,11 +571,33 @@ static osalStatus osal_parse_json_quoted_string(
     {
         c = *(state->pos++);
 
-        /* If c is quote character
+        /* If c is escape character?
          */
         if (c == '\\')
         {
             c = *(state->pos++);
+            switch (c)
+            {
+                case '\0': return OSAL_STATUS_FAILED;
+                default: break;
+                case 'n': c = '\n'; break;
+                case 'r': c = '\r'; break;
+                case 'b': c = '\b'; break;
+                case 'f': c = '\f'; break;
+                case 't': c = '\t'; break;
+#if OSAL_UTF8
+                case 'u':
+                    os_memcpy(ubuf, state->pos, 4);
+                    ubuf[4] = '\0';
+                    c32 = osal_hex_string_to_int(ubuf, &count);
+                    if (count != 4) return OSAL_STATUS_FAILED;
+                    n = osal_char_utf32_to_utf8(substr, sizeof(substr), c32);
+                    s = osal_stream_buffer_write(state->str, substr, n, &n_written, 0);
+                    if (s) return s;
+                    state->pos += 4;
+                    goto goon;
+#endif
+            }
         }
 
         /* If end of the string
@@ -561,6 +619,7 @@ static osalStatus osal_parse_json_quoted_string(
          * in buffer for this character and terminating '\0'.
          */
         s = osal_stream_buffer_write(state->str, &c, 1, &n_written, 0);
+goon:;
     }
     while (!s);
 

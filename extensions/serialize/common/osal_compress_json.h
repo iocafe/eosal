@@ -18,6 +18,11 @@
 #include "eosalx.h"
 #if OSAL_JSON_TEXT_SUPPORT
 
+/* Flags
+ */
+#define OSAL_JSON_SIMPLIFY 0
+#define OSAL_JSON_KEEP_QUIRKS 1
+
 /* Compress JSON from normal string presentation to binary format.
  */
 osalStatus osal_compress_json(

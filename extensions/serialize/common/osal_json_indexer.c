@@ -228,6 +228,15 @@ osalStatus osal_get_json_item(
             }
             break;
 
+        case OSAL_JSON_VALUE_TRUE:
+        case OSAL_JSON_VALUE_FALSE:
+            item->value.l = 0;
+            break;
+
+        case OSAL_JSON_VALUE_NULL:
+            item->value.s = "";
+            break;
+
         default:
             return OSAL_STATUS_FAILED;
     }

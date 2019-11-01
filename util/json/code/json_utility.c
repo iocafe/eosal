@@ -20,7 +20,8 @@
 static osalStatus osal_json_from_text_to_binary(
     os_char *src_path,
     os_char *dst_path,
-    os_char *skip_tags);
+    os_char *skip_tags,
+    os_int flags);
 
 static osalStatus osal_json_from_binary_to_text(
     os_char *src_path,
@@ -51,7 +52,7 @@ osalStatus osal_main(
     os_memsz extras_sz, n_written;
     osalStatus s;
     osalStream extra_args = OS_NULL;
-    os_int i, path_nr = 0;
+    os_int i, path_nr, flags;
 
     enum
     {
@@ -64,18 +65,23 @@ osalStatus osal_main(
     src_path = ".stdin";
     dst_path = ".stdout";
     path_nr = 0;
+    flags = 0;
 
     for (i = 1; i < argc; i++)
     {
         if (argv[i][0] == '-')
         {
-            if (!os_strnicmp(argv[i], "-t2b", -1))
+            if (!os_strnicmp(argv[i], "--t2b", -1))
             {
                 op = JSON_T2B;
             }
-            else if (!os_strnicmp(argv[i], "-b2t", -1))
+            else if (!os_strnicmp(argv[i], "--b2t", -1))
             {
                 op = JSON_B2T;
+            }
+            else if (!os_strnicmp(argv[i], "--keep-quirks", -1))
+            {
+                flags |= OSAL_JSON_KEEP_QUIRKS;
             }
             else if (!os_strcmp(argv[i], "-?") ||
                 !os_strnicmp(argv[i], "-h", -1) ||
@@ -118,7 +124,7 @@ osalStatus osal_main(
             {
                 extras = osal_stream_buffer_content(extra_args, &extras_sz);
             }
-            s = osal_json_from_text_to_binary(src_path, dst_path, extras);
+            s = osal_json_from_text_to_binary(src_path, dst_path, extras, flags);
             break;
 
         case JSON_B2T:
@@ -158,7 +164,8 @@ getout:
 static osalStatus osal_json_from_text_to_binary(
     os_char *src_path,
     os_char *dst_path,
-    os_char *skip_tags)
+    os_char *skip_tags,
+    os_int flags)
 {
     os_char *json_text = OS_NULL;
     os_memsz json_text_sz = 0;
@@ -171,7 +178,7 @@ static osalStatus osal_json_from_text_to_binary(
     compressed = osal_file_open(dst_path, OS_NULL, OS_NULL, OSAL_STREAM_WRITE);
     if (compressed == OS_NULL) goto getout;
 
-    s = osal_compress_json(compressed, json_text, skip_tags, 0);
+    s = osal_compress_json(compressed, json_text, skip_tags, flags);
 
 getout:
     os_free(json_text, json_text_sz);
@@ -235,9 +242,10 @@ static void osal_json_util_help(void)
     static os_char text[] = {
         "json [-t2b] [-b2t] [-title] [infile] [outfile]\n"
         "Convert: JSON file/binary file/C source file\n"
-        "-t2b JSON fom text file to packed binary format (default)\n"
-        "-b2t Packed binary JSON to plain text JSON\n"
-        "-title With -t2b skips \"title\" tags (other tags can be skipped the same way)\n"};
+        "--t2b JSON fom text file to packed binary format (default)\n"
+        "--b2t Packed binary JSON to plain text JSON\n"
+        "--keep-quirks With --t2b skips keeps marking like null, false, true (not changed to "", 0, 1)\n"
+        "-title With --t2b skips \"title\" tags (other tags can be skipped the same way)\n"};
 
     osal_console_write(text);
 }

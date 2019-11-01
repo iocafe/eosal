@@ -53,7 +53,7 @@ osalStatus osal_json_compress_test(
 
     compressed = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
 
-    s = osal_compress_json(compressed, json_text, "title", 0);
+    s = osal_compress_json(compressed, json_text, "title", OSAL_JSON_KEEP_QUIRKS /* OSAL_JSON_SIMPLIFY */);
     if (s)
     {
         osal_console_write("osal_compress_json() failed\n");
