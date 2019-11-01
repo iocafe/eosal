@@ -88,6 +88,7 @@ osalStatus osal_main(
                 !os_strnicmp(argv[i], "--help", -1))
             {
                 osal_json_util_help();
+                s = OSAL_SUCCESS;
                 goto getout;
             }
             else
@@ -240,7 +241,7 @@ getout:
 static void osal_json_util_help(void)
 {
     static os_char text[] = {
-        "json [-t2b] [-b2t] [-title] [infile] [outfile]\n"
+        "json [--t2b] [--b2t] [-title] [infile] [outfile]\n"
         "Convert: JSON file/binary file/C source file\n"
         "--t2b JSON fom text file to packed binary format (default)\n"
         "--b2t Packed binary JSON to plain text JSON\n"
