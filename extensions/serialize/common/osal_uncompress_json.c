@@ -56,8 +56,10 @@ osalStatus osal_uncompress_json(
     os_int i, prev_depth, ddigs;
     os_char nbuf[OSAL_NBUF_SZ], *p;
     os_double d;
-    os_memsz n_written;
     os_boolean is_array_item;
+
+    s = osal_write_json_str(uncompressed, "{");
+    if (s) return s;
 
     s = osal_create_json_indexer(&jindex, compressed, compressed_sz, 0);
     if (s) return s;
@@ -177,10 +179,9 @@ print_quirk:
 
     if (s == OSAL_END_OF_FILE)
     {
-        /* Write terminating '\n' and '\0' characters.
+        /* Write terminating '\n' and '}' characters.
          */
-        s = osal_stream_write(uncompressed, "\n", 2,
-            &n_written, OSAL_STREAM_DEFAULT);
+        s = osal_write_json_str(uncompressed, "\n}\n");
     }
 
 getout:

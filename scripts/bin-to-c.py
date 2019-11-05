@@ -1,5 +1,5 @@
-# signals-to-c.py 31.10.2019/pekka
-# Converts communication signal map written in JSON to C source and header files. 
+# bin-to-c.py 5.11.2019/pekka
+# Converts a binary file to C character array.
 import json
 import os
 import sys
@@ -17,7 +17,6 @@ def finish_c_files():
     hfile.write('\nOSAL_C_HEADER_ENDS\n')
     cfile.close()
     hfile.close()
-
 
 def process_source_file(path, variablename):
     global cfile, hfile
@@ -69,10 +68,10 @@ def mymain():
 
     if len(sourcefiles) < 1:
         print("No source files")
-#            exit()
+        exit()
 
-    sourcefiles.append('/coderoot/retiredcode/ioc_memory_block.hold')
-    outpath = '/tmp/aaaa.c'
+#    sourcefiles.append('/coderoot/retiredcode/ioc_memory_block.hold')
+#    outpath = '/tmp/aaaa.c'
 
     if outpath is None:
         outpath = sourcefiles[0]
