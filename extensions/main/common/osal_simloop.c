@@ -43,7 +43,7 @@ void osal_simulated_loop(
     osal_application_context = app_context;
 
 #if OSAL_MAIN_SUPPORT
-    while (!osal_loop(app_context))
+    while (!osal_loop(app_context) && osal_go())
     {
         os_timeslice();
     }

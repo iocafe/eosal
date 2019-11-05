@@ -864,7 +864,7 @@ osalStatus osal_socket_write(
             all_not_flushed = OS_FALSE;
             count = 0;
 
-            while (OS_TRUE)
+            while (osal_go())
             {
                 while (n > 0)
                 {

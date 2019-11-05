@@ -17,6 +17,44 @@
 */
 #include "eosal.h"
 #include <signal.h>
+#include <sys/wait.h>
+
+/**
+****************************************************************************************************
+  Signal handlers.
+****************************************************************************************************
+*/
+static void osal_linux_sighup(
+    int signum)
+{
+    osal_debug_error("SIGHUP");
+}
+
+static void osal_linux_sigfpe(
+    int signum)
+{
+    osal_debug_error("SIGFPE");
+}
+
+static void osal_linux_sigalrm(
+    int signum)
+{
+    osal_debug_error("SIGALRM");
+}
+
+static void osal_linux_sigchld(
+    int signum)
+{
+    int x;
+    osal_debug_error("SIGCHLD");
+    waitpid(-1, &x, WNOHANG);
+}
+
+static void osal_linux_terminate_by_signal(
+    int signum)
+{
+    osal_global->exit_process = OS_TRUE;
+}
 
 
 /**
@@ -40,9 +78,27 @@ void osal_init_os_specific(
 {
     if ((flags & OSAL_INIT_NO_LINUX_SIGNAL_INIT) == 0)
     {
-        /* Do not terminate program if socket breaks.
+        /* Ignore broken sockets, closing controlling terminal, closed child process
          */
-        /* signal (SIGPIPE, SIG_IGN); */
+        signal (SIGPIPE, SIG_IGN);
+
+        /* Ignore, but call oedebug_error() leave note if controlling terminal process is closed,
+         */
+        signal (SIGHUP, osal_linux_sighup);
+        signal (SIGFPE, osal_linux_sigfpe);
+        signal (SIGALRM, osal_linux_sigalrm);
+
+        /* Handle closed child process.
+         */
+        signal (SIGCHLD, osal_linux_sigchld);
+
+        /* Terminate process on following signals.
+         */
+        signal (SIGTERM, osal_linux_terminate_by_signal);
+        signal (SIGQUIT, osal_linux_terminate_by_signal);
+        signal (SIGINT, osal_linux_terminate_by_signal);
+        signal (SIGTSTP, osal_linux_terminate_by_signal);
+        signal (SIGABRT, osal_linux_terminate_by_signal);
     }
 }
 
@@ -63,3 +119,5 @@ void osal_shutdown_os_specific(
     void)
 {
 }
+
+

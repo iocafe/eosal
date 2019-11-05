@@ -49,6 +49,10 @@ typedef struct
      */
     os_boolean osal_initialized;
 
+    /** Set to OS_TRUE to request "terminate the process".
+     */
+    os_boolean exit_process;
+
 #if OSAL_MULTITHREAD_SUPPORT
 	/** System mutex. System mutex is used to synchronize access to global variables, etc.
 	 */
@@ -117,6 +121,9 @@ typedef struct
 #endif
 }
 osalGlobalStruct;
+
+#define osal_go() (!osal_global->exit_process)
+#define osal_stop() (osal_global->exit_process)
 
 
 #endif
