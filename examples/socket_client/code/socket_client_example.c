@@ -248,7 +248,7 @@ osalStatus osal_main(
     /* Create worker thread to do actual coommunication.
      */
     os_memclear(&mythreadprm, sizeof(mythreadprm));
-    mythreadprm.myevent = osal_event_create();;
+    mythreadprm.myevent = osal_event_create();
     mythread = osal_thread_create(mythread_func, &mythreadprm,
         OSAL_THREAD_ATTACHED, 0, "mythread");
 
