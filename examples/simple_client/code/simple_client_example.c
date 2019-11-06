@@ -68,6 +68,7 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
+
     /* Initialize underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET

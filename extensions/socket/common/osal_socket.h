@@ -124,6 +124,8 @@ void osal_socket_close(
  */
 osalStream osal_socket_accept(
     osalStream stream,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
     osalStatus *status,
     os_int flags);
 

@@ -352,4 +352,11 @@
 #define OSAL_PERSISTENT_SUPPORT 0
 #endif
 
+/** Having a console for testing makes sense in linux and windows PC environments,
+    and may be used also in micro-controller systems trough serial port.
+ */
+#ifndef OS_CONTROL_CONSOLE_SUPPORT
+#define OS_CONTROL_CONSOLE_SUPPORT 0
+#endif
+
 #endif

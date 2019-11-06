@@ -360,7 +360,9 @@ void osal_socket_close(
 */
 osalStream osal_socket_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags)
 {
     osalSocket *mysocket, *newsocket;
@@ -420,6 +422,8 @@ osalStream osal_socket_accept(
     mysocket->state = OSAL_SOCKET_NOT_CONFIGURED;
 
     osal_make_sockets();
+
+    if (remote_ip_addr) *remote_ip_addr = '\0';
 
     if (status) *status = OSAL_SUCCESS;
     return (osalStream)newsocket;

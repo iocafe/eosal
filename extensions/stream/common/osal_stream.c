@@ -40,12 +40,15 @@ void osal_stream_close(
 
 osalStream osal_stream_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags)
 {
 	if (stream)
 	{
-		return stream->iface->stream_accept(stream, status, flags);
+        return stream->iface->stream_accept(stream, remote_ip_addr,
+            remote_ip_addr_sz, status, flags);
 	}
 	if (status) *status = OSAL_STATUS_FAILED;
 	return OS_NULL;
@@ -346,10 +349,13 @@ osalStatus osal_stream_write_str(
 
 osalStream osal_stream_default_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags)
 {
 	if (status) *status = OSAL_STATUS_FAILED;
+    if (remote_ip_addr) *remote_ip_addr = '\0';
 	return OS_NULL;
 }
 

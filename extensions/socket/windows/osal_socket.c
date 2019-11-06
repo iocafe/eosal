@@ -513,7 +513,9 @@ void osal_socket_close(
 */
 osalStream osal_socket_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags)
 {
 	osalSocket *mysocket, *newsocket = OS_NULL;
@@ -625,6 +627,8 @@ osalStream osal_socket_accept(
 		        goto getout;
             }           
         }
+
+        if (remote_ip_addr) *remote_ip_addr = '\0';
 
 		/* Success set status code and cast socket structure pointer to stream pointer 
 		   and return it.

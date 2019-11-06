@@ -357,7 +357,9 @@ static void osal_openssl_close(
 */
 static osalStream osal_openssl_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags)
 {
     osalSSLSocket *sslsocket, *newsslsocket = OS_NULL;
@@ -373,7 +375,8 @@ static osalStream osal_openssl_accept(
 
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
-    newtcpsocket = osal_socket_accept(sslsocket->tcpsocket, status, flags);
+    newtcpsocket = osal_socket_accept(sslsocket->tcpsocket, remote_ip_addr,
+        remote_ip_addr_sz, status, flags);
     if (newtcpsocket == OS_NULL) return OS_NULL;
 
     /* Allocate and clear socket structure.

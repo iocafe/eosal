@@ -456,6 +456,8 @@ void osal_socket_close(
 */
 osalStream osal_socket_accept(
 	osalStream stream,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
 	osalStatus *status,
 	os_int flags)
 {
@@ -537,6 +539,11 @@ osalStream osal_socket_accept(
 		newsocket->handle = new_handle;
 		newsocket->open_flags = flags;
         newsocket->is_ipv6 = mysocket->is_ipv6;
+
+        if (remote_ip_addr)
+        {
+            os_strncpy(remote_ip_addr, inet_ntoa(sin_remote.sin_addr), remote_ip_addr_sz);
+        }
 
 		/* Save interface pointer.
 		 */

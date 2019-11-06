@@ -251,7 +251,9 @@ typedef struct osalStreamInterface
 
 	osalStream (*stream_accept)(
 		osalStream stream,
-		osalStatus *status,
+        os_char *remote_ip_addr,
+        os_memsz remote_ip_addr_sz,
+        osalStatus *status,
 		os_int flags);
 
 	osalStatus (*stream_flush)(
@@ -368,7 +370,9 @@ void osal_stream_close(
 
 osalStream osal_stream_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags);
 
 osalStatus osal_stream_flush(
@@ -452,7 +456,9 @@ osalStatus osal_stream_write_str(
 
 osalStream osal_stream_default_accept(
 	osalStream stream,
-	osalStatus *status,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
+    osalStatus *status,
 	os_int flags);
 
 osalStatus osal_stream_default_flush(

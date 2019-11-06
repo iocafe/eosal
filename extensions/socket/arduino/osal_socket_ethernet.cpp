@@ -366,6 +366,8 @@ void osal_socket_close(
 */
 osalStream osal_socket_accept(
 	osalStream stream,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
 	osalStatus *status,
 	os_int flags)
 {
@@ -434,6 +436,8 @@ osalStream osal_socket_accept(
         mysocket->sockindex = sockindex;
         osal_client_used[cix] = OS_TRUE;
         osal_trace2("Incoming socket accepted");
+
+        if (remote_ip_addr) *remote_ip_addr = '\0';
 
         /* Return socket pointer.
          */
