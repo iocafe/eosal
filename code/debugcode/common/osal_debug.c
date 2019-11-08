@@ -30,17 +30,71 @@
 #if OSAL_DEBUG_FILE_AND_LINE
 
 
+
+/**
+****************************************************************************************************
+
+  @brief Write file name and error number to debug console.
+  @anchor osal_append_C_file_name_and_line_nr(
+
+  The osal_append_C_file_name_and_line_nr() function writes C source file path and line number
+  where error, etc. occurred to console. This is useful for findinf source of problem.
+
+  Set breakpoint to this function to trap programming errors.
+
+  @param   file Path to C source file.
+  @param   line Line number within C source file.
+  @param   new_line_at_end OS_TRUE to append new line character at end. Also path and line number are
+           not appended.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_append_C_file_name_and_line_nr(
+    const os_char *file,
+    os_int line,
+    os_boolean new_line_at_end)
+{
+    os_char nbuf[22], *p;
+
+    /* Strip path from file name to keep output more readable.
+     */
+    p = os_strechr((os_char*)file, '/');
+    if (p) file = p + 1;
+    p = os_strechr((os_char*)file, '\\');
+    if (p) file = p + 1;
+
+    if (new_line_at_end)
+    {
+        /* Write file name and line number.
+         */
+        osal_console_write(". file: ");
+        osal_console_write(file);
+        osal_console_write(", line: ");
+        osal_int_to_string(nbuf, sizeof(nbuf), line);
+        osal_console_write(nbuf);
+
+        /* Write terminating line feed character.
+         */
+        osal_console_write("\n");
+    }
+}
+
+
 /**
 ****************************************************************************************************
 
   @brief Report a programming error.
   @anchor osal_debug_error_func
 
-  The osal_debug_error_func()...
+  The osal_debug_error_func() writes text, path to C file and line number within C file to
+  console. Call this function to report errors and to generate trace, basically only for
+  debug output.
 
-  Set breakpoint to this function to trap programming errors.
-
-  @param   text Pointer to error text to log. 
+  @param   text Pointer to text to log. If text starts with '~', no new line character is appended.
+  @param   file Path to C source file.
+  @param   line Line number within C source file.
 
   @return  None.
 
@@ -51,7 +105,8 @@ void osal_debug_error_func(
     const os_char *file,
 	os_int line)
 {
-    os_char nbuf[22], *p;
+    os_boolean new_line_at_end = OS_TRUE;
+    if (*text == '~') { new_line_at_end = OS_FALSE; text++; }
 
 	/* Write error message on debug console, if any.
 	 */
@@ -59,23 +114,9 @@ void osal_debug_error_func(
 
     /* Strip path from file name to keep output more readable.
      */
-    p = os_strechr((os_char*)file, '/');
-    if (p) file = p + 1;
-    p = os_strechr((os_char*)file, '\\');
-    if (p) file = p + 1;
-
-	/* Write file name and line number.
-	 */
-	osal_console_write(". file: ");
-	osal_console_write(file);
-	osal_console_write(", line: ");
-	osal_int_to_string(nbuf, sizeof(nbuf), line);
-	osal_console_write(nbuf);
-
-	/* Write terminating line feed character.
-	 */
-	osal_console_write("\n");
+    osal_append_C_file_name_and_line_nr(file, line, new_line_at_end);
 }
+
 
 /**
 ****************************************************************************************************
@@ -83,11 +124,14 @@ void osal_debug_error_func(
   @brief Report a programming error.
   @anchor osal_debug_error_int_func
 
-  The osal_debug_error_int_func()...
+  The osal_debug_error_int_func() writes text, integer argument, path to C file and line number
+  within C file to console. Call this function to report errors and to generate trace, basically
+  only for debug output.
 
-  Set breakpoint to this function to trap programming errors.
-
-  @param   text Pointer to error text to log. 
+  @param   text Pointer to text to log. If text starts with '~', no new line character is appended.
+  @param   v Integer number to append to text.
+  @param   file Path to C source file.
+  @param   line Line number within C source file.
 
   @return  None.
 
@@ -99,7 +143,9 @@ void osal_debug_error_int_func(
     const os_char *file,
 	os_int line)
 {
-    os_char nbuf[22], *p;
+    os_char nbuf[OSAL_NBUF_SZ];
+    os_boolean new_line_at_end = OS_TRUE;
+    if (*text == '~') { new_line_at_end = OS_FALSE; text++; }
 
 	/* Write error message on debug console, if any.
 	 */
@@ -109,22 +155,51 @@ void osal_debug_error_int_func(
 
     /* Strip path from file name to keep output more readable.
      */
-    p = os_strechr((os_char*)file, '/');
-    if (p) file = p + 1;
-    p = os_strechr((os_char*)file, '\\');
-    if (p) file = p + 1;
+    osal_append_C_file_name_and_line_nr(file, line, new_line_at_end);
+}
 
-	/* Write file name and line number.
-	 */
- 	osal_console_write(". file: ");
-	osal_console_write(file);
-	osal_console_write(", line: ");
-	osal_int_to_string(nbuf, sizeof(nbuf), line);
-	osal_console_write(nbuf);
 
-	/* Write terminating line feed character.
-	 */
-	osal_console_write("\n");
+
+/**
+****************************************************************************************************
+
+  @brief Report a programming error.
+  @anchor osal_debug_error_str_func
+
+  The osal_debug_error_str_func() writes text, integer argument, path to C file and line number
+  within C file to console. Call this function to report errors and to generate trace, basically
+  only for debug output.
+
+  @param   text Pointer to text to log. If text starts with '~', no new line character is appended.
+  @param   v String to append to text.
+  @param   file Path to C source file.
+  @param   line Line number within C source file.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_debug_error_str_func(
+    const os_char *text,
+    const os_char *v,
+    const os_char *file,
+    os_int line)
+{
+    os_boolean new_line_at_end = OS_TRUE;
+    if (*text == '~')
+    {
+        new_line_at_end = OS_FALSE;
+        text++;
+    }
+
+    /* Write error message on debug console, if any.
+     */
+    osal_console_write(text);
+    osal_console_write(v);
+
+    /* Strip path from file name to keep output more readable.
+     */
+    osal_append_C_file_name_and_line_nr(file, line, new_line_at_end);
 }
 
 

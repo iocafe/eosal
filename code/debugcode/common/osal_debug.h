@@ -69,6 +69,10 @@
 	 */
 	#define osal_debug_error_int(text,v) osal_debug_error_int_func(text, v, __FILE__, __LINE__)
 
+    /* Macro to add file name line number to osal_debug_error_str_func() function arguments.
+     */
+    #define osal_debug_error_str(text,v) osal_debug_error_str_func(text, v, __FILE__, __LINE__)
+
 	/* Macro to add file name line number to osal_debug_assert_func() arguments.
 	 */
     #define osal_debug_assert(cond) osal_debug_assert_func((os_long)(cond), (os_char*)__FILE__, __LINE__)
@@ -88,6 +92,14 @@
         const os_char *file,
 		os_int line);
 
+    /* Log a programming error with string argument v (appended).
+     */
+    void osal_debug_error_str_func(
+        const os_char *text,
+        const os_char *v,
+        const os_char *file,
+        os_int line);
+
 	/* Report programming error if cond is zero.
 	 */
 	void osal_debug_assert_func(
@@ -101,11 +113,17 @@
 	void osal_debug_error(
 		const os_char *text);
 
-	/* Log a programming error.
+    /* Log a programming error with integer argument v (appended).
 	 */
 	void osal_debug_error_int(
 		const os_char *text
         os_long v);
+
+    /* Log a programming error with string argument v (appended).
+     */
+    void osal_debug_error_str(
+        const os_char *text
+        const os_char *v);
 
 	/* Report programming error if cond is zero.
 	 */
@@ -121,27 +139,33 @@
 #if OSAL_TRACE
 #define osal_trace(text) osal_debug_error(text)
 #define osal_trace_int(text,v) osal_debug_error_int(text,v)
+#define osal_trace_str(text,v) osal_debug_error_str(text,v)
 #else
 #define osal_trace(text)
 #define osal_trace_int(text,v)
+#define osal_trace_str(text,v)
 #endif
 
 /* Trace level 2 */
 #if OSAL_TRACE >= 2
 #define osal_trace2(text) osal_debug_error(text)
 #define osal_trace2_int(text,v) osal_debug_error_int(text,v)
+#define osal_trace2_str(text,v) osal_debug_error_str(text,v)
 #else
 #define osal_trace2(text)
 #define osal_trace2_int(text,v)
+#define osal_trace2_str(text,v)
 #endif
 
 /* Trace level 3 */
 #if OSAL_TRACE >= 3
 #define osal_trace3(text) osal_debug_error(text)
 #define osal_trace3_int(text,v) osal_debug_error_int(text,v)
+#define osal_trace3_str(text,v) osal_debug_error_str(text,v)
 #else
 #define osal_trace3(text)
 #define osal_trace3_int(text,v)
+#define osal_trace3_str(text,v)
 #endif
 
 #endif
