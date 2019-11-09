@@ -17,8 +17,8 @@
 */
 /* Force tracing on for this source file.
  */
-#undef OSAL_TRACE
-#define OSAL_TRACE 3
+/*  #undef OSAL_TRACE
+#define OSAL_TRACE 3 */
 
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT
