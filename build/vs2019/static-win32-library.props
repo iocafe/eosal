@@ -9,7 +9,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>c:\coderoot\eosal;c:\coderoot\iocom;$(ProjectDir)..\..;c:\coderoot\eosal\libraries\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>c:\coderoot\eosal;c:\coderoot\iocom;C:\coderoot\iocom\extensions\devicedir;c:\coderoot\pins;$(ProjectDir)..\..;c:\coderoot\eosal\libraries\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

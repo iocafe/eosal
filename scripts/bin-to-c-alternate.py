@@ -52,12 +52,12 @@ def mymain():
     variablename = "noame"
     expectpath = True
     for i in range(1, n):
-        if sys.argv[i][0] == "-":
-            if sys.argv[i][1] == "o":
+        if sys.argv[i][0] is "-":
+            if sys.argv[i][1] is "o":
                 outpath = sys.argv[i+1]
                 expectpath = False
 
-            if sys.argv[i][1] == "v":
+            if sys.argv[i][1] is "v":
                 variablename = sys.argv[i+1]
                 expectpath = False
 

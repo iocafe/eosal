@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\coderoot\eosal;c:\coderoot\iocom;$(ProjectDir)..\..</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>c:\coderoot\eosal;c:\coderoot\iocom;c:\coderoot\pins;C:\coderoot\iocom\extensions\devicedir;$(ProjectDir)..\..</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>c:\coderoot\lib\win64_vs2019;C:\coderoot\eosal\libraries\win64_vs2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

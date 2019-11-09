@@ -128,6 +128,7 @@
     <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_string_to_float.c" />
     <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_string_to_int64.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_hex_string_to_int.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_pattern.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_string_get_item_int.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_string_get_item_value.c" />
