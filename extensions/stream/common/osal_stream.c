@@ -327,8 +327,9 @@ osalStatus osal_stream_write_long(
     return n_written == tmp_n ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
 
 }
+#endif
 
-osalStatus osal_stream_write_str(
+osalStatus osal_stream_print_str(
     osalStream stream,
     os_char *str,
     os_int flags)
@@ -343,7 +344,6 @@ osalStatus osal_stream_write_str(
     return n_written == str_sz ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT;
 }
 
-#endif
 #endif
 
 

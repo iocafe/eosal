@@ -437,6 +437,8 @@ void osal_tls_close(
 */
 osalStream osal_tls_accept(
     osalStream stream,
+    os_char *remote_ip_addr,
+    os_memsz remote_ip_addr_sz,
     osalStatus *status,
     os_int flags)
 {
@@ -522,7 +524,7 @@ osalStatus osal_tls_write(
     }
     if (n == 0) return OSAL_SUCCESS;
 
-    bytes = w->client.write(buf, n);
+    bytes = w->client.write((uint8_t*)buf, n);
     if (bytes < 0) bytes = 0;
     *n_written = bytes;
 
@@ -594,7 +596,7 @@ osalStatus osal_tls_read(
             bytes = n;
         }
 
-        bytes = w->client.read(buf, bytes);
+        bytes = w->client.read((uint8_t*)buf, bytes);
     }
 
 #if OSAL_TRACE >= 3

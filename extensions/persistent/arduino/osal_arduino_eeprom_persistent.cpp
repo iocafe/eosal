@@ -66,12 +66,12 @@ static osalStatus os_persistent_delete_block(
     osPersistentBlockNr block_nr);
 
 static void os_persistent_read(
-    os_uchar *buf,
+    os_char *buf,
     os_ushort addr,
     os_ushort n);
 
 static void os_persistent_write(
-    const os_uchar *buf,
+    const os_char *buf,
     os_ushort addr,
     os_ushort n);
 
@@ -129,11 +129,11 @@ void os_persistent_initialze(
 
     /* Read header.
      */
-    os_persistent_read((os_uchar*)&hdr, 0, sizeof(hdr));
+    os_persistent_read((os_char*)&hdr, 0, sizeof(hdr));
 
     /* Validate header checksum and that header is initialized.
      */
-    checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
+    checksum = os_checksum((os_char*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     if (checksum == hdr.checksum && hdr.initialized == MY_HEADER_INITIALIZED) return;
 
     os_memclear(&hdr, sizeof(hdr));
@@ -198,7 +198,7 @@ os_memsz os_persistent_load(
     if (block_sz > data_sz) block_sz = data_sz;
 
     /* tmp = (os_uchar*)os_malloc(data_sz, OS_NULL); */
-    os_uchar tmp[data_sz];
+    os_char tmp[data_sz];
     os_persistent_read(tmp, saved_pos, data_sz);
 
     if (os_checksum(tmp, data_sz, OS_NULL) != hdr.blk[block_nr].checksum)
@@ -285,9 +285,9 @@ osalStatus os_persistent_save(
     }
 
     hdr.blk[block_nr].data_sz = block_sz;
-    hdr.blk[block_nr].checksum = os_checksum((os_uchar*)block, block_sz, OS_NULL);
+    hdr.blk[block_nr].checksum = os_checksum((os_char*)block, block_sz, OS_NULL);
 
-    os_persistent_write((os_uchar*)block, hdr.blk[block_nr].pos, block_sz);
+    os_persistent_write((os_char*)block, hdr.blk[block_nr].pos, block_sz);
 
 getout:
     if (commit)
@@ -316,11 +316,11 @@ osalStatus os_persistent_commit(
     void)
 {
     if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
-    hdr.checksum = os_checksum((os_uchar*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
+    hdr.checksum = os_checksum((os_char*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 
-    os_persistent_write((os_uchar*)&hdr, 0, sizeof(hdr));
+    os_persistent_write((os_char*)&hdr, 0, sizeof(hdr));
 
     EEPROM.commit();
     return OSAL_SUCCESS;
@@ -426,7 +426,7 @@ static osalStatus os_persistent_delete_block(
 ****************************************************************************************************
 */
 static void os_persistent_read(
-    os_uchar *buf,
+    os_char *buf,
     os_ushort addr,
     os_ushort n)
 {
@@ -453,7 +453,7 @@ static void os_persistent_read(
 ****************************************************************************************************
 */
 static void os_persistent_write(
-    const os_uchar *buf,
+    const os_char *buf,
     os_ushort addr,
     os_ushort n)
 {

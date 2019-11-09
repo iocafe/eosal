@@ -314,9 +314,9 @@ void os_memcpy(
 
 /* Copy memory block.
  */
-void os_memcmp(
-    void *dst,
-    const void *src,
+os_int os_memcmp(
+    const void *str1,
+    const void *str2,
     os_memsz count);
 
 /* Move memory block.

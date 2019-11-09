@@ -100,9 +100,9 @@ osalStatus osal_main(
                 }
                 else
                 {
-                    osal_stream_write_str(extra_args, ",", 0);
+                    osal_stream_print_str(extra_args, ",", 0);
                 }
-                osal_stream_write_str(extra_args, argv[i]+1, 0);
+                osal_stream_print_str(extra_args, argv[i]+1, 0);
                 osal_stream_write(extra_args, "\0", 1, &n_written, 0);
             }
         }

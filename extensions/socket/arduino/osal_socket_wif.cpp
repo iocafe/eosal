@@ -598,7 +598,7 @@ osalStatus osal_socket_read(
             bytes = n;
         }
 
-        bytes = osal_client[ix].read(buf, bytes);
+        bytes = osal_client[ix].read((uint8_t*)buf, bytes);
     }
 
 #if OSAL_TRACE >= 3

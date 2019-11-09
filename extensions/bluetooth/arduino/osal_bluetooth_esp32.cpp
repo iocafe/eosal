@@ -157,7 +157,7 @@ static osalStatus osal_bluetooth_flush(
 */
 static osalStatus osal_bluetooth_write(
     osalStream stream,
-    const os_uchar *buf,
+    const os_char *buf,
     os_memsz n,
     os_memsz *n_written,
     os_int flags)
@@ -172,7 +172,7 @@ static osalStatus osal_bluetooth_write(
         /* nwr = SerialBT.availableForWrite();
         if (n < nwr) nwr = n; */
         nwr = n;
-        SerialBT.write(buf, nwr);
+        SerialBT.write((const uint8_t*)buf, nwr);
 
         /* Return number of bytes written.
          */
@@ -210,7 +210,7 @@ static osalStatus osal_bluetooth_write(
 */
 static osalStatus osal_bluetooth_read(
     osalStream stream,
-    os_uchar *buf,
+    os_char *buf,
     os_memsz n,
     os_memsz *n_read,
     os_int flags)

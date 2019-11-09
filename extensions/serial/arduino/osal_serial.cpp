@@ -345,7 +345,7 @@ osalStatus osal_serial_write(
          */
         nwr = myserial->serial->availableForWrite();
         if (n < nwr) nwr = n;
-        myserial->serial->write(buf, nwr);
+        myserial->serial->write((const uint8_t*)buf, nwr);
 
         /* Return number of bytes written.
          */

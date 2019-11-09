@@ -335,7 +335,7 @@
 /** OSAL extensions: If type identifiers are supported for the platform, define 1.
  */
 #ifndef OSAL_TYPEID_SUPPORT
-#define OSAL_TYPEID_SUPPORT 0
+#define OSAL_TYPEID_SUPPORT 1
 #endif
 
 /** OSAL extensions: Define 0 if there is no perststant storage support. Define 1 to use the
