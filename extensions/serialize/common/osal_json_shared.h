@@ -14,7 +14,7 @@
 ****************************************************************************************************
 */
 #ifndef OSAL_JSON_SHARED_INCLUDED
-#define OSAL_JSON_INCLUDED
+#define OSAL_JSON_SHARED_INCLUDED
 #include "eosalx.h"
 #if OSAL_SERIALIZE_SUPPORT
 

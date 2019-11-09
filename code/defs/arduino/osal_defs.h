@@ -176,11 +176,12 @@
 	support for this operating system.
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
-#ifdef ESP_PLATFORM
-#define OSAL_MULTITHREAD_SUPPORT 0
-#endif
 #ifndef OSAL_MULTITHREAD_SUPPORT
-#define OSAL_MULTITHREAD_SUPPORT 0
+  #ifdef ESP_PLATFORM
+    #define OSAL_MULTITHREAD_SUPPORT 0
+  #else
+    #define OSAL_MULTITHREAD_SUPPORT 0
+  #endif
 #endif
 
 /** If compiler can support function pointers and interfaces, define 1. Define zero
@@ -197,10 +198,39 @@
 #define OSAL_RECURSION_SUPPORT 1
 #endif
 
-/** If sockets are supported for the platform, define 1.
+/* Enumeration of socket types.
+ */
+#define OSAL_SOCKET_NONE 0
+#define OSAL_SOCKET_AUTO_SELECT 1
+#define OSAL_SOCKET_WIZNET 2
+#define OSAL_SOCKET_LWIP 3
+#define OSAL_SOCKET_WIFI 4
+#define OSAL_SOCKET_WIFI_ESP32 5
+
+/* If socket support if not selected by compiler define, select now.
+ * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
+ */
+#ifdef OSAL_SOCKET_SUPPORT
+  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_AUTO_SELECT
+    #undef OSAL_SOCKET_SUPPORT
+  #endif
+#endif
+#ifndef OSAL_SOCKET_SUPPORT
+  #ifdef STM32L4xx
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
+  #endif
+  #ifdef STM32F4xx
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP
+  #endif
+  #ifdef ESP_PLATFORM
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIFI
+  #endif
+#endif
+
+/* Unknown micro controller build, default to WizNET chip.
  */
 #ifndef OSAL_SOCKET_SUPPORT
-#define OSAL_SOCKET_SUPPORT 1
+  #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
 #endif
 
 /** Socket options for the Arduino platform
@@ -212,34 +242,6 @@
     periodically to keep up with DHCP leases, etc.
  */
 #define OSAL_SOCKET_MAINTAIN_NEEDED OSAL_SOCKET_SUPPORT
-
-#ifdef STM32L4xx
-  #define OSAL_SOCKET_WIZNET 1
-  #define OSAL_SOCKET_SELECTED
-#endif
-#ifdef STM32F4xx
-  #define OSAL_SOCKET_LWIP 1
-  #define OSAL_SOCKET_SELECTED
-#endif
-#ifdef ESP_PLATFORM
-  #define OSAL_SOCKET_WIFI 1
-  #define OSAL_SOCKET_SELECTED
-#endif
-
-/* Unknown micro controller build, default to WizNET chip. */
-#ifndef OSAL_SOCKET_SELECTED
-  #define OSAL_SOCKET_WIZNET 1
-#endif
-/* If some network option is undefined, define zero (disabled) */
-#ifndef OSAL_SOCKET_WIZNET
-  #define OSAL_SOCKET_WIZNET 0
-#endif
-#ifndef OSAL_SOCKET_LWIP
-  #define OSAL_SOCKET_LWIP 0
-#endif
-#ifndef OSAL_SOCKET_WIFI
-  #define OSAL_SOCKET_WIFI 0
-#endif
 
 /** Generic TLS support on/off switch.
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.

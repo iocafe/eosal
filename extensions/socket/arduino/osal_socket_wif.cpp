@@ -21,8 +21,7 @@
 #define OSAL_TRACE 3 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT
-#if OSAL_SOCKET_WIFI
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIFI
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -1010,5 +1009,4 @@ const osalStreamInterface osal_socket_iface
 
 #endif
 
-#endif
 #endif

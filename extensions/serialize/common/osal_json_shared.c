@@ -77,7 +77,7 @@ osalStaticJsonDictionary osal_find_in_static_json_dict(
 const os_char *osal_get_static_json_dict_str(
     osalStaticJsonDictionary ix)
 {
-    if (ix < 0 || ix >= OSAL_JSON_DICT_N_DEFINED) return OS_NULL;
+    if ((int)ix < 0 || ix >= OSAL_JSON_DICT_N_DEFINED) return OS_NULL;
     return osal_static_json_dict[ix];
 }
 

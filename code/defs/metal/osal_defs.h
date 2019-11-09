@@ -231,20 +231,36 @@
  */
 #define OSAL_SOCKET_MAINTAIN_NEEDED 1
 
-#ifdef STM32L4xx
-  #define OSAL_SOCKET_WIZNET 1
-  #define OSAL_SOCKET_LWIP 0
-  #define OSAL_SOCKET_SELECTED
+/* Enumeration of socket types.
+ */
+#define OSAL_SOCKET_NONE 0
+#define OSAL_SOCKET_AUTO_SELECT 1
+#define OSAL_SOCKET_WIZNET 2
+#define OSAL_SOCKET_LWIP 3
+
+/* If socket support if not selected by compiler define, select now.
+ * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
+ */
+#ifdef OSAL_SOCKET_SUPPORT
+  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_AUTO_SELECT
+    #undef OSAL_SOCKET_SUPPORT
+  #endif
 #endif
-#ifdef STM32F4xx
-  #define OSAL_SOCKET_WIZNET 0
-  #define OSAL_SOCKET_LWIP 1
-  #define OSAL_SOCKET_SELECTED
+#ifndef OSAL_SOCKET_SUPPORT
+  #ifdef STM32L4xx
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
+  #endif
+  #ifdef STM32F4xx
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP
+  #endif
 #endif
-#ifndef OSAL_SOCKET_SELECTED
-  #define OSAL_SOCKET_WIZNET 1
-  #define OSAL_SOCKET_LWIP 0
+
+/* Unknown micro controller build, default to WizNET chip.
+ */
+#ifndef OSAL_SOCKET_SUPPORT
+  #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
 #endif
+
 
 /** Generic TLS support on/off switch.
  */

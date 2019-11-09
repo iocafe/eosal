@@ -21,15 +21,14 @@
 #define OSAL_TRACE 1 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT
-#if OSAL_SOCKET_WIFI==0
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIZNET ||  OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP
 
-#if OSAL_SOCKET_WIZNET
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIZNET
   #include <SPI.h>
   #include <Ethernet.h>
 #endif
 
-#if OSAL_SOCKET_LWIP
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP
   #include <LwIP.h>
   #include <STM32Ethernet.h>
 #endif
@@ -68,7 +67,6 @@ static OSAL_MYSERVER osal_server[OSAL_MAX_SERVER_SOCKETS]
     = {OSAL_MYSERVER(IOC_DEFAULT_SOCKET_PORT),
        OSAL_MYSERVER(IOC_DEFAULT_SOCKET_PORT+1)};
 static os_boolean osal_server_used[OSAL_MAX_SERVER_SOCKETS];
-
 
 /* UDP sockets.
  */
@@ -1022,5 +1020,4 @@ const osalStreamInterface osal_socket_iface
 
 #endif
 
-#endif
 #endif
