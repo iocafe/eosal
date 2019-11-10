@@ -111,6 +111,10 @@ typedef struct osalSocket
      */
     osalEvent tx_event;
     osalEvent select_event;
+
+    /* Trick to get osalSocket pointer from async client handle.
+     */
+    AsyncClient *async_client;
 }
 osalSocket;
 
@@ -215,7 +219,7 @@ osalStream osal_socket_esp_open(
         goto getout;
     }
 
-    os_memclear(&w->hdr, sizeof(osalStreamHeader));
+    os_memclear(&w->hdr, sizeof(osalSocket));
     w->hdr.iface = &osal_socket_iface;
 
     /* Get host name or numeric IP address and TCP port number from parameters.
@@ -641,14 +645,36 @@ void osal_socket_esp_set_parameter(
 }
 
 
+static osalSocket *osal_get_socket_struct(
+    AsyncClient *c)
+{
+    int i;
+
+    for (i = 0; i < OSAL_MAX_SOCKETS; i++)
+    {
+        if (c == osal_socket_esp[i].async_client && osal_socket_esp[i].used)
+        {
+            osal_trace2("Async found");
+            return osal_socket_esp + i;
+        }
+    }
+    return OS_NULL;
+}
+
 static void osal_quit_worker(
-    osalSocket *w,
+    AsyncClient *c,
     osalStatus s)
 {
-    w->worker_status = s;
-    w->stop_worker_thread = OS_TRUE;
-    osal_event_set(w->tx_event);
-    if (w->select_event) osal_event_set(w->select_event);
+    osalSocket *w;
+
+    w = osal_get_socket_struct(c);
+    if (w)
+    {
+        w->worker_status = s;
+        w->stop_worker_thread = OS_TRUE;
+        osal_event_set(w->tx_event);
+        if (w->select_event) osal_event_set(w->select_event);
+    }
 }
 
 
@@ -663,32 +689,32 @@ static void osal_socket_esp_client(
 
     client.onError([](void* arg, AsyncClient * c, int8_t error)
     {
-        osalSocket *w = (osalSocket *)arg;
         osal_trace2_str("Error: ", c->errorToString(error));
         // c->close();
-        osal_quit_worker(w, OSAL_STATUS_STREAM_CLOSED);
+        osal_quit_worker(c, OSAL_STATUS_STREAM_CLOSED);
 
     });
 
     client.onTimeout([](void* arg, AsyncClient * c, uint32_t time)
     {
-        osalSocket *w = (osalSocket *)arg;
         osal_trace2("Timeout");
-        osal_quit_worker(w, OSAL_STATUS_TIMEOUT);
+        osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
     });
 
     client.onConnect([](void* arg, AsyncClient * c)
     {
-        Serial.println("-");
-        Serial.printf("Connected\n"); // Sending data.\n");
+        osal_trace2("Connected");
     });
 
     client.onData([](void* arg, AsyncClient * c, void* data, size_t len)
     {
-        osalSocket *w = (osalSocket *)arg;
+        osalSocket *w;
         os_char *buf, *p;
         os_timer start_t;
         os_short head, tail, buf_sz, n, nexthead;
+
+        w = osal_get_socket_struct(c);
+        if (w == OS_NULL) return;
 
         osal_trace2_int("Data received, length =", len);
 
@@ -710,7 +736,7 @@ static void osal_socket_esp_client(
                 w->rx_head = head;
                 if (os_elapsed(&start_t, 10000))
                 {
-                    osal_quit_worker(w, OSAL_STATUS_TIMEOUT);
+                    osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
                     return;
                 }
                 os_timeslice();
@@ -726,6 +752,7 @@ static void osal_socket_esp_client(
     });
 
     w = (osalSocket *)prm;
+    w->async_client = &client;
     osal_event_set(done);
 
     client.connect(w->host, w->port_nr);
