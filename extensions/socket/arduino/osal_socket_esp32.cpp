@@ -1,6 +1,6 @@
 /**
 
-  @file    socket_esp/arduino/osal_socket_esp_wifi.c
+  @file    socket/arduino/osal_socket_esp32.c
   @brief   OSAL TLS sockets API Arduino WiFi implementation.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -15,17 +15,21 @@
 
 ****************************************************************************************************
 */
+#include "eosalx.h"
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ESP32
+
 /* Force tracing on for this source file.
  */
 // #undef OSAL_TRACE
 // #define OSAL_TRACE 3
 
-#include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIFI_ESP32
+#include "WiFi.h"
+#include "AsyncTCP.h"
 
-
-#include <Arduino.h>
-#include <WiFiClientSecure.h>
+/* Queue sizes.
+ */
+#define OSAL_SOCKET_RX_BUF_SZ 1450
+#define OSAL_SOCKET_TX_BUF_SZ 1450
 
 /* Global network setup. Micro-controllers typically have one (or two)
    network interfaces. The network interface configuration is managed
@@ -43,7 +47,7 @@ static osalNetworkInterface osal_net_iface
 
 /** TLS library initialized flag.
  */
-os_boolean osal_socket_esp_initialized = OS_FALSE;
+os_boolean osal_sockets_initialized = OS_FALSE;
 
 /** WiFi network connected flag.
  */
@@ -55,22 +59,60 @@ static os_timer osal_wifi_init_timer;
 
 /** Arduino specific socket class to store information.
  */
-class osalSocket
+typedef struct osalSocket
 {
-    public:
     /** A stream structure must start with this generic stream header structure, which contains
         parameters common to every stream.
      */
     osalStreamHeader hdr;
 
-    /* Arduino librarie's Wifi TLS socket client object.
-     */
-    WiFiClientSecure client;
-
-    /** Nonzero if socket is used.
+    /** Nonzero if socket structure is used.
      */
     os_boolean used;
-};
+
+    /* Stop the worker thread flag.
+     */
+    volatile os_boolean stop_worker_thread;
+
+    /* TRUE for IP v6 address, FALSE for IO v4.
+     */
+    os_boolean is_ipv6;
+
+    /* Host name or IP addrss.
+     */
+    os_char host[OSAL_IPADDR_SZ];
+    os_int port_nr;
+
+    /** Ring buffer for received data, pointer and size
+     */
+    os_char *rx_buf;
+    os_short rx_buf_sz;
+
+    /** Head and tail index. Position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
+     */
+    volatile os_short rx_head, rx_tail;
+
+    /** Ring buffer for transmitted data, pointer and size
+     */
+    os_char *tx_buf;
+    os_short tx_buf_sz;
+
+    /** Head and tail index. Head is position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
+     *  Pail is position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
+     */
+    volatile os_short tx_head, tx_tail;
+
+    /* Worker thread handle and exit status code.
+     */
+    osalThreadHandle *thread_handle;
+    osalStatus worker_status;
+
+    /* Events for triggering send and select.
+     */
+    osalEvent tx_event;
+    osalEvent select_event;
+}
+osalSocket;
 
 /** Maximum number of sockets.
  */
@@ -87,6 +129,14 @@ static osalSocket *osal_get_unused_socket(void);
 
 static os_boolean osal_is_wifi_initialized(
     void);
+
+void osal_socket_esp_close(
+    osalStream stream);
+
+static void osal_socket_esp_client(
+    void *prm,
+    osalEvent done);
+
 
 /**
 ****************************************************************************************************
@@ -137,17 +187,15 @@ osalStream osal_socket_esp_open(
     osalStatus *status,
     os_int flags)
 {
-    os_int port_nr;
-    os_char host[OSAL_HOST_BUF_SZ];
-    os_boolean is_ipv6;
-    osalSocket *w;
+    osalSocket *w = OS_NULL;
     osalStatus rval = OSAL_STATUS_FAILED;
+    os_memsz sz;
 
     /* Initialize sockets library, if not already initialized.
      */
-    if (!osal_socket_esp_initialized)
+    if (!osal_sockets_initialized)
     {
-        osal_socket_esp_initialize(OS_NULL, 0, OS_NULL);
+        osal_socket_initialize(OS_NULL, 0);
     }
 
     /* If WiFi network is not connected, we can do nothing.
@@ -158,13 +206,6 @@ osalStream osal_socket_esp_open(
         goto getout;
     }
 
-    /* Get host name or numeric IP address and TCP port number from parameters.
-       The host buffer must be released by calling os_free() function,
-       unless if host is OS_NULL (unpecified).
-     */
-    osal_socket_get_host_name_and_port(parameters,
-        &port_nr, host, sizeof(host), &is_ipv6, flags, IOC_DEFAULT_TLS_PORT);
-
     /* Get first unused osal_socket_esp structure.
      */
     w = osal_get_unused_socket();
@@ -174,29 +215,57 @@ osalStream osal_socket_esp_open(
         goto getout;
     }
 
-    /* Set up client certificate, if we use one.
-     */
-      // w->client.setCACert(test_root_ca);  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WE MAY WANT TO USE THIS
-      // w->client.setCertificate(bobs_key); // for client verification
-      // w->client.setPrivateKey(bobs_certificate);	// for client verification
+    os_memclear(&w->hdr, sizeof(osalStreamHeader));
+    w->hdr.iface = &osal_socket_iface;
 
-    osal_trace2_int("Connecting to TLS socket port ", port_nr);
-    osal_trace2(host);
-
-    /* Connect the socket.
+    /* Get host name or numeric IP address and TCP port number from parameters.
+       The host buffer must be released by calling os_free() function,
+       unless if host is OS_NULL (unpecified).
      */
-    if (!w->client.connect(host, port_nr))
+    osal_socket_get_host_name_and_port(parameters,
+        &w->port_nr, w->host, OSAL_IPADDR_SZ, &w->is_ipv6, flags, IOC_DEFAULT_TLS_PORT);
+
+    /* Allocate ring buffers.
+     */
+    w->tx_buf = os_malloc(OSAL_SOCKET_TX_BUF_SZ, &sz);
+    w->tx_buf_sz = (os_short)sz;
+    w->rx_buf = os_malloc(OSAL_SOCKET_RX_BUF_SZ, &sz);
+    w->rx_buf_sz = (os_short)sz;
+    if (w->tx_buf == OS_NULL || w->rx_buf == OS_NULL)
     {
-        osal_trace("Wifi: TLS socket connect failed");
-        w->client.stop();
+        osal_debug_error("socket ring buffer allocation failed");
         goto getout;
     }
 
-    os_memclear(&w->hdr, sizeof(osalStreamHeader));
-    w->used = OS_TRUE;
-    w->hdr.iface = &osal_socket_esp_iface;
+    /* Create tx event (send)
+     */
+    w->tx_event = osal_event_create();
+    if (w->tx_event == OS_NULL)
+    {
+        osal_debug_error("unable to create socket TX event");
+        goto getout;
+    }
 
-    osal_trace2("wifi: TLS socket connected.");
+    osal_trace2_str("~Connecting socket to ", w->host);
+    osal_trace2_int(", port ", w->port_nr);
+
+    /* Create worker thread.
+     */
+    w->thread_handle = osal_thread_create(osal_socket_esp_client,
+        w, OSAL_THREAD_ATTACHED, 3000, "sockworker");
+
+#if 0
+    xTaskCreatePinnedToCore(
+             osal_socket_esp_client, /* Function to implement the task */
+             "Task1", /* Name of the task */
+              10000,  /* Stack size in words */
+              w,  /* Task input parameter */
+              0,  /* Priority of the task */
+              &Task1,  /* Task handle. */
+              0); /* Core where the task should run */
+#endif
+
+    w->used = OS_TRUE;
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
@@ -205,6 +274,10 @@ osalStream osal_socket_esp_open(
     return (osalStream)w;
 
 getout:
+    /* Clean up all resources.
+     */
+    osal_socket_esp_close((osalStream)w);
+
     /* Set status code and return NULL pointer to indicate failure.
      */
     if (status) *status = rval;
@@ -235,14 +308,26 @@ void osal_socket_esp_close(
 
     if (stream == OS_NULL) return;
     w = (osalSocket*)stream;
-    if (!w->used)
+    if (w->used)
     {
-        osal_debug_error("osal_socket_esp: Socket closed twice");
-        return;
-    }
+        /* Terminate worker thread. Set flag and set event.
+         */
+        w->stop_worker_thread = OS_TRUE;
+        osal_thread_join(w->thread_handle);
 
-    w->client.stop();
-    w->used = OS_FALSE;
+        /* release events
+         */
+        osal_event_delete(w->tx_event);
+
+        /* Release ring buffers.
+         */
+        os_free(w->tx_buf, w->tx_buf_sz);
+        os_free(w->rx_buf, w->rx_buf_sz);
+
+        /* This structure is no longer used.
+         */
+        w->used = OS_FALSE;
+    }
 }
 
 
@@ -304,6 +389,24 @@ osalStatus osal_socket_esp_flush(
     osalStream stream,
     os_int flags)
 {
+    osalSocket *w;
+
+    if (stream)
+    {
+        w = (osalSocket*)stream;
+        if (!w->used) return OSAL_STATUS_FAILED;
+
+        if (w->worker_status)
+        {
+            return w->worker_status;
+        }
+
+        if (w->tx_head |= w->tx_tail)
+        {
+            osal_event_set(w->tx_event);
+        }
+    }
+
     return OSAL_SUCCESS;
 }
 
@@ -337,34 +440,65 @@ osalStatus osal_socket_esp_write(
     os_int flags)
 {
     osalSocket *w;
-    int bytes;
+    os_int count;
+    osalStatus status;
+    os_char *wbuf;
+    os_short head, tail, buf_sz, nexthead, buffered_n;
 
+    if (stream)
+    {
+        w = (osalSocket*)stream;
+        osal_debug_assert(w->hdr.iface == &osal_socket_iface);
+
+        if (n < 0 || buf == OS_NULL || !w->used)
+        {
+            status = OSAL_STATUS_FAILED;
+            goto getout;
+        }
+
+        if (w->worker_status)
+        {
+            status = w->worker_status;
+            goto getout;
+        }
+
+        if (n == 0)
+        {
+            status = OSAL_SUCCESS;
+            goto getout;
+        }
+
+        wbuf = w->tx_buf;
+        osal_debug_assert(wbuf);
+        buf_sz = w->tx_buf_sz;
+        head = w->tx_head;
+        tail = w->tx_tail;
+        count = 0;
+
+        while (n > 0)
+        {
+            nexthead = head + 1;
+            if (nexthead >= buf_sz) nexthead = 0;
+            if (nexthead == tail) break;
+            wbuf[head] = *(buf++);
+            head = nexthead;
+            n--;
+            count++;
+        }
+
+        w->tx_head = head;
+        buffered_n = head - tail;
+        if (buffered_n < 0) buffered_n += buf_sz;
+        if (buffered_n > 2*buf_sz/3) osal_event_set(w->tx_event);
+
+        *n_written = count;
+        return OSAL_SUCCESS;
+    }
+    status = OSAL_STATUS_FAILED;
+
+getout:
     *n_written = 0;
-
-    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-    w = (osalSocket*)stream;
-    if (!w->used)
-    {
-        osal_debug_error("osal_socket_esp: Unused socket");
-        return OSAL_STATUS_FAILED;
-    }
-
-    if (!w->client.connected())
-    {
-        osal_debug_error("osal_socket_esp: Not connected");
-        return OSAL_STATUS_FAILED;
-    }
-    if (n == 0) return OSAL_SUCCESS;
-
-    bytes = w->client.write((uint8_t*)buf, n);
-    if (bytes < 0) bytes = 0;
-    *n_written = bytes;
-
-#if OSAL_TRACE >= 3
-    if (bytes > 0) osal_trace("Data written to socket");
-#endif
-
-    return OSAL_SUCCESS;
+    return status;
 }
 
 
@@ -384,9 +518,6 @@ osalStatus osal_socket_esp_write(
            which may be less than n if there are fewer bytes available. If the function fails
            n_read is set to zero.
   @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
-           The OSAL_STREAM_PEEK flag causes the function to return data in socket, but nothing
-           will be removed from the socket.
-           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
            indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
@@ -401,42 +532,60 @@ osalStatus osal_socket_esp_read(
     os_int flags)
 {
     osalSocket *w;
-    int bytes;
+    os_int count;
+    osalStatus status;
+    os_char *rbuf;
+    os_short head, tail, buf_sz;
 
-    *n_read = 0;
-
-    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-    w = (osalSocket*)stream;
-    if (!w->used)
+    if (stream)
     {
-        osal_debug_error("osal_socket_esp: Socket can not be read");
-        return OSAL_STATUS_FAILED;
-    }
+        w = (osalSocket*)stream;
+        osal_debug_assert(w->hdr.iface == &osal_socket_iface);
 
-    if (!w->client.connected())
-    {
-        osal_debug_error("osal_socket_esp: Not connected");
-        return OSAL_STATUS_FAILED;
-    }
-
-    bytes = w->client.available();
-    if (bytes < 0) bytes = 0;
-    if (bytes)
-    {
-        if (bytes > n)
+        if (n < 0 || buf == OS_NULL || !w->used)
         {
-            bytes = n;
+            status = OSAL_STATUS_FAILED;
+            goto getout;
         }
 
-        bytes = w->client.read((uint8_t*)buf, bytes);
+        if (w->worker_status)
+        {
+            status = w->worker_status;
+            goto getout;
+        }
+
+        if (n == 0)
+        {
+            status = OSAL_SUCCESS;
+            goto getout;
+        }
+
+        rbuf = w->rx_buf;
+        osal_debug_assert(rbuf);
+        buf_sz = w->rx_buf_sz;
+        head = w->rx_head;
+        tail = w->rx_tail;
+        count = 0;
+
+        while (n > 0 && tail != head)
+        {
+            *(buf++) = rbuf[tail];
+            n--;
+            count++;
+
+            if (++tail >= buf_sz) tail = 0;
+        }
+
+        w->rx_tail = tail;
+
+        *n_read = count;
+        return OSAL_SUCCESS;
     }
+    status = OSAL_STATUS_FAILED;
 
-#if OSAL_TRACE >= 3
-    if (bytes > 0) osal_trace2_int("Data received from socket", bytes);
-#endif
-
-    *n_read = bytes;
-    return OSAL_SUCCESS;
+getout:
+    *n_read = 0;
+    return status;
 }
 
 
@@ -489,6 +638,149 @@ void osal_socket_esp_set_parameter(
     /* Call the default implementation
      */
     osal_stream_default_set_parameter(stream, parameter_ix, value);
+}
+
+
+static void osal_quit_worker(
+    osalSocket *w,
+    osalStatus s)
+{
+    w->worker_status = s;
+    w->stop_worker_thread = OS_TRUE;
+    osal_event_set(w->tx_event);
+    if (w->select_event) osal_event_set(w->select_event);
+}
+
+
+static void osal_socket_esp_client(
+    void *prm,
+    osalEvent done)
+{
+    AsyncClient client;
+    osalSocket *w;
+    os_char *buf;
+    os_short head, tail, buf_sz, n_sent, n;
+
+    client.onError([](void* arg, AsyncClient * c, int8_t error)
+    {
+        osalSocket *w = (osalSocket *)arg;
+        osal_trace2_str("Error: ", c->errorToString(error));
+        // c->close();
+        osal_quit_worker(w, OSAL_STATUS_STREAM_CLOSED);
+
+    });
+
+    client.onTimeout([](void* arg, AsyncClient * c, uint32_t time)
+    {
+        osalSocket *w = (osalSocket *)arg;
+        osal_trace2("Timeout");
+        osal_quit_worker(w, OSAL_STATUS_TIMEOUT);
+    });
+
+    client.onConnect([](void* arg, AsyncClient * c)
+    {
+        Serial.println("-");
+        Serial.printf("Connected\n"); // Sending data.\n");
+    });
+
+    client.onData([](void* arg, AsyncClient * c, void* data, size_t len)
+    {
+        osalSocket *w = (osalSocket *)arg;
+        os_char *buf, *p;
+        os_timer start_t;
+        os_short head, tail, buf_sz, n, nexthead;
+
+        osal_trace2_int("Data received, length =", len);
+
+        p = (os_char*)data;
+        n = (os_short)len;
+
+        buf = w->rx_buf;
+        buf_sz = w->rx_buf_sz;
+        head = w->rx_head;
+        tail = w->rx_tail;
+        os_get_timer(&start_t);
+
+        while (n > 0)
+        {
+            nexthead = head + 1;
+            if (nexthead >= buf_sz) nexthead = 0;
+            if (nexthead == tail)
+            {
+                w->rx_head = head;
+                if (os_elapsed(&start_t, 10000))
+                {
+                    osal_quit_worker(w, OSAL_STATUS_TIMEOUT);
+                    return;
+                }
+                os_timeslice();
+                tail = w->rx_tail;
+            }
+            buf[head] = *(p++);
+            head = nexthead;
+            n--;
+        }
+        w->rx_head = head;
+
+        if (w->select_event) osal_event_set(w->select_event);
+    });
+
+    w = (osalSocket *)prm;
+    osal_event_set(done);
+
+    client.connect(w->host, w->port_nr);
+    //Serial.println(xPortGetCoreID());
+
+    buf = w->tx_buf;
+    buf_sz = w->tx_buf_sz;
+
+    while (!w->stop_worker_thread && osal_go())
+    {
+        osal_event_wait(w->tx_event, OSAL_EVENT_INFINITE);
+
+        if (w->tx_head != w->tx_tail)
+        {
+            tail = w->tx_tail;
+
+            do
+            {
+                head = w->tx_head;
+
+                n_sent = 0;
+                if (head < tail)
+                {
+                    n = buf_sz - tail;
+                    n_sent = client.add(buf + tail, n);
+
+                    tail += n_sent;
+                    if (tail >= buf_sz) tail = 0;
+                }
+                if (head > tail)
+                {
+                    n = head - tail;
+                    n_sent = client.add(buf + tail, n);
+
+                    tail += n_sent;
+                }
+
+                w->tx_tail = tail;
+                if (w->tx_head == tail) break;
+
+                os_timeslice();
+            }
+            while (w->tx_head != tail && !w->stop_worker_thread && osal_go());
+            client.send();
+        }
+    }
+
+    if (!w->worker_status)
+    {
+        w->worker_status = OSAL_STATUS_STREAM_CLOSED;
+        w->stop_worker_thread = OS_TRUE;
+        if (w->select_event) osal_event_set(w->select_event);
+    }
+
+    client.close();
 }
 
 
@@ -630,24 +922,22 @@ static osalSocket *osal_get_unused_socket(void)
 ****************************************************************************************************
 
   @brief Initialize sockets LWIP/WizNet.
-  @anchor osal_socket_esp_initialize
+  @anchor osal_socket_initialize
 
-  The osal_socket_esp_initialize() initializes the underlying sockets library. This used either DHCP,
+  The osal_socket_initialize() initializes the underlying sockets library. This used either DHCP,
   or statical configuration parameters.
 
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
            This implementation sets up only nic[0].
   @param   n_nics Number of network interfaces in nic array.
-  @param   prm Parameters related to TLS. Can OS_NULL for client if not needed.
 
   @return  None.
 
 ****************************************************************************************************
 */
-void osal_socket_esp_initialize(
+void osal_socket_initialize(
     osalNetworkInterface *nic,
-    os_int n_nics,
-    osalTLSParam *prm)
+    os_int n_nics)
 {
     const os_char *wifi_net_name = "bean24";
     const os_char *wifi_net_password = "talvi333";
@@ -681,7 +971,7 @@ void osal_socket_esp_initialize(
         if (*nic->wifi_net_password != '\0') wifi_net_password = nic->wifi_net_password;
     }
 
-    osal_socket_esp_initialized = OS_TRUE;
+    osal_sockets_initialized = OS_TRUE;
 
     // osal_mac_from_str(mac, osal_net_iface.mac);
 
@@ -702,7 +992,7 @@ void osal_socket_esp_initialize(
     /* Set TLS library initialized flag, now waiting for wifi initialization. We do not lock
      * the code here to allow IO sequence, etc to proceed even without wifi.
      */
-    osal_socket_esp_initialized = OS_TRUE;
+    osal_sockets_initialized = OS_TRUE;
     osal_wifi_initialized = OS_FALSE;
 }
 
@@ -723,7 +1013,7 @@ void osal_socket_esp_initialize(
 static os_boolean osal_is_wifi_initialized(
     void)
 {
-    if (!osal_socket_esp_initialized) return OS_FALSE;
+    if (!osal_sockets_initialized) return OS_FALSE;
     if (!osal_wifi_initialized)
     {
         /* If WiFi is not connected, just return failure.
@@ -754,21 +1044,21 @@ static os_boolean osal_is_wifi_initialized(
 ****************************************************************************************************
 
   @brief Shut down sockets.
-  @anchor osal_socket_esp_shutdown
+  @anchor osal_socket_shutdown
 
-  The osal_socket_esp_shutdown() shuts down the underlying sockets library.
+  The osal_socket_shutdown() shuts down the underlying sockets library.
 
   @return  None.
 
 ****************************************************************************************************
 */
-void osal_socket_esp_shutdown(
+void osal_socket_shutdown(
     void)
 {
-    if (osal_socket_esp_initialized)
+    if (osal_sockets_initialized)
     {
         WiFi.disconnect();
-        osal_socket_esp_initialized = OS_FALSE;
+        osal_sockets_initialized = OS_FALSE;
     }
 }
 
@@ -777,16 +1067,16 @@ void osal_socket_esp_shutdown(
 ****************************************************************************************************
 
   @brief Keep the sockets library alive.
-  @anchor osal_socket_esp_maintain
+  @anchor osal_socket_maintain
 
-  The osal_socket_esp_maintain() function should be called periodically to maintain sockets
+  The osal_socket_maintain() function should be called periodically to maintain sockets
   library.
 
   @return  None.
 
 ****************************************************************************************************
 */
-void osal_socket_esp_maintain(
+void osal_socket_maintain(
     void)
 {
 //    Ethernet.maintain();
@@ -798,7 +1088,7 @@ void osal_socket_esp_maintain(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-const osalStreamInterface osal_socket_esp_iface
+const osalStreamInterface osal_socket_iface
  = {osal_socket_esp_open,
     osal_socket_esp_close,
     osal_socket_esp_accept,

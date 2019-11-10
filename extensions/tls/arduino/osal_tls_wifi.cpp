@@ -552,9 +552,6 @@ osalStatus osal_tls_write(
            which may be less than n if there are fewer bytes available. If the function fails
            n_read is set to zero.
   @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
-           The OSAL_STREAM_PEEK flag causes the function to return data in socket, but nothing
-           will be removed from the socket.
-           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
            indicate an error. See @ref osalStatus "OSAL function return codes" for full list.

@@ -324,9 +324,6 @@ getout:
            which may be less than n if there are fewer bytes available. If the function fails
            n_read is set to zero.
   @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
-           The OSAL_STREAM_PEEK flag causes the function to return data in file, but nothing
-           will be removed from the file. See @ref osalStreamFlags "Flags for Stream Functions"
-           for list of stream flags.
   @return  The function returns OSAL_SUCCESS (0) if any data was read. Return code
 .		   Return value OSAL_END_OF_FILE indicates end of file (nread is set to zero).
            Other return values inficate an error.

@@ -205,7 +205,7 @@
 #define OSAL_SOCKET_WIZNET 2
 #define OSAL_SOCKET_LWIP 3
 #define OSAL_SOCKET_WIFI 4
-#define OSAL_SOCKET_WIFI_ESP32 5
+#define OSAL_SOCKET_ESP32 5
 
 /* If socket support if not selected by compiler define, select now.
  * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
@@ -223,7 +223,7 @@
     #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP
   #endif
   #ifdef ESP_PLATFORM
-    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIFI
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ESP32
   #endif
 #endif
 
