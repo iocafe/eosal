@@ -29,7 +29,7 @@
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 1
+#define OSAL_TRACE 3
 #endif
 
 /** C compiler's debug build flag.
@@ -74,18 +74,14 @@
     operating system memory allocation is called directly.
  */
 #ifndef OSAL_MEMORY_MANAGER
-#define OSAL_MEMORY_MANAGER 1
+#define OSAL_MEMORY_MANAGER 0
 #endif
 
 /** Include resource monitor code. If OSAL_RESOURCE_MONITOR flags is nonzero, code for
     monitoring operating system resource use is included.
  */
 #ifndef OSAL_RESOURCE_MONITOR
-#if OSAL_DEBUG
-#define OSAL_RESOURCE_MONITOR 1
-#else
-#define OSAL_RESOURCE_MONITOR 0
-#endif
+#define OSAL_RESOURCE_MONITOR OSAL_DEBUG
 #endif
 
 /** Include code to force os_lock() to switch to time critical priority
