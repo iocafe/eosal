@@ -239,14 +239,14 @@ static void osal_thread_intermediate_func(
 
 osal_trace("thread exit");
 
-    /* Call OS to delete the taskm and Inform resource monitor.
-     */
-    vTaskDelete(NULL);
-    osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
-
     /* If we have join event (attached to another thread), then set join flag.
      */
     if (join_event) osal_event_set(join_event);
+
+    /* Call OS to delete the taskm and Inform resource monitor.
+     */
+    osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
+    vTaskDelete(NULL);
 }
 
 

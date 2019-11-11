@@ -491,7 +491,10 @@ osalStatus osal_socket_esp_write(
         w->tx_head = head;
         buffered_n = head - tail;
         if (buffered_n < 0) buffered_n += buf_sz;
-        if (buffered_n > 2*buf_sz/3) osal_event_set(w->tx_event);
+        if (buffered_n > 2*buf_sz/3)
+        {
+            osal_event_set(w->tx_event);
+        }
 
         *n_written = count;
         return OSAL_SUCCESS;
@@ -801,7 +804,7 @@ static void osal_socket_esp_client(
                     tail += n_appended;
                     if (tail >= buf_sz) tail = 0;
                 }
-                else if (head > tail)
+                if (head > tail)
                 {
                     n = head - tail;
                     n_appended = client.add(buf + tail, n);
