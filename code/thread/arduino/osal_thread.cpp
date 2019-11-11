@@ -14,8 +14,8 @@
   generally happens frequently enough that the user perceives the threads or tasks as running
   at the same time. On a multiprocessor or multi-core system, the threads or tasks will generally
   run at the same time, with each processor or core running a particular thread or task.
-  A new thread is created by osal_thread_create() function call, and exited by osal_thread_exit()
-  function. Thread priorizing and sleep are handled by osal_thread_set_priority() and
+  A new thread is created by osal_thread_create() function call.
+  Thread priorizing and sleep are handled by osal_thread_set_priority() and
   os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
   function.
 
@@ -51,20 +51,31 @@ typedef struct
     /** Event to set when parameters have been copied to entry point functions own memory.
      */
     osalEvent done;
+
+    /** Even to set when task has stopped
+     */
+    osalEvent join_event;
 }
 osalArduinoThreadPrms;
 
-#endif
+/** Thread parameters. Needed to join the threads.
+ */
+typedef struct
+{
+    /** Even to set when task has stopped
+     */
+    osalEvent join_event;
+}
+osalArduinoThreadHandle;
+
 
 /* Forward referred static functions.
  */
-#if OSAL_MULTITHREAD_SUPPORT
 static void osal_thread_intermediate_func(
   void *parameters);
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
+
 /**
 ****************************************************************************************************
 
@@ -118,7 +129,8 @@ osalThreadHandle *osal_thread_create(
 	const os_char *name)
 {
     osalArduinoThreadPrms thrprm;
-    TaskHandle_t handle = NULL;
+    TaskHandle_t th = OS_NULL;
+    osalArduinoThreadHandle *handle = OS_NULL;
     BaseType_t s;
 
     /* Save pointers to thread entry point function and to parameters into
@@ -127,6 +139,24 @@ osalThreadHandle *osal_thread_create(
     os_memclear(&thrprm, sizeof(osalArduinoThreadPrms));
     thrprm.func = func;
     thrprm.prm = prm;
+
+    /* If we need to be able to join the thread, set up thread structure for
+     * storing handle and and
+       create .
+     */
+    if (flags & OSAL_THREAD_ATTACHED)
+    {
+        handle = (osalArduinoThreadHandle*)os_malloc(sizeof(osalArduinoThreadHandle), OS_NULL);
+        if (handle == OS_NULL) return OS_NULL;
+        os_memclear(handle, sizeof(osalArduinoThreadHandle));
+
+        handle->join_event = thrprm.join_event = osal_event_create();
+        if (thrprm.join_event == OS_NULL)
+        {
+            os_free(handle, sizeof(osalArduinoThreadHandle));
+            return OS_NULL;
+        }
+    }
 
     /* Create event to wait until newly created thread has processed it's parameters. If creating
        the event failes, return the error code.
@@ -139,12 +169,11 @@ osalThreadHandle *osal_thread_create(
     }
 
     /* Call FreeRTOS to create and start the new thread.
+     * FreeRTOS takes stack size as words, so divide by 2
      */
-    stack_size /= 2;
     s = xTaskCreate(osal_thread_intermediate_func, name,
-        stack_size, &thrprm,
-        5 /* uxPriority */, &handle);
-
+        stack_size/2, &thrprm,
+        3 /* uxPriority */, &th);
 
     /* If thread creation fails, then return error code.
      */
@@ -153,7 +182,6 @@ osalThreadHandle *osal_thread_create(
         osal_debug_error("osal_thread,xTaskCreate failed");
         return OS_NULL;
     }
-
 
     /* Inform resource monitor that thread has been succesfully creted.
      */
@@ -167,22 +195,12 @@ osalThreadHandle *osal_thread_create(
      */
     osal_event_delete(thrprm.done);
 
-    /* If we didn't create a joinable thread, save thread handle.
-     */
-    if ((flags & OSAL_THREAD_ATTACHED) == 0)
-    {
-        vTaskDelete(handle);
-        handle = OS_NULL;
-    }
-
     /* Success.
      */
     return (osalThreadHandle*)handle;
 }
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -193,9 +211,7 @@ osalThreadHandle *osal_thread_create(
   systems.
 
   @param   lpParameter Pointer to parameter structure to start Windows thread.
-
-  @return  1, but the function never really returns, it terminates with osal_thread_exit()
-           function call.
+  @return  None. Typically this thread is terminated either by this thread or by OS on return.
 
 ****************************************************************************************************
 */
@@ -205,26 +221,35 @@ static void osal_thread_intermediate_func(
     osalArduinoThreadPrms
         *thrprm;
 
+    osalEvent
+        join_event;
+
     /* Make sure that we are running on normal thread priority.
      */
     osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
 
-    /* Cast the pointer
+    /* Cast the pointer and save join event, if any.
      */
     thrprm = (osalArduinoThreadPrms*)parameters;
+    join_event = thrprm->join_event;
 
-    /* Call the final thread entry point function.
+    /* Call the application's thread entry point function.
      */
     thrprm->func(thrprm->prm, thrprm->done);
 
-    /* Inform resource monitor that thread is terminated.
-    */
+osal_trace("thread exit");
+
+    /* Call OS to delete the taskm and Inform resource monitor.
+     */
+    vTaskDelete(NULL);
     osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
+
+    /* If we have join event (attached to another thread), then set join flag.
+     */
+    if (join_event) osal_event_set(join_event);
 }
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -245,85 +270,24 @@ static void osal_thread_intermediate_func(
 void osal_thread_join(
 	osalThreadHandle *handle)
 {
+    osalArduinoThreadHandle *ahandle;
+
     /* Check for programming errors.
      */
     if (handle == OS_NULL)
     {
-        osal_debug_error("osal_thread,osal_thread_join: NULL handle");
+        osal_debug_error("osal_thread_join: NULL handle");
         return;
     }
 
-/*     s = pthread_join(handle, &res);
-    if (s != 0)
+    ahandle = (osalArduinoThreadHandle*)handle;
+    if (ahandle->join_event)
     {
-        osal_debug_error("osal_thread,osal_thread_join failed");
-        return;
-    }
-*/
-
-    /* free(res); Free memory allocated by thread */
-}
-#endif
-
-
-#if OSAL_MULTITHREAD_SUPPORT
-/**
-****************************************************************************************************
-
-  @brief Release operating system thread handle
-  @anchor osal_thread_release_handle
-
-  The osal_thread_release_handle() function is alternative to osal_thread_join() to release
-  resources allocated for operating system handle. Difference to join is that this function
-  will not wait for the thread to exit.
-
-  @param   handle Thread handle as returned by osal_thread_create.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_thread_release_handle(
-	osalThreadHandle *handle)
-{
-    /* Check for programming errors.
-     */
-    if (handle == OS_NULL)
-    {
-        osal_debug_error("osal_thread,osal_thread_release_handle: NULL handle");
-        return;
+        osal_event_wait(ahandle->join_event, OSAL_EVENT_INFINITE);
     }
 }
-#endif
 
 
-
-/**
-****************************************************************************************************
-
-  @brief Exit the thread.
-  @anchor osal_thread_exit
-
-  The osal_thread_exit() function exits the thread which called this function. Resource monitor's
-  thread count is decremented (if resource monitor is enabled), the stack is freeded and the
-  thread terminates. Every thread created by osal_thread_create() function must be eventally
-  terminated by this function. This function will be called also when thread entry point function
-  returns. If this is the last thread of the process, then the whole process is also terminated.
-
-  @return  None.
-
-****************************************************************************************************
-*/
-#if 0
-void osal_thread_exit(
-	void)
-{
-    /* Inform resource monitor that thread is terminated.
-     */
-    osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
-
-    /* Call Linux to exit the thread.
-     */
-}
 #endif
 
 

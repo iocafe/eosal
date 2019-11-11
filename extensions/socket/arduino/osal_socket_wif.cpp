@@ -942,6 +942,12 @@ void osal_socket_initialize(
 }
 
 
+os_boolean osal_is_wifi_initialized(
+    void)
+{
+    return osal_sockets_initialized;
+}
+
 
 /**
 ****************************************************************************************************

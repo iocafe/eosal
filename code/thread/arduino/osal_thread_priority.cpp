@@ -111,7 +111,7 @@ static UBaseType_t osal_thread_priority_to_rt_priority(
             break;
 
         case OSAL_THREAD_PRIORITY_TIME_CRITICAL:
-            rtpriority = 30;
+            rtpriority = 6;
             break;
     }
 

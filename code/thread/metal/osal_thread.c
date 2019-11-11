@@ -14,8 +14,8 @@
   generally happens frequently enough that the user perceives the threads or tasks as running
   at the same time. On a multiprocessor or multi-core system, the threads or tasks will generally
   run at the same time, with each processor or core running a particular thread or task.
-  A new thread is created by osal_thread_create() function call, and exited by osal_thread_exit()
-  function. Thread priorizing and sleep are handled by osal_thread_set_priority() and
+  A new thread is created by osal_thread_create() function call
+  Thread priorizing and sleep are handled by osal_thread_set_priority() and
   os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
   function.
 
@@ -191,8 +191,7 @@ osalThreadHandle *osal_thread_create(
 
   @param   lpParameter Pointer to parameter structure to start Windows thread.
 
-  @return  1, but the function never really returns, it terminates with osal_thread_exit()
-           function call.
+  @return  None.
 
 ****************************************************************************************************
 */
@@ -259,66 +258,6 @@ void osal_thread_join(
 */
 
     /* free(res); Free memory allocated by thread */
-}
-#endif
-
-
-#if OSAL_MULTITHREAD_SUPPORT
-/**
-****************************************************************************************************
-
-  @brief Release operating system thread handle
-  @anchor osal_thread_release_handle
-
-  The osal_thread_release_handle() function is alternative to osal_thread_join() to release
-  resources allocated for operating system handle. Difference to join is that this function
-  will not wait for the thread to exit.
-
-  @param   handle Thread handle as returned by osal_thread_create.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_thread_release_handle(
-	osalThreadHandle *handle)
-{
-	/* Check for programming errors.
-	 */
-	if (handle == OS_NULL)
-	{
-		osal_debug_error("osal_thread,osal_thread_release_handle: NULL handle");
-		return;
-	}
-}
-#endif
-
-
-/**
-****************************************************************************************************
-
-  @brief Exit the thread.
-  @anchor osal_thread_exit
-
-  The osal_thread_exit() function exits the thread which called this function. Resource monitor's
-  thread count is decremented (if resource monitor is enabled), the stack is freeded and the
-  thread terminates. Every thread created by osal_thread_create() function must be eventally
-  terminated by this function. This function will be called also when thread entry point function
-  returns. If this is the last thread of the process, then the whole process is also terminated.
-
-  @return  None.
-
-****************************************************************************************************
-*/
-#if 0
-void osal_thread_exit(
-	void)
-{
-    /* Inform resource monitor that thread is terminated.
-     */
-    osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
-
-    /* Call Metal to exit the thread.
-     */
 }
 #endif
 

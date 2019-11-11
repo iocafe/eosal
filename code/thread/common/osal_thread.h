@@ -15,8 +15,8 @@
   generally happens frequently enough that the user perceives the threads or tasks as running
   at the same time. On a multiprocessor or multi-core system, the threads or tasks will generally
   run at the same time, with each processor or core running a particular thread or task.
-  A new thread is created by osal_thread_create() function call, and exited by osal_thread_exit()
-  function. Thread priorizing and sleep are handled by osal_thread_set_priority() and
+  A new thread is created by osal_thread_create() function call
+  Thread priorizing and sleep are handled by osal_thread_set_priority() and
   os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
   function.
 
@@ -171,10 +171,9 @@ osalThreadHandle;
 
   @name Thread Functions
 
-  A new thread is created by osal_thread_create() function and terminated by osal_thread_exit()
-  function. Functions osal_thread_set_priority() and os_sleep() are used to set scheduling
-  and control timing of the thread execution. The osal_thread_get_id() function retrieves integer
-  number uniquely identifying the thread.
+  A new thread is created by osal_thread_create(). Functions osal_thread_set_priority() and
+  os_sleep() are used to set scheduling and control timing of the thread execution.
+  The osal_thread_get_id() function retrieves integer number uniquely identifying the thread.
 
 ****************************************************************************************************
  */
@@ -193,12 +192,6 @@ osalThreadHandle;
        Releases thread handle.
      */
     void osal_thread_join(
-	    osalThreadHandle *handle);
-
-    /* Alternative for osal_thread_join(). Just closes thread handle without waiting for
-       thread to stop.
-     */
-    void osal_thread_release_handle(
 	    osalThreadHandle *handle);
 
     /* Set thread priority.

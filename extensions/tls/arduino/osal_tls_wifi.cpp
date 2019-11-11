@@ -25,6 +25,7 @@
 #if OSAL_OPENSSL_SUPPORT==0
 
 #include <Arduino.h>
+#include "WiFi.h"
 #include <WiFiClientSecure.h>
 
 /* Global network setup. Micro-controllers typically have one (or two)
@@ -138,7 +139,7 @@ static const os_char bobs_key[] = \
     "-----END RSA PRIVATE KEY-----\n";
 
 /* Bob's key */
-static const os_char bobs_certificate[] = 
+static const os_char bobs_certificate[] =
     "-----BEGIN CERTIFICATE-----\n"
     "MIIGJTCCBA2gAwIBAgIBAjANBgkqhkiG9w0BAQUFADCBsjELMAkGA1UEBhMCRlIx\n"
     "DzANBgNVBAgMBkFsc2FjZTETMBEGA1UEBwwKU3RyYXNib3VyZzEYMBYGA1UECgwP\n"
@@ -213,13 +214,9 @@ static const os_char bobs_certificate[] =
  */
 os_boolean osal_tls_initialized = OS_FALSE;
 
-/** WiFi network connected flag.
- */
-static os_boolean osal_wifi_initialized;
-
 /** WiFi network connection timer.
  */
-static os_timer osal_wifi_init_timer;
+// static os_timer osal_wifi_init_timer;
 
 /** Arduino specific socket class to store information.
  */
@@ -253,8 +250,6 @@ static osalSocket osal_tls[OSAL_MAX_SOCKETS];
  */
 static osalSocket *osal_get_unused_socket(void);
 
-static os_boolean osal_is_wifi_initialized(
-    void);
 
 /**
 ****************************************************************************************************
@@ -814,21 +809,7 @@ void osal_tls_initialize(
     os_int n_nics,
     osalTLSParam *prm)
 {
-    const os_char *wifi_net_name = "bean24";
-    const os_char *wifi_net_password = "talvi333";
     int i;
-
-    /* Initialize only once.
-     */
-    /* IPAddress
-        ip_address(192, 168, 1, 201),
-        dns_address(8, 8, 8, 8),
-        gateway_address(192, 168, 1, 254),
-        subnet_mask(255, 255, 255, 0);
-
-    byte
-        mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
-    */
 
     /* Clear Get parameters. Use defaults if not set.
      */
@@ -837,38 +818,15 @@ void osal_tls_initialize(
         osal_tls[i].used = OS_FALSE;
     }
 
-    /* Get parameters. Use defaults if not set.
-     */
-    if (nic == OS_NULL) n_nics = 0;
-    if (n_nics >= 1)
-    {
-        if (*nic->wifi_net_name != '\0') wifi_net_name = nic->wifi_net_name;
-        if (*nic->wifi_net_password != '\0') wifi_net_password = nic->wifi_net_password;
-    }
+    osal_socket_initialize(nic, n_nics);
+
 
     osal_tls_initialized = OS_TRUE;
 
-    // osal_mac_from_str(mac, osal_net_iface.mac);
-
-    /* Initialize using static configuration.
-    osal_ip_from_str(ip_address, osal_net_iface.ip_address);
-    osal_ip_from_str(dns_address, osal_net_iface.dns_address);
-    osal_ip_from_str(gateway_address, osal_net_iface.gateway_address);
-    osal_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
-     */
-
-    /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
-       without WiFi network.
-     */
-    osal_trace("Commecting to Wifi network");
-    osal_trace(wifi_net_name);
-    WiFi.begin(wifi_net_name, wifi_net_password);
-
-    /* Set TLS library initialized flag, now waiting for wifi initialization. We do not lock
+    /* Set TLS library initialized flag, now waiting for wifi initialization. We do not bllock
      * the code here to allow IO sequence, etc to proceed even without wifi.
      */
     osal_tls_initialized = OS_TRUE;
-    osal_wifi_initialized = OS_FALSE;
 }
 
 
@@ -885,7 +843,8 @@ void osal_tls_initialize(
 
 ****************************************************************************************************
 */
-static os_boolean osal_is_wifi_initialized(
+#if 0
+BASIC SOCKET FUNCTION USED static os_boolean osal_is_wifi_initialized(
     void)
 {
     if (!osal_tls_initialized) return OS_FALSE;
@@ -913,6 +872,7 @@ static os_boolean osal_is_wifi_initialized(
     }
     return OS_TRUE;
 }
+#endif
 
 
 /**
@@ -932,7 +892,7 @@ void osal_tls_shutdown(
 {
     if (osal_tls_initialized)
     {
-        WiFi.disconnect();
+        osal_socket_shutdown();
         osal_tls_initialized = OS_FALSE;
     }
 }

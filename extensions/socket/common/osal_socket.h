@@ -217,6 +217,10 @@ void osal_socket_embed_default_port(
     os_int default_use_flags,
     os_int default_port_nr);
 
+/* For Arduino
+ */
+os_boolean osal_is_wifi_initialized(
+    void);
 
 /*@}*/
 

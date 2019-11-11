@@ -72,7 +72,7 @@ typedef enum
   OSAL_RMON_SYSTEM_MEMORY_ALLOCATION = 1,
 
   /** Thread count. Number of threads created by osal_thread_create() function, but not
-      terminated by osal_thread_exit() function.
+      terminated.
    */
   OSAL_RMON_THREAD_COUNT = 2,
 
