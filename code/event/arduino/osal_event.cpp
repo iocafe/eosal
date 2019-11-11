@@ -154,13 +154,21 @@ osalStatus osal_event_wait(
     osalEvent evnt,
     os_int timeout_ms)
 {
+    TickType_t tout_ticks;
+
     if (evnt == OS_NULL)
     {
         osal_debug_error("osal_event_set: NULL argument");
         return OSAL_STATUS_FAILED;
     }
 
-    return ((xSemaphoreTake(evnt, timeout_ms/portTICK_PERIOD_MS) == pdTRUE )
+#if INCLUDE_vTaskSuspend != 1
+    BREAK COMPILE: WE NEED INCLUDE_vTaskSuspend=1 configuration define for portMAX_DELAY!
+#endif
+
+    tout_ticks = (timeout_ms == OSAL_EVENT_INFINITE) ? portMAX_DELAY : timeout_ms/portTICK_PERIOD_MS;
+
+    return ((xSemaphoreTake(evnt, tout_ticks) == pdTRUE)
             ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
 }
 

@@ -666,6 +666,8 @@ static void osal_quit_worker(
 {
     osalSocket *w;
 
+    osal_trace("QUIT_WORKER");
+
     w = osal_get_socket_struct(c);
     if (w)
     {
@@ -684,7 +686,8 @@ static void osal_socket_esp_client(
     AsyncClient client;
     osalSocket *w;
     os_char *buf;
-    os_short head, tail, buf_sz, n_sent, n;
+    os_short head, tail, buf_sz, n_appended, n;
+    os_int total_appended;
 
     client.onError([](void* arg, AsyncClient * c, int8_t error)
     {
@@ -765,15 +768,22 @@ static void osal_socket_esp_client(
 
     buf = w->tx_buf;
     buf_sz = w->tx_buf_sz;
+    total_appended = 0;
 
     while (!w->stop_worker_thread && osal_go())
     {
         osal_event_wait(w->tx_event, OSAL_EVENT_INFINITE);
 
+        if (!client.connected())
+        {
+            osal_event_set(w->tx_event);
+            continue;
+        }
+
         //send();
         os_timeslice();
 
-        if (w->tx_head != w->tx_tail)
+        if (w->tx_head != w->tx_tail && !total_appended)
         {
             tail = w->tx_tail;
 
@@ -781,32 +791,47 @@ static void osal_socket_esp_client(
             {
                 head = w->tx_head;
 
-                n_sent = 0;
+                n_appended = 0;
                 if (head < tail)
                 {
                     n = buf_sz - tail;
-                    n_sent = client.add(buf + tail, n);
+                    n_appended = client.add(buf + tail, n);
+                    total_appended += n_appended;
 
-                    tail += n_sent;
+                    tail += n_appended;
                     if (tail >= buf_sz) tail = 0;
                 }
-                if (head > tail)
+                else if (head > tail)
                 {
                     n = head - tail;
-                    n_sent = client.add(buf + tail, n);
+                    n_appended = client.add(buf + tail, n);
+                    total_appended += n_appended;
 
-                    tail += n_sent;
+                    tail += n_appended;
                 }
 
                 w->tx_tail = tail;
                 if (w->tx_head == tail) break;
 
-                if (!n) client.send();
-
                 os_timeslice();
+
+                if (!n_appended) break;
             }
             while (w->tx_head != tail && !w->stop_worker_thread && osal_go());
-            client.send();
+
+        }
+
+        if (total_appended)
+        {
+            if (client.send())
+            {
+                total_appended = 0;
+            }
+            else
+            {
+                os_timeslice();
+                osal_event_set(w->tx_event);
+            }
         }
     }
 
