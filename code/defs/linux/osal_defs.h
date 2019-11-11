@@ -44,7 +44,7 @@
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 2
+#define OSAL_TRACE 1
 #endif
 
 /** Byte order. If OSAL_SMALL_ENDIAN flags is nonzero, the small endian byte format is assumed,

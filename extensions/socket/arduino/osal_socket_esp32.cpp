@@ -216,7 +216,7 @@ osalStream osal_socket_esp_open(
         goto getout;
     }
 
-    os_memclear(&w->hdr, sizeof(osalSocket));
+    os_memclear(w, sizeof(osalSocket));
     w->hdr.iface = &osal_socket_iface;
 
     /* Get host name or numeric IP address and TCP port number from parameters.
@@ -703,7 +703,7 @@ static void osal_socket_esp_client(
     client.onTimeout([](void* arg, AsyncClient * c, uint32_t time)
     {
         osal_trace("Timeout");
-        // osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
+        osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
     });
 
     client.onConnect([](void* arg, AsyncClient * c)
@@ -762,12 +762,16 @@ static void osal_socket_esp_client(
     osal_event_set(done);
 
 
-// client.setRxTimeout(20);
-// client.setAckTimeout(2000);//no ACK timeout for the last sent packet in milliseconds
-// client.setNoDelay(true);
+ //client.setRxTimeout(20000);
+ //client.setAckTimeout(2000);//no ACK timeout for the last sent packet in milliseconds
+ //client.setNoDelay(false);
 
     client.connect(w->host, w->port_nr);
     //Serial.println(xPortGetCoreID());
+
+//    client.setRxTimeout(20);
+//    client.setAckTimeout(2000);//no ACK timeout for the last sent packet in milliseconds
+//    client.setNoDelay(true);
 
     buf = w->tx_buf;
     buf_sz = w->tx_buf_sz;
@@ -775,7 +779,7 @@ static void osal_socket_esp_client(
 
     while (!w->stop_worker_thread && osal_go())
     {
-        // osal_event_wait(w->tx_event, OSAL_EVENT_INFINITE); // ?????????????????????????????????????????
+        osal_event_wait(w->tx_event, OSAL_EVENT_INFINITE); // ?????????????????????????????????????????
 
         if (!client.connected())
         {

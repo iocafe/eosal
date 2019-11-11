@@ -4,10 +4,12 @@
   @brief   Creating, deleting, setting and waiting for events.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    9.11.2019
 
-  This file implements event related functionality for Windows. Generally events are used for
-  a thread wait until it needs to do something.
+  This file implements events using FreeRTOS binary semaphores. Generally events are used by
+  a thread to wait until something happens.
+
+  See https://www.freertos.org/xSemaphoreCreateBinary.html
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -44,14 +46,14 @@ osalEvent osal_event_create(
 {
     SemaphoreHandle_t m;
 
-    // m = xSemaphoreCreateMutex();
+    /* Use semaphora as event
+     */
     m = xSemaphoreCreateBinary();
     if (m == NULL)
     {
         osal_debug_error("osal_event.c, xSemaphoreCreateBinary() failed");
         return OS_NULL;
     }
-    xSemaphoreTake(m, 0);
 
     /* Inform resource monitor that event has been created and return the event pointer.
      */
@@ -83,6 +85,7 @@ void osal_event_delete(
         osal_debug_error("osal_event_delete: NULL argument");
         return;
     }
+
 
     vSemaphoreDelete((SemaphoreHandle_t)evnt);
 
@@ -163,7 +166,7 @@ osalStatus osal_event_wait(
     }
 
 #if INCLUDE_vTaskSuspend != 1
-    BREAK COMPILE: WE NEED INCLUDE_vTaskSuspend=1 configuration define for portMAX_DELAY!
+    #error BREAK COMPILE: We need INCLUDE_vTaskSuspend=1 configuration define for portMAX_DELAY
 #endif
 
     tout_ticks = (timeout_ms == OSAL_EVENT_INFINITE) ? portMAX_DELAY : timeout_ms/portTICK_PERIOD_MS;
