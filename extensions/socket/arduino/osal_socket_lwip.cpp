@@ -24,6 +24,12 @@
 // #define OSAL_TRACE 3
 
 #include "lwip.h"
+#include "lwip/netif.h"
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
+#include "lwip/stats.h"
+// #include "lwip/prot/dhcp.h"
+//#include "lwip/debug.h"
 
 
 /* Queue sizes.
