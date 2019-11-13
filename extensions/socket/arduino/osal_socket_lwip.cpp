@@ -23,7 +23,8 @@
 // #undef OSAL_TRACE
 // #define OSAL_TRACE 3
 
-#include "WiFi.h"
+#include "lwip.h"
+
 
 /* Queue sizes.
  */
@@ -55,8 +56,6 @@ static os_boolean osal_wifi_initialized;
 /** WiFi network connection timer.
  */
 static os_timer osal_wifi_init_timer;
-
-/* Commands from
 
 /** Arduino specific socket class to store information.
  */

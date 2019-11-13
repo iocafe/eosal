@@ -201,8 +201,7 @@
 #define OSAL_SOCKET_ARDUINO_ETHERNET_WIZ 2
 #define OSAL_SOCKET_ARDUINO_ETHERNET_LWIP 3
 #define OSAL_SOCKET_ARDUINO_WIFI 4
-#define OSAL_SOCKET_ESP32 5
-#define OSAL_SOCKET_LWIP_RAW 6
+#define OSAL_SOCKET_LWIP_RAW 5
 
 /* If socket support if not selected by compiler define, select now.
  * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
@@ -220,7 +219,7 @@
     #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ARDUINO_ETHERNET_LWIP
   #endif
   #ifdef ESP_PLATFORM
-    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ESP32
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP_RAW
   #endif
 #endif
 
