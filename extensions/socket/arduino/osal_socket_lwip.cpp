@@ -125,11 +125,10 @@ typedef struct osalSocket
 #if 0
     /* Belongs to LWIP thread ??
      */
-      struct pbuf *processing;
+      int procpos;
+      struct pbuf *proc;
     struct pbuf *in;        /* pointer on the received pbuf */
       struct tcp_pcb *pcb;    /* pointer on the current tcp_pcb */
-      int procpos;
-      struct csSocketState *accepted_es;
 
     /* Worker thread handle and exit status code.
      */
@@ -168,7 +167,6 @@ typedef struct osalLWIPThread
       struct pbuf *processing;
       struct tcp_pcb *pcb;    /* pointer on the current tcp_pcb */
       int procpos;
-      struct csSocketState *accepted_es;
 
     /* TRUE for IP v6 address, FALSE for IO v4.
      */
@@ -181,7 +179,6 @@ typedef struct osalLWIPThread
 
     /* Events for triggering send and select.
      */
-    osalEvent tx_event;
     osalEvent select_event;
 #endif
 }
@@ -1180,12 +1177,11 @@ static err_t osal_lwip_thread_accept_callback(
         goto getout;
     }
 
-    cp_memclear(es, sizeof(csSocketState));
-    listen_es->accepted_es = es;
+    ->accepted_es = es;
     es->pcb = newpcb;
 
     /* set priority for the newly accepted tcp connection newpcb */
-    tcp_setprio(newpcb, TCP_PRIO_MIN ??);
+//    tcp_setprio(newpcb, TCP_PRIO_MIN ??);
 
     tcp_arg(newpcb, neww);
 
@@ -1193,7 +1189,7 @@ static err_t osal_lwip_thread_accept_callback(
     tcp_recv(newpcb, osal_lwip_thread_recv_callback);
     tcp_err(newpcb, osal_lwip_thread_error_callback);
     tcp_poll(newpcb, osal_lwip_thread_poll_callback, 10);
-    // tcp_sent(newpcb, osal_lwip_thread_sent_callback);
+    tcp_sent(newpcb, osal_lwip_thread_sent_callback);
 
     return ERR_OK;
 
