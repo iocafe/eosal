@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/arduino/osal_socket_esp32.c
+  @file    socket/arduino/osal_socket_lwip.c
   @brief   OSAL sockets API for ESP32/Arduino WiFi implementation.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -16,7 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ESP32
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP_RAW
 
 /* Force tracing on for this source file.
  */
@@ -24,7 +24,6 @@
 // #define OSAL_TRACE 3
 
 #include "WiFi.h"
-#include "AsyncTCP.h"
 
 /* Queue sizes.
  */
@@ -47,7 +46,7 @@ static osalNetworkInterface osal_net_iface
 
 /** Sockets library initialized flag.
  */
-os_boolean osal_sockets_initialized = OS_FALSE;
+os_boolean osal_sockets_initialized;
 
 /** WiFi network connected flag.
  */
@@ -56,6 +55,8 @@ static os_boolean osal_wifi_initialized;
 /** WiFi network connection timer.
  */
 static os_timer osal_wifi_init_timer;
+
+/* Commands from
 
 /** Arduino specific socket class to store information.
  */
@@ -66,29 +67,48 @@ typedef struct osalSocket
      */
     osalStreamHeader hdr;
 
+    /** Nonzero if socket structure is reserved by a thread.
+     */
+    os_boolean reserved;
+
     /** Nonzero if socket structure is used.
      */
     os_boolean used;
 
-    /* Stop the worker thread flag.
+    /** Commands to lwIP thread, set by application side, cleared by lwIP thread.
      */
-    volatile os_boolean stop_worker_thread;
+    os_boolean open_socket_cmd;
+    os_boolean close_socket_cmd;
 
-    /* TRUE for IP v6 address, FALSE for IO v4.
+    /** Status codes returned by lwIP thread for commands.
+     */
+    osalStatus open_status;
+
+#if OSAL_MULTITHREAD_SUPPORT
+
+    /** Events to to trig application side of socket.
+     */
+    osalEvent trig_app_socket;
+
+#endif
+
+    /** TRUE for IP v6 address, FALSE for IO v4.
      */
     os_boolean is_ipv6;
 
-    /* Host name or IP addrss.
+    /** Host name or IP addrss.
      */
     os_char host[OSAL_IPADDR_SZ];
     os_int port_nr;
 
-    /** Ring buffer for received data, pointer and size
+    /** Ring buffer for received data, pointer and size. Allocated when socket is
+        opened, released when socket is closed.
      */
     os_char *rx_buf;
     os_short rx_buf_sz;
 
-    /** Head and tail index. Position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
+    /** Head and tail index. Position in buffer to which next byte is to be written.
+        Range 0 ... buf_sz-1.
      */
     volatile os_short rx_head, rx_tail;
 
@@ -97,10 +117,62 @@ typedef struct osalSocket
     os_char *tx_buf;
     os_short tx_buf_sz;
 
-    /** Head and tail index. Head is position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
-     *  Tail is position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
+    /** Head and tail index. Head is position in buffer to which next byte is to be written.
+        Range 0 ... buf_sz-1. Tail is position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
      */
     volatile os_short tx_head, tx_tail;
+
+#if 0
+    /* Belongs to LWIP thread ??
+     */
+      struct pbuf *processing;
+    struct pbuf *in;        /* pointer on the received pbuf */
+      struct tcp_pcb *pcb;    /* pointer on the current tcp_pcb */
+      int procpos;
+      struct csSocketState *accepted_es;
+
+    /* Worker thread handle and exit status code.
+     */
+    osalThreadHandle *thread_handle;
+    osalStatus socket_status;
+#endif
+}
+osalSocket;
+
+
+/** Arduino specific socket class to store information.
+ */
+typedef struct osalLWIPThread
+{
+    /** Network interface configuration.
+     */
+    osalNetworkInterface nic[OSAL_DEFAULT_NRO_NICS];
+    os_int n_nics
+
+#if OSAL_MULTITHREAD_SUPPORT
+
+    /** Mutex for synchronizing socket structure reservation.
+     */
+    osalMutex socket_struct_mutex;
+
+    /** Events to to trig LWIP to work.
+     */
+    osalEvent trig_lwip_thread_event;
+
+#endif
+
+
+#if 0
+
+      struct pbuf *in;        /* pointer on the received pbuf */
+      struct pbuf *processing;
+      struct tcp_pcb *pcb;    /* pointer on the current tcp_pcb */
+      int procpos;
+      struct csSocketState *accepted_es;
+
+    /* TRUE for IP v6 address, FALSE for IO v4.
+     */
+    os_boolean is_ipv6;
 
     /* Worker thread handle and exit status code.
      */
@@ -111,25 +183,26 @@ typedef struct osalSocket
      */
     osalEvent tx_event;
     osalEvent select_event;
-
-    /* Trick to get osalSocket pointer from async client handle.
-     */
-    AsyncClient *async_client;
+#endif
 }
-osalSocket;
+osalLWIPThread;
 
 /** Maximum number of sockets.
  */
-#define OSAL_MAX_SOCKETS 8
+#define OSAL_MAX_SOCKETS 4
 
-/* Array of socket structures for every possible WizNet sockindex
+/* Array of structures for TCP sockets.
  */
-static osalSocket osal_socket_esp[OSAL_MAX_SOCKETS];
+static osalSocket osal_sock[OSAL_MAX_SOCKETS];
+
+/* LWIP thread state structure.
+ */
+static osalLWIPThread osal_lwip;
 
 
 /* Prototypes for forward referred static functions.
  */
-static osalSocket *osal_get_unused_socket(void);
+static osalSocket *osal_reserve_socket_struct(void);
 
 void osal_socket_esp_close(
     osalStream stream);
@@ -207,12 +280,12 @@ osalStream osal_socket_esp_open(
         goto getout;
     }
 
-    /* Get first unused osal_socket_esp structure.
+    /* Get first unused osal_sock structure.
      */
-    w = osal_get_unused_socket();
+    w = osal_reserve_socket_struct();
     if (w == OS_NULL)
     {
-        osal_debug_error("osal_socket_esp: Too many sockets");
+        osal_debug_error("osal_sock: Too many sockets");
         goto getout;
     }
 
@@ -238,35 +311,24 @@ osalStream osal_socket_esp_open(
         goto getout;
     }
 
-    /* Create tx event (send)
+    /* Create event used by LWIP to trig the application side.
      */
-    w->tx_event = osal_event_create();
-    if (w->tx_event == OS_NULL)
-    {
-        osal_debug_error("unable to create socket TX event");
-        goto getout;
-    }
+    w->trig_app_socket = osal_event_create();
+    osal_debug_assert(w->trig_app_socket);
 
     osal_trace2_str("~Connecting socket to ", w->host);
     osal_trace2_int(", port ", w->port_nr);
 
-    /* Create worker thread.
+    /* Give open socket command to lwIP thread and wait for lwIP thread to carry it out
+       set to application side, cleared by lwIP thread.
      */
-    w->thread_handle = osal_thread_create(osal_socket_esp_client,
-        w, OSAL_THREAD_ATTACHED, 3000, "sockworker");
-
-#if 0
-    xTaskCreatePinnedToCore(
-             osal_socket_esp_client, /* Function to implement the task */
-             "Task1", /* Name of the task */
-              10000,  /* Stack size in words */
-              w,  /* Task input parameter */
-              0,  /* Priority of the task */
-              &Task1,  /* Task handle. */
-              0); /* Core where the task should run */
-#endif
-
     w->used = OS_TRUE;
+    w->open_socket_cmd = OS_TRUE;
+    osal_event_set(osal_lwip.trig_lwip_thread_event);
+    while (w->open_socket_cmd)
+    {
+        osal_event_wait(w->trig_app_socket);
+    }
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
@@ -309,27 +371,30 @@ void osal_socket_esp_close(
 
     if (stream == OS_NULL) return;
     w = (osalSocket*)stream;
-    if (w->used)
+    if (!w->reserved) return;
+
+    /* Give close socket command to lwIP thread and wait for lwIP thread to carry it out
+       set to application side, cleared by lwIP thread.
+     */
+    w->close_socket_cmd = OS_TRUE;
+    osal_event_set(osal_lwip.trig_lwip_thread_event);
+    while (w->close_socket_cmd)
     {
-        /* Terminate worker thread. Set flag and set event.
-         */
-        w->stop_worker_thread = OS_TRUE;
-        osal_event_set(w->tx_event);
-        osal_thread_join(w->thread_handle);
-
-        /* release events
-         */
-        osal_event_delete(w->tx_event);
-
-        /* Release ring buffers.
-         */
-        os_free(w->tx_buf, w->tx_buf_sz);
-        os_free(w->rx_buf, w->rx_buf_sz);
-
-        /* This structure is no longer used.
-         */
-        w->used = OS_FALSE;
+        osal_event_wait(w->trig_app_socket);
     }
+
+    /* Release event
+     */
+    osal_event_delete(w->trig_app_socket);
+
+    /* Release ring buffers.
+     */
+    os_free(w->tx_buf, w->tx_buf_sz);
+    os_free(w->rx_buf, w->rx_buf_sz);
+
+    /* This structure is no longer used.
+     */
+    os_memclear(w, sizeof(osalSocket));
 }
 
 
@@ -595,58 +660,6 @@ getout:
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Get socket parameter.
-  @anchor osal_socket_esp_get_parameter
-
-  The osal_socket_esp_get_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @return  Parameter value.
-
-****************************************************************************************************
-*/
-os_long osal_socket_esp_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix)
-{
-    /* Call the default implementation
-     */
-    return osal_stream_default_get_parameter(stream, parameter_ix);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set socket parameter.
-  @anchor osal_socket_esp_set_parameter
-
-  The osal_socket_esp_set_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @param   value Parameter value to set.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_esp_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value)
-{
-    /* Call the default implementation
-     */
-    osal_stream_default_set_parameter(stream, parameter_ix, value);
-}
-
-
 static osalSocket *osal_get_socket_struct(
     AsyncClient *c)
 {
@@ -654,10 +667,10 @@ static osalSocket *osal_get_socket_struct(
 
     for (i = 0; i < OSAL_MAX_SOCKETS; i++)
     {
-        if (c == osal_socket_esp[i].async_client && osal_socket_esp[i].used)
+        if (c == osal_sock[i].async_client && osal_sock[i].used)
         {
             osal_trace2("Async found");
-            return osal_socket_esp + i;
+            return osal_sock + i;
         }
     }
     return OS_NULL;
@@ -682,233 +695,44 @@ static void osal_quit_worker(
 }
 
 
-static void osal_socket_esp_client(
-    void *prm,
-    osalEvent done)
-{
-    AsyncClient client;
-    osalSocket *w;
-    os_char *buf;
-    os_short head, tail, buf_sz, n_appended, n;
-    os_int total_appended;
-
-    client.onError([](void* arg, AsyncClient * c, int8_t error)
-    {
-        osal_trace_str("Error: ", c->errorToString(error));
-        // c->close();
-        osal_quit_worker(c, OSAL_STATUS_STREAM_CLOSED);
-
-    });
-
-    client.onTimeout([](void* arg, AsyncClient * c, uint32_t time)
-    {
-        osal_trace("Timeout");
-        osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
-    });
-
-    client.onConnect([](void* arg, AsyncClient * c)
-    {
-        osal_trace("Connected");
-    });
-
-    client.onData([](void* arg, AsyncClient * c, void* data, size_t len)
-    {
-        osalSocket *w;
-        os_char *buf, *p;
-        os_timer start_t;
-        os_short head, tail, buf_sz, n, nexthead;
-
-        w = osal_get_socket_struct(c);
-        if (w == OS_NULL) return;
-
-        // osal_trace_int("Data received, length =", len);
-
-        p = (os_char*)data;
-        n = (os_short)len;
-
-        buf = w->rx_buf;
-        buf_sz = w->rx_buf_sz;
-        head = w->rx_head;
-        tail = w->rx_tail;
-        os_get_timer(&start_t);
-
-        while (n > 0)
-        {
-            nexthead = head + 1;
-            if (nexthead >= buf_sz) nexthead = 0;
-            if (nexthead == tail)
-            {
-                w->rx_head = head;
-                if (os_elapsed(&start_t, 10000))
-                {
-                    osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
-                    return;
-                }
-                os_timeslice();
-                tail = w->rx_tail;
-                continue;
-            }
-            buf[head] = *(p++);
-            head = nexthead;
-            n--;
-        }
-        w->rx_head = head;
-
-        if (w->select_event) osal_event_set(w->select_event);
-    });
-
-    w = (osalSocket *)prm;
-    w->async_client = &client;
-    osal_event_set(done);
-
-
- //client.setRxTimeout(20000);
- //client.setAckTimeout(2000);//no ACK timeout for the last sent packet in milliseconds
- //client.setNoDelay(false);
-
-
-    client.connect(w->host, w->port_nr);
-    //Serial.println(xPortGetCoreID());
-
-//    client.setRxTimeout(20);
-//    client.setAckTimeout(2000);//no ACK timeout for the last sent packet in milliseconds
-//    client.setNoDelay(true);
-
-    buf = w->tx_buf;
-    buf_sz = w->tx_buf_sz;
-    total_appended = 0;
-
-
-
-
-    while (!w->stop_worker_thread && osal_go())
-    {
-     //   osal_event_wait(w->tx_event, OSAL_EVENT_INFINITE); // ?????????????????????????????????????????
-
-        //send();
-        os_timeslice(); // ?????????????????????????????????????????
-        os_sleep(10);
-
-        if (!client.canSend())
-        {
-            osal_event_set(w->tx_event);
-            continue;
-        }
-
-        if (w->tx_head != w->tx_tail)
-        {
-            tail = w->tx_tail;
-
-            do
-            {
-                head = w->tx_head;
-
-                n_appended = 0;
-                total_appended = 0;
-                if (head < tail)
-                {
-                    n = buf_sz - tail;
-                    n_appended = client.space();
-                    if (n_appended < n) n = n_appended;
-                    if (n > 0)
-                    {
-                        if (client.add(buf + tail, n) != n)
-                        {
-                            osal_trace("client.add  failed");
-                        }
-                        total_appended += n;
-//                        tail += n;
-//                        if (!client.send())
-//                        {
-//                            osal_trace("client.send failed");
-//                        }
-                    }
-
-                    tail += n_appended;
-                    if (tail >= buf_sz) tail = 0;
-                }
-                if (head > tail)
-                {
-                    n = head - tail;
-                    n_appended = client.space();
-                    if (n_appended < n) n = n_appended;
-                    if (n > 0)
-                    {
-                        if (client.add(buf + tail, n) != n)
-                        {
-                            osal_trace("client.add  failed");
-                        }
-                        total_appended += n;
-                        tail += n;
-//                        if (!client.send())
-//                        {
-//                            osal_trace("client.send failed");
-//                        }
-                    }
-                }
-
-
-
-                w->tx_tail = tail;
-                if (w->tx_head == tail) break;
-
-                os_timeslice();
-
-                if (!n_appended) break;
-            }
-            while (w->tx_head != tail && total_appended && !w->stop_worker_thread && osal_go());
-
-            client.send();
-
-        }
-
-if (0)  if (total_appended)
-        {
-            if (client.send())
-            {
-                total_appended = 0;
-            }
-            else
-            {
-                os_timeslice();
-                osal_event_set(w->tx_event);
-            }
-            os_sleep(100);
-        }
-    }
-
-    if (!w->worker_status)
-    {
-        w->worker_status = OSAL_STATUS_STREAM_CLOSED;
-        w->stop_worker_thread = OS_TRUE;
-        if (w->select_event) osal_event_set(w->select_event);
-    }
-
-    client.close();
-}
 
 
 /**
 ****************************************************************************************************
 
-  @brief Get first unused osal_socket_esp.
-  @anchor osal_get_unused_socket
+  @brief Get first unreserved socket state structure.
+  @anchor osal_reserve_socket_struct
 
-  The osal_get_unused_socket() function finds index of first unused osal_socket_esp item in
-  osal_socket_esp array.
+  The osal_reserve_socket_struct() function finds index of first unreserved item in
+  osal_sock array.
+
+  This function is thread safe and can be called from both lwip thread and application
+  side threads.
 
   @return Pointer to socket data structure, or OS_NULL if no free ones.
 
 ****************************************************************************************************
 */
-static osalSocket *osal_get_unused_socket(void)
+static osalSocket *osal_reserve_socket_struct(void)
 {
+    osalSocket *w;
     int i;
+
+    osal_mutex_lock(osal_lwip.socket_struct_mutex);
 
     for (i = 0; i < OSAL_MAX_SOCKETS; i++)
     {
-        if (!osal_socket_esp[i].used) return osal_socket_esp + i;
+        w = osal_sock + i;
+        if (!w->reserved)
+        {
+            w = osal_sock + i;
+            w->reserved = OS_TRUE;
+        }
+        osal_mutex_unlock(osal_lwip.socket_struct_mutex);
+        return w;
     }
+
+    osal_mutex_unlock(osal_lwip.socket_struct_mutex);
     return OS_NULL;
 }
 
@@ -1021,6 +845,481 @@ static osalSocket *osal_get_unused_socket(void)
 }
 */
 
+#if OSAL_MULTITHREAD_SUPPORT
+/**
+****************************************************************************************************
+
+  @brief lwIP thread.
+
+  The osal_socket_lwip_thread is thread function which runs LWIP in multithread environment.
+  The LWIP can be called only from this thread.
+
+  @param   prm Pointer to worker thread parameter structure, not used, always OS_NULL.
+  @param   done Event to set when worker thread has started.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_socket_lwip_thread(
+    void *prm,
+    osalEvent done)
+{
+    osalSocket *w;
+    int i;
+
+    osal_lwip_initialize();
+    osal_event_set(done);
+
+    while (OS_TRUE)
+    {
+        /* If we have no wifi connection, wait for one.
+         */
+        // ?? os_boolean osal_is_wifi_initialized(
+            void)
+
+        osal_event_wait(osal_lwip.trig_lwip_thread_event);
+
+        for (i = 0; i < OSAL_MAX_SOCKETS; i++)
+        {
+            w = osal_socket + i;
+            if (w->used)
+            {
+                osal_lwip_serve_socket(w);
+            }
+        }
+    }
+}
+#endif
+
+
+/**
+****************************************************************************************************
+
+  @brief lwIP thread handling of one socket.
+
+  The osal_lwip_serve_socket function serves one socket.
+
+  @param   w Socket structure pointer.
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_lwip_serve_socket(
+    osalSocket *w)
+{
+    if (w->open_socket_cmd)
+    {
+        w->open_status = osal_lwip_connect_socket(w);
+        w->socket_status = w->open_status ? w->open_status : OSAL_STATUS_PENDING;
+        w->open_socket_cmd = OS_FALSE;
+        osal_event_set(w->trig_app_socket);
+    }
+
+    if (w->close_socket_cmd)
+    {
+        w->used = OS_FALSE;
+        w->close_socket_cmd = OS_FALSE;
+        osal_event_set(w->trig_app_socket);
+    }
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Start connecting a socket.
+
+  The osal_lwip_connect_socket function initiates socket connection. This function doesn't wait
+  for connect, osal_lwip_connect_callback is for that.
+
+  @param   w Socket structure pointer.
+  @return  None.
+
+****************************************************************************************************
+*/
+static osalStatus void osal_lwip_connect_socket(
+    osalSocket *w)
+{
+    struct tcp_pcb *pcb;
+    err_t err;
+
+    pcb = tcp_new();
+    if (my_pcb == 0)
+    {
+        return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+    }
+
+    err = tcp_connect(pcb, struct ip_addr *ipaddr , u16_t port , osal_lwip_connect_callback);
+    if (err != ERR_OK)
+    {
+        memp_free(MEMP_TCP_PCB, pcb);
+        return OSAL_STATUS_FAILED;
+    }
+
+    return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Callback when socket connection has been established or failed.
+
+  The osal_lwip_connect_callback function....
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static err_t osal_lwip_connect_callback(
+    void *arg,
+    struct tcp_pcb *tpcb,
+    err_t err)
+{
+    osalSocket *w;
+    w = (osalSocket*)arg;
+
+    w->socket_status = connected or failed
+
+    osal_event_set(w->trig_app_socket);
+}
+
+
+static void osal_lwip_thread_read(
+    osalSocket *w)
+{
+    client.onData([](void* arg, AsyncClient * c, void* data, size_t len)
+    {
+        osalSocket *w;
+        os_char *buf, *p;
+        os_timer start_t;
+        os_short head, tail, buf_sz, n, nexthead;
+
+        w = osal_get_socket_struct(c);
+        if (w == OS_NULL) return;
+
+        // osal_trace_int("Data received, length =", len);
+
+        p = (os_char*)data;
+        n = (os_short)len;
+
+        buf = w->rx_buf;
+        buf_sz = w->rx_buf_sz;
+        head = w->rx_head;
+        tail = w->rx_tail;
+        os_get_timer(&start_t);
+
+        while (n > 0)
+        {
+            nexthead = head + 1;
+            if (nexthead >= buf_sz) nexthead = 0;
+            if (nexthead == tail)
+            {
+                w->rx_head = head;
+                if (os_elapsed(&start_t, 10000))
+                {
+                    osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
+                    return;
+                }
+                os_timeslice();
+                tail = w->rx_tail;
+                continue;
+            }
+            buf[head] = *(p++);
+            head = nexthead;
+            n--;
+        }
+        w->rx_head = head;
+
+        if (w->select_event) osal_event_set(w->select_event);
+    });
+}
+
+static void osal_lwip_thread_write(
+    osalSocket *w)
+{
+    os_char *buf;
+    os_short head, tail, buf_sz, n_appended, n;
+    os_int total_appended;
+
+    client.connect(w->host, w->port_nr);
+
+    buf = w->tx_buf;
+    buf_sz = w->tx_buf_sz;
+    total_appended = 0;
+
+     //   osal_event_wait(w->tx_event, OSAL_EVENT_INFINITE); // ?????????????????????????????????????????
+
+        //send();
+        os_timeslice(); // ?????????????????????????????????????????
+        os_sleep(10);
+
+        if (!client.canSend())
+        {
+            osal_event_set(w->tx_event);
+            continue;
+        }
+
+        if (w->tx_head != w->tx_tail)
+        {
+            tail = w->tx_tail;
+
+            do
+            {
+                head = w->tx_head;
+
+                n_appended = 0;
+                total_appended = 0;
+                if (head < tail)
+                {
+                    n = buf_sz - tail;
+                    n_appended = client.space();
+                    if (n_appended < n) n = n_appended;
+                    if (n > 0)
+                    {
+                        if (client.add(buf + tail, n) != n)
+                        {
+                            osal_trace("client.add  failed");
+                        }
+                        total_appended += n;
+//                        tail += n;
+//                        if (!client.send())
+//                        {
+//                            osal_trace("client.send failed");
+//                        }
+                    }
+
+                    tail += n_appended;
+                    if (tail >= buf_sz) tail = 0;
+                }
+                if (head > tail)
+                {
+                    n = head - tail;
+                    n_appended = client.space();
+                    if (n_appended < n) n = n_appended;
+                    if (n > 0)
+                    {
+                        if (client.add(buf + tail, n) != n)
+                        {
+                            osal_trace("client.add  failed");
+                        }
+                        total_appended += n;
+                        tail += n;
+//                        if (!client.send())
+//                        {
+//                            osal_trace("client.send failed");
+//                        }
+                    }
+                }
+
+
+
+                w->tx_tail = tail;
+                if (w->tx_head == tail) break;
+
+                os_timeslice();
+
+                if (!n_appended) break;
+            }
+            while (w->tx_head != tail && total_appended && !w->stop_worker_thread && osal_go());
+
+            client.send();
+
+        }
+
+
+    while (!w->stop_worker_thread && osal_go())
+    {
+    if (!w->worker_status)
+    {
+        w->worker_status = OSAL_STATUS_STREAM_CLOSED;
+        w->stop_worker_thread = OS_TRUE;
+        if (w->select_event) osal_event_set(w->select_event);
+    }
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief tcp_accept lwIP callback
+  @anchor osal_lwip_thread_accept_callback
+
+  The osal_lwip_thread_accept_callback() function gets called by lwIP when new connection
+  is accepted.
+
+  @param   arg Argument for the tcp_pcb connection.
+  @param   newpcb Pointer on tcp_pcb struct for the newly created tcp connection
+  @param   err Not used.
+  @return  Error code.
+
+****************************************************************************************************
+*/
+static err_t osal_lwip_thread_accept_callback(
+    void *arg,
+    struct tcp_pcb *newpcb,
+    err_t err)
+{
+    osalSocket *w;
+    err_t ret_err;
+    int i;
+
+    w = (osalSocket*)arg;
+    osalSocket *w
+    if (w->accepted_w)
+    {
+        ret_err = ERR_MEM;
+        goto getout;
+    }
+
+    find free socket port;
+    if (i == NULL)
+    {
+        ret_err = ERR_MEM;
+        goto getout;
+    }
+
+    cp_memclear(es, sizeof(csSocketState));
+    listen_es->accepted_es = es;
+    es->pcb = newpcb;
+
+    /* set priority for the newly accepted tcp connection newpcb */
+    tcp_setprio(newpcb, TCP_PRIO_MIN ??);
+
+    tcp_arg(newpcb, neww);
+
+    tcp_nagle_disable(newpcb);
+    tcp_recv(newpcb, osal_lwip_thread_recv_callback);
+    tcp_err(newpcb, osal_lwip_thread_error_callback);
+    tcp_poll(newpcb, osal_lwip_thread_poll_callback, 10);
+    // tcp_sent(newpcb, osal_lwip_thread_sent_callback);
+
+    return ERR_OK;
+
+getout:
+    /*  close tcp connection */
+    close_pcb(newpcb);
+
+    /* return error code */
+    return ret_err;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief tcp_recv callback
+  @anchor osal_lwip_thread_error_callback
+
+  The osal_lwip_thread_recv_callback() function gets called by lwIP when new data arrives.
+
+  The TCP protocol specifies a window that tells the sending host how much data it can send
+  on the connection. The window size for all connections is TCP_WND which may be overridden
+  in lwipopts.h. When the application has processed the incoming data, it must call the
+  tcp_recved() function to indicate that TCP can increase the receive window.
+
+  @param   arg Argument for the tcp_pcb connection.
+  @param   tpcb The pcb for the tcp connection.
+  @param   pointer to the received pbuf.
+  @param   err Error information regarding the reveived pbuf.
+  @return  Error code.
+
+****************************************************************************************************
+*/
+static err_t osal_lwip_thread_recv_callback(
+    void *arg,
+    struct tcp_pcb *tpcb,
+    struct pbuf *p,
+    err_t err)
+{
+    osalSocket *w;
+    err_t ret_err;
+
+    LWIP_ASSERT("arg != NULL",arg != NULL);
+
+    w = (osalSocket*)arg;
+
+    /* if we receive an empty tcp frame from client => close connection */
+    if (p == NULL)
+    {
+        /* we're done sending, close connection */
+        closes(w);
+        ret_err = ERR_OK;
+    }
+    /* else : a non empty frame was received from client but for some reason err != ERR_OK */
+    else if(err != ERR_OK)
+    {
+        /* free received pbuf*/
+        if (p != NULL)
+        {
+            pbuf_free(p);
+        }
+        ret_err = err;
+    }
+    else
+    {
+        tcp_recved(es->pcb, p->tot_len);
+
+        /* more data received from client and previous data has been already sent*/
+        if(es->in == NULL)
+        {
+            es->in = p;
+        }
+        else
+        {
+            pbuf_cat(es->in, p);
+        }
+        ret_err = ERR_OK;
+    }
+
+    return ret_err;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief tcp_err lwIP callback function
+  @anchor osal_lwip_thread_error_callback
+
+  The osal_lwip_thread_error_callback() function...
+
+  @param   arg
+  @param   err Not used.
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_lwip_thread_error_callback(
+    void *arg,
+    err_t err)
+{
+    osal_error("lwip error callback");
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief tcp_poll lwIP callback function
+  @anchor osal_lwip_thread_poll_callback
+
+  The osal_lwip_thread_poll_callback() function...
+
+  @param   arg
+  @param   tpcb The pcb for the tcp connection
+  @return  None.
+
+****************************************************************************************************
+*/
+static osal_lwip_thread_poll_callback(
+    void *arg,
+    struct tcp_pcb *tpcb)
+{
+    return ERR_OK;
+}
+
 
 /**
 ****************************************************************************************************
@@ -1031,17 +1330,11 @@ static osalSocket *osal_get_unused_socket(void)
   The osal_socket_initialize() initializes the underlying sockets library. This used either DHCP,
   or statical configuration parameters.
 
-  @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
-           This implementation sets up only nic[0].
-  @param   n_nics Number of network interfaces in nic array.
-
   @return  None.
 
 ****************************************************************************************************
 */
-void osal_socket_initialize(
-    osalNetworkInterface *nic,
-    os_int n_nics)
+void osal_lwip_initialize(void)
 {
     const os_char *wifi_net_name = "bean24";
     const os_char *wifi_net_password = "talvi333";
@@ -1057,29 +1350,10 @@ void osal_socket_initialize(
 
     byte
         mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
-    */
 
-    /* Clear Get parameters. Use defaults if not set.
-     */
-    for (i = 0; i < OSAL_MAX_SOCKETS; i++)
-    {
-        osal_socket_esp[i].used = OS_FALSE;
-    }
+    osal_mac_from_str(mac, osal_net_iface.mac);
 
-    /* Get parameters. Use defaults if not set.
-     */
-    if (nic == OS_NULL) n_nics = 0;
-    if (n_nics >= 1)
-    {
-        if (*nic->wifi_net_name != '\0') wifi_net_name = nic->wifi_net_name;
-        if (*nic->wifi_net_password != '\0') wifi_net_password = nic->wifi_net_password;
-    }
-
-    osal_sockets_initialized = OS_TRUE;
-
-    // osal_mac_from_str(mac, osal_net_iface.mac);
-
-    /* Initialize using static configuration.
+     Initialize using static configuration.
     osal_ip_from_str(ip_address, osal_net_iface.ip_address);
     osal_ip_from_str(dns_address, osal_net_iface.dns_address);
     osal_ip_from_str(gateway_address, osal_net_iface.gateway_address);
@@ -1109,8 +1383,11 @@ void osal_socket_initialize(
   @brief Check if WiFi network is connected.
   @anchor osal_is_wifi_initialized
 
-  The osal_is_wifi_initialized() function is used when opening or staring to listen for incoming
-  connections to make sure that WiFi network is connected.
+  Called to check if WiFi initialization has been completed and if so, the function initializes
+  has been initialized and connected. Once connection is detected,
+  the LWIP library is initialized.
+
+  osal_wifi_initialized
 
   @return  OS_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
 
@@ -1126,7 +1403,7 @@ os_boolean osal_is_wifi_initialized(
          */
         if (WiFi.status() != WL_CONNECTED)
         {
-            if (os_elapsed(&osal_wifi_init_timer, 500))
+            if (os_elapsed(&osal_wifi_init_timer, 2000))
             {
                 osal_trace2("Waiting for wifi");
                 os_get_timer(&osal_wifi_init_timer);
@@ -1135,8 +1412,9 @@ os_boolean osal_is_wifi_initialized(
         }
         osal_trace("Wifi network connected");
 
-        /* Here WE should convert IP address to string.
-           ip_address = Ethernet.localIP(); */
+        /* Initialize LWIP library
+         */
+        lwip_init();
 
         /* Mark that Wifi is intialized.
          */
@@ -1149,10 +1427,65 @@ os_boolean osal_is_wifi_initialized(
 /**
 ****************************************************************************************************
 
+  @brief Initialize sockets LWIP/WizNet.
+  @anchor osal_socket_initialize
+
+  The osal_socket_initialize() function:
+  - clears all static memory used by the socket wrapper and
+  - saved network interface configuration.
+  - Multithread mode: Create osal_socket_struct_mutex for synchronizing socket structure reservation.
+  - Multithread mode: Create trig_lwip_thread_event to trig LWIP thread to action
+  - Multithread mode: start lwIP thread.
+  - Single thread mode: initialize lwIP library and start connecing Wifi.
+
+  @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
+  @param   n_nics Number of network interfaces in nic array.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_socket_initialize(
+    osalNetworkInterface *nic,
+    os_int n_nics)
+{
+    os_memclear(osal_lwip, sizeof(osal_lwip));
+    os_memclear(osal_sock, sizeof(osal_sock));
+
+    osal_sockets_initialized = OS_FALSE;
+    osal_wifi_initialized = OS_FALSE;
+
+    if (n_nics > OSAL_DEFAULT_NRO_NICS) n_nics = OSAL_DEFAULT_NRO_NICS;
+    os_memcpy(&osal_lwip.nic, nic, n_nics*sizeof(osalNetworkInterface));
+    osal_lwip.n_nics = n_nics;
+
+    /* Defaults for testing, remove
+     */
+    if (osal_lwip.nic[0].wifi_net_name[0] == '\0')
+        os_strncpy(osal_lwip.nic[0].wifi_net_name, "bean24", OSAL_WIFI_PRM_SZ);
+    if (osal_lwip.nic[0].wifi_net_password[0] == '\0')
+        os_strncpy(osal_lwip.nic[0].wifi_net_password, "talvi333", OSAL_WIFI_PRM_SZ);
+
+#if OSAL_MULTITHREAD_SUPPORT
+    osal_lwip.socket_struct_mutex = osal_mutex_create();
+    osal_debug_assert(osal_lwip.socket_struct_mutex);
+    osal_lwip.trig_lwip_thread_event = osal_event_create();
+    osal_debug_assert(osal_lwip.trig_lwip_thread_event);
+
+    osal_thread_create(osal_socket_lwip_thread,
+        OS_NULL, OSAL_THREAD_DETACHED, 8000, "lwip_thread");
+#else
+    osal_lwip_initialize();
+#endif
+}
+
+
+/**
+****************************************************************************************************
+
   @brief Shut down sockets.
   @anchor osal_socket_shutdown
 
-  The osal_socket_shutdown() shuts down the underlying sockets library.
+  The osal_socket_shutdown() is not used for LWIP. Clean up is not implemented.
 
   @return  None.
 
@@ -1161,11 +1494,6 @@ os_boolean osal_is_wifi_initialized(
 void osal_socket_shutdown(
     void)
 {
-    if (osal_sockets_initialized)
-    {
-        WiFi.disconnect();
-        osal_sockets_initialized = OS_FALSE;
-    }
 }
 
 
@@ -1176,8 +1504,8 @@ void osal_socket_shutdown(
   @brief Keep the sockets library alive.
   @anchor osal_socket_maintain
 
-  The osal_socket_maintain() function should be called periodically to maintain sockets
-  library.
+  The osal_socket_maintain() function is not needed for raw LWIP, empty function is here just
+  to allow build if OSAL_SOCKET_MAINTAIN_NEEDED is on.
 
   @return  None.
 
@@ -1186,6 +1514,7 @@ void osal_socket_shutdown(
 void osal_socket_maintain(
     void)
 {
+  #warning Unnecessary OSAL_SOCKET_MAINTAIN_NEEDED=1 define, remove to save a few bytes
 }
 #endif
 
@@ -1205,8 +1534,8 @@ const osalStreamInterface osal_socket_iface
     osal_socket_esp_read,
     osal_stream_default_write_value,
     osal_stream_default_read_value,
-    osal_socket_esp_get_parameter,
-    osal_socket_esp_set_parameter,
+    osal_stream_default_get_parameter,
+    osal_stream_default_set_parameter,
     OS_NULL};
 
 #endif

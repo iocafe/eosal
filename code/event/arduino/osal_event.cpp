@@ -86,7 +86,6 @@ void osal_event_delete(
         return;
     }
 
-
     vSemaphoreDelete((SemaphoreHandle_t)evnt);
 
     /* Inform resource monitor that the event has been deleted.
@@ -120,6 +119,7 @@ void osal_event_set(
         return;
     }
 
+    // xSemaphoreTake(evnt, 0);
     xSemaphoreGive(evnt);
 }
 
@@ -135,9 +135,6 @@ void osal_event_set(
   system and expected to consume very little processor time while waiting. If event state
   is signaled either before the function call or during wait interval function returns
   OSAL_SUCCESS. When the function returns the event is always cleared to non signaled state.
-
-  NOTE: Currently only timeout values 0 and OSAL_EVENT_INFINITE (-1) are supported.
-  I hope others would not be needed.
 
   @param   evnt Event pointer returned by osal_event_create() function.
   @param   timeout_ms Wait timeout. If event is not signaled within this time, then the
@@ -166,7 +163,7 @@ osalStatus osal_event_wait(
     }
 
 #if INCLUDE_vTaskSuspend != 1
-    #error BREAK COMPILE: We need INCLUDE_vTaskSuspend=1 configuration define for portMAX_DELAY
+    #error BREAK COMPILE: We need INCLUDE_vTaskSuspend=1 FreeRTOS configuration define for portMAX_DELAY
 #endif
 
     tout_ticks = (timeout_ms == OSAL_EVENT_INFINITE) ? portMAX_DELAY : timeout_ms/portTICK_PERIOD_MS;

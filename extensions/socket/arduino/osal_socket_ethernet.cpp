@@ -21,14 +21,14 @@
 #define OSAL_TRACE 1 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIZNET ||  OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_ETHERNET_WIZ ||  OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_ETHERNET_LWIP
 
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIZNET
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_ETHERNET_WIZ
   #include <SPI.h>
   #include <Ethernet.h>
 #endif
 
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_ETHERNET_LWIP
   #include <LwIP.h>
   #include <STM32Ethernet.h>
 #endif
@@ -989,11 +989,15 @@ void osal_socket_shutdown(
 
 ****************************************************************************************************
 */
+#if OSAL_SOCKET_MAINTAIN_NEEDED
 void osal_socket_maintain(
     void)
 {
     Ethernet.maintain();
 }
+#else
+  #warning OSAL_SOCKET_MAINTAIN_NEEDED is 0, is calling Ethernet.maintain() disabled on purpose?
+#endif
 
 
 #if OSAL_FUNCTION_POINTER_SUPPORT

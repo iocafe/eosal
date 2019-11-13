@@ -198,10 +198,11 @@
  */
 #define OSAL_SOCKET_NONE 0
 #define OSAL_SOCKET_AUTO_SELECT 1
-#define OSAL_SOCKET_WIZNET 2
-#define OSAL_SOCKET_LWIP 3
-#define OSAL_SOCKET_WIFI 4
+#define OSAL_SOCKET_ARDUINO_ETHERNET_WIZ 2
+#define OSAL_SOCKET_ARDUINO_ETHERNET_LWIP 3
+#define OSAL_SOCKET_ARDUINO_WIFI 4
 #define OSAL_SOCKET_ESP32 5
+#define OSAL_SOCKET_LWIP_RAW 6
 
 /* If socket support if not selected by compiler define, select now.
  * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
@@ -213,10 +214,10 @@
 #endif
 #ifndef OSAL_SOCKET_SUPPORT
   #ifdef STM32L4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ARDUINO_ETHERNET_WIZ
   #endif
   #ifdef STM32F4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP
+    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ARDUINO_ETHERNET_LWIP
   #endif
   #ifdef ESP_PLATFORM
     #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ESP32
@@ -226,18 +227,29 @@
 /* Unknown micro controller build, default to WizNET chip.
  */
 #ifndef OSAL_SOCKET_SUPPORT
-  #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
+  #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_ARDUINO_ETHERNET_WIZ
 #endif
 
 /** Socket options for the Arduino platform
  */
-#define OSAL_SOCKET_SELECT_SUPPORT 0
+#ifndef OSAL_SOCKET_SELECT_SUPPORT
+  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP_RAW
+    #define OSAL_SOCKET_SELECT_SUPPORT OSAL_MULTITHREAD_SUPPORT
+  #else
+    #define OSAL_SOCKET_SELECT_SUPPORT 0
+  #endif
+#endif
 
-/** Socket maintain support is something typical to single thread mode in
-    micro controllers. For those we may need to call a maintain function
-    periodically to keep up with DHCP leases, etc.
+/** Calling "maintain socket" is periodically necessary in some single thread mode
+    network implemntations. This may be necessary to keep up with DHCP leases, etc.
  */
-#define OSAL_SOCKET_MAINTAIN_NEEDED OSAL_SOCKET_SUPPORT
+#ifndef OSAL_SOCKET_MAINTAIN_NEEDED
+  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_ETHERNET_WIZ ||  OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_ETHERNET_LWIP
+    #define OSAL_SOCKET_MAINTAIN_NEEDED OSAL_SOCKET_SUPPORT
+  #else
+    #define OSAL_SOCKET_MAINTAIN_NEEDED 0
+  #endif
+#endif
 
 /** Generic TLS support on/off switch.
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.

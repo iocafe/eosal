@@ -21,7 +21,7 @@
 #define OSAL_TRACE 3 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_WIFI
+#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_WIFI
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -972,14 +972,15 @@ void osal_socket_shutdown(
 }
 
 
+#if OSAL_SOCKET_MAINTAIN_NEEDED
 /**
 ****************************************************************************************************
 
   @brief Keep the sockets library alive.
   @anchor osal_socket_maintain
 
-  The osal_socket_maintain() function should be called periodically to maintain sockets
-  library.
+  The osal_socket_maintain() function is not needed for Arduino WiFi, empty function is here
+  just to allow build if OSAL_SOCKET_MAINTAIN_NEEDED is on.
 
   @return  None.
 
@@ -988,7 +989,9 @@ void osal_socket_shutdown(
 void osal_socket_maintain(
     void)
 {
+  #warning Unnecessary OSAL_SOCKET_MAINTAIN_NEEDED=1 define, remove to save a few bytes
 }
+#endif
 
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
