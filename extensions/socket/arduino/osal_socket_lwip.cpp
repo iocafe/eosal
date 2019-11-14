@@ -1176,45 +1176,39 @@ static void osal_lwip_move_received_data_to_ring_buffer(
 
         pos = w->current_pos;
         pr = w->current_buf;
+        data_sz = pr->tot_len - pos;
 
-        do
+        if (head >= tail)
         {
-            data_sz = pr->tot_len - pos;
-            copynow = 0;
-
-            if (head >= tail)
+            copynow = data_sz;
+            space = buf_sz - head;
+            if (tail == 0) space--;
+            if (copynow > space) copynow = space;
+            if (copynow > 0)
             {
-                copynow = data_sz;
-                space = buf_sz - head;
-                if (tail == 0) space--;
-                if (copynow > space) copynow = space;
-                if (copynow > 0)
-                {
-                    pbuf_copy_partial(pr, buf + head, copynow, pos);
-                    head += copynow;
-                    if (head >= buf_sz) head = 0;
-                    pos += copynow;
-                    data_sz -= copynow;
-                    something_done += copynow;
-                }
-            }
-
-            if (head + 1 < tail)
-            {
-                copynow = data_sz;
-                space = tail - head - 1;
-                if (copynow > space) copynow = space;
-                if (copynow > 0)
-                {
-                    pbuf_copy_partial(pr, buf + head, copynow, pos);
-                    head += copynow;
-                    pos += copynow;
-                    data_sz -= copynow;
-                    something_done += copynow;
-                }
+                pbuf_copy_partial(pr, buf + head, copynow, pos);
+                head += copynow;
+                if (head >= buf_sz) head = 0;
+                pos += copynow;
+                data_sz -= copynow;
+                something_done += copynow;
             }
         }
-        while (copynow);
+
+        if (head + 1 < tail)
+        {
+            copynow = data_sz;
+            space = tail - head - 1;
+            if (copynow > space) copynow = space;
+            if (copynow > 0)
+            {
+                pbuf_copy_partial(pr, buf + head, copynow, pos);
+                head += copynow;
+                pos += copynow;
+                data_sz -= copynow;
+                something_done += copynow;
+            }
+        }
 
         w->current_pos = pos;
         w->rx_head = head;
