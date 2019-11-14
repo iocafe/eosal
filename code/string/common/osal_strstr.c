@@ -34,7 +34,7 @@
 		   Flag OSAL_STRING_SEARCH_LINE_ONLY causes search to stop on first new line
 		   character or semicolon.
 		   Flag OSAL_STRING_SEARCH_ITEM_NAME is used to find a named item from list
-		   string. See function osal_string_get_item_value() for more information.
+		   string. See function osal_str_get_item_value() for more information.
 
   @return  Pointer to the first occurrence of substring within the string, or OS_NULL if 
 		   substr is not found.

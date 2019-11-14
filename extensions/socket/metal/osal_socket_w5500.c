@@ -135,14 +135,6 @@ static os_short osal_get_unused_socket(
 static os_short osal_get_unused_w5500_port(
     void);
 
-static void osal_ip_from_str(
-    uint8_t *ip,
-    const os_char *str);
-
-static void osal_mac_from_str(
-    uint8_t mac[6],
-    const char* str);
-
 static void osal_initialize_wiz_chip(
     void);
 
@@ -255,7 +247,7 @@ osalStream osal_socket_open(
 
     /* Save IP address and TCP/UDP port number.
      */
-    osal_ip_from_str(mysocket->ip_address, host);
+    osal_ip_from_str(mysocket->ip_address, 4, host);
     mysocket->port_nr = (os_ushort)port_nr;
 
     /* Set socket use by flags
@@ -733,119 +725,6 @@ static os_short osal_get_unused_w5500_port(
 /**
 ****************************************************************************************************
 
-  @brief Convert string to binary MAC or IP address.
-  @anchor osal_str_to_bin
-
-  The osal_mac_from_str() converts string representation of MAC or IP address to binary.
-
-  @param   x Pointer to byte array into which to store the address.
-  @param   n Size of x in bytes. 4 or 6 bytes.
-  @param   str Input, MAC or IP address as string.
-  @param   c Separator character.
-  @param   b 10 for decimal numbers (IP address) or 16 for hexadecimal numbers (MAC).
-  @return  OS_TRUE if successfull.
-
-****************************************************************************************************
-*/
-static int osal_str_to_bin(
-    uint8_t *x,
-    os_short n,
-    const os_char* str,
-    os_char c,
-    os_short b)
-{
-    os_int i;
-
-    for (i = 0; i < n; i++)
-    {
-        if (b == 10)
-        {
-            x[i] = (uint8_t)osal_string_to_int(str, NULL);
-        }
-        else
-        {
-            x[i] = (uint8_t)osal_hex_string_to_int(str, NULL);
-        }
-        str = os_strchr((os_char*)str, c);
-        if (str == NULL) break;
-        ++str;
-    }
-    return i + 1 == n;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary IP address.
-  @anchor osal_ip_from_str
-
-  The osal_ip_from_str() converts string representation of IP address to binary.
-  If the function fails, binary IP address is left unchanged.
-
-  @param   ip Pointer where to store IP as binary.
-  @param   str Input, IP address as string.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_ip_from_str(
-    uint8_t *ip,
-    const os_char *str)
-{
-    uint8_t buf[4];
-    os_short i;
-
-    if (osal_str_to_bin(buf, sizeof(buf), str, '.', 10))
-    {
-        for (i = 0; i<(os_short)sizeof(buf); i++) ip[i] = buf[i];
-    }
-#if OSAL_DEBUG
-    else
-    {
-        osal_debug_error("IP string error");
-    }
-#endif
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary MAC address.
-  @anchor osal_mac_from_str
-
-  The osal_mac_from_str() converts string representation of MAC address to binary.
-  If the function fails, binary MAC is left unchanged.
-
-  @param   mac Pointer to byte array into which to store the MAC.
-  @param   str Input, MAC address as string.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_mac_from_str(
-    uint8_t mac[6],
-    const char* str)
-{
-    uint8_t buf[6];
-
-    if (osal_str_to_bin(buf, sizeof(buf), str, '-', 16))
-    {
-        os_memcpy(mac, buf, sizeof(buf));
-    }
-#if OSAL_DEBUG
-    else
-    {
-        osal_debug_error("MAC string error");
-    }
-#endif
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Initialize sockets.
   @anchor osal_socket_initialize
 
@@ -1035,14 +914,14 @@ static void osal_setup_network(
     static wiz_NetInfo ni;
 
     os_memclear(&ni, sizeof(ni));
-    osal_ip_from_str(ni.ip, OSAL_IP_ADDRESS_DEFAULT);
-    osal_ip_from_str(ni.ip, osal_net_iface.ip_address);
+    osal_ip_from_str(ni.ip, 4, OSAL_IP_ADDRESS_DEFAULT);
+    osal_ip_from_str(ni.ip, 4, osal_net_iface.ip_address);
 
-    osal_ip_from_str(ni.gw, OSAL_GATEWAY_ADDRESS_DEFAULT);
-    osal_ip_from_str(ni.gw, osal_net_iface.gateway_address);
+    osal_ip_from_str(ni.gw, 4, OSAL_GATEWAY_ADDRESS_DEFAULT);
+    osal_ip_from_str(ni.gw, 4, osal_net_iface.gateway_address);
 
-    osal_ip_from_str(ni.sn, OSAL_SUBNET_MASK_DEFAULT);
-    osal_ip_from_str(ni.sn, osal_net_iface.subnet_mask);
+    osal_ip_from_str(ni.sn, 4, OSAL_SUBNET_MASK_DEFAULT);
+    osal_ip_from_str(ni.sn, 4, osal_net_iface.subnet_mask);
     ni.dhcp = osal_net_iface.dhcp ? NETINFO_DHCP : NETINFO_STATIC;
 
     if (osal_net_iface.dhcp)

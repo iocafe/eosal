@@ -1,10 +1,10 @@
 /**
 
-  @file    stringx/common/osal_pattern.c
+  @file    stringx/common/osal_pattern_match.c
   @brief   Wild card pattern matching.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    9.11.2019
 
   Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

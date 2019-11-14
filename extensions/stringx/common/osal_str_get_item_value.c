@@ -1,6 +1,6 @@
 /**
 
-  @file    stringx/common/osal_string_get_item_value.c
+  @file    stringx/common/osal_str_get_item_value.c
   @brief   Find value of item in list string.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -21,9 +21,9 @@
 ****************************************************************************************************
 
   @brief Find a value of specified list item.
-  @anchor osal_string_get_item_value
+  @anchor osal_str_get_item_value
 
-  The osal_string_get_item_value() function finds the value of first of item with given
+  The osal_str_get_item_value() function finds the value of first of item with given
   item name within a list string. This function is related to processing of list strings,
   which are used to pass parameters, etc. List string consists of items, arranged as table
   with columns and rows columns. Each column is separated by comma or tabulator character
@@ -33,7 +33,7 @@
   any characters, including comma, semicolon, tabulator or new line. 
   
   For example list could be 'ip="192.168.1.232:22",timeout=2500'. Calling
-  osal_string_get_item_value() on this string with item name "ip" would return
+  osal_str_get_item_value() on this string with item name "ip" would return
   pointer to '192.168.1.232:22",timeout=2500' position within this string
   and set n_chars to 16.
 
@@ -53,7 +53,7 @@
 
 ****************************************************************************************************
 */
-const os_char *osal_string_get_item_value(
+const os_char *osal_str_get_item_value(
     const os_char *list_str,
 	const os_char *item_name,
 	os_memsz *n_chars,
@@ -125,9 +125,9 @@ getout:
 ****************************************************************************************************
 
   @brief Find beginning of next line in list string.
-  @anchor osal_string_get_next_line
+  @anchor osal_str_get_next_line
 
-  The osal_string_get_next_line() function returns pointer to beginning of next line 
+  The osal_str_get_next_line() function returns pointer to beginning of next line 
   in list string
   
 
@@ -138,7 +138,7 @@ getout:
 
 ****************************************************************************************************
 */
-const os_char *osal_string_get_next_line(
+const os_char *osal_str_get_next_line(
     const os_char *list_str)
 {
     const os_char *a, *b;

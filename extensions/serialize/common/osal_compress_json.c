@@ -451,7 +451,7 @@ static osalStatus parse_json_value(
         return s;
     }
 
-    ivalue = osal_string_to_int(data, &count);
+    ivalue = osal_str_to_int(data, &count);
     if (count == data_n)
     {
         if (ivalue == 0)
@@ -588,7 +588,7 @@ static osalStatus osal_parse_json_quoted_string(
                 case 'u':
                     os_memcpy(ubuf, state->pos, 4);
                     ubuf[4] = '\0';
-                    c32 = (os_uint)osal_hex_string_to_int(ubuf, &count);
+                    c32 = (os_uint)osal_hex_str_to_int(ubuf, &count);
                     if (count != 4) return OSAL_STATUS_FAILED;
                     n = osal_char_utf32_to_utf8(substr, sizeof(substr), c32);
                     s = osal_stream_buffer_write(state->str, substr, n, &n_written, 0);

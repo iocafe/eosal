@@ -761,47 +761,10 @@ static os_short osal_get_unused_server(void)
 /**
 ****************************************************************************************************
 
-  @brief Convert string to binary MAC or IP address.
-  @anchor osal_str_to_bin
-
-  The osal_mac_from_str() converts string representation of MAC or IP address to binary.
-
-  @param   x Pointer to byte array into which to store the address.
-  @param   n Size of x in bytes. 4 or 6 bytes.
-  @param   str Input, MAC or IP address as string.
-  @param   c Separator character.
-  @param   b 10 for decimal numbers (IP address) or 16 for hexadecimal numbers (MAC).
-  @return  OS_TRUE if successfull.
-
-****************************************************************************************************
-*/
-static int osal_str_to_bin(
-    byte *x,
-    os_short n,
-    const os_char* str,
-    os_char c,
-    os_short b)
-{
-    os_int i;
-
-    for (i = 0; i < n; i++)
-    {
-        x[i] = (byte)strtoul(str, NULL, b);
-        str = strchr(str, c);
-        if (str == NULL) break;
-        ++str;
-    }
-    return i + 1 == n;
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Convert string to binary IP address.
-  @anchor osal_ip_from_str
+  @anchor osal_arduino_ip_from_str
 
-  The osal_ip_from_str() converts string representation of IP address to binary.
+  The osal_arduino_ip_from_str() converts string representation of IP address to binary.
   If the function fails, binary IP address is left unchanged.
 
   @param   ip Pointer to Arduino IP address to set.
@@ -810,23 +773,17 @@ static int osal_str_to_bin(
 
 ****************************************************************************************************
 */
-static void osal_ip_from_str(
+static void osal_arduino_ip_from_str(
     IPAddress& ip,
     const os_char *str)
 {
-    byte buf[4];
+    os_uchar buf[4];
     os_short i;
 
-    if (osal_str_to_bin(buf, sizeof(buf), str, '.', 10))
+    if (osal_ip_from_str(buf, sizeof(buf), stz) == OSAL_SUCCESS)
     {
-        for (i = 0; i<(os_short)sizeof(buf); i++) ip[i] = buf[i];
+        for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
     }
-#if OSAL_DEBUG
-    else
-    {
-        osal_debug_error("IP string error");
-    }
-#endif
 }
 
 
@@ -834,9 +791,9 @@ static void osal_ip_from_str(
 ****************************************************************************************************
 
   @brief Convert string to binary MAC address.
-  @anchor osal_mac_from_str
+  @anchor osal_arduino_mac_from_str
 
-  The osal_mac_from_str() converts string representation of MAC address to binary.
+  The osal_arduino_mac_from_str() converts string representation of MAC address to binary.
   If the function fails, binary MAC is left unchanged.
 
   @param   mac Pointer to byte array into which to store the MAC.
@@ -845,23 +802,19 @@ static void osal_ip_from_str(
 
 ****************************************************************************************************
 */
-static void osal_mac_from_str(
+static void osal_arduino_mac_from_str(
     byte mac[6],
     const char* str)
 {
-    byte buf[6];
+    os_uchar buf[6];
+    os_short i;
 
-    if (osal_str_to_bin(buf, sizeof(buf), str, '-', 16))
+    if (osal_mac_from_str(buf, stz) == OSAL_SUCCESS)
     {
-        os_memcpy(mac, buf, sizeof(buf));
+        for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
     }
-#if OSAL_DEBUG
-    else
-    {
-        osal_debug_error("MAC string error");
-    }
-#endif
 }
+
 
 static String DisplayAddress(IPAddress address)
 {
@@ -910,14 +863,14 @@ void osal_socket_initialize(
     os_memclear(osal_client_used, sizeof(osal_client_used));
     os_memclear(osal_server_used, sizeof(osal_server_used));
 
-    osal_mac_from_str(mac, osal_net_iface.mac);
+    osal_arduino_mac_from_str(mac, osal_net_iface.mac);
 
     /* Initialize using static configuration.
      */
-    osal_ip_from_str(ip_address, osal_net_iface.ip_address);
-    osal_ip_from_str(dns_address, osal_net_iface.dns_address);
-    osal_ip_from_str(gateway_address, osal_net_iface.gateway_address);
-    osal_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
+    osal_arduino_ip_from_str(ip_address, osal_net_iface.ip_address);
+    osal_arduino_ip_from_str(dns_address, osal_net_iface.dns_address);
+    osal_arduino_ip_from_str(gateway_address, osal_net_iface.gateway_address);
+    osal_arduino_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
 
     /* Start the WiFi.
      */

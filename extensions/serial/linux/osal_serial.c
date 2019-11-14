@@ -181,7 +181,7 @@ osalStream osal_serial_open(
 
     /* Baud rate.
      */
-    baudrate = osal_string_get_item_int(parameters, "baud", 115200, OSAL_STRING_DEFAULT);
+    baudrate = osal_str_get_item_int(parameters, "baud", 115200, OSAL_STRING_DEFAULT);
     baud = B115200;
     for (i = 0; i < OSA_NRO_BAUD_CHOICES; i++)
     {
@@ -195,7 +195,7 @@ osalStream osal_serial_open(
 
     /* Parity.
      */
-    v = osal_string_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
+    v = osal_str_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
     parity = 0;
     if (!os_strnicmp(v, "even", 4))
     {
@@ -761,7 +761,7 @@ static void osal_get_linux_serial_port_name(
 
     if (!os_strnicmp(p, "COM", winport_n))
     {
-        com_nr = osal_string_to_int(p + winport_n, OS_NULL);
+        com_nr = osal_str_to_int(p + winport_n, OS_NULL);
         osal_int_to_string(nbuf, sizeof(nbuf),
             com_nr - (com_nr >= first_com_to_usb ? first_com_to_usb : 1));
         os_strncat(portname, com_nr >= first_com_to_usb ? "ttyUSB" : "tty", portname_sz);

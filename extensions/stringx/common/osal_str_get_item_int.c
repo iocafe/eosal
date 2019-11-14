@@ -1,6 +1,6 @@
 /**
 
-  @file    stringx/common/osal_string_get_item_int.c
+  @file    stringx/common/osal_str_get_item_int.c
   @brief   Get integer value of an item in list string.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -21,11 +21,11 @@
 ****************************************************************************************************
 
   @brief Get integer value of specified list item.
-  @anchor osal_string_get_item_int
+  @anchor osal_str_get_item_int
 
-  The osal_string_get_item_int() function finds the value of first of item with given
+  The osal_str_get_item_int() function finds the value of first of item with given
   item name within a list string, and returns item's value as integer. 
-  See function osal_string_get_item_value() for more information about list strings.
+  See function osal_str_get_item_value() for more information about list strings.
 
   @param   list_str Pointer to list string to search. If the str is OS_NULL the function
 		   will return the default value.
@@ -41,7 +41,7 @@
 
 ****************************************************************************************************
 */
-os_long osal_string_get_item_int(
+os_long osal_str_get_item_int(
     const os_char *list_str,
 	const os_char *item_name,
 	os_long default_value,
@@ -53,14 +53,14 @@ os_long osal_string_get_item_int(
 
 	/* Get pointer to value as string.
 	 */
-	str_value = osal_string_get_item_value(list_str, item_name, OS_NULL, flags);
+	str_value = osal_str_get_item_value(list_str, item_name, OS_NULL, flags);
 
 	/* If we got string value convert it to integer. Use value of conversion to
 	   integer succeeded.
 	 */
 	if (str_value) 
 	{
-		x = osal_string_to_int(str_value, &count);
+		x = osal_str_to_int(str_value, &count);
 		if (count) default_value = x;
 	}
 

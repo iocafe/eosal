@@ -49,7 +49,7 @@ os_double osal_string_to_double(
 
 /* Convert a string to 64 bit integer.
  */
-os_memsz osal_string_to_int64(
+os_memsz osal_str_to_int64(
     os_int64 *x, 
     os_char *str);
 

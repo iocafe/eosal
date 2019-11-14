@@ -48,6 +48,10 @@ typedef enum
      */
     OSAL_STATUS_PENDING,
 
+    /** Indicating that we are dealing with IP v6 address (not indicating an error).
+     */
+    OSAL_STATUS_IS_IPV6,
+
     /** General failed.
      */
     OSAL_STATUS_FAILED,

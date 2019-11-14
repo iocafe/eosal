@@ -71,7 +71,7 @@ void osal_socket_get_host_name_and_port(
 	/* Find newtwork address / port within parameter string. 
 	 */
     if (parameters == OS_NULL) parameters = "";
-	value_pos = osal_string_get_item_value(parameters, "addr", 
+	value_pos = osal_str_get_item_value(parameters, "addr", 
 		&n_chars, OSAL_STRING_SEARCH_LINE_ONLY);
 	if (value_pos == OS_NULL) 
     {
@@ -106,7 +106,7 @@ void osal_socket_get_host_name_and_port(
 	 */
 	if (port_pos)
 	{
-        *port_nr = (os_int)osal_string_to_int(port_pos, OS_NULL);
+        *port_nr = (os_int)osal_str_to_int(port_pos, OS_NULL);
 	}
     else
     {

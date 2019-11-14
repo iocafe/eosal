@@ -147,11 +147,11 @@ osalStream osal_serial_open(
 
     /* Baud rate.
      */
-    baudrate = (long)osal_string_get_item_int(parameters, "baud", 115200, OSAL_STRING_DEFAULT);
+    baudrate = (long)osal_str_get_item_int(parameters, "baud", 115200, OSAL_STRING_DEFAULT);
 
     /* Parity.
      */
-    v = osal_string_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
+    v = osal_str_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
     port_config = SERIAL_8N1;
     if (!os_strnicmp(v, "even", 4))
     {

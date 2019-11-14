@@ -40,7 +40,7 @@
 #define OSAL_STRING_SEARCH_ITEM_NAME 1 
 
 /** Search first line only. If specified the os_strchr(), 
-    osal_string_get_item_value(), osal_string_get_item_int()...  functions will search only
+    osal_str_get_item_value(), osal_str_get_item_int()...  functions will search only
 	first line of the sting.
  */
 #define OSAL_STRING_SEARCH_LINE_ONLY 2

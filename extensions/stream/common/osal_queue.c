@@ -72,7 +72,7 @@ osalStream osal_queue_open(
 	/* Parse queue buffer size from paramete string, for example "buf=1024". Default 
 	   queue size is 512 bytes.
 	 */
-	sz = (os_memsz)osal_string_get_item_int(parameters, "buf", 512, 
+	sz = (os_memsz)osal_str_get_item_int(parameters, "buf", 512, 
 		OSAL_STRING_SEARCH_LINE_ONLY);
 	 
 	/* Allocate queue structure.
@@ -83,7 +83,7 @@ osalStream osal_queue_open(
 	/* Get value of "ctrl" flag. This determines if the queue is to use control codes.
 	   If control codes are to be used, reserve extra space.
 	 */
-	queue->ctrl_support = (os_boolean)osal_string_get_item_int(parameters, "ctrl", 0, 
+	queue->ctrl_support = (os_boolean)osal_str_get_item_int(parameters, "ctrl", 0, 
 		OSAL_STRING_SEARCH_LINE_ONLY);
 	if (queue->ctrl_support) sz += OSAL_QUEUE_CTRL_RESERVE;
 

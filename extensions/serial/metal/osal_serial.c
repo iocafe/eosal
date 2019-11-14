@@ -294,7 +294,7 @@ osalStream osal_serial_open(
 
     /* Parse baud rate "bps". Default to 115200.
      */
-    initstruc.BaudRate = osal_string_get_item_int(parameters, "baud",
+    initstruc.BaudRate = osal_str_get_item_int(parameters, "baud",
         115200, OSAL_STRING_DEFAULT);
 
     /* Number of bits in byte is always 8.
@@ -303,7 +303,7 @@ osalStream osal_serial_open(
 
     /* Get parity check option: "none", "odd" or "even". Defaults to "none".
      */
-    v = osal_string_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
+    v = osal_str_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
     initstruc.Parity = LL_USART_PARITY_NONE;
     if (!os_strnicmp(v, "even", 4))
     {

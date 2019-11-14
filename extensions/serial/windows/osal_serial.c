@@ -186,12 +186,12 @@ osalStream osal_serial_open(
  
     /* Baud rate.
      */
-    dcb.BaudRate = (DWORD)osal_string_get_item_int(parameters,
+    dcb.BaudRate = (DWORD)osal_str_get_item_int(parameters,
         "baud", 115200, OSAL_STRING_DEFAULT);
 
     /* Parity.
      */
-    v = osal_string_get_item_value(parameters,
+    v = osal_str_get_item_value(parameters,
         "parity", OS_NULL, OSAL_STRING_DEFAULT);
     dcb.Parity = NOPARITY;
     if (!os_strnicmp(v, "even", 4))

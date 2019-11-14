@@ -1,6 +1,6 @@
 /**
 
-  @file    stringx/common/osal_hex_string_to_int.c
+  @file    stringx/common/osal_hex_str_to_int.c
   @brief   Convert hexadecimal string to integer.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -21,9 +21,9 @@
 ****************************************************************************************************
 
   @brief Convert hexadecimal string to integer.
-  @anchor osal_hex_string_to_int
+  @anchor osal_hex_str_to_int
 
-  The osal_hex_string_to_int() function converts a string to integer. If no integer is found, the
+  The osal_hex_str_to_int() function converts a string to integer. If no integer is found, the
   function sets count to zero and returns zero.
 
   @param   str Pointer to string to convert to integer. 
@@ -35,7 +35,7 @@
 
 ****************************************************************************************************
 */
-os_long osal_hex_string_to_int(
+os_long osal_hex_str_to_int(
     const os_char *str,
 	os_memsz *count)
 {

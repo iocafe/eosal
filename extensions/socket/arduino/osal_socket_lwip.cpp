@@ -744,114 +744,6 @@ static osalSocket *osal_reserve_socket_struct(void)
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary MAC or IP address.
-  @anchor osal_str_to_bin
-
-  The osal_mac_from_str() converts string representation of MAC or IP address to binary.
-
-  @param   x Pointer to byte array into which to store the address.
-  @param   n Size of x in bytes. 4 or 6 bytes.
-  @param   str Input, MAC or IP address as string.
-  @param   c Separator character.
-  @param   b 10 for decimal numbers (IP address) or 16 for hexadecimal numbers (MAC).
-  @return  OS_TRUE if successfull.
-
-****************************************************************************************************
-*/
-/* static int osal_str_to_bin(
-    byte *x,
-    os_short n,
-    const os_char* str,
-    os_char c,
-    os_short b)
-{
-    os_int i;
-
-    for (i = 0; i < n; i++)
-    {
-        x[i] = (byte)strtoul(str, NULL, b);
-        str = strchr(str, c);
-        if (str == NULL) break;
-        ++str;
-    }
-    return i + 1 == n;
-}
-*/
-
-
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary IP address.
-  @anchor osal_ip_from_str
-
-  The osal_ip_from_str() converts string representation of IP address to binary.
-  If the function fails, binary IP address is left unchanged.
-
-  @param   ip Pointer to Arduino IP address to set.
-  @param   str Input, IP address as string.
-  @return  None.
-
-****************************************************************************************************
-*/
-/* static void osal_ip_from_str(
-    IPAddress& ip,
-    const os_char *str)
-{
-    byte buf[4];
-    os_short i;
-
-    if (osal_str_to_bin(buf, sizeof(buf), str, '.', 10))
-    {
-        for (i = 0; i<(os_short)sizeof(buf); i++) ip[i] = buf[i];
-    }
-#if OSAL_DEBUG
-    else
-    {
-        osal_debug_error("IP string error");
-    }
-#endif
-}
-*/
-
-
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary MAC address.
-  @anchor osal_mac_from_str
-
-  The osal_mac_from_str() converts string representation of MAC address to binary.
-  If the function fails, binary MAC is left unchanged.
-
-  @param   mac Pointer to byte array into which to store the MAC.
-  @param   str Input, MAC address as string.
-  @return  None.
-
-****************************************************************************************************
-*/
-/* static void osal_mac_from_str(
-    byte mac[6],
-    const char* str)
-{
-    byte buf[6];
-
-    if (osal_str_to_bin(buf, sizeof(buf), str, '-', 16))
-    {
-        os_memcpy(mac, buf, sizeof(buf));
-    }
-#if OSAL_DEBUG
-    else
-    {
-        osal_debug_error("MAC string error");
-    }
-#endif
-}
-*/
-
 #if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
@@ -941,7 +833,8 @@ static void osal_lwip_serve_socket(
   for connect, osal_lwip_connect_callback is for that.
 
   @param   w Socket structure pointer.
-  @return  None.
+  @return  OSAL_SUCCESS if connecti was successfully initiated. OSAL_STATUS_PENDING indicates
+           that we are waiting for network initialization (wifi, etc.) to complete.
 
 ****************************************************************************************************
 */
@@ -949,7 +842,26 @@ static osalStatus osal_lwip_connect_socket(
     osalSocket *w)
 {
     struct tcp_pcb *pcb;
+    os_uchar ipbytes[16];
+    ip_addr_t ip4;
+
 //    err_t err;
+
+    if (!osal_wifi_initialized) return OSAL_STATUS_PENDING;
+
+
+    switch (osal_ip_from_str(ipbytes, sizeof(ipbytes), w->host)
+    {
+        case OSAL_SUCCESS:
+            IP_ADDR4(&ip4, ipbytes[0], ipbytes[1], ipbytes[2], ipbytes[3]);
+            break;
+
+        case OSAL_STATUS_IS_IPV6:
+            /* not implemented */
+
+        default:
+            return;
+    }
 
     pcb = tcp_new();
     if (pcb == 0)
@@ -957,13 +869,13 @@ static osalStatus osal_lwip_connect_socket(
         return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
     }
 
-/*    err = tcp_connect(pcb, struct ip_addr *ipaddr , u16_t port , osal_lwip_connect_callback);
+    err = tcp_connect(pcb, &ipaddr, (u16_t)w->port_nr, osal_lwip_connect_callback);
     if (err != ERR_OK)
     {
         memp_free(MEMP_TCP_PCB, pcb);
         return OSAL_STATUS_FAILED;
     }
-*/
+
     return OSAL_SUCCESS;
 }
 
