@@ -163,11 +163,12 @@ osalStream osal_socket_open(
     os_boolean is_ipv6;
     int af, udp, on = 1, s, sa_sz;
 
-    /* Initialize sockets library, if not already initialized. 
+    /* If not initialized.
      */
     if (!osal_sockets_initialized)
     {
-        osal_socket_initialize(OS_NULL, 0);
+        if (status) *status = OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
 	/* Get host name or numeric IP address and TCP port number from parameters.

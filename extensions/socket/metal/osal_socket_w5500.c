@@ -204,11 +204,12 @@ osalStream osal_socket_open(
     osalSocket *mysocket;
     osalStatus rval = OSAL_STATUS_FAILED;
 
-    /* Initialize sockets library, if not already initialized.
+    /* If not initialized.
      */
     if (!osal_sockets_initialized)
     {
-        osal_socket_initialize(OS_NULL, 0);
+        if (status) *status = OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
     /* Initialize Wiznet w5500 chip and set the MAC address.

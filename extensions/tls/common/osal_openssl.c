@@ -207,12 +207,12 @@ static osalStream osal_openssl_open(
     osalStatus s;
     os_char host[OSAL_HOST_BUF_SZ];
 
-    /* Initialize TLS sockets library, if not already initialized. Here we have no certificate
-       or key, so this may well not work (at least for a server).
+    /* If not initialized.
      */
     if (!osal_tls_initialized)
     {
-        osal_tls_initialize(OS_NULL, 0, OS_NULL);
+        if (status) *status = OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
     /* Connect or listen socket. Make sure to use TLS default port if unspecified.

@@ -61,7 +61,7 @@ osalStatus osal_thread_set_priority(
 {
     /* Get current thread handle and set thread priority.
      */
-    vTaskPrioritySet(xTaskGetCurrentTaskHandle(), osal_thread_priority_to_rt_priority(priority));
+    vTaskPrioritySet(NULL, osal_thread_priority_to_rt_priority(priority));
 
     /* Success.
      */

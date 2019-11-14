@@ -123,7 +123,7 @@ osalStatus osal_ip_from_str(
     }
 
     count = osal_str_to_list(buf, 4, str, '.', 10);
-    if (count == OSAL_SUCCESS)
+    if (count == 4)
     {
         for (i = 0; i < 4; i++)
         {

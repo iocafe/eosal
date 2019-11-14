@@ -306,11 +306,12 @@ osalStream osal_tls_open(
     osalSocket *w;
     osalStatus rval = OSAL_STATUS_FAILED;
 
-    /* Initialize sockets library, if not already initialized.
+    /* If not initialized.
      */
     if (!osal_tls_initialized)
     {
-        osal_tls_initialize(OS_NULL, 0, OS_NULL);
+        if (status) *status = OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
     /* If WiFi network is not connected, we can do nothing.

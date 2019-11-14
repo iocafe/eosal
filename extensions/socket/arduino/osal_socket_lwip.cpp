@@ -303,11 +303,12 @@ osalStream osal_socket_esp_open(
     osalStatus rval = OSAL_STATUS_FAILED;
     os_memsz sz;
 
-    /* Initialize sockets library, if not already initialized.
+    /* If not initialized.
      */
     if (!osal_sockets_initialized)
     {
-        osal_socket_initialize(OS_NULL, 0);
+        if (status) *status = OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
     /* Get first unused osal_sock structure.
@@ -767,12 +768,13 @@ static void osal_socket_lwip_thread(
     osalSocket *w;
     int i;
 
-    // osal_lwip_initialize();
+    osal_lwip_initialize();
     osal_event_set(done);
 
     while (OS_TRUE)
     {
         osal_event_wait(osal_lwip.trig_lwip_thread_event, OSAL_EVENT_INFINITE);
+        osal_is_wifi_initialized();
 
         for (i = 0; i < OSAL_MAX_SOCKETS; i++)
         {
@@ -841,7 +843,7 @@ static osalStatus osal_lwip_connect_socket(
     ip_addr_t ip4;
     err_t err;
 
-    if (!osal_is_wifi_initialized()) return OSAL_STATUS_PENDING;
+    if (!osal_wifi_initialized) return OSAL_STATUS_PENDING;
 
     switch (osal_ip_from_str(ipbytes, sizeof(ipbytes), w->host))
     {
@@ -1380,8 +1382,6 @@ void osal_socket_initialize(
     osal_debug_assert(osal_lwip.socket_struct_mutex);
     osal_lwip.trig_lwip_thread_event = osal_event_create();
     osal_debug_assert(osal_lwip.trig_lwip_thread_event);
-
-    osal_lwip_initialize();
 
     osal_thread_create(osal_socket_lwip_thread,
         OS_NULL, OSAL_THREAD_DETACHED, 8000, "lwip_thread");
