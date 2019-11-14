@@ -832,7 +832,7 @@ static void osal_lwip_serve_socket(
 
     if (w->close_socket_cmd)
     {
-        if (osal_lwip_close_socket(w) == OSAL_STATUS_SUCCESS)
+        if (osal_lwip_close_socket(w) == OSAL_SUCCESS)
         {
             w->used = OS_FALSE;
             w->close_socket_cmd = OS_FALSE;
@@ -911,7 +911,7 @@ static osalStatus osal_lwip_connect_socket(
 
     /* Set other callback functions.
      */
-    tcp_err(tpcb, osal_lwip_thread_error_callback);
+    tcp_err(tpcb, osal_lwip_error_callback);
     tcp_recv(tpcb, osal_lwip_data_received_callback);
     // tcp_poll(pcb, poll function,1);
     //tcp_poll(newpcb, osal_lwip_thread_poll_callback, 10);
@@ -981,10 +981,10 @@ static void osal_lwip_error_callback(
     osal_trace2("lwip_error_callback");
     osal_debug_assert(w);
 
-    tcp_err(tpcb, 0);
-    tcp_recv(newpcb, 0);
-    tcp_err(newpcb, 0);
-    tcp_sent(newpcb, 0);
+//    tcp_err(tpcb, 0);
+//    tcp_recv(tpcb, 0);
+//    tcp_err(tpcb, 0);
+//    tcp_sent(tpcb, 0);
 //    tcp_poll(tpcb, 0, 10);
 
     w->socket_status = OSAL_STATUS_FAILED;
@@ -1015,7 +1015,7 @@ static osalStatus osal_lwip_close_socket(
     struct tcp_pcb *tpcb;
     osal_trace2("lwip_close_socket");
 
-    tpcb = w->socket_pcb
+    tpcb = w->socket_pcb;
     osal_debug_assert(tpcb);
 
     tcp_err(tpcb, 0);
