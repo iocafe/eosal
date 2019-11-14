@@ -119,7 +119,7 @@ void osal_event_set(
         return;
     }
 
-    // xSemaphoreTake(evnt, 0);
+    xSemaphoreTake(evnt, 0);
     xSemaphoreGive(evnt);
 }
 

@@ -83,25 +83,25 @@ typedef struct osalSocket
 
     /** Nonzero if socket structure is reserved by a thread.
      */
-    os_boolean reserved;
+    volatile os_boolean reserved;
 
     /** Nonzero if socket structure is used.
      */
-    os_boolean used;
+    volatile os_boolean used;
 
     /** Commands to lwIP thread, set by application side, cleared by lwIP thread.
      */
-    os_boolean open_socket_cmd;
-    os_boolean close_socket_cmd;
+    volatile os_boolean open_socket_cmd;
+    volatile os_boolean close_socket_cmd;
 
     /** Status codes returned by lwIP thread for commands.
      */
-    osalStatus open_status;
+    volatile osalStatus open_status;
 
     /** Current socket status code, OSAL_SUCCESS = running fine, OSAL_STATUS_PENDING = waiting
         for something, other values are errors.
      */
-    osalStatus socket_status;
+    volatile osalStatus socket_status;
 
 #if OSAL_MULTITHREAD_SUPPORT
 
@@ -310,14 +310,6 @@ osalStream osal_socket_esp_open(
         osal_socket_initialize(OS_NULL, 0);
     }
 
-    /* If WiFi network is not connected, we can do nothing.
-     */
-    if (!osal_is_wifi_initialized())
-    {
-        rval = OSAL_STATUS_PENDING;
-        goto getout;
-    }
-
     /* Get first unused osal_sock structure.
      */
     w = osal_reserve_socket_struct();
@@ -368,10 +360,18 @@ osalStream osal_socket_esp_open(
         osal_event_wait(w->trig_app_socket, OSAL_EVENT_INFINITE);
     }
 
+    /* If open failed
+     */
+    if (w->open_status)
+    {
+        rval = w->open_status;
+        goto getout;
+    }
+
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
      */
-    if (status) *status = OSAL_SUCCESS;
+    if (status) *status = w->open_status;
     return (osalStream)w;
 
 getout:
@@ -767,16 +767,11 @@ static void osal_socket_lwip_thread(
     osalSocket *w;
     int i;
 
-    osal_lwip_initialize();
+    // osal_lwip_initialize();
     osal_event_set(done);
 
     while (OS_TRUE)
     {
-        /* If we have no wifi connection, wait for one.
-         */
-        // ?? os_boolean osal_is_wifi_initialized(
-//            void)
-
         osal_event_wait(osal_lwip.trig_lwip_thread_event, OSAL_EVENT_INFINITE);
 
         for (i = 0; i < OSAL_MAX_SOCKETS; i++)
@@ -844,23 +839,21 @@ static osalStatus osal_lwip_connect_socket(
     struct tcp_pcb *pcb;
     os_uchar ipbytes[16];
     ip_addr_t ip4;
+    err_t err;
 
-//    err_t err;
+    if (!osal_is_wifi_initialized()) return OSAL_STATUS_PENDING;
 
-    if (!osal_wifi_initialized) return OSAL_STATUS_PENDING;
-
-
-    switch (osal_ip_from_str(ipbytes, sizeof(ipbytes), w->host)
+    switch (osal_ip_from_str(ipbytes, sizeof(ipbytes), w->host))
     {
         case OSAL_SUCCESS:
             IP_ADDR4(&ip4, ipbytes[0], ipbytes[1], ipbytes[2], ipbytes[3]);
             break;
 
-        case OSAL_STATUS_IS_IPV6:
+        // case OSAL_STATUS_IS_IPV6:
             /* not implemented */
 
         default:
-            return;
+            return OSAL_STATUS_FAILED;
     }
 
     pcb = tcp_new();
@@ -869,7 +862,7 @@ static osalStatus osal_lwip_connect_socket(
         return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
     }
 
-    err = tcp_connect(pcb, &ipaddr, (u16_t)w->port_nr, osal_lwip_connect_callback);
+    err = tcp_connect(pcb, &ip4, (u16_t)w->port_nr, osal_lwip_connect_callback);
     if (err != ERR_OK)
     {
         memp_free(MEMP_TCP_PCB, pcb);
@@ -1387,6 +1380,8 @@ void osal_socket_initialize(
     osal_debug_assert(osal_lwip.socket_struct_mutex);
     osal_lwip.trig_lwip_thread_event = osal_event_create();
     osal_debug_assert(osal_lwip.trig_lwip_thread_event);
+
+    osal_lwip_initialize();
 
     osal_thread_create(osal_socket_lwip_thread,
         OS_NULL, OSAL_THREAD_DETACHED, 8000, "lwip_thread");

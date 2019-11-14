@@ -67,7 +67,7 @@ os_int osal_str_to_list(
         if (--n <= 0 || !bytes) break;
 
         str = os_strchr((os_char*)str, c);
-        if (str == NULL) break;
+        if (str == OS_NULL) break;
         ++str;
     }
 
