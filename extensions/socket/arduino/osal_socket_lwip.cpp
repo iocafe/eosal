@@ -502,15 +502,17 @@ osalStatus osal_socket_flush(
     os_int flags)
 {
     osalSocket *w;
+    osalStatus s;
 
     if (stream)
     {
         w = (osalSocket*)stream;
         if (!w->used) return OSAL_STATUS_FAILED;
 
-        if (w->socket_status)
+        s = w->socket_status;
+        if (s)
         {
-            return w->socket_status;
+            return (s == OSAL_STATUS_PENDING) ? OSAL_SUCCESS : s;
         }
 
         if (w->tx_head |= w->tx_tail)
@@ -537,7 +539,7 @@ osalStatus osal_socket_flush(
   @param   n_written Pointer to integer into which the function stores the number of bytes
            actually written to socket,  which may be less than n if there is not enough space
            left in the socket. If the function fails n_written is set to zero.
-  @param   flags Flags for the function.
+  @param   flags Flags for the function, ignored by this implementation.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
            indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
@@ -571,6 +573,8 @@ osalStatus osal_socket_write(
         if (w->socket_status)
         {
             status = w->socket_status;
+            if (status == OSAL_STATUS_PENDING)
+                status = OSAL_SUCCESS;
             goto getout;
         }
 
@@ -631,6 +635,10 @@ getout:
 
   The osal_socket_read() function reads up to n bytes of data from socket into buffer.
 
+  Internally this copies up to n bytes from ring buffer, which holds incoming data from lwip
+  thread. If some data is moved from ring buffer, the lwip thread event is triggered. This
+  allows it to move data from lwip buffers to ring buffer, if any.
+
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
@@ -639,6 +647,7 @@ getout:
            which may be less than n if there are fewer bytes available. If the function fails
            n_read is set to zero.
   @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
+           Ignored by this implementation.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
            indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
@@ -672,6 +681,8 @@ osalStatus osal_socket_read(
         if (w->socket_status)
         {
             status = w->socket_status;
+            if (status == OSAL_STATUS_PENDING)
+                status = OSAL_SUCCESS;
             goto getout;
         }
 
@@ -682,41 +693,39 @@ osalStatus osal_socket_read(
         }
 
         rbuf = w->rx_buf;
-        osal_debug_assert(rbuf);
         buf_sz = w->rx_buf_sz;
         head = w->rx_head;
         tail = w->rx_tail;
         count = 0;
 
-        while (n > 0 && tail != head)
+        if (tail > head)
         {
-            if (tail > head)
-            {
-                copynow = buf_sz - tail;
-                if (copynow > n) copynow = n;
+            copynow = buf_sz - tail;
+            if (copynow > n) copynow = n;
 
-                os_memcpy(buf, rbuf + tail, copynow);
-                tail += copynow;
-                if (tail >= buf_sz) tail = 0;
-                buf += copynow;
-                n -= copynow;
-                count += copynow;
-            }
+            os_memcpy(buf, rbuf + tail, copynow);
+            tail += copynow;
+            if (tail >= buf_sz) tail = 0;
+            buf += copynow;
+            n -= copynow;
+            count += copynow;
+        }
 
-            if (tail < head)
-            {
-                copynow = head - tail;
-                if (copynow > n) copynow = n;
+        if (tail < head && n)
+        {
+            copynow = head - tail;
+            if (copynow > n) copynow = n;
 
-                os_memcpy(buf, rbuf + tail, copynow);
-                tail += copynow;
-                buf += copynow;
-                n -= copynow;
-                count += copynow;
-            }
+            os_memcpy(buf, rbuf + tail, copynow);
+            tail += copynow;
+            count += copynow;
         }
 
         w->rx_tail = tail;
+        if (count)
+        {
+            osal_event_set(osal_lwip.trig_lwip_thread_event);
+        }
 
         *n_read = count;
         return OSAL_SUCCESS;
