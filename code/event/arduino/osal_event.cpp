@@ -119,8 +119,12 @@ void osal_event_set(
         return;
     }
 
-    xSemaphoreTake(evnt, 0);
-    xSemaphoreGive(evnt);
+    // xSemaphoreTake(evnt, 0);
+    // xSemaphoreGive(evnt); For unknown reason crash here at random.
+
+    BaseType_t xx;
+    xSemaphoreGiveFromISR(evnt, &xx);
+
 }
 
 
