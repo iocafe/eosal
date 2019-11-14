@@ -52,6 +52,7 @@ os_long osal_str_get_item_int(
 const os_char *osal_str_get_next_line(
     const os_char *list_str);
 
+
 /* Convert string to integer.
  */
 os_long osal_str_to_int(
