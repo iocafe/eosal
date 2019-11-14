@@ -242,7 +242,7 @@ static void osal_lwip_move_received_data_to_ring_buffer(
 static err_t osal_lwip_ready_to_send_callback(
     void *arg,
     struct tcp_pcb *tpcb,
-    u16_t len)
+    u16_t len);
 
 static void osal_lwip_send_data_from_buffer(
     osalSocket *w);
@@ -515,7 +515,7 @@ osalStatus osal_socket_flush(
 
         if (w->tx_head |= w->tx_tail)
         {
-            osal_lwip.flush_now = OS_TRUE;
+            w->flush_now = OS_TRUE;
             osal_event_set(osal_lwip.trig_lwip_thread_event);
         }
 
@@ -636,7 +636,7 @@ osalStatus osal_socket_write(
     if (nexthead >= buf_sz) nexthead = 0;
     if (nexthead == tail)
     {
-        osal_lwip.flush_now = OS_TRUE;
+        w->flush_now = OS_TRUE;
         osal_event_set(osal_lwip.trig_lwip_thread_event);
     }
 
@@ -964,7 +964,7 @@ static osalStatus osal_lwip_connect_socket(
      */
     tcp_err(tpcb, osal_lwip_error_callback);
     tcp_recv(tpcb, osal_lwip_data_received_callback);
-    tcp_sent(newpcb, osal_lwip_ready_to_send_callback);
+    tcp_sent(tpcb, osal_lwip_ready_to_send_callback);
 
     return OSAL_SUCCESS;
 }
@@ -1030,14 +1030,11 @@ static void osal_lwip_error_callback(
     osal_trace2("lwip_error_callback");
     osal_debug_assert(w);
 
-//    tcp_err(tpcb, 0);
-//    tcp_recv(tpcb, 0);
-//    tcp_err(tpcb, 0);
-//    tcp_sent(tpcb, 0);
-//    tcp_poll(tpcb, 0, 10);
 
     w->socket_status = OSAL_STATUS_FAILED;
     osal_event_set(w->trig_app_socket);
+
+    // if (select callback) trig
 }
 
 
@@ -1071,7 +1068,6 @@ static osalStatus osal_lwip_close_socket(
     tcp_recv(tpcb, 0);
     tcp_err(tpcb, 0);
     tcp_sent(tpcb, 0);
-//    tcp_poll(tpcb, 0, 10);
 
     if (w->incoming_buf)
     {
@@ -1292,13 +1288,14 @@ static void osal_lwip_send_data_from_buffer(
     os_char *buf;
     os_short head, tail, buf_sz, n;
     os_uint space;
+    err_t rval;
 
-    space = tcp_sndbuf(es->pcb);
-    if (w->tx_head == w->tx_tail || space <= 0 || !osal_lwip.flush_now)
+    space = tcp_sndbuf(w->socket_pcb);
+    if (w->tx_head == w->tx_tail || space <= 0 || !w->flush_now)
     {
         return;
     }
-    osal_lwip.flush_now = OS_FALSE;
+    w->flush_now = OS_FALSE;
 
     buf = w->tx_buf;
     buf_sz = w->tx_buf_sz;
@@ -1318,7 +1315,7 @@ static void osal_lwip_send_data_from_buffer(
         }
 
         space -= n;
-        tail += n
+        tail += n;
         if (tail >= buf_sz) tail = 0;
     }
 
@@ -1341,7 +1338,7 @@ static void osal_lwip_send_data_from_buffer(
 
     if (tail != w->tx_head)
     {
-        osal_lwip.flush_now = OS_TRUE;
+        w->flush_now = OS_TRUE;
     }
 
     // xxx if (select_event) trig it;
@@ -1372,6 +1369,7 @@ static err_t osal_lwip_ready_to_send_callback(
     u16_t len)
 {
     osal_lwip_send_data_from_buffer((osalSocket*)arg);
+    return ERR_OK;
 }
 
 
