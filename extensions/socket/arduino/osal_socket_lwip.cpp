@@ -1182,7 +1182,7 @@ static void osal_lwip_move_received_data_to_ring_buffer(
             data_sz = pr->tot_len - pos;
             copynow = 0;
 
-            if (head > tail)
+            if (head >= tail)
             {
                 copynow = data_sz;
                 space = buf_sz - head;
