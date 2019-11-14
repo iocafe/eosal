@@ -141,6 +141,11 @@ typedef struct osalSocket
      */
     volatile os_short tx_head, tx_tail;
 
+    /** Connection identifier (PCB), OS_NULL if none.
+     */
+    struct tcp_pcb *socket_pcb;
+
+
 #if 0
     /* Belongs to LWIP thread ??
      */
@@ -215,7 +220,7 @@ static osalLWIPThread osal_lwip;
  */
 static osalSocket *osal_reserve_socket_struct(void);
 
-void osal_socket_esp_close(
+void osal_socket_close(
     osalStream stream);
 
 static void osal_lwip_serve_socket(
@@ -229,18 +234,27 @@ static err_t osal_lwip_connect_callback(
     struct tcp_pcb *tpcb,
     err_t err);
 
-static err_t osal_lwip_thread_accept_callback(
-    void *arg,
-    struct tcp_pcb *newpcb,
-    err_t err);
+static osalStatus osal_lwip_close_socket(
+    osalSocket *w);
 
-static err_t osal_lwip_thread_recv_callback(
+static err_t osal_lwip_data_received_callback(
     void *arg,
     struct tcp_pcb *tpcb,
     struct pbuf *p,
     err_t err);
 
-static void osal_lwip_thread_error_callback(
+static err_t osal_lwip_thread_accept_callback(
+    void *arg,
+    struct tcp_pcb *newpcb,
+    err_t err);
+
+/* static err_t osal_lwip_thread_recv_callback(
+    void *arg,
+    struct tcp_pcb *tpcb,
+    struct pbuf *p,
+    err_t err); */
+
+static void osal_lwip_error_callback(
     void *arg,
     err_t err);
 
@@ -254,9 +268,9 @@ void osal_lwip_initialize(void);
 ****************************************************************************************************
 
   @brief Open a socket.
-  @anchor osal_socket_esp_open
+  @anchor osal_socket_open
 
-  The osal_socket_esp_open() function opens a socket. The socket can be either listening TCP
+  The osal_socket_open() function opens a socket. The socket can be either listening TCP
   socket, connecting TCP socket or UDP multicast socket.
 
   @param  parameters Socket parameters, a list string or direct value.
@@ -293,7 +307,7 @@ void osal_lwip_initialize(void);
 
 ****************************************************************************************************
 */
-osalStream osal_socket_esp_open(
+osalStream osal_socket_open(
     const os_char *parameters,
     void *option,
     osalStatus *status,
@@ -378,7 +392,7 @@ osalStream osal_socket_esp_open(
 getout:
     /* Clean up all resources.
      */
-    osal_socket_esp_close((osalStream)w);
+    osal_socket_close((osalStream)w);
 
     /* Set status code and return NULL pointer to indicate failure.
      */
@@ -391,9 +405,9 @@ getout:
 ****************************************************************************************************
 
   @brief Close socket.
-  @anchor osal_socket_esp_close
+  @anchor osal_socket_close
 
-  The osal_socket_esp_close() function closes a socket, which was creted by osal_socket_esp_open()
+  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
   function. All resource related to the socket are freed. Any attemp to use the socket after
   this call may result crash.
 
@@ -403,7 +417,7 @@ getout:
 
 ****************************************************************************************************
 */
-void osal_socket_esp_close(
+void osal_socket_close(
     osalStream stream)
 {
     osalSocket *w;
@@ -441,9 +455,9 @@ void osal_socket_esp_close(
 ****************************************************************************************************
 
   @brief Accept connection from listening socket.
-  @anchor osal_socket_esp_open
+  @anchor osal_socket_open
 
-  The osal_socket_esp_accept() function accepts an incoming connection from listening socket.
+  The osal_socket_accept() function accepts an incoming connection from listening socket.
 
   @param   stream Stream pointer representing the listening socket.
   @param   status Pointer to integer into which to store the function status code. Value
@@ -458,7 +472,7 @@ void osal_socket_esp_close(
 
 ****************************************************************************************************
 */
-osalStream osal_socket_esp_accept(
+osalStream osal_socket_accept(
     osalStream stream,
     os_char *remote_ip_addr,
     os_memsz remote_ip_addr_sz,
@@ -474,9 +488,9 @@ osalStream osal_socket_esp_accept(
 ****************************************************************************************************
 
   @brief Flush the socket.
-  @anchor osal_socket_esp_flush
+  @anchor osal_socket_flush
 
-  The osal_socket_esp_flush() function flushes data to be written to stream.
+  The osal_socket_flush() function flushes data to be written to stream.
 
 
   IMPORTANT, FLUSH MUST BE CALLED: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT) must
@@ -491,7 +505,7 @@ osalStream osal_socket_esp_accept(
 
 ****************************************************************************************************
 */
-osalStatus osal_socket_esp_flush(
+osalStatus osal_socket_flush(
     osalStream stream,
     os_int flags)
 {
@@ -521,9 +535,9 @@ osalStatus osal_socket_esp_flush(
 ****************************************************************************************************
 
   @brief Write data to socket.
-  @anchor osal_socket_esp_write
+  @anchor osal_socket_write
 
-  The osal_socket_esp_write() function writes up to n bytes of data from buffer to socket.
+  The osal_socket_write() function writes up to n bytes of data from buffer to socket.
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
@@ -538,7 +552,7 @@ osalStatus osal_socket_esp_flush(
 
 ****************************************************************************************************
 */
-osalStatus osal_socket_esp_write(
+osalStatus osal_socket_write(
     osalStream stream,
     const os_char *buf,
     os_memsz n,
@@ -621,9 +635,9 @@ getout:
 ****************************************************************************************************
 
   @brief Read data from socket.
-  @anchor osal_socket_esp_read
+  @anchor osal_socket_read
 
-  The osal_socket_esp_read() function reads up to n bytes of data from socket into buffer.
+  The osal_socket_read() function reads up to n bytes of data from socket into buffer.
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to buffer to read into.
@@ -639,7 +653,7 @@ getout:
 
 ****************************************************************************************************
 */
-osalStatus osal_socket_esp_read(
+osalStatus osal_socket_read(
     osalStream stream,
     os_char *buf,
     os_memsz n,
@@ -659,7 +673,6 @@ osalStatus osal_socket_esp_read(
 
         if (n < 0 || buf == OS_NULL || !w->used)
         {
-osal_trace("here");
             status = OSAL_STATUS_FAILED;
             goto getout;
         }
@@ -768,7 +781,7 @@ static void osal_socket_lwip_thread(
     osalSocket *w;
     int i;
 
-    osal_lwip_initialize();
+    // osal_lwip_initialize();
     osal_event_set(done);
 
     while (OS_TRUE)
@@ -792,9 +805,14 @@ static void osal_socket_lwip_thread(
 /**
 ****************************************************************************************************
 
-  @brief lwIP thread handling of one socket.
+  @brief lwIP thread handling of one socket (lwip thread).
 
   The osal_lwip_serve_socket function serves one socket.
+
+
+  Failed socket close: The osal_lwip_close_socket() function can fail if we are out of memory.
+  In this case we will try to close it repeatedly again until successfull. To do this we
+  leave close command active and retrigger the lwip thread event.
 
   @param   w Socket structure pointer.
   @return  None.
@@ -814,9 +832,16 @@ static void osal_lwip_serve_socket(
 
     if (w->close_socket_cmd)
     {
-        w->used = OS_FALSE;
-        w->close_socket_cmd = OS_FALSE;
-        osal_event_set(w->trig_app_socket);
+        if (osal_lwip_close_socket(w) == OSAL_STATUS_SUCCESS)
+        {
+            w->used = OS_FALSE;
+            w->close_socket_cmd = OS_FALSE;
+            osal_event_set(w->trig_app_socket);
+        }
+        else
+        {
+            osal_event_set(osal_lwip.trig_lwip_thread_event);
+        }
     }
 }
 
@@ -824,7 +849,7 @@ static void osal_lwip_serve_socket(
 /**
 ****************************************************************************************************
 
-  @brief Start connecting a socket.
+  @brief Start connecting a socket  (lwip thread).
 
   The osal_lwip_connect_socket function initiates socket connection. This function doesn't wait
   for connect, osal_lwip_connect_callback is for that.
@@ -838,13 +863,16 @@ static void osal_lwip_serve_socket(
 static osalStatus osal_lwip_connect_socket(
     osalSocket *w)
 {
-    struct tcp_pcb *pcb;
+    struct tcp_pcb *tpcb;
     os_uchar ipbytes[16];
     ip_addr_t ip4;
     err_t err;
 
     if (!osal_wifi_initialized) return OSAL_STATUS_PENDING;
+    osal_trace2("lwip_connect_socket");
 
+    /* Convert IP address from string to binary
+     */
     switch (osal_ip_from_str(ipbytes, sizeof(ipbytes), w->host))
     {
         case OSAL_SUCCESS:
@@ -858,18 +886,36 @@ static osalStatus osal_lwip_connect_socket(
             return OSAL_STATUS_FAILED;
     }
 
-    pcb = tcp_new();
-    if (pcb == 0)
+    /* Allocate connection identifier (PCB)
+     */
+    osal_debug_assert(w->socket_pcb == OS_NULL);
+    tpcb = tcp_new();
+    w->socket_pcb = tpcb;
+    if (tpcb == 0)
     {
         return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
     }
+    tcp_arg(tpcb, w);
 
-    err = tcp_connect(pcb, &ip4, (u16_t)w->port_nr, osal_lwip_connect_callback);
+    /* Initiate connecting socket, sets callback for successfull connect.
+     */
+    err = tcp_connect(tpcb, &ip4, (u16_t)w->port_nr, osal_lwip_connect_callback);
     if (err != ERR_OK)
     {
-        memp_free(MEMP_TCP_PCB, pcb);
+        memp_free(MEMP_TCP_PCB, tpcb);
+        w->socket_pcb = OS_NULL;
         return OSAL_STATUS_FAILED;
     }
+
+    tcp_nagle_disable(tpcb);
+
+    /* Set other callback functions.
+     */
+    tcp_err(tpcb, osal_lwip_thread_error_callback);
+    tcp_recv(tpcb, osal_lwip_data_received_callback);
+    // tcp_poll(pcb, poll function,1);
+    //tcp_poll(newpcb, osal_lwip_thread_poll_callback, 10);
+    //tcp_sent(newpcb, osal_lwip_thread_sent_callback);
 
     return OSAL_SUCCESS;
 }
@@ -878,10 +924,14 @@ static osalStatus osal_lwip_connect_socket(
 /**
 ****************************************************************************************************
 
-  @brief Callback when socket connection has been established or failed.
+  @brief Callback when socket connection has been established (lwip thread).
 
-  The osal_lwip_connect_callback function....
+  The osal_lwip_connect_callback function changes socket status from waiting for connection
+  (OSAL_PENDING) to connected (OSAL_SUCCESS) ....
 
+  @param   arg Pointer to socket structure, set by tcp_arg(w->socket_pcb, w) for the PCB.
+  @param   tpcb	The connection pcb which is connected.
+  @param   err	An unused error code, always ERR_OK currently
   @return  None.
 
 ****************************************************************************************************
@@ -893,19 +943,172 @@ static err_t osal_lwip_connect_callback(
 {
     osalSocket *w;
     w = (osalSocket*)arg;
+    osal_trace2("lwip_connect_callback");
+    osal_debug_assert(w);
 
-    // w->socket_status = connected or failed
+    w->socket_status = OSAL_SUCCESS;
+    /* osal_event_set(w->trig_app_socket); */
 
-    osal_event_set(w->trig_app_socket);
-
-return ERR_OK;
-
+    return ERR_OK;
 }
 
 
-static void osal_lwip_thread_read(
+/**
+****************************************************************************************************
+
+  @brief Callback when socket has failed somehow (lwip thread).
+
+  The osal_lwip_error_callback function is called when socket connection fails (is disconnected
+  for any reason). The function changes socket status to failed (OSAL_STATUS_FAILED) and
+  triggers application end.
+
+  Function also disables any future callbacks for the PCB.
+
+  @param   arg Pointer to socket structure, set by tcp_arg(w->socket_pcb, w) for the PCB.
+  @param   err Error code to indicate why the pcb has been closed ERR_ABRT: aborted through
+           tcp_abort or by a TCP timer ERR_RST: the connection was reset by the remote host
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_lwip_error_callback(
+    void *arg,
+    err_t err)
+{
+    osalSocket *w;
+    w = (osalSocket*)arg;
+    osal_trace2("lwip_error_callback");
+    osal_debug_assert(w);
+
+    tcp_err(tpcb, 0);
+    tcp_recv(newpcb, 0);
+    tcp_err(newpcb, 0);
+    tcp_sent(newpcb, 0);
+//    tcp_poll(tpcb, 0, 10);
+
+    w->socket_status = OSAL_STATUS_FAILED;
+    osal_event_set(w->trig_app_socket);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Close socket (lwip thread).
+
+  The osal_lwip_close_socket function closes socket connection and frees PCB. If closing socket
+  failes, the function leaves PCB allocated, and returns error code. Thus applications
+  close function will not return to try later on again. In this case of error lwip will trigger
+  it's own event to keep on retrying.
+
+  @param   w Socket structure pointer.
+  @return  OSAL_SUCCESS if connecti was successfully closed. Other return values indicate that
+           closing socket failed and needs to be retried until successfull.
+
+****************************************************************************************************
+*/
+static osalStatus osal_lwip_close_socket(
     osalSocket *w)
 {
+    err_t err;
+    struct tcp_pcb *tpcb;
+    osal_trace2("lwip_close_socket");
+
+    tpcb = w->socket_pcb
+    osal_debug_assert(tpcb);
+
+    tcp_err(tpcb, 0);
+    tcp_recv(tpcb, 0);
+    tcp_err(tpcb, 0);
+    tcp_sent(tpcb, 0);
+//    tcp_poll(tpcb, 0, 10);
+
+    err = tcp_close(w->socket_pcb);
+    if (err != ERR_OK)
+    {
+        osal_debug_error("Closing lwip socket failed, no memory available");
+        os_timeslice();
+        return OSAL_STATUS_FAILED;
+    }
+
+    w->socket_pcb = OS_NULL;
+    return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Called when data has been received (lwip thread).
+
+  The osal_osal_lwip_data_received_callback function...
+
+  @param   arg Pointer to socket structure, set by tcp_arg(w->socket_pcb, w) for the PCB.
+  @param   tpcb	The connection pcb which received data
+  @param   p	The received data (or NULL when the connection has been closed!)
+  @param   err	An error code if there has been an error receiving Only return ERR_ABRT
+           if you have called tcp_abort from within the callback function!
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static err_t osal_lwip_data_received_callback(
+    void *arg,
+    struct tcp_pcb *tpcb,
+    struct pbuf *p,
+    err_t err)
+{
+    osalSocket *w;
+    w = (osalSocket*)arg;
+    err_t rerr;
+
+    osal_trace2("lwip_data_received_callback");
+    osal_debug_assert(w);
+
+    /* An empty frame, close connection.
+     */
+    if (p == NULL)
+    {
+        // close socket ?
+        w->socket_status = OSAL_STATUS_HANDLE_CLOSED;
+        osal_event_set(w->trig_app_socket);
+        return ERR_OK;
+    }
+
+    /* A non empty frame was received from client, but err is set? Should not happen.
+     */
+    else if (err != ERR_OK)
+    {
+        w->socket_status = OSAL_STATUS_FAILED;
+        pbuf_free(p);
+        osal_event_set(w->trig_app_socket);
+        return err;
+    }
+
+    /* Save into ring buffer
+     */
+
+    /* Inform client that we have received this. CHANGE TOT_LEN TO MATCH WHAT FIT INTO RING BUFFER
+     */
+    tcp_recved(tpcb, p->tot_len);
+    pbuf_free(p);
+
+        /* Rore data received from client and previous data has been already sent*/
+        /* if(w->in == OS_NULL)
+        {
+            w->in = p;
+        }
+        else
+        {
+            pbuf_cat(w->in, p);
+        }
+        rerr = ERR_OK; */
+
+    return ERR_OK;
+}
+
 #if 0
     //client.onData([](void* arg, AsyncClient * c, void* data, size_t len)
     os_char *buf, *p;
@@ -946,8 +1149,10 @@ static void osal_lwip_thread_read(
     w->rx_head = head;
 
     // if (w->select_event) osal_event_set(w->select_event);
-#endif
+    return ERR_OK;
 }
+#endif
+
 
 static void osal_lwip_thread_write(
     osalSocket *w)
@@ -1116,8 +1321,10 @@ getout:
 }
 
 
+#if 0
 /**
-****************************************************************************************************
+***************************************************
+*************************************************
 
   @brief tcp_recv callback
   @anchor osal_lwip_thread_error_callback
@@ -1143,7 +1350,6 @@ static err_t osal_lwip_thread_recv_callback(
     struct pbuf *p,
     err_t err)
 {
-#if 0
     osalSocket *w;
     err_t ret_err;
 
@@ -1185,31 +1391,10 @@ static err_t osal_lwip_thread_recv_callback(
     }
 
     return ret_err;
+}
 #endif
-    return ERR_OK;
-}
 
 
-/**
-****************************************************************************************************
-
-  @brief tcp_err lwIP callback function
-  @anchor osal_lwip_thread_error_callback
-
-  The osal_lwip_thread_error_callback() function...
-
-  @param   arg
-  @param   err Not used.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_lwip_thread_error_callback(
-    void *arg,
-    err_t err)
-{
-    osal_debug_error("lwip error callback");
-}
 
 
 /**
@@ -1383,6 +1568,8 @@ void osal_socket_initialize(
     osal_lwip.trig_lwip_thread_event = osal_event_create();
     osal_debug_assert(osal_lwip.trig_lwip_thread_event);
 
+    osal_lwip_initialize();
+
     osal_thread_create(osal_socket_lwip_thread,
         OS_NULL, OSAL_THREAD_DETACHED, 8000, "lwip_thread");
 #else
@@ -1437,13 +1624,13 @@ void osal_socket_maintain(
     function pointers to OSAL sockets implementation.
  */
 const osalStreamInterface osal_socket_iface
- = {osal_socket_esp_open,
-    osal_socket_esp_close,
-    osal_socket_esp_accept,
-    osal_socket_esp_flush,
+ = {osal_socket_open,
+    osal_socket_close,
+    osal_socket_accept,
+    osal_socket_flush,
     osal_stream_default_seek,
-    osal_socket_esp_write,
-    osal_socket_esp_read,
+    osal_socket_write,
+    osal_socket_read,
     osal_stream_default_write_value,
     osal_stream_default_read_value,
     osal_stream_default_get_parameter,
