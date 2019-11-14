@@ -243,6 +243,9 @@ static err_t osal_lwip_data_received_callback(
     struct pbuf *p,
     err_t err);
 
+static void osal_lwip_move_received_data_to_ring_buffer(
+    osalSocket *w);
+
 static err_t osal_lwip_thread_accept_callback(
     void *arg,
     struct tcp_pcb *newpcb,
@@ -664,7 +667,7 @@ osalStatus osal_socket_read(
     os_int count;
     osalStatus status;
     os_char *rbuf;
-    os_short head, tail, buf_sz;
+    os_short head, tail, buf_sz, copynow;
 
     if (stream)
     {
@@ -698,11 +701,30 @@ osalStatus osal_socket_read(
 
         while (n > 0 && tail != head)
         {
-            *(buf++) = rbuf[tail];
-            n--;
-            count++;
+            if (tail > head)
+            {
+                copynow = buf_sz - tail;
+                if (copynow > n) copynow = n;
 
-            if (++tail >= buf_sz) tail = 0;
+                os_memcpy(buf, rbuf + tail, copynow);
+                tail += copynow;
+                if (tail >= buf_sz) tail = 0;
+                buf += copynow;
+                n -= copynow;
+                count += copynow;
+            }
+
+            if (tail < head)
+            {
+                copynow = head - tail;
+                if (copynow > n) copynow = n;
+
+                os_memcpy(buf, rbuf + tail, copynow);
+                tail += copynow;
+                buf += copynow;
+                n -= copynow;
+                count += copynow;
+            }
         }
 
         w->rx_tail = tail;
@@ -830,7 +852,7 @@ static void osal_lwip_serve_socket(
         osal_event_set(w->trig_app_socket);
     }
 
-    if (w->close_socket_cmd)
+    else if (w->close_socket_cmd)
     {
         if (osal_lwip_close_socket(w) == OSAL_SUCCESS)
         {
@@ -842,6 +864,11 @@ static void osal_lwip_serve_socket(
         {
             osal_event_set(osal_lwip.trig_lwip_thread_event);
         }
+    }
+
+    else
+    {
+        osal_lwip_move_received_data_to_ring_buffer(w);
     }
 }
 
@@ -1024,6 +1051,24 @@ static osalStatus osal_lwip_close_socket(
     tcp_sent(tpcb, 0);
 //    tcp_poll(tpcb, 0, 10);
 
+    if (w->in)
+    {
+        if (!pbuf_free(w->in))
+        {
+            os_debug_error("?");
+        }
+        w->in = OS_NULL;
+    }
+
+    if (es->processing)
+    {
+        if (!pbuf_free(w->processing))
+        {
+            os_debug_error("?");
+        }
+        w->processing = OS_NULL;
+    }
+
     err = tcp_close(w->socket_pcb);
     if (err != ERR_OK)
     {
@@ -1087,33 +1132,45 @@ static err_t osal_lwip_data_received_callback(
         return err;
     }
 
-    /* Save into ring buffer
+    /* Store received data.
      */
+    if(w->in == OS_NULL)
+    {
+        w->in = p;
+    }
+    else
+    {
+        pbuf_cat(w->in, p);
+    }
 
-    /* Inform client that we have received this. CHANGE TOT_LEN TO MATCH WHAT FIT INTO RING BUFFER
+    /* Move from lwip memory format into ring buffer.
      */
-    tcp_recved(tpcb, p->tot_len);
-    pbuf_free(p);
-
-        /* Rore data received from client and previous data has been already sent*/
-        /* if(w->in == OS_NULL)
-        {
-            w->in = p;
-        }
-        else
-        {
-            pbuf_cat(w->in, p);
-        }
-        rerr = ERR_OK; */
+    osal_lwip_move_received_data_to_ring_buffer(w);
 
     return ERR_OK;
 }
 
-#if 0
-    //client.onData([](void* arg, AsyncClient * c, void* data, size_t len)
+
+/**
+****************************************************************************************************
+
+  @brief Called to move incoming data to ring buffer (lwip thread).
+
+  The osal_lwip_move_received_data_to_ring_buffer function...
+
+
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_lwip_move_received_data_to_ring_buffer(
+    osalSocket *w)
+{
+    struct pbuf *pr,
     os_char *buf, *p;
     os_timer start_t;
-    os_short head, tail, buf_sz, n, nexthead;
+    os_short head, tail, buf_sz, n, space;
+    os_int data_sz, copynow, pos, something_done;
 
     // osal_trace_int("Data received, length =", len);
 
@@ -1124,34 +1181,88 @@ static err_t osal_lwip_data_received_callback(
     buf_sz = w->rx_buf_sz;
     head = w->rx_head;
     tail = w->rx_tail;
-    os_get_timer(&start_t);
+    something_done = 0;
 
-    while (n > 0)
+    while (OS_TRUE)
     {
-        nexthead = head + 1;
-        if (nexthead >= buf_sz) nexthead = 0;
-        if (nexthead == tail)
+        if (w->processing == NULL)
         {
-            w->rx_head = head;
-            if (os_elapsed(&start_t, 10000))
-            {
-                //osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
-                return;
-            }
-            os_timeslice();
-            tail = w->rx_tail;
-            continue;
+            w->processing = w->in;
+            w->procpos = 0;
+            w->in = NULL;
+            if (w->processing == OS_NULL) return;
         }
-        buf[head] = *(p++);
-        head = nexthead;
-        n--;
-    }
-    w->rx_head = head;
 
-    // if (w->select_event) osal_event_set(w->select_event);
+        pos = es->procpos;
+        pr = w->processing;
+
+        do
+        {
+            data_sz = pr->tot_len - pos;
+            copynow = 0;
+
+            if (head > tail)
+            {
+                copynow = data_sz;
+                space = buf_sz - head;
+                if (tail == 0) space--;
+                if (copynow > space) copynow = space;
+                if (copynow > 0)
+                {
+                    pbuf_copy_partial(pr, buf + head, copynow, pos);
+                    head += copynow;
+                    if (head >= buf_sz) head = 0;
+                    pos += copynow;
+                    data_sz -= copynow;
+                    something_done += copynow;
+                }
+            }
+
+            if (head + 1 < tail)
+            {
+                copynow = data_sz;
+                space = tail - head - 1;
+                if (copynow > space) copynow = space;
+                if (copynow > 0)
+                {
+                    pbuf_copy_partial(pr, buf + head, copynow, pos);
+                    head += copynow;
+                    pos += copynow;
+                    data_sz -= copynow;
+                    something_done += copynow;
+                }
+            }
+        }
+        while (copynow);
+
+        es->procpos = pos;
+        w->rx_head = head;
+
+        if (data_sz <= 0)
+        {
+            if (!pbuf_free(pr))
+            {
+                os_debug_error("CS_LWIP ERR 1");
+            }
+            w->processing = OS_NULL;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (something_done)
+    {
+        /* Inform client that we have received this. CHANGE TOT_LEN TO MATCH WHAT FIT INTO RING BUFFER
+         */
+        tcp_recved(tpcb, something_done);
+
+        // if (w->select_event) osal_event_set(w->select_event);
+    }
+
     return ERR_OK;
 }
-#endif
 
 
 static void osal_lwip_thread_write(
