@@ -513,7 +513,7 @@ osalStatus osal_socket_flush(
         w = (osalSocket*)stream;
         if (!w->used) return OSAL_STATUS_FAILED;
 
-        if (w->tx_head |= w->tx_tail)
+        if (w->tx_head != w->tx_tail)
         {
             w->flush_now = OS_TRUE;
             osal_event_set(osal_lwip.trig_lwip_thread_event);
