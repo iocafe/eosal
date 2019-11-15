@@ -525,7 +525,11 @@ osalStatus osal_socket_write(
     if (n == 0) return OSAL_SUCCESS;
 
     bytes = osal_client[ix].write(buf, n);
-    if (bytes < 0) bytes = 0;
+    if (bytes < 0)
+    {
+        osal_debug_error_int("osal_socket: write problem, bytes = ", bytes);
+        bytes = 0;
+    }
     *n_written = bytes;
 
 #if OSAL_TRACE >= 3
@@ -596,6 +600,10 @@ osalStatus osal_socket_read(
         }
 
         bytes = osal_client[ix].read((uint8_t*)buf, bytes);
+        if (bytes < 0)
+        {
+            osal_debug_error_int("osal_socket: read problem, bytes = ", bytes);
+        }
     }
 
 #if OSAL_TRACE >= 3
