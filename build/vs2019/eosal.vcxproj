@@ -128,11 +128,12 @@
     <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_string_to_float.c" />
     <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_string_to_int64.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
-    <ClCompile Include="..\..\extensions\stringx\common\osal_hex_string_to_int.c" />
-    <ClCompile Include="..\..\extensions\stringx\common\osal_pattern.c" />
-    <ClCompile Include="..\..\extensions\stringx\common\osal_string_get_item_int.c" />
-    <ClCompile Include="..\..\extensions\stringx\common\osal_string_get_item_value.c" />
-    <ClCompile Include="..\..\extensions\stringx\common\osal_string_to_int.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_hex_str_to_int.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_pattern_match.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_int.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_value.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_bin.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_int.c" />
     <ClCompile Include="..\..\extensions\time\windows\osal_time.c" />
     <ClCompile Include="..\..\extensions\tls\common\osal_openssl.c" />
     <ClCompile Include="..\..\extensions\typeid\common\osal_typeid.c" />
