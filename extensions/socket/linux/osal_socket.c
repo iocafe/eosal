@@ -323,7 +323,8 @@ osalStream osal_socket_open(
 
 	/* Success set status code and cast socket structure pointer to stream pointer and return it.
 	 */
-	if (status) *status = OSAL_SUCCESS;
+    osal_trace2("socket opened");
+    if (status) *status = OSAL_SUCCESS;
 	return (osalStream)mysocket;
 
 getout:
@@ -345,7 +346,8 @@ getout:
 
 	/* Set status code and return NULL pointer.
 	 */
-	if (status) *status = rval;
+    osal_trace2("socket open failed");
+    if (status) *status = rval;
 	return OS_NULL;
 }
 
@@ -551,10 +553,12 @@ osalStream osal_socket_accept(
 		newsocket->hdr.iface = &osal_socket_iface;
 	#endif
 
+
 		/* Success set status code and cast socket structure pointer to stream pointer 
 		   and return it.
 		 */
-		if (status) *status = OSAL_SUCCESS;
+        osal_trace2("socket accepted");
+        if (status) *status = OSAL_SUCCESS;
 		return (osalStream)newsocket;
 	}
 
@@ -691,6 +695,7 @@ osalStatus osal_socket_write(
 		{
             if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 			{
+                osal_trace2("socket write failed");
                 mysocket->write_blocked = OS_TRUE;
                 status = errno == ECONNREFUSED
                     ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
@@ -770,6 +775,7 @@ osalStatus osal_socket_read(
          */
         if (rval == 0)
         {
+            osal_trace2("socket gracefully closed");
             *n_read = 0;
             return OSAL_STATUS_STREAM_CLOSED;
         }
@@ -778,6 +784,7 @@ osalStatus osal_socket_read(
 		{
             if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 			{
+                osal_trace2("socket read failed");
                 status = errno == ECONNREFUSED
                     ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
 				goto getout;
@@ -793,58 +800,6 @@ osalStatus osal_socket_read(
 getout:
 	*n_read = 0;
     return status;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get socket parameter.
-  @anchor osal_socket_get_parameter
-
-  The osal_socket_get_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @return  Parameter value.
-
-****************************************************************************************************
-*/
-os_long osal_socket_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
-{
-	/* Call the default implementation
-	 */
-	return osal_stream_default_get_parameter(stream, parameter_ix);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set socket parameter.
-  @anchor osal_socket_set_parameter
-
-  The osal_socket_set_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @param   value Parameter value to set.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
-{
-	/* Call the default implementation
-	 */
-	osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -1191,8 +1146,8 @@ const osalStreamInterface osal_socket_iface
 	osal_socket_read,
 	osal_stream_default_write_value,
 	osal_stream_default_read_value,
-	osal_socket_get_parameter,
-	osal_socket_set_parameter,
+    osal_stream_default_get_parameter,
+    osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
     osal_socket_select};
 #else
