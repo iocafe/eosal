@@ -818,7 +818,7 @@ static void osal_arduino_mac_from_str(
 
     if (osal_mac_from_str(buf, str) == OSAL_SUCCESS)
     {
-        for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
+        for (i = 0; i < sizeof(buf); i++) mac[i] = buf[i];
     }
 }
 

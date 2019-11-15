@@ -781,7 +781,7 @@ static void osal_arduino_ip_from_str(
     os_uchar buf[4];
     os_short i;
 
-    if (osal_ip_from_str(buf, sizeof(buf), stz) == OSAL_SUCCESS)
+    if (osal_ip_from_str(buf, sizeof(buf), str) == OSAL_SUCCESS)
     {
         for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
     }
@@ -810,9 +810,9 @@ static void osal_arduino_mac_from_str(
     os_uchar buf[6];
     os_short i;
 
-    if (osal_mac_from_str(buf, stz) == OSAL_SUCCESS)
+    if (osal_mac_from_str(buf, str) == OSAL_SUCCESS)
     {
-        for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
+        for (i = 0; i < sizeof(buf); i++) mac[i] = buf[i];
     }
 }
 
