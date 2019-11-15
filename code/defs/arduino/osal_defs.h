@@ -29,7 +29,7 @@
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 3
+#define OSAL_TRACE 2
 #endif
 
 /** C compiler's debug build flag.

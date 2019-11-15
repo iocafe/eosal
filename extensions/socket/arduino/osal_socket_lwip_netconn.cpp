@@ -1478,13 +1478,30 @@ void osal_socket_initialize_2(void)
     osal_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
      */
 
+    //DO NOT TOUCH
+     //  This is here to force the ESP32 to reset the WiFi and initialise correctly.
+     Serial.print("WIFI status = ");
+     Serial.println(WiFi.getMode());
+     WiFi.disconnect(true);
+     delay(1000);
+     WiFi.mode(WIFI_STA);
+     delay(1000);
+     Serial.print("WIFI status = ");
+     Serial.println(WiFi.getMode());
+     // End silly stuff !!!
+
+     WiFi.mode(WIFI_STA);
+     WiFi.disconnect();
+     WiFi.status() == WL_CONNECTED;
+     delay(100);
+
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
     osal_trace("Commecting to Wifi network");
     osal_trace(wifi_net_name);
-    WiFi.mode(WIFI_STA);
-    WiFi.disconnect();
+    //WiFi.mode(WIFI_STA);
+    //WiFi.disconnect();
     WiFi.begin(wifi_net_name, wifi_net_password);
 
     /* Set socket library initialized flag, now waiting for wifi initialization. We do not lock

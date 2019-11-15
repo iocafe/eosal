@@ -169,9 +169,14 @@ osalThreadHandle *osal_thread_create(
     /* Call FreeRTOS to create and start the new thread.
      * FreeRTOS takes stack size as words, so divide by 2
      */
-    s = xTaskCreate(osal_thread_intermediate_func, name,
+    /* s = xTaskCreate(osal_thread_intermediate_func, name,
         stack_size/2, &thrprm,
-        3 /* uxPriority */, &th);
+        3 , &th);
+    */  /* 3 = uxPriority */
+
+    s = xTaskCreatePinnedToCore(osal_thread_intermediate_func, name,
+        stack_size/2, &thrprm, 5 /* uxPriority */, &th,
+        0 /* Core where the task should run */);
 
     /* If thread creation fails, then return error code.
      */

@@ -279,7 +279,7 @@ osalStream osal_socket_open(
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
 	 */
-	if (status) *status = OSAL_SUCCESS;
+    if (status) *status = OSAL_SUCCESS;
     return (osalStream)mysocket;
 
 getout:
@@ -320,6 +320,7 @@ void osal_socket_close(
         return;
     }
 
+    osal_trace2("closing socket");
     ix = mysocket->index;
     switch (mysocket->use)
     {
@@ -880,6 +881,23 @@ void osal_socket_initialize(
     osal_arduino_ip_from_str(dns_address, osal_net_iface.dns_address);
     osal_arduino_ip_from_str(gateway_address, osal_net_iface.gateway_address);
     osal_arduino_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
+
+    //DO NOT TOUCH
+     //  This is here to force the ESP32 to reset the WiFi and initialise correctly.
+     Serial.print("WIFI status = ");
+     Serial.println(WiFi.getMode());
+     WiFi.disconnect(true);
+     delay(1000);
+     WiFi.mode(WIFI_STA);
+     delay(1000);
+     Serial.print("WIFI status = ");
+     Serial.println(WiFi.getMode());
+     // End silly stuff !!!
+
+     WiFi.mode(WIFI_STA);
+     WiFi.disconnect();
+     WiFi.status() == WL_CONNECTED;
+     delay(100);
 
     /* Start the WiFi.
      */
