@@ -513,14 +513,13 @@ osalStatus osal_socket_write(
     mysocket = (osalSocket*)stream;
     if (mysocket->use != OSAL_SOCKET_CLIENT)
     {
-        osal_debug_error("osal_socket: Socket can not be read");
         return OSAL_STATUS_FAILED;
     }
     ix = mysocket->index;
 
     if (!osal_client[ix].connected())
     {
-        osal_debug_error("osal_socket: Not connected");
+        osal_debug_error("osal_socket_write: Not connected");
         return OSAL_STATUS_FAILED;
     }
     if (n == 0) return OSAL_SUCCESS;
@@ -528,8 +527,13 @@ osalStatus osal_socket_write(
     bytes = osal_client[ix].write(buf, n);
     if (bytes < 0)
     {
-        osal_debug_error_int("osal_socket: write problem, bytes = ", bytes);
-        bytes = 0;
+        if (errno == EAGAIN)
+        {
+            osal_trace2("osal_socket_write: Again");
+            return OSAL_SUCCESS;
+        }
+        osal_debug_error("osal_socket_write: Disconnected");
+        return OSAL_STATUS_STREAM_CLOSED;
     }
     *n_written = bytes;
 
@@ -571,7 +575,7 @@ osalStatus osal_socket_read(
 	os_int flags)
 {
 	osalSocket *mysocket;
-    os_int bytes;
+    os_int read_now, bytes;
     os_short ix;
 
     *n_read = 0;
@@ -580,31 +584,30 @@ osalStatus osal_socket_read(
     mysocket = (osalSocket*)stream;
     if (mysocket->use != OSAL_SOCKET_CLIENT)
     {
-        osal_debug_error("osal_socket: Socket can not be read");
         return OSAL_STATUS_FAILED;
     }
     ix = mysocket->index;
 
     if (!osal_client[ix].connected())
     {
-        osal_debug_error("osal_socket: Not connected");
-        return OSAL_STATUS_FAILED;
+        osal_debug_error("osal_socket_read: Not connected");
+        return OSAL_STATUS_STREAM_CLOSED;
     }
 
-    bytes = osal_client[ix].available();
-    if (bytes < 0) bytes = 0;
-    if (bytes)
-    {
-        if (bytes > n)
-        {
-            bytes = n;
-        }
+    read_now = osal_client[ix].available();
+    if (read_now <= 0) return OSAL_SUCCESS;
+    if (n < read_now) read_now = n;
 
-        bytes = osal_client[ix].read((uint8_t*)buf, bytes);
-        if (bytes < 0)
+    bytes = osal_client[ix].read((uint8_t*)buf, read_now);
+    if (bytes < 0)
+    {
+        if (errno == EAGAIN)
         {
-            osal_debug_error_int("osal_socket: read problem, bytes = ", bytes);
+            osal_trace2("osal_socket_read: Again");
+            return OSAL_SUCCESS;
         }
+        osal_debug_error("osal_socket_read: Disconnected");
+        return OSAL_STATUS_STREAM_CLOSED;
     }
 
 #if OSAL_TRACE >= 3
