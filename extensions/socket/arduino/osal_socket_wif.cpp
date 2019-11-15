@@ -854,7 +854,7 @@ void osal_socket_initialize(
     osalNetworkInterface *nic,
     os_int n_nics)
 {
-    const char* ssid     = "bean24";
+    const char* ssid     = "julian";
     const char* password = "talvi333";
 
 
