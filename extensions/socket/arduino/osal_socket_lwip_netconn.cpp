@@ -16,7 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_LWIP_RAW
+#if OSAL_SOCKET_SUPPORT == OSAL_SOCKET_LWIP_RAW
 
 /* Force tracing on for this source file.
  */
