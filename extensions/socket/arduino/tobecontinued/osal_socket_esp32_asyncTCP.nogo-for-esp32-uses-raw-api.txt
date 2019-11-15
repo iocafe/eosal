@@ -650,7 +650,7 @@ void osal_socket_esp_set_parameter(
 static osalSocket *osal_get_socket_struct(
     AsyncClient *c)
 {
-    int i;
+    os_int i;
 
     for (i = 0; i < OSAL_MAX_SOCKETS; i++)
     {
@@ -868,7 +868,7 @@ static void osal_socket_esp_client(
 */
 static osalSocket *osal_get_unused_socket(void)
 {
-    int i;
+    os_int i;
 
     for (i = 0; i < OSAL_MAX_SOCKETS; i++)
     {
@@ -1010,7 +1010,7 @@ void osal_socket_initialize(
 {
     const os_char *wifi_net_name = "bean24";
     const os_char *wifi_net_password = "talvi333";
-    int i;
+    os_int i;
 
     /* Initialize only once.
      */

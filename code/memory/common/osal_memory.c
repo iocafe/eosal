@@ -795,8 +795,8 @@ osalStaticMemBlock *osal_static_mem_block_list = OS_NULL;
 */
 void osal_memory_add_static_block(
     void *block,
-    int block_sz,
-    int block_alloc)
+    os_int block_sz,
+    os_int block_alloc)
 {
     osalStaticMemBlock
         *b;

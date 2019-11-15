@@ -161,7 +161,7 @@ osalStream osal_socket_open(
     struct sockaddr *sa;
     void *sa_data;
     os_boolean is_ipv6;
-    int af, udp, on = 1, s, sa_sz;
+    os_int af, udp, on = 1, s, sa_sz;
 
     /* If not initialized.
      */
@@ -418,7 +418,7 @@ void osal_socket_close(
 	osalSocket *mysocket;
 	SOCKET handle;
     char buf[64];
-	int n, rval;
+	os_int n, rval;
 
 	/* If called with NULL argument, do nothing.
 	 */
@@ -521,7 +521,7 @@ osalStream osal_socket_accept(
 {
 	osalSocket *mysocket, *newsocket = OS_NULL;
     SOCKET handle, new_handle = INVALID_SOCKET;
-	int addr_size, on = 1;
+	os_int addr_size, on = 1;
 	struct sockaddr_in sin_remote;
 	struct sockaddr_in6 sin_remote6;
 	osalStatus rval;
@@ -769,7 +769,7 @@ static osalStatus osal_socket_write2(
 	os_memsz *n_written,
 	os_int flags)
 {
-	int rval, werr;
+	os_int rval, werr;
 	SOCKET handle;
     osalStatus status;
 
@@ -829,7 +829,7 @@ osalStatus osal_socket_write(
 	os_memsz *n_written,
 	os_int flags)
 {
-	int count, wrnow;
+	os_int count, wrnow;
 	osalSocket *mysocket;
     osalStatus status;
     os_uchar *rbuf;
@@ -962,7 +962,7 @@ osalStatus osal_socket_read(
 	os_memsz *n_read,
 	os_int flags)
 {
-    int rval, werr;
+    os_int rval, werr;
 	osalSocket *mysocket;
 	SOCKET handle;
     osalStatus status;

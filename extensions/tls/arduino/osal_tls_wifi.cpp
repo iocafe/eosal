@@ -501,7 +501,7 @@ osalStatus osal_tls_write(
     os_int flags)
 {
     osalSocket *w;
-    int bytes;
+    os_int bytes;
 
     *n_written = 0;
 
@@ -562,7 +562,7 @@ osalStatus osal_tls_read(
     os_int flags)
 {
     osalSocket *w;
-    int bytes;
+    os_int bytes;
 
     *n_read = 0;
 
@@ -668,7 +668,7 @@ void osal_tls_set_parameter(
 */
 static osalSocket *osal_get_unused_socket(void)
 {
-    int i;
+    os_int i;
 
     for (i = 0; i < OSAL_MAX_SOCKETS; i++)
     {
@@ -701,7 +701,7 @@ void osal_tls_initialize(
     os_int n_nics,
     osalTLSParam *prm)
 {
-    int i;
+    os_int i;
 
     /* Clear Get parameters. Use defaults if not set.
      */

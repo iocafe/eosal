@@ -503,7 +503,7 @@ osalStatus osal_socket_write(
 	os_int flags)
 {
     osalSocket *mysocket;
-    int bytes;
+    os_int bytes;
     os_short ix;
 
     *n_written = 0;
@@ -566,7 +566,7 @@ osalStatus osal_socket_read(
 	os_int flags)
 {
 	osalSocket *mysocket;
-    int bytes;
+    os_int bytes;
     os_short ix;
 
     *n_read = 0;

@@ -781,7 +781,7 @@ getout:
 static osalSocket *osal_reserve_socket_struct(void)
 {
     osalSocket *w;
-    int i;
+    os_int i;
 
     osal_mutex_lock(osal_lwip.socket_struct_mutex);
 
@@ -823,7 +823,7 @@ static void osal_socket_lwip_thread(
     osalEvent done)
 {
     osalSocket *w;
-    int i;
+    os_int i;
 
     osal_event_set(done);
 
@@ -1397,7 +1397,7 @@ static err_t osal_lwip_thread_accept_callback(
 #if 0
     osalSocket *w;
     err_t ret_err;
-    int i;
+    os_int i;
 
     w = (osalSocket*)arg;
     osalSocket *w

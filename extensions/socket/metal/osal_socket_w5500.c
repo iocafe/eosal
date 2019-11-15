@@ -486,7 +486,7 @@ osalStatus osal_socket_write(
 	os_int flags)
 {
     osalSocket *mysocket;
-    int bytes, port_ix, s;
+    os_int bytes, port_ix, s;
 
     *n_written = 0;
 
@@ -554,7 +554,7 @@ osalStatus osal_socket_read(
 	os_int flags)
 {
 	osalSocket *mysocket;
-    int bytes, s, port_ix;
+    os_int bytes, s, port_ix;
 
     *n_read = 0;
 
@@ -695,7 +695,7 @@ static os_short osal_get_unused_w5500_port(
 {
     osalSocket *mysocket;
     os_boolean used[OSAL_NRO_W5500_PORTS];
-    int index, port_ix;
+    os_int index, port_ix;
 
     os_memclear(used, sizeof(used));
     for (index = 0; index < OSAL_MAX_SOCKETS; index++)
@@ -1066,7 +1066,7 @@ static os_ushort osal_find_free_outgoing_port(
     osalSocket *mysocket;
     const os_ushort base_port_nr = 1500;
     os_boolean used[OSAL_NRO_W5500_PORTS];
-    int index;
+    os_int index;
     os_ushort port_offset;
 
     os_memclear(used, sizeof(used));
@@ -1114,7 +1114,7 @@ static void osal_connect_client_socket(
 {
     os_short port_ix;
     os_ushort local_port_nr;
-    int rval;
+    os_int rval;
 
     port_ix = osal_get_unused_w5500_port();
     if (port_ix == OSAL_ALL_USED)
@@ -1165,7 +1165,7 @@ static void osal_make_sockets(
     void)
 {
     osalSocket *mysocket;
-    int index;
+    os_int index;
 
     for (index = 0; index < OSAL_MAX_SOCKETS; index++)
     {
@@ -1220,7 +1220,7 @@ static void osal_reboot_network(
     void)
 {
     osalSocket *mysocket;
-    int index;
+    os_int index;
 
     for (index = 0; index < OSAL_MAX_SOCKETS; index++)
     {

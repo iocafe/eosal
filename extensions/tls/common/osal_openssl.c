@@ -1137,7 +1137,7 @@ static osalSSLStatus osal_openssl_do_ssl_handshake(
     char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
     osalSSLStatus status;
 
-    int n = SSL_do_handshake(sslsocket->ssl);
+    os_int n = SSL_do_handshake(sslsocket->ssl);
     status = osal_openssl_get_sslstatus(sslsocket->ssl, n);
 
     /* Did SSL request to write bytes?
@@ -1186,7 +1186,7 @@ static osalStatus osal_openssl_do_encrypt(
     char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
     osalSSLStatus status;
     osalStatus s;
-    int n;
+    os_int n;
 
     if (!SSL_is_init_finished(sslsocket->ssl))
         return OSAL_STATUS_NOTHING_TO_DO;

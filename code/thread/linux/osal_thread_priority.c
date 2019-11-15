@@ -21,7 +21,7 @@
 /* Forward referred static functions.
  */
 /* #if OSAL_MULTITHREAD_SUPPORT
-static int osal_thread_priority_to_rt_priority(
+static os_int osal_thread_priority_to_rt_priority(
     osalThreadPriority priority);
 #endif */
 
@@ -94,7 +94,7 @@ osalStatus osal_thread_set_priority(
 */
 #if OSAL_MULTITHREAD_SUPPORT
 #if 0
-static int osal_thread_priority_to_rt_priority(
+static os_int osal_thread_priority_to_rt_priority(
     osalThreadPriority priority)
 {
     int rtpriority;

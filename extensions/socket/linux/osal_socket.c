@@ -48,7 +48,7 @@ typedef struct osalSocket
 
 	/** Operating system's socket handle.
 	 */
-    int handle;
+    os_int handle;
 
 	/** Stream open flags. Flags which were given to osal_socket_open() or osal_socket_accept()
         function. 
@@ -80,15 +80,15 @@ os_boolean osal_sockets_initialized = OS_FALSE;
 /* Prototypes for forward referred static functions.
  */
 static void osal_socket_blocking_mode(
-    int handle,
+    os_int handle,
     int blockingmode);
 
 static void osal_socket_set_nodelay(
-    int handle,
+    os_int handle,
     int state);
 
 static void osal_socket_set_cork(
-    int handle,
+    os_int handle,
     int state);
 
 
@@ -150,7 +150,7 @@ osalStream osal_socket_open(
     struct addrinfo *ptr = NULL;
     struct addrinfo hints;
 	osalStatus rval;
-    int handle = -1;
+    os_int handle = -1;
 	struct sockaddr_in saddr;
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
@@ -370,9 +370,9 @@ void osal_socket_close(
 	osalStream stream)
 {
 	osalSocket *mysocket;
-    int handle;
+    os_int handle;
     char buf[64];
-    int n;
+    os_int n;
 
 	/* If called with NULL argument, do nothing.
 	 */
@@ -463,8 +463,7 @@ osalStream osal_socket_accept(
 	os_int flags)
 {
 	osalSocket *mysocket, *newsocket = OS_NULL;
-    int handle, new_handle = -1;
-    int on = 1;
+    os_int handle, new_handle = -1, on = 1;
     socklen_t addr_size;
 	struct sockaddr_in sin_remote;
 	struct sockaddr_in6 sin_remote6;
@@ -607,7 +606,7 @@ osalStatus osal_socket_flush(
 	osalStream stream,
 	os_int flags)
 {
-    int state;
+    os_int state;
     osalSocket *mysocket;
 
     if (stream)
@@ -654,9 +653,8 @@ osalStatus osal_socket_write(
 	os_memsz *n_written,
 	os_int flags)
 {
-	int rval;
+	os_int rval, handle;
 	osalSocket *mysocket;
-    int handle;
     osalStatus status;
 
 	if (stream)
@@ -747,7 +745,7 @@ osalStatus osal_socket_read(
 	os_int flags)
 {
 	osalSocket *mysocket;
-    int handle, rval;
+    os_int handle, rval;
     osalStatus status;
 
 	if (stream)
@@ -1049,7 +1047,7 @@ osalStatus osal_socket_select(
 ****************************************************************************************************
 */
 static void osal_socket_blocking_mode(
-    int handle,
+    os_int handle,
     int blockingmode)
 {
    int fl;
@@ -1083,7 +1081,7 @@ getout:
 ****************************************************************************************************
 */
 static void osal_socket_set_nodelay(
-    int handle,
+    os_int handle,
     int state)
 {
     /* IPPROTO_TCP didn't work. Needed SOL_TCP. Why, IPPROTO_TCP should be the portable one? */
@@ -1108,7 +1106,7 @@ static void osal_socket_set_nodelay(
 ****************************************************************************************************
 */
 static void osal_socket_set_cork(
-    int handle,
+    os_int handle,
     int state)
 {
     /* IPPROTO_TCP didn't work. Needed SOL_TCP. Why, IPPROTO_TCP should be the portable one? */

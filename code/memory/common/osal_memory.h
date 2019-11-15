@@ -240,7 +240,7 @@ typedef struct osalStaticMemBlock
     /** Pointer to next static memory block in list.
      */
     struct osalStaticMemBlock * next;
-    int block_sz;
+    os_int block_sz;
 }
 osalStaticMemBlock;
 
@@ -252,8 +252,8 @@ extern osalStaticMemBlock *osal_static_mem_block_list;
  */
 void osal_memory_add_static_block(
     void *block,
-    int block_sz,
-    int block_alloc);
+    os_int block_sz,
+    os_int block_alloc);
 
 /* Reserved a prepared static memory block.
  */
