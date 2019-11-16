@@ -25,14 +25,14 @@
  */
 OSAL_C_HEADER_BEGINS
 
-/** Flags for osal_double_to_string() function.
+/** Flags for osal_double_to_str() function.
  */
 #define OSAL_FLOAT_DEFAULT 0
 #define OSAL_FLOAT_E_FORMAT 1
 
 /* Convert floating point number to string.
  */
-os_memsz osal_double_to_string(
+os_memsz osal_double_to_str(
     os_char *buf, 
     os_memsz buf_sz,
     os_double x, 
@@ -41,7 +41,7 @@ os_memsz osal_double_to_string(
 
 /* Convert string to floating point number.
  */
-os_double osal_string_to_double(
+os_double osal_str_to_double(
     const os_char *str,
     os_memsz *count);
 

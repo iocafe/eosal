@@ -475,7 +475,7 @@ static osalStatus parse_json_value(
         return s;
     }
 
-    dvalue = osal_string_to_double(data, &count);
+    dvalue = osal_str_to_double(data, &count);
     if (count == data_n)
     {
         if (dvalue == 0.0)

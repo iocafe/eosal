@@ -142,7 +142,7 @@ osalStatus osal_uncompress_json(
             case OSAL_JSON_VALUE_FLOAT:
                 d = item.value.d; if (d < 0) d = -d;
                 ddigs = 5; while (d >= 1.0 && ddigs > 1) {ddigs--; d *= 0.1; }
-                osal_double_to_string(nbuf, sizeof(nbuf),
+                osal_double_to_str(nbuf, sizeof(nbuf),
                     item.value.d, ddigs, OSAL_FLOAT_DEFAULT);
                 s = osal_write_json_str(uncompressed, ": ");
                 if (s) goto getout;

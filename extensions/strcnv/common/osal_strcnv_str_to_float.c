@@ -1,12 +1,12 @@
 /**
 
-  @file    strcnv/common/osal_double_to_string.c
+  @file    strcnv/common/osal_double_to_str.c
   @brief   Convert string to floating point number.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    9.11.2011
 
-  Function osal_string_to_double() converts string to floating point number.
+  Function osal_str_to_double() converts string to floating point number.
   This code is adopted from code written by "Michael Ringgaard". Original copyright 
   note below.
 
@@ -47,9 +47,9 @@
 ****************************************************************************************************
 
   @brief Convert string to floating point number.
-  @anchor osal_string_to_double
+  @anchor osal_str_to_double
 
-  The osal_string_to_double() function converts a string to double precision floating point
+  The osal_str_to_double() function converts a string to double precision floating point
   value. Preceeding white space characters are skipped. If the string doesn't contain value, 
   the function return 0 and count is set to 0.
 
@@ -61,7 +61,7 @@
 
 ****************************************************************************************************
 */
-os_double osal_string_to_double(
+os_double osal_str_to_double(
     const os_char *str,
     os_memsz *count)
 {
