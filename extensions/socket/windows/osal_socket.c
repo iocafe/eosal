@@ -1,15 +1,16 @@
 /**
 
   @file    socket/windows/osal_socket.c
-  @brief   OSAL sockets API windows implementation.
+  @brief   OSAL stream API implementation for windows sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    15.11.2019
 
-  Implementation of OSAL sockets for Windows.
+  Ethernet connectivity. Implementation of OSAL stream API and general network functionality
+  using Windows sockets API. This implementation supports select functionality.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
-  modified, and distributed under the terms of the project licensing. By continuing to use, modify,fliste
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.
 

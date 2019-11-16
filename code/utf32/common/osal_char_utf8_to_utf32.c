@@ -11,7 +11,7 @@
   If we need UTF8 support (define OSAL_UTF8 is nonzero), we need to be convert between
   UTF8 and UTF32 characters.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

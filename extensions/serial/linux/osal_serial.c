@@ -1,14 +1,14 @@
 /**
 
   @file    serial/linux/osal_serial.c
-  @brief   OSAL serials API linux implementation.
+  @brief   OSAL stream API implementation for linux serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    3.6.2019
+  @date    15.11.2019
 
-  OSAL serial port wrapper implementation for Linux.
+  Serial communication. Implementation of OSAL stream API for Linux serial ports.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

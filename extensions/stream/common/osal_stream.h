@@ -1,15 +1,18 @@
 /**
 
   @file    stream/common/osal_stream.h
-  @brief   Stream interface.
+  @brief   Stream interface for OSAL stream API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    15.11.2019
 
-  This header file contains functions type definitions and stream interface structure 
-  definition.
+  Definition OSAL stream API: defines osalStreamInterface structure. function prototypes
+  and preprocessor defines. The OSAL stream API is abstraction which makes streams (including
+  sockets) look similar to upper levels of code, regardless of operating system, network
+  library, or other transport actually used. In other words, this file defines how a stream
+  looks like to upper layers of code.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

@@ -1,15 +1,16 @@
 /**
 
   @file    serial/common/osal_serial.h
-  @brief   OSAL Serials API.
+  @brief   OSAL stream API for serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    15.11.2019
 
-  This header file contains function prototypes and definitions for OSAL serials API.
-  Osal serials api is wrapper for operating system serials.
+  Serial communication speficic function prototypes and definitions to implement OSAL stream API.
+  OSAL stream API is abstraction which makes streams (including  sockets) look similar to upper
+  levels of code, regardless of operating system or data transport implementation.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.

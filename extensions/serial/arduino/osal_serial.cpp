@@ -1,12 +1,12 @@
 /**
 
   @file    serial/arduino/osal_serial.cpp
-  @brief   OSAL serials API Arduino implementation.
+  @brief   OSAL stream API implementation for Arduino serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    7.6.2019
+  @date    15.11.2019
 
-  Implementation of OSAL serials for Arduino.
+  Serial communication. Implementation of OSAL stream API for Arduino serial ports.
 
   IMPORTANT
   We need RX buffer of 256 bytes and SERIAL_RX_BUFFER_SIZE is 64 by default.
@@ -25,7 +25,7 @@
   To display
   stty -a -F /dev/ttyUSB0
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

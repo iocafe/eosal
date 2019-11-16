@@ -8,7 +8,7 @@
 
   Test 64 bit int artihmetic. Meaningfull only if compiler doesn't support 64 bit integern types.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

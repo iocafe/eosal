@@ -1,19 +1,20 @@
 /**
 
   @file    tls/common/osal_openssl.c
-  @brief   OSAL sockets API OpenSSL implementation.
+  @brief   OSAL stream API layer to use secure OpenSSL sockets.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    20.8.2019
 
-  OpenSSL for sockets.
+  Secure network connectivity. Implementation of OSAL stream API and general network functionality
+  using OpenSSL. This implementation uses OSAL stream API also downwards to access underlying data
+  transport socket.
 
-  Original copyright notice and credits:
-  This is based on example work by Mr Darren Smith. Original Copyright (c) 2017 Darren Smith.
-  The example is free software; you can redistribute it and/or modify it under the terms of
-  the MIT license. See LICENSE for details.
+  Original copyright notice and credits: This is based on example work by Mr Darren Smith.
+  Original Copyright (c) 2017 Darren Smith. The example is free software; you can redistribute
+  it and/or modify it under the terms of the MIT license. See LICENSE for details.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.

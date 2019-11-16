@@ -1,14 +1,15 @@
 /**
 
-  @file    tls/arduino/osal_tls_wifi.c
-  @brief   OSAL TLS sockets API Arduino WiFi implementation.
+  @file    tls/arduino/osal_tls_arduino_wifi.cpp
+  @brief   OSAL stream API layer to use secure Arduino WiFi sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    20.1.2017
+  @date    15.11.2019
 
-  Implementation of OSAL sockets for secure TLS sockets over WiFi within Arduino framework.
+  Secure wifi connectivity. Implementation of OSAL stream API and general network functionality
+  using Arduino's Arduino's secure wifi sockets API.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.

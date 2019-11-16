@@ -9,7 +9,7 @@
   Conversion of UTF32 character to UTF16 character. The UTF16 character takes 1 or 2 words
   (osal_ushorts) to store.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

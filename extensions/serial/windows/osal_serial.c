@@ -1,10 +1,12 @@
 /**
 
   @file    serial/windows/osal_serial.c
-  @brief   OSAL serials API windows implementation.
+  @brief   OSAL stream API implementation for windows serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    6.7.2019
+  @date    15.11.2019
+
+  Serial communication. Implementation of OSAL stream API for Windows serial ports.
 
   Windows overlapped IO is used to monitor received data and avaliablility of transmit buffer.
   On top of this API windows serial port can be used with select much like a non blocking serial 

@@ -1,21 +1,24 @@
 /**
 
   @file    serial/metal/osal_serial.c
+  @brief   OSAL stream API implementation for some STM32 core M4 chips.
   @brief   OSAL serial port metal implementation.
   @author  Pekka Lehtikoski
-  @version 1.0
-  @date    7.3.2018
+  @date    15.11.2019
 
-  Implementation of OSAL serials for Metal.
+  Serial communication. Implementation of OSAL stream for some STM32 core M4 chips.
 
-  IMPORTANT
+  THIS CODE NEEDS TO MOVE TO CHIP SPECIFIC FILE, like osal_serial_stm32_a.c and be more
+  clearly enabled/disabled by chip type define.
+
+  NOTES:
   Does this really do anything?
   stty -F /dev/ttyUSB0 -ixon
 
   To display
   stty -a -F /dev/ttyUSB0
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

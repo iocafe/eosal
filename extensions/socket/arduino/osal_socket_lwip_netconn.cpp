@@ -1,20 +1,24 @@
 /**
 
-  @file    socket/arduino/osal_socket_lwip.c
-  @brief   OSAL sockets API for ESP32/Arduino WiFi implementation.
+  @file    socket/arduino/osal_socket_lwip_netconn.cpp
+  @brief   OSAL stream API layer to use lwIP netconn API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    20.1.2017
+  @date    15.11.2019
 
-  Implementation of OSAL sockets over ESP WiFi within Arduino framework.
+  Ethernet/WiFi connectivity. Implementation of OSAL stream API and general network functionality
+  using lwIP librarie's netconn API. This work in both single and multi threaded systems.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  NOT READY, JUST PLANNED
+
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
+
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT == OSAL_SOCKET_LWIP_RAW
 

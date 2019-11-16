@@ -9,7 +9,7 @@
   Client to write something to socket or serial port and read from it. Extermely simple: No
   dynamic memory allocation, multithreading, socket select, etc. Just bare bones.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

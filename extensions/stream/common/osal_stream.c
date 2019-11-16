@@ -1,14 +1,19 @@
 /**
 
   @file    stream/commmon/osal_stream.c
-  @brief   Stream interface and default function implementations.
+  @brief   Stream interface and interface function implementations.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    15.11.2019
 
-  Stream interface implementation.
+  A set of intermediate functions are used to access a specific stream. For example
+  application which wants to open a stream calls osal_stream_open(). A pointer to
+  stream interface structure is given as argument to osal_stream_open call. This structure
+  contains pointer to implementation, for example to the osal_socket_open function, so
+  it can be called. The stream interface structure pointer is stored within handle, so
+  it is not needed as argument for rest of the osal_stream_* functions.
 
-  Copyright 2012 - 2019 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.
