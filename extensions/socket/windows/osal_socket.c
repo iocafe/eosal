@@ -207,12 +207,12 @@ osalStream osal_socket_open(
     
     if (host[0] != '\0')
     {
-        host_utf16 = osal_string_utf8_to_utf16_malloc(host, &sz1);
+        host_utf16 = osal_str_utf8_to_utf16_malloc(host, &sz1);
 
         if (InetPtonW(af, host_utf16, sa_data) <= 0)
         {
             osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
-            port_utf16 = osal_string_utf8_to_utf16_malloc(nbuf, &sz2);
+            port_utf16 = osal_str_utf8_to_utf16_malloc(nbuf, &sz2);
 
             s = GetAddrInfoW(host_utf16, port_utf16,
                 &hints, &addrinfo);

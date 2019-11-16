@@ -82,7 +82,7 @@ int wmain(
     utf8_argv = (os_char**)os_malloc(argc*sizeof(os_char*), OS_NULL);
     for (i = 0; i < argc; i++)
     {
-        utf8_argv[i] = osal_string_utf16_to_utf8_malloc(argv[i], OS_NULL);
+        utf8_argv[i] = osal_str_utf16_to_utf8_malloc(argv[i], OS_NULL);
     }
 
     /* Call OS independent process entry point.

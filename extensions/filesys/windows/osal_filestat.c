@@ -49,7 +49,7 @@ osalStatus osal_filestat(
 
     /* Convert path and wild card to UTF16.
      */
-    path_utf16 = osal_string_utf8_to_utf16_malloc(path, &path_sz);
+    path_utf16 = osal_str_utf8_to_utf16_malloc(path, &path_sz);
 
     /* Get file stats from windows.
      */

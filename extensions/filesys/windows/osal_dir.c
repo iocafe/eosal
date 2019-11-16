@@ -65,8 +65,8 @@ osalStatus osal_dir(
 
     /* Convert path and wild card to UTF16.
      */
-    path_utf16 = osal_string_utf8_to_utf16_malloc(path, &path_sz);
-    wildcard_utf16 = osal_string_utf8_to_utf16_malloc(path, &wildcard_sz);
+    path_utf16 = osal_str_utf8_to_utf16_malloc(path, &path_sz);
+    wildcard_utf16 = osal_str_utf8_to_utf16_malloc(path, &wildcard_sz);
 
     /* Allocate buffer
      */
@@ -111,7 +111,7 @@ osalStatus osal_dir(
 
         /* Allocate memory and save file name as UTF8.
          */
-        item->name = osal_string_utf16_to_utf8_malloc(finddata.cFileName, OS_NULL);
+        item->name = osal_str_utf16_to_utf8_malloc(finddata.cFileName, OS_NULL);
     }
     while (FindNextFileW(handle, &finddata) != 0);
 
@@ -184,7 +184,7 @@ osalStatus osal_mkdir(
 
     /* Convert path and wild card to UTF16.
      */
-    path_utf16 = osal_string_utf8_to_utf16_malloc(path, &path_sz);
+    path_utf16 = osal_str_utf8_to_utf16_malloc(path, &path_sz);
 
     /* Create directory.
      */
@@ -228,7 +228,7 @@ osalStatus osal_rmdir(
 
     /* Convert path and wild card to UTF16.
      */
-    path_utf16 = osal_string_utf8_to_utf16_malloc(path, &path_sz);
+    path_utf16 = osal_str_utf8_to_utf16_malloc(path, &path_sz);
 
     /* Remove directory.
      */

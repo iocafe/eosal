@@ -50,27 +50,27 @@ os_uint osal_char_utf16_to_utf32(
 
 /* Convert an UTF16 string to UTF8 string.
  */
-os_memsz osal_string_utf16_to_utf8(
+os_memsz osal_str_utf16_to_utf8(
     os_char *buf8,
     os_memsz buf8_sz,
     const os_ushort *str16);
 
 /* Convert an UTF8 string to UTF16 string.
  */
-os_memsz osal_string_utf8_to_utf16(
+os_memsz osal_str_utf8_to_utf16(
     os_ushort *buf16,
     os_memsz buf16_n,
     const os_char *str8);
 
 /* Convert an UTF16 string to UTF8 string in newly allocated buffer.
  */
-os_char *osal_string_utf16_to_utf8_malloc(
+os_char *osal_str_utf16_to_utf8_malloc(
     const os_ushort *str16,
     os_memsz *sz_ptr);
 
 /* Convert an UTF8 string to UTF16 string in newly allocated buffer.
  */
-os_ushort *osal_string_utf8_to_utf16_malloc(
+os_ushort *osal_str_utf8_to_utf16_malloc(
     const os_char *str8,
     os_memsz *sz_ptr);
 

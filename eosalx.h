@@ -50,6 +50,7 @@ OSAL_C_HEADER_BEGINS
 #endif
 
 #include "extensions/stream/common/osal_stream.h"
+#include "extensions/stream/common/osal_stream_buffer.h"
 
 #if OSAL_STRINGX_SUPPORT
   #include "extensions/stringx/common/osal_stringx.h"
@@ -76,7 +77,6 @@ OSAL_C_HEADER_BEGINS
 
 #if OSAL_SERIALIZE_SUPPORT
   #include "extensions/serialize/common/osal_serialize.h"
-  #include "extensions/serialize/common/osal_stream_buffer.h"
   #include "extensions/serialize/common/osal_json_shared.h"
   #include "extensions/serialize/common/osal_json_indexer.h"
 #endif

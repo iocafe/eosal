@@ -134,7 +134,7 @@ osalStream osal_file_open(
     /* Open the file. Convert path from UTF8 to UTF16 string, allocate new buffer.
        Release buffer after open.
      */
-    path_utf16 = osal_string_utf8_to_utf16_malloc(parameters, &sz);
+    path_utf16 = osal_str_utf8_to_utf16_malloc(parameters, &sz);
     err = _wfopen_s (&handle, path_utf16, mode); 
     os_free(path_utf16, sz);
 

@@ -21,7 +21,6 @@
 
 /** Stream interface structure for the stream buffer class.
  */
-#if OSAL_SERIALIZE_SUPPORT
 #if OSAL_FUNCTION_POINTER_SUPPORT
 extern const osalStreamInterface osal_stream_buffer_iface;
 
@@ -102,6 +101,5 @@ os_char *osal_stream_buffer_content(
  */
 #ifndef OSAL_STREAM_BUFFER_IFACE
 #define OSAL_STREAM_BUFFER_IFACE OS_NULL
-#endif
 
 #endif

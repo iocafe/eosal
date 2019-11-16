@@ -50,7 +50,7 @@ void osal_sysconsole_write(
 	/* Convert an UTF8 string to UTF16 string, print it
        and release allocated buffer.
 	 */
-	utf16_str = osal_string_utf8_to_utf16_malloc(text, &sz);
+	utf16_str = osal_str_utf8_to_utf16_malloc(text, &sz);
     wprintf(L"%ls", utf16_str); 
 	os_free(utf16_str, sz);
 
@@ -77,7 +77,7 @@ THIS IS WINDOWS IMPLEMENTATION. DOESN'T WORK WELL AT LEAST ON WIN 10
 	/* Convert an UTF8 string to UTF16 string in newly allocated buffer and calculate
 	   number of UTF8 workds.
 	 */
-	utf16_str = osal_string_utf8_to_utf16_malloc(text, &sz);
+	utf16_str = osal_str_utf8_to_utf16_malloc(text, &sz);
 	n_chars = sz / sizeof(os_ushort) - 1;
 
 	/* Write the UTF16 string to console.

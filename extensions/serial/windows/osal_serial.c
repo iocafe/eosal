@@ -153,7 +153,7 @@ osalStream osal_serial_open(
     /* Get serial port name, convert it to windows format and then to UTF16
     */
     osal_get_windows_serial_port_name(&parameters, portname, sizeof(portname));
-    osal_string_utf8_to_utf16(
+    osal_str_utf8_to_utf16(
         wportname, sizeof(wportname) / sizeof(os_ushort), portname);
 
     use_select = (os_boolean)((flags & (OSAL_STREAM_NO_SELECT|OSAL_STREAM_SELECT)) == OSAL_STREAM_SELECT);

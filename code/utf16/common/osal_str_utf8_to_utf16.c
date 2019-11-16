@@ -1,6 +1,6 @@
 /**
 
-  @file    utf16/common/osal_string_utf8_to_utf16.c
+  @file    utf16/common/osal_str_utf8_to_utf16.c
   @brief   String conversion from UTF8 to UTF16.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -27,9 +27,9 @@
 ****************************************************************************************************
 
   @brief Convert an UTF8 string to UTF16 string.
-  @anchor osal_string_utf8_to_utf16
+  @anchor osal_str_utf8_to_utf16
 
-  The osal_string_utf8_to_utf16() converts an UTF8 encoded string to UTF16 encoded string,
+  The osal_str_utf8_to_utf16() converts an UTF8 encoded string to UTF16 encoded string,
   or calculates UTF16 string buffer length in words, which is needed to store UTF8 string
   given as argument.
 
@@ -48,7 +48,7 @@
 
 ****************************************************************************************************
 */
-os_memsz osal_string_utf8_to_utf16(
+os_memsz osal_str_utf8_to_utf16(
     os_ushort *buf16,
     os_memsz buf16_n,
     const os_char *str8)
