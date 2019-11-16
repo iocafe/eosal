@@ -122,7 +122,7 @@ osalStatus osal_uncompress_json(
                 break;
 
             case OSAL_JSON_VALUE_STRING:
-                osal_int_to_string(nbuf, sizeof(nbuf), item.value.l);
+                osal_int_to_str(nbuf, sizeof(nbuf), item.value.l);
                 s = osal_write_json_str(uncompressed, ": \"");
                 if (s) goto getout;
                 s = osal_write_escaped_json_str(uncompressed, item.value.s);
@@ -132,7 +132,7 @@ osalStatus osal_uncompress_json(
                 break;
 
             case OSAL_JSON_VALUE_INTEGER:
-                osal_int_to_string(nbuf, sizeof(nbuf), item.value.l);
+                osal_int_to_str(nbuf, sizeof(nbuf), item.value.l);
                 s = osal_write_json_str(uncompressed, ": ");
                 if (s) goto getout;
                 s = osal_write_json_str(uncompressed, nbuf);

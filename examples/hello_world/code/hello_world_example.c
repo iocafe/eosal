@@ -74,7 +74,7 @@ osalStatus osal_loop(
      */
     if (os_elapsed(&t, 1000))
     {
-        osal_int_to_string(buf, sizeof(buf), count--);
+        osal_int_to_str(buf, sizeof(buf), count--);
         osal_console_write("howdy ");
         osal_console_write(buf);
         osal_console_write("\n");

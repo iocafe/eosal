@@ -95,7 +95,7 @@ osalStatus osal_loop(
         osal_console_write(prm_b.txt2);
         osal_console_write("\n");
 
-        osal_int_to_string(buf, sizeof(buf), count--);
+        osal_int_to_str(buf, sizeof(buf), count--);
         os_strncpy(prm_a.txt1, "txt a1: ", TXT_SZ);
         os_strncat(prm_a.txt1, buf, TXT_SZ);
         os_strncpy(prm_a.txt2, "txt a2: ", TXT_SZ);

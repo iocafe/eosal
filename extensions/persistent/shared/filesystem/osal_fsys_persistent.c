@@ -194,7 +194,7 @@ static void os_persistent_make_path(
 
     os_strncat(path, "iodevprm-", path_sz);
     os_strncat(path, "-", path_sz);
-    osal_int_to_string(buf, sizeof(buf), block_nr);
+    osal_int_to_str(buf, sizeof(buf), block_nr);
     os_strncat(path, buf, path_sz);
     os_strncat(path, ".dat", path_sz);
 }

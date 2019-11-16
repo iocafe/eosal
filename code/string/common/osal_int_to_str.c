@@ -1,6 +1,6 @@
 /**
 
-  @file    string/common/osal_int_to_string.c
+  @file    string/common/osal_int_to_str.c
   @brief   Convert integer to string.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -20,9 +20,9 @@
 ****************************************************************************************************
 
   @brief Convert integer to string.
-  @anchor osal_int_to_string
+  @anchor osal_int_to_str
 
-  The osal_int_to_string() function converts an integer x to string and stores the resulting 
+  The osal_int_to_str() function converts an integer x to string and stores the resulting
   string into buffer. If the buffer is too small to hold the resulting string, the function
   stores null character to buffer and returns 1.
 
@@ -36,7 +36,7 @@
 
 ****************************************************************************************************
 */
-os_memsz osal_int_to_string(
+os_memsz osal_int_to_str(
     os_char *buf,
 	os_memsz buf_sz,
 	os_long x)

@@ -762,7 +762,7 @@ static void osal_get_linux_serial_port_name(
     if (!os_strnicmp(p, "COM", winport_n))
     {
         com_nr = osal_str_to_int(p + winport_n, OS_NULL);
-        osal_int_to_string(nbuf, sizeof(nbuf),
+        osal_int_to_str(nbuf, sizeof(nbuf),
             com_nr - (com_nr >= first_com_to_usb ? first_com_to_usb : 1));
         os_strncat(portname, com_nr >= first_com_to_usb ? "ttyUSB" : "tty", portname_sz);
         os_strncat(portname, nbuf, portname_sz);

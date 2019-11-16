@@ -45,7 +45,7 @@ os_double osal_string_to_double(
     const os_char *str,
     os_memsz *count);
 
-/* #define osal_int64_to_string(b,s,x) osal_int_to_string((b),(s),*(x)) */
+/* #define osal_int64_to_str(b,s,x) osal_int_to_str((b),(s),*(x)) */
 
 /* Convert a string to 64 bit integer.
  */
@@ -54,13 +54,13 @@ os_memsz osal_str_to_int64(
     os_char *str);
 
 /* Convert 64 bit integer to string. If operating system supports 64 bit integers as 
-   os_long type, we just use macro to map this to osal_int_to_string() function. 
+   os_long type, we just use macro to map this to osal_int_to_str() function. 
    If operating system has no 64 bit support, the function implementation is used.
  */
 #if OSAL_LONG_IS_64_BITS
-    #define osal_int64_to_string(b,s,x) osal_int_to_string((b),(s),*(x))
+    #define osal_int64_to_str(b,s,x) osal_int_to_str((b),(s),*(x))
 #else
-    os_memsz osal_int64_to_string(
+    os_memsz osal_int64_to_str(
 		os_char *buf, 
         os_memsz buf_sz,
         os_int64 *x);

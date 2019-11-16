@@ -205,7 +205,7 @@ osalStream osal_socket_open(
     {
         if (inet_pton(af, host, sa_data) <= 0)
         {
-            osal_int_to_string(nbuf, sizeof(nbuf), port_nr);
+            osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
             s = getaddrinfo(host, nbuf, &hints, &addrinfo);
 
             if (s || addrinfo == NULL) 

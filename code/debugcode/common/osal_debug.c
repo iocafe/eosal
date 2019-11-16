@@ -72,7 +72,7 @@ static void osal_append_C_file_name_and_line_nr(
         osal_console_write(". file: ");
         osal_console_write(file);
         osal_console_write(", line: ");
-        osal_int_to_string(nbuf, sizeof(nbuf), line);
+        osal_int_to_str(nbuf, sizeof(nbuf), line);
         osal_console_write(nbuf);
 
         /* Write terminating line feed character.
@@ -150,7 +150,7 @@ void osal_debug_error_int_func(
 	/* Write error message on debug console, if any.
 	 */
 	osal_console_write(text);
-	osal_int_to_string(nbuf, sizeof(nbuf), v);
+	osal_int_to_str(nbuf, sizeof(nbuf), v);
 	osal_console_write(nbuf);
 
     /* Strip path from file name to keep output more readable.
@@ -285,7 +285,7 @@ void osal_debug_error(
 	/* Write error message and integer argument on debug console, if any.
 	 */
 	osal_console_write(text);
-	osal_int_to_string(nbuf, sizeof(nbuf), v);
+	osal_int_to_str(nbuf, sizeof(nbuf), v);
 	osal_console_write(".\n");
 }
 

@@ -191,7 +191,7 @@ void osal_socket_embed_default_port(
     if (is_ipv6) os_strncat(buf, "[", buf_sz);
     os_strncat(buf, host, buf_sz);
     os_strncat(buf, is_ipv6 ? "]:" : ":", buf_sz);
-    osal_int_to_string(nbuf, sizeof(nbuf), default_port_nr);
+    osal_int_to_str(nbuf, sizeof(nbuf), default_port_nr);
     os_strncat(buf, nbuf, buf_sz);
 }
 

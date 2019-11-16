@@ -123,7 +123,7 @@ void os_persistent_initialze(
         eeprom_sz = min_eeprom_sz;
     }
     osal_console_write("EEPROM size = ");
-    osal_int_to_string(buf, sizeof(buf), eeprom_sz);
+    osal_int_to_str(buf, sizeof(buf), eeprom_sz);
     osal_console_write(buf);
     osal_console_write("\n");
 

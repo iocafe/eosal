@@ -211,7 +211,7 @@ osalStream osal_socket_open(
 
         if (InetPtonW(af, host_utf16, sa_data) <= 0)
         {
-            osal_int_to_string(nbuf, sizeof(nbuf), port_nr);
+            osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
             port_utf16 = osal_string_utf8_to_utf16_malloc(nbuf, &sz2);
 
             s = GetAddrInfoW(host_utf16, port_utf16,

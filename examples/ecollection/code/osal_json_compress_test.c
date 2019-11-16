@@ -60,17 +60,17 @@ osalStatus osal_json_compress_test(
         goto getout;
     }
 
-    osal_int_to_string(nbuf, sizeof(nbuf), s);
+    osal_int_to_str(nbuf, sizeof(nbuf), s);
     osal_console_write("\nstatus = ");
     osal_console_write(nbuf);
 
     osal_console_write("\noriginal size = ");
-    osal_int_to_string(nbuf, sizeof(nbuf), os_strlen(json_text));
+    osal_int_to_str(nbuf, sizeof(nbuf), os_strlen(json_text));
     osal_console_write(nbuf);
 
     osal_console_write("\ncompressed size = ");
     data = osal_stream_buffer_content(compressed, &data_sz);
-    osal_int_to_string(nbuf, sizeof(nbuf), data_sz);
+    osal_int_to_str(nbuf, sizeof(nbuf), data_sz);
     osal_console_write(nbuf);
 
     osal_console_write("\n");

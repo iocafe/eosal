@@ -45,7 +45,7 @@
  */
 #define OSAL_STRING_SEARCH_LINE_ONLY 2
 
-/** Recommended number conversion buffer for osal_int_to_string(), etc.
+/** Recommended number conversion buffer for osal_int_to_str(), etc.
  */
 #define OSAL_NBUF_SZ 32
 
@@ -116,7 +116,7 @@ os_char *os_strstr(
 
 /* Convert integer to string.
  */
-os_memsz osal_int_to_string(
+os_memsz osal_int_to_str(
     os_char *buf,
 	os_memsz buf_sz,
 	os_long x);
