@@ -1,12 +1,12 @@
 /**
 
   @file    filesys/windows/osal_file.c
-  @brief   Basic file IO.
+  @brief   OSAL stream API for windows files.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011 
+  @date    15.11.2019
 
-  File IO for Windows.
+  Implementation of OSAL stream API for Windows file IO.
 
   Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

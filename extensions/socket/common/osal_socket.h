@@ -7,7 +7,7 @@
   @date    15.11.2019
 
   Socket speficic function prototypes and definitions to implement OSAL stream API for sockets.
-  OSAL stream API is abstraction which makes streams (including  sockets) look similar to upper
+  OSAL stream API is abstraction which makes streams (including sockets) look similar to upper
   levels of code, regardless of operating system or network library implementation.
 
   Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,

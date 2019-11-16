@@ -1,13 +1,14 @@
 /**
 
   @file    filesys/common/osal_file.h
-  @brief   File IO API.
+  @brief   OSAL stream API for file IO.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    15.11.2019
 
-  This header file contains function prototypes and definitions for OSAL file IO.
-  OSAL file IO is wrapper for operating system file IO.
+  This header file contains function prototypes and definitions to implement OSAL stream API
+  and for basic file IO.  OSAL stream API is abstraction which makes streams (including files)
+  look similar to upper levels of code, regardless of operating system and implementation.
 
   Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
