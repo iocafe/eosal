@@ -317,8 +317,8 @@ osalStream osal_tls_open(
 
     /* If WiFi network is not connected, we can do nothing.
      */
-    if (!osal_is_wifi_initialized())
-    {
+    rval = osal_is_wifi_initialized();
+    if (rval) {
         rval = OSAL_STATUS_PENDING;
         goto getout;
     }
@@ -721,51 +721,6 @@ void osal_tls_initialize(
      */
     osal_tls_initialized = OS_TRUE;
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Check if WiFi network is connected.
-  @anchor osal_is_wifi_initialized
-
-  The osal_is_wifi_initialized() function is used when opening or staring to listen for incoming
-  connections to make sure that WiFi network is connected.
-
-  @return  OS_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
-
-****************************************************************************************************
-*/
-#if 0
-BASIC SOCKET FUNCTION USED static os_boolean osal_is_wifi_initialized(
-    void)
-{
-    if (!osal_tls_initialized) return OS_FALSE;
-    if (!osal_wifi_initialized)
-    {
-        /* If WiFi is not connected, just return failure.
-         */
-        if (WiFi.status() != WL_CONNECTED)
-        {
-            if (os_elapsed(&osal_wifi_init_timer, 500))
-            {
-                osal_trace2("Waiting for wifi");
-                os_get_timer(&osal_wifi_init_timer);
-            }
-            return OS_FALSE;
-        }
-        osal_trace("Wifi network connected");
-
-        /* Here WE should convert IP address to string.
-           ip_address = Ethernet.localIP(); */
-
-        /* Mark that Wifi is intialized.
-         */
-        osal_wifi_initialized = OS_TRUE;
-    }
-    return OS_TRUE;
-}
-#endif
 
 
 /**

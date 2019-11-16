@@ -7,7 +7,8 @@
   @date    15.11.2019
 
   Ethernet connectivity. Implementation of OSAL stream API and general network functionality
-  using Arduino's ethernet socket API. This work in both single and multi threaded systems.
+  using Arduino's ethernet socket API. This work in both single and multi threaded systems,
+  but all sockets need to be handled by one thread.
 
   Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

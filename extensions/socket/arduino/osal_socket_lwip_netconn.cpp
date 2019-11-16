@@ -1526,13 +1526,13 @@ void osal_socket_initialize_2(void)
   has been initialized and connected. Once connection is detected,
   the LWIP library is initialized.
 
-  osal_wifi_initialized
-
-  @return  OS_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
+  @return  OSAL_SUCCESS if we are connected to a wifi network.
+           OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
+           OSAL_STATUS_FALED No connection, at least for now.
 
 ****************************************************************************************************
 */
-os_boolean osal_is_wifi_initialized(
+osalStatus osal_is_wifi_initialized(
     void)
 {
     if (!osal_sockets_initialized) return OS_FALSE;
@@ -1547,7 +1547,7 @@ os_boolean osal_is_wifi_initialized(
                 osal_trace2("Waiting for wifi");
                 os_get_timer(&osal_wifi_init_timer);
             }
-            return OS_FALSE;
+            return OSAL_STATUS_FALED;
         }
         osal_trace("Wifi network connected");
 
@@ -1559,7 +1559,7 @@ os_boolean osal_is_wifi_initialized(
          */
         osal_wifi_initialized = OS_TRUE;
     }
-    return OS_TRUE;
+    return OSAL_SUCCESS;
 }
 
 
