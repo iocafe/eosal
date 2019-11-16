@@ -9,7 +9,7 @@
   Memory buffer, which implements OSAL stream interface. This class presents simple buffer
   in memory as a stream for reading and writing.
 
-  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

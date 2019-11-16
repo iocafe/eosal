@@ -14,7 +14,7 @@
   Original Copyright (c) 2017 Darren Smith. The example is free software; you can redistribute
   it and/or modify it under the terms of the MIT license. See LICENSE for details.
 
-  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.

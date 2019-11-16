@@ -10,7 +10,17 @@
   using Arduino's wifi socket API. This work in both single and multi threaded systems,
   but all sockets need to be handled by one thread.
 
-  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  MISSING - TO BE DONE
+  - How to set up network configuration and topology needs to be decided
+  - Static IP configuration missing
+  - Listening and accepting sockets
+  - DNS to resolve host names
+  - UDP multicasts for "ligthouse"
+  - Nagle needs to follow NODELAY flags, now always disabled
+  - Blocking mode, do we take it completely our or implement it?
+  - WiFiMulti to allow automatic switching between several known wifi networks.
+
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.

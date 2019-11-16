@@ -9,7 +9,7 @@
   Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash,
   in case EEPROM omulation.
 
-  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.

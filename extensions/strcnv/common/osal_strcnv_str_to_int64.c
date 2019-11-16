@@ -8,7 +8,7 @@
 
   Function osal_str_to_int64() to convert string to 64 bit integer.
 
-  Copyright 2012 - 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.
