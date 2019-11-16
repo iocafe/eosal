@@ -44,29 +44,29 @@ osalNetworkInterface osal_net_iface
  */
 os_boolean osal_sockets_initialized = OS_FALSE;
 
-/* WiFi connected flag.
- */
-os_boolean osal_wifi_connected = OS_FALSE;
+#define OSAL_MYCLIENT WiFiClient
+#define OSAL_MYSERVER WiFiServer
+#define OSAL_MYUDP WiFiUDP
 
 /* Client sockets.
  */
 #define OSAL_MAX_CLIENT_SOCKETS 6
-static WiFiClient osal_client[OSAL_MAX_CLIENT_SOCKETS];
+static OSAL_MYCLIENT osal_client[OSAL_MAX_CLIENT_SOCKETS];
 static os_boolean osal_client_used[OSAL_MAX_CLIENT_SOCKETS];
 
 /* Listening server sockets.
  */
 #define OSAL_MAX_SERVER_SOCKETS 2
-static WiFiServer osal_server[OSAL_MAX_SERVER_SOCKETS]
-    = {WiFiServer(IOC_DEFAULT_SOCKET_PORT),
-       WiFiServer(IOC_DEFAULT_SOCKET_PORT+1)};
+static OSAL_MYSERVER osal_server[OSAL_MAX_SERVER_SOCKETS]
+    = {OSAL_MYSERVER(IOC_DEFAULT_SOCKET_PORT),
+       OSAL_MYSERVER(IOC_DEFAULT_SOCKET_PORT+1)};
 static os_boolean osal_server_used[OSAL_MAX_SERVER_SOCKETS];
 
 
 /* UDP sockets.
  */
 /* #define OSAL_MAX_UDP_SOCKETS 2
-static WiFiUDP osal_udp[OSAL_MAX_UDP_SOCKETS];
+static OSAL_MYUDP osal_udp[OSAL_MAX_UDP_SOCKETS];
 static os_boolean osal_udp_used[OSAL_MAX_UDP_SOCKETS];
 */
 
@@ -113,22 +113,6 @@ typedef struct osalSocket
     /** Wiznet chip's or other socket port index.
      */
     MY_SOCKIX_TYPE sockindex;
-
-    /** Ring buffer, OS_NULL if not used.
-     */
-    os_char *buf;
-
-    /** Buffer size in bytes.
-     */
-    os_short buf_sz;
-
-    /** Head index. Position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
-     */
-    os_short head;
-
-    /** Tail index. Position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
-     */
-    os_short tail;
 }
 osalSocket;
 
@@ -139,16 +123,6 @@ static osalSocket osal_socket[OSAL_MAX_SOCKETS];
 
 /* Prototypes for forward referred static functions.
  */
-static void osal_socket_setup_ring_buffer(
-    osalSocket *mysocket);
-
-static osalStatus osal_socket_write2(
-    osalSocket *mysocket,
-    const os_char *buf,
-    os_memsz n,
-    os_memsz *n_written,
-    os_int flags);
-
 static os_short osal_get_unused_socket(void);
 static os_short osal_get_unused_client(void);
 static os_short osal_get_unused_server(void);
@@ -294,10 +268,6 @@ osalStream osal_socket_open(
             goto getout;
         }
 
-        osal_client[ix].setNoDelay(true);
-        osal_client[ix].setTimeout(0);
-        osal_socket_setup_ring_buffer(mysocket);
-
         osal_client_used[ix] = OS_TRUE;
         mysocket->use = OSAL_SOCKET_CLIENT;
         mysocket->index = ix;
@@ -318,17 +288,6 @@ getout:
 	 */
     if (status) *status = rval;
 	return OS_NULL;
-}
-
-
-static void osal_socket_setup_ring_buffer(
-    osalSocket *mysocket)
-{
-    os_memsz sz;
-
-   /* 1760 selected for TCP sockets, foced over TCP packet size limit */
-    mysocket->buf = os_malloc(1760, &sz);
-    mysocket->buf_sz = sz;
 }
 
 
@@ -375,10 +334,7 @@ void osal_socket_close(
             break;
     }
 
-    /* Free ring buffer, if any, and mark socket unused (clear whole struct to be safe).
-     */
-    os_free(mysocket->buf, mysocket->buf_sz);
-    os_memclear(mysocket, sizeof(osalSocket));
+    mysocket->use = OSAL_SOCKET_UNUSED;
 }
 
 
@@ -478,10 +434,6 @@ osalStream osal_socket_accept(
 
         if (remote_ip_addr) *remote_ip_addr = '\0';
 
-        osal_client[cix].setNoDelay(true);
-        osal_client[cix].setTimeout(0);
-        osal_socket_setup_ring_buffer(mysocket);
-
         /* Return socket pointer.
          */
         return (osalStream)mysocket;
@@ -520,45 +472,7 @@ osalStatus osal_socket_flush(
 	osalStream stream,
 	os_int flags)
 {
-    osalSocket *mysocket;
-    os_short head, tail, wrnow;
-    os_memsz nwr;
-    osalStatus status;
-
-    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-
-    mysocket = (osalSocket*)stream;
-    head = mysocket->head;
-    tail = mysocket->tail;
-    if (head != tail)
-    {
-        if (head < tail)
-        {
-            wrnow = mysocket->buf_sz - tail;
-            status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
-            if (status) return status;
-            if (nwr == wrnow) tail = 0;
-            else tail += (os_short)nwr;
-        }
-
-        if (head > tail)
-        {
-            wrnow = head - tail;
-            status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
-            if (status) return status;
-            tail += (os_short)nwr;
-        }
-
-        if (tail == head)
-        {
-            tail = head = 0;
-        }
-
-        mysocket->head = head;
-        mysocket->tail = tail;
-    }
-
-    return OSAL_SUCCESS;
+	return OSAL_SUCCESS;
 }
 
 
@@ -568,7 +482,7 @@ osalStatus osal_socket_flush(
   @brief Write data to socket.
   @anchor osal_socket_write
 
-  The osal_socket_write2() function writes up to n bytes of data from buffer to socket.
+  The osal_socket_write() function writes up to n bytes of data from buffer to socket.
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
@@ -583,18 +497,25 @@ osalStatus osal_socket_flush(
 
 ****************************************************************************************************
 */
-static osalStatus osal_socket_write2(
-    osalSocket *mysocket,
+osalStatus osal_socket_write(
+    osalStream stream,
     const os_char *buf,
 	os_memsz n,
 	os_memsz *n_written,
 	os_int flags)
 {
+    osalSocket *mysocket;
     os_int bytes;
     os_short ix;
 
     *n_written = 0;
 
+    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
+    mysocket = (osalSocket*)stream;
+    if (mysocket->use != OSAL_SOCKET_CLIENT)
+    {
+        return OSAL_STATUS_FAILED;
+    }
     ix = mysocket->index;
 
     if (!osal_client[ix].connected())
@@ -622,138 +543,6 @@ static osalStatus osal_socket_write2(
 #endif
 
     return OSAL_SUCCESS;
-}
-
-
-
-/**
-****************************************************************************************************
-
-  @brief Write data to socket.
-  @anchor osal_socket_write
-
-  The osal_socket_write() function writes up to n bytes of data from buffer to socket.
-
-  @param   stream Stream pointer representing the socket.
-  @param   buf Pointer to the beginning of data to place into the socket.
-  @param   n Maximum number of bytes to write.
-  @param   n_written Pointer to integer into which the function stores the number of bytes
-           actually written to socket,  which may be less than n if there is not enough space
-           left in the socket. If the function fails n_written is set to zero.
-  @param   flags Flags for the function.
-           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-****************************************************************************************************
-*/
-osalStatus osal_socket_write(
-    osalStream stream,
-    const os_char *buf,
-    os_memsz n,
-    os_memsz *n_written,
-    os_int flags)
-{
-    os_int count, wrnow;
-    osalSocket *mysocket;
-    osalStatus status;
-    os_char *rbuf;
-    os_short head, tail, buf_sz, nexthead;
-    os_memsz nwr;
-    os_boolean all_not_flushed;
-
-    if (stream)
-    {
-        /* Cast stream pointer to socket structure pointer.
-         */
-        mysocket = (osalSocket*)stream;
-        osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
-
-        /* Check for errorneous arguments.
-         */
-        if (n < 0 || buf == OS_NULL)
-        {
-            status = OSAL_STATUS_FAILED;
-            goto getout;
-        }
-
-        /* Special case. Writing 0 bytes will trigger write callback by worker thread.
-         */
-        if (n == 0)
-        {
-            status = OSAL_SUCCESS;
-            goto getout;
-        }
-
-        if (mysocket->buf)
-        {
-            rbuf = mysocket->buf;
-            buf_sz = mysocket->buf_sz;
-            head = mysocket->head;
-            tail = mysocket->tail;
-            all_not_flushed = OS_FALSE;
-            count = 0;
-
-            while (osal_go())
-            {
-                while (n > 0)
-                {
-                    nexthead = head + 1;
-                    if (nexthead >= buf_sz) nexthead = 0;
-                    if (nexthead == tail) break;
-                    rbuf[head] = *(buf++);
-                    head = nexthead;
-                    n--;
-                    count++;
-                }
-
-                if (n == 0 || all_not_flushed)
-                {
-                    break;
-                }
-
-                if (head < tail)
-                {
-                    wrnow = buf_sz - tail;
-
-                    status = osal_socket_write2(mysocket, rbuf+tail, wrnow, &nwr, flags);
-                    if (status) goto getout;
-                    if (nwr == wrnow) tail = 0;
-                    else tail += (os_short)nwr;
-                }
-
-                if (head > tail)
-                {
-                    wrnow = head - tail;
-
-                    status = osal_socket_write2(mysocket, rbuf+tail, wrnow, &nwr, flags);
-                    if (status) goto getout;
-                    tail += (os_short)nwr;
-                }
-
-                if (tail == head)
-                {
-                    tail = head = 0;
-                }
-                else
-                {
-                    all_not_flushed = OS_TRUE;
-                }
-            }
-
-            mysocket->head = head;
-            mysocket->tail = tail;
-            *n_written = count;
-            return OSAL_SUCCESS;
-        }
-
-        return osal_socket_write2(mysocket, buf, n, n_written, flags);
-    }
-    status = OSAL_STATUS_FAILED;
-
-getout:
-    *n_written = 0;
-    return status;
 }
 
 
@@ -828,6 +617,58 @@ osalStatus osal_socket_read(
 
     *n_read = bytes;
     return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get socket parameter.
+  @anchor osal_socket_get_parameter
+
+  The osal_socket_get_parameter() function gets a parameter value.
+
+  @param   stream Stream pointer representing the socket.
+  @param   parameter_ix Index of parameter to get.
+		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+  @return  Parameter value.
+
+****************************************************************************************************
+*/
+os_long osal_socket_get_parameter(
+	osalStream stream,
+	osalStreamParameterIx parameter_ix)
+{
+	/* Call the default implementation
+	 */
+	return osal_stream_default_get_parameter(stream, parameter_ix);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Set socket parameter.
+  @anchor osal_socket_set_parameter
+
+  The osal_socket_set_parameter() function gets a parameter value.
+
+  @param   stream Stream pointer representing the socket.
+  @param   parameter_ix Index of parameter to get.
+		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+  @param   value Parameter value to set.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_socket_set_parameter(
+	osalStream stream,
+	osalStreamParameterIx parameter_ix,
+	os_long value)
+{
+	/* Call the default implementation
+	 */
+	osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -1033,7 +874,6 @@ void osal_socket_initialize(
         mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
 
     osal_sockets_initialized = OS_TRUE;
-    os_memclear(osal_socket, sizeof(osal_socket));
     os_memclear(osal_client_used, sizeof(osal_client_used));
     os_memclear(osal_server_used, sizeof(osal_server_used));
 
@@ -1060,7 +900,7 @@ void osal_socket_initialize(
 
      WiFi.mode(WIFI_STA);
      WiFi.disconnect();
-     osal_wifi_connected = (os_boolean)(WiFi.status() == WL_CONNECTED);
+     WiFi.status() == WL_CONNECTED;
      delay(100);
 
     /* Start the WiFi.
@@ -1153,8 +993,8 @@ const osalStreamInterface osal_socket_iface
 	osal_socket_read,
 	osal_stream_default_write_value,
 	osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
-    osal_stream_default_set_parameter,
+	osal_socket_get_parameter,
+	osal_socket_set_parameter,
     OS_NULL};
 
 #endif
