@@ -692,7 +692,7 @@ osalStatus osal_socket_write(
         
         rval = send(handle, buf, (int)n, MSG_NOSIGNAL);
 
-        if (rval == -1)
+        if (rval < 0)
 		{
             if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 			{
