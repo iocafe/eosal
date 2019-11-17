@@ -32,6 +32,7 @@
 #include <sched.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <limits.h>
 
 
 /** Intermediate parameter structure when creating a new Linux thread.
@@ -171,7 +172,7 @@ osalThreadHandle *osal_thread_create(
         if (opt->priority) linprm.priority = opt->priority;
         if (opt->stack_size)
         {
-            stack_size + opt->stack_size;
+            stack_size = opt->stack_size;
             if (stack_size < PTHREAD_STACK_MIN) stack_size = PTHREAD_STACK_MIN;
             pthread_attr_setstacksize(&attrib, opt->stack_size);
         }

@@ -66,7 +66,7 @@ osalStatus osal_threads_example_2_main(
 
     os_memclear(&myprm, sizeof(myprm));
 
-    handle = osal_thread_create(my_thread_2_func, &myprm, OSAL_THREAD_ATTACHED, 0, "mythread1");
+    handle = osal_thread_create(my_thread_2_func, &myprm, OS_NULL, OSAL_THREAD_ATTACHED);
 
 	os_sleep(2000);
 

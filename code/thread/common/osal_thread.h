@@ -254,7 +254,7 @@ osalThreadOptParams;
 #else
     /* Macros to do nothing if OSAL_MULTITHREAD_SUPPORT is not selected.
      */
-    #define osal_thread_create(f,p,l,s,n) OS_NULL
+    #define osal_thread_create(f,p,o,l) OS_NULL
     #define osal_thread_join(h)
     #define osal_thread_set_priority(p) OSAL_SUCCESS
     #define osal_thread_get_id(r) 0

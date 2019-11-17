@@ -1587,6 +1587,8 @@ void osal_socket_initialize(
     osalNetworkInterface *nic,
     os_int n_nics)
 {
+    osalThreadOptParams opt;
+
     os_memclear(&osal_lwip, sizeof(osal_lwip));
     os_memclear(osal_sock, sizeof(osal_sock));
 
@@ -1612,8 +1614,14 @@ void osal_socket_initialize(
 
     osal_socket_initialize_2();
 
+    os_memclear(&opt, sizeof(opt));
+    opt.thread_name = "lwip_thread";
+    opt.stack_size = 8000;
+    opt.pin_to_core = OS_TRUE;
+    opt.pin_to_core_nr = 0;
+
     osal_thread_create(osal_socket_lwip_thread,
-        OS_NULL, OSAL_THREAD_DETACHED, 8000, "lwip_thread");
+        OS_NULL, *opt, OSAL_THREAD_DETACHED);
 #else
     osal_socket_initialize_2();
 #endif

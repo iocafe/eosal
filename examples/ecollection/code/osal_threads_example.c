@@ -58,7 +58,7 @@ osalStatus osal_threads_example_main(
 
     os_memclear(&myprm, sizeof(myprm));
 
-    osal_thread_create(my_thread_1_func, &myprm, OSAL_THREAD_DETACHED, 0, "mythread1");
+    osal_thread_create(my_thread_1_func, &myprm, OS_NULL, OSAL_THREAD_DETACHED);
 
     return OSAL_SUCCESS;
 }

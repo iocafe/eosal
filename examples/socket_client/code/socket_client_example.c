@@ -249,8 +249,7 @@ osalStatus osal_main(
      */
     os_memclear(&mythreadprm, sizeof(mythreadprm));
     mythreadprm.myevent = osal_event_create();
-    mythread = osal_thread_create(mythread_func, &mythreadprm,
-        OSAL_THREAD_ATTACHED, 0, "mythread");
+    mythread = osal_thread_create(mythread_func, &mythreadprm, OS_NULL, OSAL_THREAD_ATTACHED);
 
     /* Read keyboard and set event if key pressed.
      */
