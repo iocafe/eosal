@@ -10,6 +10,15 @@
   using Arduino's wifi socket API. This work in both single and multi threaded systems,
   but all sockets need to be handled by one thread.
 
+  Features:
+  - WiFiMulti to allows automatic switching between two known wifi networks. Notice that if
+    two wifi networks are specified in NIC connfiguration, then static network configuration
+    cannot be used and DHCP will be enabled.
+
+  Notes:
+    Wifi.config() function in ESP does not follow same argument order as arduino. This
+    can create problem if using static IP address.
+
   MISSING - TO BE DONE
   - How to set up network configuration and topology needs to be decided
   - Static IP configuration missing
@@ -18,7 +27,6 @@
   - UDP multicasts for "ligthouse"
   - Nagle needs to follow NODELAY flags, now always disabled
   - Blocking mode, do we take it completely our or implement it?
-  - WiFiMulti to allow automatic switching between several known wifi networks.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -46,8 +54,11 @@
 #if OSAL_WIFI_MULTI
 #include <WiFiMulti.h>
 WiFiMulti wifiMulti;
-static os_boolean osal_wifi_multi_on;
 #endif
+
+/* Two known wifi networks to select from in NIC configuration.
+ */
+static os_boolean osal_wifi_multi_on = OS_FALSE;
 
 /* The osal_socket_initialize() stores application's network setting here. The values in
    are then used and changed by initialization to reflect initialized state.
@@ -1157,35 +1168,6 @@ static void osal_arduino_ip_from_str(
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary MAC address.
-  @anchor osal_arduino_mac_from_str
-
-  The osal_arduino_mac_from_str() converts string representation of MAC address to binary.
-  If the function fails, binary MAC is left unchanged.
-
-  @param   mac Pointer to byte array into which to store the MAC.
-  @param   str Input, MAC address as string.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_arduino_mac_from_str(
-    byte mac[6],
-    const char* str)
-{
-    os_uchar buf[6];
-    os_short i;
-
-    if (osal_mac_from_str(buf, str) == OSAL_SUCCESS)
-    {
-        for (i = 0; i < sizeof(buf); i++) mac[i] = buf[i];
-    }
-}
-
-
 static String DisplayAddress(IPAddress address)
 {
  return String(address[0]) + "." +
@@ -1219,19 +1201,6 @@ void osal_socket_initialize(
     osalNetworkInterface *nic,
     os_int n_nics)
 {
-//    os_int i;
-
-    /* Initialize only once.
-     */
-    IPAddress
-        ip_address(192, 168, 1, 201),
-        dns_address(8, 8, 8, 8),
-        gateway_address(192, 168, 1, 254),
-        subnet_mask(255, 255, 255, 0);
-
-    byte
-        mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
-
     if (nic == OS_NULL && n_nics < 1)
     {
         osal_debug_error("osal_socket_initialize(): No NIC configuration");
@@ -1245,38 +1214,16 @@ void osal_socket_initialize(
     /* Use WiFiMulti if we have second access point.
      */
     osal_wifi_multi_on = (osal_wifi_nic.wifi_net_name_2[0] != '\0');
-
-    wifiMulti.addAP(osal_wifi_nic.wifi_net_name_1, osal_wifi_nic.wifi_net_password_1);
-    wifiMulti.addAP(osal_wifi_nic.wifi_net_name_2, osal_wifi_nic.wifi_net_password_2);
+    if (osal_wifi_multi_on)
+    {
+        wifiMulti.addAP(osal_wifi_nic.wifi_net_name_1, osal_wifi_nic.wifi_net_password_1);
+        wifiMulti.addAP(osal_wifi_nic.wifi_net_name_2, osal_wifi_nic.wifi_net_password_2);
+    }
 #endif
 
     os_memclear(osal_socket, sizeof(osal_socket));
     os_memclear(osal_client_state, sizeof(osal_client_state));
     os_memclear(osal_server_state, sizeof(osal_server_state));
-
-    osal_arduino_mac_from_str(mac, osal_wifi_nic.mac);
-
-    /* Initialize using static configuration.
-     */
-    osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
-    osal_arduino_ip_from_str(dns_address, osal_wifi_nic.dns_address);
-    osal_arduino_ip_from_str(gateway_address, osal_wifi_nic.gateway_address);
-    osal_arduino_ip_from_str(subnet_mask, osal_wifi_nic.subnet_mask);
-
-    /* Umph, on soft reboot memory is not cleared. This is ugly way
-       to clear the WifiClient and WifiServer objects. May cause problems
-       by calling lwip with illegal handles.
-     */
-/*     for (i=0; i<OSAL_MAX_CLIENT_SOCKETS; i++)
-    {
-        if (osal_client[i] == true)
-            osal_client[i].stop();
-    }
-    for (i=0; i<OSAL_MAX_SERVER_SOCKETS; i++)
-    {
-        if (osal_server[i] == true)
-            osal_server[i].stop();
-    } */
 
     /* Start wifi initialization.
      */
@@ -1343,9 +1290,6 @@ osalStatus osal_is_wifi_initialized(
 {
     osalStatus s;
 
-    const os_char *wifi_net_name = "julian";
-    const os_char *wifi_net_password = "talvi333";
-
     if (!osal_sockets_initialized) return OSAL_STATUS_FAILED;
 
     s = osal_wifi_init_failed_once
@@ -1375,14 +1319,36 @@ osalStatus osal_is_wifi_initialized(
             {
                 /* Start the WiFi.
                  */
-#if OSAL_WIFI_MULTI
                 if (!osal_wifi_multi_on)
                 {
-                    WiFi.begin(wifi_net_name, wifi_net_password);
+                    /* Initialize using static configuration.
+                     */
+                    if (osal_wifi_nic.no_dhcp)
+                    {
+                        /* Some default network parameters.
+                         */
+                        IPAddress
+                            ip_address(192, 168, 199, 199),
+                            dns_address(8, 8, 8, 8),
+                            gateway_address(192, 168, 199, 254),
+                            subnet_mask(255, 255, 255, 0);
+
+                        osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
+                        osal_arduino_ip_from_str(dns_address, osal_wifi_nic.dns_address);
+                        osal_arduino_ip_from_str(gateway_address, osal_wifi_nic.gateway_address);
+                        osal_arduino_ip_from_str(subnet_mask, osal_wifi_nic.subnet_mask);
+
+                        /* Warning: ESP does not follow same argument order as arduino,
+                           one below is for ESP32.
+                         */
+                        if (!WiFi.config(ip_address, gateway_address, subnet_mask, dns_address))
+                        {
+                            osal_debug_error("Static IP configuration failed");
+                        }
+                    }
+
+                    WiFi.begin(osal_wifi_nic.wifi_net_name_1, osal_wifi_nic.wifi_net_password_1);
                 }
-#else
-                WiFi.begin(wifi_net_name, wifi_net_password);
-#endif
 
                 os_get_timer(&osal_wifi_step_timer);
                 osal_wifi_init_step = OSAL_WIFI_INIT_STEP3;
