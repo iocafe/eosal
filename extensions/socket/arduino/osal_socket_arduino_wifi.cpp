@@ -35,21 +35,24 @@
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_WIFI
 
+
+/** Use WifiMulti to automatically select one from known access points. Define 1 or 0.
+ */
+#define OSAL_WIFI_MULTI 1
+
 #include <Arduino.h>
 #include <WiFi.h>
 
-/* Global network setup. Micro-controllers typically have one (or two)
-   network interfaces. The network interface configuration is managed
-   here, not by operating system.
+#if OSAL_WIFI_MULTI
+#include <WiFiMulti.h>
+WiFiMulti wifiMulti;
+static os_boolean osal_wifi_multi_on;
+#endif
+
+/* The osal_socket_initialize() stores application's network setting here. The values in
+   are then used and changed by initialization to reflect initialized state.
  */
-osalNetworkInterface osal_net_iface
-  = {"METAL",              /* host_name */
-     "192.168.1.201",      /* ip_address */
-     "255.255.255.0",      /* subnet_mask */
-     "192.168.1.254",      /* gateway_address */
-     "8.8.8.8",            /* dns_address */
-     "66-7F-18-67-A1-D3",  /* mac */
-     0};                   /* dhcp */
+static osalNetworkInterface osal_wifi_nic;
 
 /* Socket library initialized flag.
  */
@@ -1201,8 +1204,13 @@ static String DisplayAddress(IPAddress address)
   The osal_socket_initialize() initializes the underlying sockets library. This used either DHCP,
   or statical configuration parameters.
 
-  @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
-  @param   n_nics Number of network interfaces in nic array.
+  Network interface configuration must be given to osal_socket_initialize() as when using wifi,
+  because wifi SSID (wifi net name) and password are required to connect.
+
+  @param   nic Pointer to array of network interface structures. A network interface is needed,
+           and The arduino Wifi implemetation
+           supports only one network interface.
+  @param   n_nics Number of network interfaces in nic array. 1 or more, only first NIC used.
   @return  None.
 
 ****************************************************************************************************
@@ -1211,7 +1219,7 @@ void osal_socket_initialize(
     osalNetworkInterface *nic,
     os_int n_nics)
 {
-    os_int i;
+//    os_int i;
 
     /* Initialize only once.
      */
@@ -1224,25 +1232,42 @@ void osal_socket_initialize(
     byte
         mac[6] = {0x66, 0x7F, 0x18, 0x67, 0xA1, 0xD3};
 
-    osal_sockets_initialized = OS_TRUE;
+    if (nic == OS_NULL && n_nics < 1)
+    {
+        osal_debug_error("osal_socket_initialize(): No NIC configuration");
+    }
+    else
+    {
+        os_memcpy(&osal_wifi_nic, nic, sizeof(osalNetworkInterface));
+    }
+
+#if OSAL_WIFI_MULTI
+    /* Use WiFiMulti if we have second access point.
+     */
+    osal_wifi_multi_on = (osal_wifi_nic.wifi_net_name_2[0] != '\0');
+
+    wifiMulti.addAP(osal_wifi_nic.wifi_net_name_1, osal_wifi_nic.wifi_net_password_1);
+    wifiMulti.addAP(osal_wifi_nic.wifi_net_name_2, osal_wifi_nic.wifi_net_password_2);
+#endif
+
     os_memclear(osal_socket, sizeof(osal_socket));
     os_memclear(osal_client_state, sizeof(osal_client_state));
     os_memclear(osal_server_state, sizeof(osal_server_state));
 
-    osal_arduino_mac_from_str(mac, osal_net_iface.mac);
+    osal_arduino_mac_from_str(mac, osal_wifi_nic.mac);
 
     /* Initialize using static configuration.
      */
-    osal_arduino_ip_from_str(ip_address, osal_net_iface.ip_address);
-    osal_arduino_ip_from_str(dns_address, osal_net_iface.dns_address);
-    osal_arduino_ip_from_str(gateway_address, osal_net_iface.gateway_address);
-    osal_arduino_ip_from_str(subnet_mask, osal_net_iface.subnet_mask);
+    osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
+    osal_arduino_ip_from_str(dns_address, osal_wifi_nic.dns_address);
+    osal_arduino_ip_from_str(gateway_address, osal_wifi_nic.gateway_address);
+    osal_arduino_ip_from_str(subnet_mask, osal_wifi_nic.subnet_mask);
 
     /* Umph, on soft reboot memory is not cleared. This is ugly way
        to clear the WifiClient and WifiServer objects. May cause problems
        by calling lwip with illegal handles.
      */
-    for (i=0; i<OSAL_MAX_CLIENT_SOCKETS; i++)
+/*     for (i=0; i<OSAL_MAX_CLIENT_SOCKETS; i++)
     {
         if (osal_client[i] == true)
             osal_client[i].stop();
@@ -1251,7 +1276,7 @@ void osal_socket_initialize(
     {
         if (osal_server[i] == true)
             osal_server[i].stop();
-    }
+    } */
 
     /* Start wifi initialization.
      */
@@ -1350,7 +1375,14 @@ osalStatus osal_is_wifi_initialized(
             {
                 /* Start the WiFi.
                  */
+#if OSAL_WIFI_MULTI
+                if (!osal_wifi_multi_on)
+                {
+                    WiFi.begin(wifi_net_name, wifi_net_password);
+                }
+#else
                 WiFi.begin(wifi_net_name, wifi_net_password);
+#endif
 
                 os_get_timer(&osal_wifi_step_timer);
                 osal_wifi_init_step = OSAL_WIFI_INIT_STEP3;
@@ -1359,7 +1391,18 @@ osalStatus osal_is_wifi_initialized(
             break;
 
         case OSAL_WIFI_INIT_STEP3:
+#if OSAL_WIFI_MULTI
+            if (!osal_wifi_multi_on)
+            {
+                osal_wifi_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
+            }
+            else
+            {
+                osal_wifi_connected = (os_boolean) (wifiMulti.run() == WL_CONNECTED);
+            }
+#else
             osal_wifi_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
+#endif
 
             /* If no change in connection status:
                - If we are connected or connection has never failed (boot), or
@@ -1378,7 +1421,8 @@ osalStatus osal_is_wifi_initialized(
                     s = OSAL_STATUS_FAILED;
                 }
 
-                else {
+                else
+                {
                     if (os_elapsed(&osal_wifi_step_timer, 8000))
                     {
                         osal_wifi_init_failed_now = OS_TRUE;
@@ -1402,7 +1446,7 @@ osalStatus osal_is_wifi_initialized(
             if (osal_wifi_connected)
             {
                 s = OSAL_SUCCESS;
-                osal_trace("Wifi network connected");
+                osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
                 osal_socket_on_wifi_connect();
 
 #if OSAL_TRACE

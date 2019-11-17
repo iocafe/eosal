@@ -80,10 +80,13 @@ typedef struct
        x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
     */
     os_char mac[OSAL_MAC_SZ];
-    os_char dhcp;
+    os_char no_dhcp;
 
-    os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
-    os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_name_1[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_password_1[OSAL_WIFI_PRM_SZ];
+
+    os_char wifi_net_name_2[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_password_2[OSAL_WIFI_PRM_SZ];
 }
 osalNetworkInterface;
 
