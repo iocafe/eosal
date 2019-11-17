@@ -170,7 +170,7 @@ osalThreadHandle *osal_thread_create(
     if (opt)
     {
         if (opt->priority) winprm.priority = opt->priority;
-        if (opt->stack_size) stack_size = opt->stack_size;
+        if (opt->stack_size) stack_size = (SIZE_T)opt->stack_size;
     }
 
     /* Call Windows to create and start the new thread.
