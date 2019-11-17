@@ -23,11 +23,6 @@
 #include <task.h>
 
 
-/* Forward referred static functions.
- */
-static UBaseType_t osal_thread_priority_to_rt_priority(
-    osalThreadPriority priority);
-
 /**
 ****************************************************************************************************
 
@@ -62,7 +57,8 @@ osalStatus osal_thread_set_priority(
 {
     /* Get current thread handle and set thread priority.
      */
-    vTaskPrioritySet(xTaskGetCurrentTaskHandle(), osal_thread_priority_to_rt_priority(priority));
+    vTaskPrioritySet(xTaskGetCurrentTaskHandle(),
+        (UBaseType_t)osal_thread_priority_to_sys_priority(priority));
 
     /* Success.
      */
@@ -75,7 +71,7 @@ osalStatus osal_thread_set_priority(
 
   @brief Convert OSAL thread priority to FreeRTOS thread priority.
 
-  The osal_thread_priority_to_rt_priority function converts OSAL thread priority to linux
+  The osal_thread_priority_to_sys_priority function converts OSAL thread priority to FreeRTOS
   thread priority number. For portability the OSAL has it's own thread priority enumeration,
   and this function translated these for linux.
 
@@ -87,10 +83,10 @@ osalStatus osal_thread_set_priority(
 
 ****************************************************************************************************
 */
-static UBaseType_t osal_thread_priority_to_rt_priority(
+os_int osal_thread_priority_to_sys_priority(
     osalThreadPriority priority)
 {
-    int rtpriority;
+    os_int rtpriority;
 
     switch (priority)
     {
@@ -112,7 +108,7 @@ static UBaseType_t osal_thread_priority_to_rt_priority(
             break;
 
         case OSAL_THREAD_PRIORITY_TIME_CRITICAL:
-            rtpriority = 30;
+            rtpriority = 6;
             break;
     }
 

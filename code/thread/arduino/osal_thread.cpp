@@ -100,6 +100,8 @@ static void osal_thread_intermediate_func(
            own memory, and then calling osal_event_set() to set done event to allow the
            calling thread to proceed. If no parameters are needed, this can be OS_NULL,
            but even then entry point function must set done event.
+  @param   opt Pointer to thread options structure, like thread name, stack size, etc.  Can
+           be set to OS_NULL to use defaults.
   @param   Flags OSAL_THREAD_ATTACHED or OSAL_THREAD_DETACHED given to osal_thread_create sets is
 		   the newly created thread is to be attached to the thread which created this one.
 		   If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
@@ -109,11 +111,6 @@ static void osal_thread_intermediate_func(
 		   If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
 		   created it. The osal_thread_create() returns OS_NULL and join or request exit functions
 		   are not available.
-  @param   stack_size Initial stack size in bytes for the new thread. Value 0 creates thread
-           with default stack size for operating system.
-  @param   name Name for the new thread. Some operating systems allow naming
-           threads, which is very useful for debugging. If no name is needed this can be
-           set to OS_NULL.
 
   @return  Pointer to thread handle if OSAL_THREAD_ATTACHED flags is given, or OS_NULL otherwise.
 
@@ -122,14 +119,19 @@ static void osal_thread_intermediate_func(
 osalThreadHandle *osal_thread_create(
 	osal_thread_func *func,
 	void *prm,
-	os_int flags,
-	os_memsz stack_size,
-	const os_char *name)
+    osalThreadOptParams *opt,
+    os_int flags)
 {
     osalArduinoThreadPrms thrprm;
     TaskHandle_t th = OS_NULL;
     osalArduinoThreadHandle *handle = OS_NULL;
+    osalThreadPriority priority = OSAL_THREAD_PRIORITY_NORMAL;
+    os_memsz stack_size = 4000;
+    os_boolean pin_to_core = OS_FALSE;
+    os_short pin_to_core_nr = 0;
+    const os_char *thread_name = "osal";
     BaseType_t s;
+    UBaseType_t rtpriority;
 
     /* Save pointers to thread entry point function and to parameters into
        thread creation parameter structure.
@@ -166,17 +168,33 @@ osalThreadHandle *osal_thread_create(
         return OS_NULL;
     }
 
+    /* Process options, if any
+     */
+    if (opt)
+    {
+        if (opt->priority) priority = opt->priority;
+        if (opt->thread_name) thread_name = opt->thread_name;
+        if (opt->stack_size) stack_size = opt->stack_size;
+
+        pin_to_core = opt->pin_to_core;
+        pin_to_core_nr = opt->pin_to_core_nr;
+    }
+    rtpriority = (UBaseType_t)osal_thread_priority_to_sys_priority(priority);
+
     /* Call FreeRTOS to create and start the new thread.
      * FreeRTOS takes stack size as words, so divide by 2
      */
-    /* s = xTaskCreate(osal_thread_intermediate_func, name,
-        stack_size/2, &thrprm,
-        3 , &th);
-    */  /* 3 = uxPriority */
-
-    s = xTaskCreatePinnedToCore(osal_thread_intermediate_func, name,
-        stack_size/2, &thrprm, 5 /* uxPriority */, &th,
-        0 /* Core where the task should run */);
+    if (pin_to_core)
+    {
+        s = xTaskCreatePinnedToCore(osal_thread_intermediate_func, thread_name,
+            stack_size/2, &thrprm, rtpriority, &th,
+            pin_to_core_nr);
+    }
+    else
+    {
+        s = xTaskCreate(osal_thread_intermediate_func, thread_name,
+            stack_size/2, &thrprm, rtpriority, &th);
+    }
 
     /* If thread creation fails, then return error code.
      */

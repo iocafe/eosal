@@ -98,6 +98,8 @@ static void *osal_thread_intermediate_func(
            own memory, and then calling osal_event_set() to set done event to allow the
            calling thread to proceed. If no parameters are needed, this can be OS_NULL,
            but even then entry point function must set done event.
+  @param   opt Pointer to thread options structure, like thread name, stack size, etc.  Can
+           be set to OS_NULL to use defaults.
   @param   Flags OSAL_THREAD_ATTACHED or OSAL_THREAD_DETACHED given to osal_thread_create sets is
 		   the newly created thread is to be attached to the thread which created this one.
 		   If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
@@ -107,11 +109,6 @@ static void *osal_thread_intermediate_func(
 		   If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
 		   created it. The osal_thread_create() returns OS_NULL and join or request exit functions
 		   are not available.
-  @param   stack_size Initial stack size in bytes for the new thread. Value 0 creates thread
-           with default stack size for operating system.
-  @param   name Name for the new thread. Some operating systems allow naming
-           threads, which is very useful for debugging. If no name is needed this can be
-           set to OS_NULL.
 
   @return  Pointer to thread handle if OSAL_THREAD_ATTACHED flags is given, or OS_NULL otherwise.
 
@@ -120,9 +117,8 @@ static void *osal_thread_intermediate_func(
 osalThreadHandle *osal_thread_create(
 	osal_thread_func *func,
 	void *prm,
-	os_int flags,
-	os_memsz stack_size,
-	const os_char *name)
+    osalThreadOptParams *opt,
+    os_int flags)
 {
     osalLinuxThreadPrms linprm;
     osalLinuxThreadHandle *handle;

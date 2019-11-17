@@ -22,7 +22,7 @@
 /* Forward referred static functions.
  */
 #if OSAL_MULTITHREAD_SUPPORT
-static int osal_thread_priority_to_windows_priority(
+static int osal_thread_priority_to_sys_priority(
     osalThreadPriority priority);
 #endif
 
@@ -69,7 +69,7 @@ osalStatus osal_thread_set_priority(
     /* Set thread priority
      */
     if (!SetThreadPriority(hThread,
-       osal_thread_priority_to_windows_priority(priority)))
+       osal_thread_priority_to_sys_priority(priority)))
     {
         osal_debug_error("SetThreadPriority() failed");
         return OSAL_STATUS_THREAD_SET_PRIORITY_FAILED;
@@ -87,7 +87,7 @@ osalStatus osal_thread_set_priority(
 
   @brief Convert OSAL thread priority to Windows thread priority.
 
-  The osal_thread_priority_to_windows_priority function converts OSAL thread priority to Windows
+  The osal_thread_priority_to_sys_priority function converts OSAL thread priority to Windows
   thread priority number. For portability the OSAL has it's own thread priority enumeration,
   and this function translated these for Windows.
 
@@ -101,7 +101,7 @@ osalStatus osal_thread_set_priority(
 ****************************************************************************************************
 */
 #if OSAL_MULTITHREAD_SUPPORT
-static int osal_thread_priority_to_windows_priority(
+static int osal_thread_priority_to_sys_priority(
     osalThreadPriority priority)
 {
     int winpriority;

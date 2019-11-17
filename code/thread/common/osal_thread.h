@@ -166,6 +166,45 @@ osalThreadHandle;
 /*@}*/
 
 
+/**
+****************************************************************************************************
+
+  @name Optional thread parameters
+
+  This parameter structure can be given when creating a new thread. It contains opetional
+  and some platform dependent settings for a new thread. Allocate this structure from stack,
+  ose oe_memclear to fill it with zeros and set only parameters you want to modify from defaults.
+
+****************************************************************************************************
+ */
+typedef struct osalThreadOptParams
+{
+    /** Name for the new thread. Some operating systems allow naming threads, which is very
+        useful for debugging. If no name is needed this can be NULL.
+     */
+    const os_char *thread_name;
+
+    /** Stack size for the new thread in bytes. Value 0 creates thread with default stack
+        size for operating system.
+     */
+    os_memsz stack_size;
+
+    /** Priority for the new threa, for example OSAL_THREAD_PRIORITY_NORMAL. If zero, default
+       is used.
+     */
+    osalThreadPriority priority;
+
+    /** Pin thread to specific processor core.
+     */
+    os_boolean pin_to_core;
+
+    /** Core number to pin to if pin_to_core is set.
+     */
+    os_short pin_to_core_nr;
+}
+osalThreadOptParams;
+
+
 /** 
 ****************************************************************************************************
 
@@ -184,9 +223,8 @@ osalThreadHandle;
     osalThreadHandle *osal_thread_create(
         osal_thread_func *func,
         void *prm,
-	    os_int flags,
-        os_memsz stack_size,
-        const os_char *name);
+        osalThreadOptParams *opt,
+        os_int flags);
 
     /* Join worker thread to this thread (one which created the worker)
        Releases thread handle.
@@ -207,6 +245,11 @@ osalThreadHandle;
     /* Sleep until end of time slice.
      */
     void os_timeslice(void);
+
+    /* Convert OSAL thread priority to underlyin OS priority number.
+     */
+    os_int osal_thread_priority_to_sys_priority(
+        osalThreadPriority priority);
 
 #else
     /* Macros to do nothing if OSAL_MULTITHREAD_SUPPORT is not selected.

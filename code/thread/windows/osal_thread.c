@@ -43,6 +43,10 @@ typedef struct
      */
     void *prm;
 
+    /** Priority for the new thread.
+     */
+    osalThreadPriority priority;
+
     /** Event to set when parameters have been copied to entry point functions own memory.
      */
     osalEvent done;
@@ -66,8 +70,6 @@ osalWindowsThreadHandle;
 static DWORD WINAPI osal_thread_intermediate_func(
   LPVOID lpParameter);
 
-static int osal_thread_priority_to_windows_priority(
-    osalThreadPriority priority);
 #endif
 
 
@@ -98,6 +100,8 @@ static int osal_thread_priority_to_windows_priority(
            own memory, and then calling osal_event_set() to set done event to allow the
            calling thread to proceed. If no parameters are needed, this can be OS_NULL,
            but even then entry point function must set done event.
+  @param   opt Pointer to thread options structure, like thread name, stack size, etc.  Can
+           be set to OS_NULL to used defaults.
   @param   Flags OSAL_THREAD_ATTACHED or OSAL_THREAD_DETACHED given to osal_thread_create sets is
 		   the newly created thread is to be attached to the thread which created this one.
 		   If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
@@ -107,11 +111,6 @@ static int osal_thread_priority_to_windows_priority(
 		   If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
 		   created it. The osal_thread_create() returns OS_NULL and join or request exit functions
 		   are not available.
-  @param   stack_size Initial stack size in bytes for the new thread. Value 0 creates thread
-           with default stack size for operating system.
-  @param   name Name for the new thread. Some operating systems allow naming
-           threads, which is very useful for debugging. If no name is needed this can be
-           set to OS_NULL.
 
   @return  Pointer to thread handle if OSAL_THREAD_ATTACHED flags is given, or OS_NULL otherwise.
 
@@ -120,9 +119,8 @@ static int osal_thread_priority_to_windows_priority(
 osalThreadHandle *osal_thread_create(
 	osal_thread_func *func,
 	void *prm,
-	os_int flags,
-	os_memsz stack_size,
-	const os_char *name)
+    osalThreadOptParams *opt,
+    os_int flags)
 {
     HANDLE 
 		thread_handle;
@@ -135,6 +133,9 @@ osalThreadHandle *osal_thread_create(
 
 	osalWindowsThreadHandle
 		*handle;
+
+    SIZE_T
+         stack_size = 0; /* 0 = use Windows default for .exe */
 
     /* Save pointers to thread entry point function and to parameters into
        thread creation parameter structure.
@@ -163,14 +164,19 @@ osalThreadHandle *osal_thread_create(
 		handle = OS_NULL;
 	}
 
+    /* Process options, if any.
+     */
+    winprm.priority = OSAL_THREAD_PRIORITY_NORMAL;
+    if (opt)
+    {
+        if (opt->priority) winprm.priority = opt->priority;
+        if (opt->stack_size) stack_size = opt->stack_size;
+    }
+
     /* Call Windows to create and start the new thread.
      */
-    thread_handle = CreateThread(NULL,
-        (SIZE_T)stack_size,
-        osal_thread_intermediate_func,
-        &winprm,
-        0,
-        &thread_id);
+    thread_handle = CreateThread(NULL, stack_size, osal_thread_intermediate_func,
+        &winprm, 0, &thread_id);
 
     /* If thread creation fails, then return error code.
      */
@@ -235,13 +241,13 @@ static DWORD WINAPI osal_thread_intermediate_func(
     osalWindowsThreadPrms
         *winprm;
 
-    /* Make sure that we are running on normal thread priority.
-     */
-    osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
-
     /* Cast the pointer
      */
     winprm = (osalWindowsThreadPrms*)lpParameter;
+
+    /* Use specified thread priotity.
+     */
+    osal_thread_set_priority(winprm->priority);
 
     /* Call the final thread entry point function.
      */
