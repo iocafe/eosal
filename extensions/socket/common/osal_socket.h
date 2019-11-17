@@ -75,6 +75,7 @@ typedef struct
     os_char subnet_mask[OSAL_IPADDR_SZ];
     os_char gateway_address[OSAL_IPADDR_SZ];
     os_char dns_address[OSAL_IPADDR_SZ];
+    os_char dns_address_2[OSAL_IPADDR_SZ];
 
     /* Locally administered MAC address ranges safe for testing: x2:xx:xx:xx:xx:xx,
        x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx

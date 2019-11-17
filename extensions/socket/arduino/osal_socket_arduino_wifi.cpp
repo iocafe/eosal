@@ -16,12 +16,13 @@
     cannot be used and DHCP will be enabled.
 
   Notes:
-    Wifi.config() function in ESP does not follow same argument order as arduino. This
+  - Wifi.config() function in ESP does not follow same argument order as arduino. This
     can create problem if using static IP address.
+  - Static WiFi IP address doesn't work for ESP32. This seems to be a bug in espressif Arduino
+    support (replacing success check with 15 sec delay will patch it). Wait for espressif
+    updates, ESP32 is still quite new.
 
   MISSING - TO BE DONE
-  - How to set up network configuration and topology needs to be decided
-  - Static IP configuration missing
   - Listening and accepting sockets
   - DNS to resolve host names
   - UDP multicasts for "ligthouse"
@@ -1302,6 +1303,7 @@ osalStatus osal_is_wifi_initialized(
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
                become unnecessary at some point.
              */
+            WiFi.mode(WIFI_OFF);
             WiFi.mode(WIFI_STA);
             WiFi.disconnect();
             WiFi.getMode();
@@ -1328,20 +1330,22 @@ osalStatus osal_is_wifi_initialized(
                         /* Some default network parameters.
                          */
                         IPAddress
-                            ip_address(192, 168, 199, 199),
+                            ip_address(192, 168, 1, 195),
                             dns_address(8, 8, 8, 8),
+                            dns_address_2(0, 0, 0, 0),
                             gateway_address(192, 168, 199, 254),
                             subnet_mask(255, 255, 255, 0);
 
                         osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
                         osal_arduino_ip_from_str(dns_address, osal_wifi_nic.dns_address);
+                        osal_arduino_ip_from_str(dns_address_2, osal_wifi_nic.dns_address_2);
                         osal_arduino_ip_from_str(gateway_address, osal_wifi_nic.gateway_address);
                         osal_arduino_ip_from_str(subnet_mask, osal_wifi_nic.subnet_mask);
 
                         /* Warning: ESP does not follow same argument order as arduino,
                            one below is for ESP32.
                          */
-                        if (!WiFi.config(ip_address, gateway_address, subnet_mask, dns_address))
+                        if (!WiFi.config(ip_address, gateway_address, subnet_mask, dns_address, dns_address_2))
                         {
                             osal_debug_error("Static IP configuration failed");
                         }
