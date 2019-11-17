@@ -112,7 +112,13 @@ osalThreadHandle *osal_thread_create(
 {
     osalMetalThreadPrms thrprm;
     TaskHandle_t handle = NULL;
+    osalThreadPriority priority = OSAL_THREAD_PRIORITY_NORMAL;
+    os_memsz stack_size = 4000;
+    os_boolean pin_to_core = OS_FALSE;
+    os_short pin_to_core_nr = 0;
+    const os_char *thread_name = "osal";
     BaseType_t s;
+    UBaseType_t rtpriority;
 
     /* Save pointers to thread entry point function and to parameters into
        thread creation parameter structure.
@@ -131,13 +137,33 @@ osalThreadHandle *osal_thread_create(
         return OS_NULL;
     }
 
-    /* Call FreeRTOS to create and start the new thread.
+    /* Process options, if any
      */
-    stack_size /= 2;
-    s = xTaskCreate(osal_thread_intermediate_func, name,
-    	stack_size, &thrprm,
-        5 /* uxPriority */, &handle);
+    if (opt)
+    {
+        if (opt->priority) priority = opt->priority;
+        if (opt->thread_name) thread_name = opt->thread_name;
+        if (opt->stack_size) stack_size = opt->stack_size;
 
+        pin_to_core = opt->pin_to_core;
+        pin_to_core_nr = opt->pin_to_core_nr;
+    }
+    rtpriority = (UBaseType_t)osal_thread_priority_to_sys_priority(priority);
+
+    /* Call FreeRTOS to create and start the new thread.
+     * FreeRTOS takes stack size as words, so divide by 2
+     */
+    if (pin_to_core)
+    {
+        s = xTaskCreatePinnedToCore(osal_thread_intermediate_func, thread_name,
+            stack_size/2, &thrprm, rtpriority, &th,
+            pin_to_core_nr);
+    }
+    else
+    {
+        s = xTaskCreate(osal_thread_intermediate_func, thread_name,
+            stack_size/2, &thrprm, rtpriority, &th);
+    }
 
     /* If thread creation fails, then return error code.
      */

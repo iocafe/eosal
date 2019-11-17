@@ -46,6 +46,10 @@ typedef struct
      */
     void *prm;
 
+    /** Priority for the new thread.
+     */
+    osalThreadPriority priority;
+
     /** Event to set when parameters have been copied to entry point functions own memory.
      */
     osalEvent done;
@@ -124,6 +128,7 @@ osalThreadHandle *osal_thread_create(
     osalLinuxThreadHandle *handle;
     pthread_attr_t attrib;
     pthread_t threadh;
+    size_t stack_size;
     int s;
 
     /* Save pointers to thread entry point function and to parameters into
@@ -158,7 +163,19 @@ osalThreadHandle *osal_thread_create(
     pthread_attr_setdetachstate(&attrib,
         handle ? PTHREAD_CREATE_JOINABLE : PTHREAD_CREATE_DETACHED);
 
-    // pthread_attr_setstacksize(&attrib, stack_size);
+    /* Process options, if any.
+     */
+    linprm.priority = OSAL_THREAD_PRIORITY_NORMAL;
+    if (opt)
+    {
+        if (opt->priority) linprm.priority = opt->priority;
+        if (opt->stack_size)
+        {
+            stack_size + opt->stack_size;
+            if (stack_size < PTHREAD_STACK_MIN) stack_size = PTHREAD_STACK_MIN;
+            pthread_attr_setstacksize(&attrib, opt->stack_size);
+        }
+    }
 
     /* Call linux to create and start the new thread.
      */
@@ -222,13 +239,13 @@ static void *osal_thread_intermediate_func(
     osalLinuxThreadPrms
         *linprm;
 
-    /* Make sure that we are running on normal thread priority.
-     */
-    osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
-
     /* Cast the pointer
      */
     linprm = (osalLinuxThreadPrms*)parameters;
+
+    /* Make sure that we are running on normal thread priority.
+     */
+    osal_thread_set_priority(linprm->priority);
 
     /* Call the final thread entry point function.
      */
