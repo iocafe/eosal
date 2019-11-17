@@ -380,7 +380,7 @@ void os_microsleep(
 */
 void os_timeslice(void)
 {
-    usleep(2000);
+    usleep(1000);
 }
 #endif
 
