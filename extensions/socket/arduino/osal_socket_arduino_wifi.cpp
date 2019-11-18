@@ -643,6 +643,7 @@ osalStream osal_socket_accept(
         osal_debug_error("osal_socket: Not a listening socket");
         goto getout;
     }
+    six = mysocket->index;
 
     /* Get first unused osal_socket structure.
      */
@@ -653,7 +654,6 @@ osalStream osal_socket_accept(
         goto getout;
     }
     mysocket = osal_socket + mysocket_ix;
-    six = mysocket->index;
 
     /* Get first unused osal_client index.
      */
@@ -703,8 +703,9 @@ osalStream osal_socket_accept(
         osal_client[cix].setTimeout(0);
         osal_socket_setup_ring_buffer(mysocket);
 
-        /* Return socket pointer.
+        /* Success, return socket pointer.
          */
+        if (status) *status = OSAL_SUCCESS;
         return (osalStream)mysocket;
     }
     rval = OSAL_STATUS_NO_NEW_CONNECTION;

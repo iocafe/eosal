@@ -384,6 +384,7 @@ osalStream osal_socket_accept(
         osal_debug_error("osal_socket: Socket is not listening");
         goto getout;
     }
+    six = mysocket->index;
 
     /* Get first unused osal_socket structure.
      */
@@ -394,7 +395,6 @@ osalStream osal_socket_accept(
         goto getout;
     }
     mysocket = osal_socket + mysocket_ix;
-    six = mysocket->index;
 
     /* Get first unused osal_client index.
      */
