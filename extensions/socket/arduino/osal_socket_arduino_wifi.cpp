@@ -470,7 +470,7 @@ static osalStatus osal_socket_really_listen(
     osal_debug_assert(osal_server_state[ix] == OSAL_PREPARED_STATE);
 
     osal_server[ix].begin((uint16_t)mysocket->port_nr);
-    osal_trace2("Listening socket opened");
+    osal_trace_int("Listening TCP port ", mysocket->port_nr);
 
     osal_server_state[ix] = OSAL_RUNNING_STATE;
     return OSAL_SUCCESS;
@@ -506,6 +506,12 @@ osalStatus osal_socket_check(
     if (mysocket->use == OSAL_SOCKET_CLIENT)
     {
         if (osal_client_state[ix] == OSAL_RUNNING_STATE)
+            return OSAL_SUCCESS;
+    }
+
+    if (mysocket->use == OSAL_SOCKET_SERVER)
+    {
+        if (osal_server_state[ix] == OSAL_RUNNING_STATE)
             return OSAL_SUCCESS;
     }
 
@@ -621,13 +627,20 @@ osalStream osal_socket_accept(
     osalSocket *mysocket;
     os_short mysocket_ix, six, cix, j;
     MY_SOCKIX_TYPE sockindex;
-    osalStatus rval = OSAL_STATUS_FAILED;
+    osalStatus rval = OSAL_STATUS_FAILED, wifi_rval;
 
-    if (stream == OS_NULL) goto getout;
     mysocket = (osalSocket*)stream;
+    wifi_rval = osal_socket_check(mysocket);
+    if (wifi_rval)
+    {
+        rval = (wifi_rval == OSAL_STATUS_PENDING
+            ? OSAL_STATUS_NO_NEW_CONNECTION : wifi_rval);
+        goto getout;
+    }
+
     if (mysocket->use != OSAL_SOCKET_SERVER)
     {
-        osal_debug_error("osal_socket: Socket is not listening");
+        osal_debug_error("osal_socket: Not a listening socket");
         goto getout;
     }
 
@@ -647,7 +660,7 @@ osalStream osal_socket_accept(
     cix = osal_get_unused_client();
     if (cix == OSAL_ALL_USED)
     {
-        osal_debug_error("osal_socket: Too many clients, cannot accept more");
+        osal_debug_error("osal_socket: Too many clients, can't accept more");
         goto getout;
     }
 
