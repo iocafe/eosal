@@ -327,7 +327,6 @@ osalStream osal_socket_open(
             goto getout;
         }
 
-
         mysocket->use = OSAL_SOCKET_SERVER;
         mysocket->index = ix;
         mysocket->sockindex = OSAL_ALL_USED;
@@ -565,7 +564,6 @@ void osal_socket_close(
             break;
 
         case OSAL_SOCKET_SERVER:
-
             switch (osal_server_state[ix])
             {
                 case OSAL_UNUSED_STATE:
