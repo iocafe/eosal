@@ -61,6 +61,10 @@ typedef enum
      */
     OSAL_STATUS_TIMEOUT,
 
+    /** Attempt to call interface function which is not implemented.
+     */
+    OSAL_STATUS_NULL_FUNC,
+
     /** Creating thread failed.
      */
     OSAL_STATUS_THREAD_CREATE_FAILED,

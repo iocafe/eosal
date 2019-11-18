@@ -418,7 +418,7 @@ osalStream osal_socket_accept(
 
         for (j = 0; j<OSAL_MAX_SOCKETS; j++)
         {
-           if (osal_socket[j].use == OSAL_SOCKET_UNUSED) continue;
+           if (osal_socket[j].use != OSAL_SOCKET_UNUSED) continue;
 
            if (sockindex == osal_socket[j].sockindex)
            {

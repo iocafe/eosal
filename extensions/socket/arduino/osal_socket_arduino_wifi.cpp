@@ -23,7 +23,6 @@
     updates, ESP32 is still quite new.
 
   MISSING - TO BE DONE
-  - Listening and accepting sockets
   - DNS to resolve host names
   - UDP multicasts for "ligthouse"
   - Nagle needs to follow NODELAY flags, now always disabled
@@ -563,6 +562,7 @@ void osal_socket_close(
                 case OSAL_RUNNING_STATE:
                 case OSAL_FAILED_STATE:
                     osal_client[ix].stop();
+                    mysocket->sockindex = 0;
                     break;
             }
 
@@ -579,6 +579,7 @@ void osal_socket_close(
 
                 case OSAL_RUNNING_STATE:
                     osal_server[ix].stop();
+                    mysocket->sockindex = 0;
                     break;
             }
             osal_server_state[ix] = OSAL_UNUSED_STATE;
@@ -677,7 +678,7 @@ osalStream osal_socket_accept(
 
         for (j = 0; j<OSAL_MAX_SOCKETS; j++)
         {
-           if (osal_socket[j].use == OSAL_SOCKET_UNUSED) continue;
+           if (j == cix) continue;
 
            if (sockindex == osal_socket[j].sockindex)
            {
@@ -1544,6 +1545,7 @@ void osal_socket_on_wifi_disconnect(
                 if (osal_server_state[ix] != OSAL_RUNNING_STATE) break;
                 osal_server[ix].stop();
                 osal_server_state[ix] = OSAL_FAILED_STATE;
+                mysocket->sockindex = 0;
                 break;
 
             case OSAL_SOCKET_UDP:

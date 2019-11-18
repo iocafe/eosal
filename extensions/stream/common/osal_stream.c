@@ -299,6 +299,8 @@ void osal_stream_set_parameter(
 	}
 }
 
+/* Return value OSAL_STATUS_NULL_FUNC indicates that select is not implemented.
+ */
 osalStatus osal_stream_select(
 	osalStream *streams,
     os_int nstreams,
@@ -309,7 +311,14 @@ osalStatus osal_stream_select(
 {
 	if (nstreams) if (streams[0])
 	{
-        return streams[0]->iface->stream_select(streams, nstreams, evnt, selectdata, timeout_ms, flags);
+        if (streams[0]->iface->stream_select)
+        {
+            return streams[0]->iface->stream_select(streams, nstreams, evnt, selectdata, timeout_ms, flags);
+        }
+        else
+        {
+            return OSAL_STATUS_NULL_FUNC;
+        }
 	}
 
 	return OSAL_STATUS_FAILED;
