@@ -17,13 +17,13 @@
 
 /* Forward referred static functions.
  */
-static osalStatus osal_json_from_text_to_binary(
+static osalStatus osal_json_text_to_binary(
     os_char *src_path,
     os_char *dst_path,
     os_char *skip_tags,
     os_int flags);
 
-static osalStatus osal_json_from_binary_to_text(
+static osalStatus osal_json_binary_to_text(
     os_char *src_path,
     os_char *dst_path);
 
@@ -125,11 +125,11 @@ osalStatus osal_main(
             {
                 extras = osal_stream_buffer_content(extra_args, &extras_sz);
             }
-            s = osal_json_from_text_to_binary(src_path, dst_path, extras, flags);
+            s = osal_json_text_to_binary(src_path, dst_path, extras, flags);
             break;
 
         case JSON_B2T:
-            s = osal_json_from_binary_to_text(src_path, dst_path);
+            s = osal_json_binary_to_text(src_path, dst_path);
             break;
     }
 
@@ -149,9 +149,9 @@ getout:
 /**
 ****************************************************************************************************
 
-  @brief Conver JSON text file to packed binary JSON file.
+  @brief Convert JSON text file to packed binary JSON file.
 
-  The osal_json_from_text_to_binary() function..
+  The osal_json_text_to_binary() function..
 
   @param   src_path Path to input file.
   @param   dst_path Path to output file.
@@ -162,7 +162,7 @@ getout:
 
 ****************************************************************************************************
 */
-static osalStatus osal_json_from_text_to_binary(
+static osalStatus osal_json_text_to_binary(
     os_char *src_path,
     os_char *dst_path,
     os_char *skip_tags,
@@ -192,9 +192,9 @@ getout:
 /**
 ****************************************************************************************************
 
-  @brief Conver packed binary JSON file to plain JSON text.
+  @brief Convert packed binary JSON file to plain JSON text.
 
-  The osal_json_from_binary_to_text() function..
+  The osal_json_binary_to_text() function..
 
   @param   src_path Path to input file.
   @param   dst_path Path to output file.
@@ -203,7 +203,7 @@ getout:
 
 ****************************************************************************************************
 */
-static osalStatus osal_json_from_binary_to_text(
+static osalStatus osal_json_binary_to_text(
     os_char *src_path,
     os_char *dst_path)
 {
