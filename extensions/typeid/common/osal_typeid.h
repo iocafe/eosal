@@ -118,7 +118,7 @@ osalTypeId;
 /* Convert type name string to type identifier (integer).
  */
 osalTypeId osal_typeid_from_name(
-    os_char *name);
+    const os_char *name);
 
 /* Convert type identifier to type name string.
  */

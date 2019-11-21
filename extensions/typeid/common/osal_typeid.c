@@ -76,7 +76,7 @@ static const osalTypeInfo osal_typeinfo[] = {
 ****************************************************************************************************
 */
 osalTypeId osal_typeid_from_name(
-    os_char *name)
+    const os_char *name)
 {
     os_int
         i;
