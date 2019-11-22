@@ -55,7 +55,7 @@ typedef struct osalStreamHeader *osalStream;
   @anchor osalStreamFlags
 
   These flags nodify how stream functions behave. Some flags are appropriate for many functions,
-  and some flags are effecr only one.
+  and some flags are effect only one.
 
 ****************************************************************************************************
 */
