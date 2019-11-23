@@ -437,7 +437,7 @@ osalStatus osal_stream_write_long(
 
 osalStatus osal_stream_print_str(
     osalStream stream,
-    os_char *str,
+    const os_char *str,
     os_int flags);
 
 /*@}*/
