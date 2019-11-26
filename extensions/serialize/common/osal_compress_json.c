@@ -23,7 +23,7 @@ typedef struct
 {
     /** Current position in JSON source.
      */
-    os_char *pos;
+    const os_char *pos;
 
     /** Buffer for string being parsed
      */
@@ -47,7 +47,7 @@ typedef struct
 
     /** List of tags to skip.
      */
-    os_char *skip_tags;
+    const os_char *skip_tags;
 
     /** How deep we have recursed into skipped tags.
      */
@@ -106,8 +106,8 @@ static os_long osal_add_string_to_json_dict(
 */
 osalStatus osal_compress_json(
     osalStream compressed,
-    os_char *json_source,
-    os_char *skip_tags,
+    const os_char *json_source,
+    const os_char *skip_tags,
     os_int flags)
 {
     osalJsonCompressor state;
@@ -642,7 +642,8 @@ goon:;
 static osalStatus osal_parse_json_number(
     osalJsonCompressor *state)
 {
-    os_char *p, c;
+    os_char c;
+    const os_char *p;
     os_long seekzero = 0;
     os_memsz n_written;
     osalStatus s;

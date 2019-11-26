@@ -27,8 +27,8 @@
  */
 osalStatus osal_compress_json(
     osalStream compressed,
-    os_char *json_source,
-    os_char *skip_tags,
+    const os_char *json_source,
+    const os_char *skip_tags,
     os_int flags);
 
 #endif
