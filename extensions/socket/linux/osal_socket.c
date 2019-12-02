@@ -234,6 +234,10 @@ osalStream osal_socket_open(
 			    goto getout;
             }
 	    }
+        /* else
+        {
+            hostaddr = gethostbyname(host);
+        } */
     }
 
     /* Create socket.

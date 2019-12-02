@@ -37,7 +37,7 @@ typedef struct osalPosixEvent
 {
     pthread_cond_t cond;
     pthread_mutex_t mutex;
-    os_boolean signaled;
+    os_boolean event_signaled;
 
     /** Pipe file descriptors to use event to interrupt socket select().
      */
@@ -73,7 +73,7 @@ osalEvent osal_event_create(
      * created by default.
      */
     pe = malloc(sizeof(osalPosixEvent));
-    pe->signaled = OS_FALSE;
+    pe->event_signaled = OS_FALSE;
     pe->pipefd[0] = pe->pipefd[1] =  -1;
 
     /* Create mutex to access the event
@@ -164,7 +164,6 @@ void osal_event_delete(
      */
     free(pe);
     osal_resource_monitor_decrement(OSAL_RMON_EVENT_COUNT);
-
 }
 
 
@@ -203,15 +202,15 @@ void osal_event_set(
 
     /* If event is already signaled, there is not much to do.
      */
-    if (pe->signaled)
+    if (pe->event_signaled)
     {
         pthread_mutex_unlock(&pe->mutex);
         return;
     }
 
-    /* Mark event as signaled.
+    /* Mark the event as signaled.
      */
-    pe->signaled = OS_TRUE;
+    pe->event_signaled = OS_TRUE;
 
     /* If we are interrupting socket select().
      */
@@ -248,9 +247,6 @@ void osal_event_set(
   is signaled either before the function call or during wait interval function returns
   OSAL_SUCCESS. When the function returns the event is always cleared to non signaled state.
 
-  NOTE: Currently only timeout values 0 and OSAL_EVENT_INFINITE (-1) are supported.
-  I hope others would not be needed.
-
   @param   evnt Event pointer returned by osal_event_create() function.
   @param   timeout_ms Wait timeout. If event is not signaled within this time, then the
            function will return OSAL_STATUS_TIMEOUT. To wait infinetly give
@@ -271,6 +267,7 @@ osalStatus osal_event_wait(
 {
     osalPosixEvent *pe;
     osalStatus s;
+    struct timespec ts;
 
     if (evnt == OS_NULL)
     {
@@ -286,25 +283,61 @@ osalStatus osal_event_wait(
     /* If event is already signaled or immediate return regardless is requested,
        set event to unsignald state and return OSAL SUCCESS or OSAL_STATUS_TIMEOUT.
      */
-    if (pe->signaled || timeout_ms == 0)
+    if (pe->event_signaled || timeout_ms == 0)
     {
-        s = (pe->signaled ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
-        pe->signaled = OS_FALSE;
+        s = (pe->event_signaled ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
+        pe->event_signaled = OS_FALSE;
         pthread_mutex_unlock(&pe->mutex);
         return s;
     }
 
-    /* Wait for event.
+    /* Wait forever for an event.
      */
-    do
+    if (timeout_ms == OSAL_EVENT_INFINITE)
     {
-        pthread_cond_wait(&pe->cond, &pe->mutex);
-    }
-    while (!pe->signaled);
+        do
+        {
+            pthread_cond_wait(&pe->cond, &pe->mutex);
+        }
+        while (!pe->event_signaled);
 
-    pe->signaled = OS_FALSE;
+        s = OSAL_SUCCESS;
+    }
+
+    /* Watr for a specific time
+     */
+    else
+    {
+        /* Calculate timer value for time out.
+         */
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        ts.tv_sec += timeout_ms / 1000;
+        ts.tv_nsec += (timeout_ms % 1000) * 1000000L;
+        if (ts.tv_nsec >= 1000000000)
+        {
+            ts.tv_sec++;
+            ts.tv_nsec -= 1000000000;
+        }
+
+        /* Wait for event to become event_signaled or until
+           timeout occurs.
+         */
+        s = OSAL_SUCCESS;
+        do
+        {
+            if (pthread_cond_timedwait(&pe->cond,
+                &pe->mutex, &ts))
+            {
+                s = OSAL_STATUS_TIMEOUT;
+                break;
+            }
+        }
+        while (!pe->event_signaled);
+    }
+
+    pe->event_signaled = OS_FALSE;
     pthread_mutex_unlock(&pe->mutex);
-    return OSAL_SUCCESS;
+    return s;
 }
 
 
@@ -355,7 +388,6 @@ int osal_event_pipefd(
         printf ("OK\n");
     }
 
-
     return pe->pipefd[0];
 }
 
@@ -393,7 +425,7 @@ void osal_event_clearpipe(
     {
         while (read(pe->pipefd[0], &c, 1) > 0);
     }
-    pe->signaled = OS_FALSE;
+    pe->event_signaled = OS_FALSE;
 }
 
 #endif
