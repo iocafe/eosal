@@ -15,6 +15,7 @@
 */
 #include "eosalx.h"
 #if OSAL_PERSISTENT_SUPPORT
+#if OSAL_USE_SHARED_FSYS_PERSISTENT
 
 #define OSAL_PERSISTENT_MAX_PATH 128
 
@@ -77,6 +78,35 @@ void os_persistent_initialze(
 void os_persistent_shutdown(
     void)
 {
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get pointer to persistant data block within persistent storage.
+  @anchor os_persistent_get_ptr
+
+  If persistant storage is in micro-controller's flash, we can just get pointer to data block
+  and data size. If persistant storage is on such media (file system, etc) that direct
+  pointer is not available, the function returns OSAL_STATUS_NOT_SUPPORTED and function
+  os_persistent_load() must be called to read the data to local RAM.
+
+  @param   block_nr Parameter block number, see osal_persistent.h.
+  @param   block Pointer to block (structure) to load.
+  @param   block_sz Block size in bytes.
+  @return  OSAL_SUCCESS of successfull. Value OSAL_STATUS_NOT_SUPPORTED indicates that
+           pointer cannot be aquired on this platform and os_persistent_load() must be
+           called instead. Other values indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus os_persistent_get_ptr(
+    osPersistentBlockNr block_nr,
+    void **block,
+    os_memsz *block_sz)
+{
+    return OSAL_STATUS_NOT_SUPPORTED;
 }
 
 
@@ -199,4 +229,61 @@ static void os_persistent_make_path(
     os_strncat(path, ".dat", path_sz);
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Get platform info for writing a flash program.
+  @anchor os_persistent_programming_specs
+
+  Get block size, etc. info for writing the micro controller code on this specific platform.
+
+  @param   specs Pointer to programming specs structure to fill in. Set up only if return
+           value is OSAL_SUCCESS.
+  @return  OSAL_SUCCESS if all is good. Return value OSAL_STATUS_NOT_SUPPORTED indicates
+           that flash cannot be programmed on this system.
+
+****************************************************************************************************
+*/
+osalStatus os_persistent_programming_specs(
+    osProgrammingSpecs *specs)
+{
+    return OSAL_STATUS_NOT_SUPPORTED;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get platform specifications for programming the flash.
+  @anchor os_persistent_programming_specs
+
+  @param   cmd Programming command:
+           - OS_PROG_WRITE write n bytes of pgrogram to flags.
+           - OS_PROG_INTERRUPT interrupt programming.
+           - OS_PROG_COMPLETE programming complete, prepare to start the new program.
+  @param   buf Pointer to program data to write to flash.
+  @param   addr Flash address to write to. Not real flasg address, but offset within the program
+           being written. Zero is always beginning of program.
+  @param   nbytes Number of bytes to write from buffer. Must be divisible by min_prog_block_sz.
+
+  Hint: In practice nbytes can be expected to be power of 2, like 32, 64, 128, etc.
+  It may be safe to assume that program can always be written for example 256 bytes at a time.
+
+  @return  OSAL_SUCCESS if all is good. Return value OSAL_STATUS_NOT_SUPPORTED indicates
+           that flash cannot be programmed on this system.
+
+****************************************************************************************************
+*/
+osalStatus os_persistent_program(
+    osProgCommand cmd,
+    const os_char *buf,
+    os_int addr,
+    os_memsz nbytes)
+{
+    return OSAL_STATUS_NOT_SUPPORTED;
+}
+
+
+#endif
 #endif

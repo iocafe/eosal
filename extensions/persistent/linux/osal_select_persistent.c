@@ -22,5 +22,6 @@
 */
 #include "eosalx.h"
 #if OSAL_PERSISTENT_SUPPORT
+#define OSAL_USE_SHARED_FSYS_PERSISTENT 1
 #include "extensions/persistent/shared/filesystem/osal_fsys_persistent.c"
 #endif

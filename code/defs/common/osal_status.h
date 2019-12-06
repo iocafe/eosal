@@ -61,6 +61,10 @@ typedef enum
      */
     OSAL_STATUS_TIMEOUT,
 
+    /** Operation not supported for this operating system/hardware platform.
+     */
+    OSAL_STATUS_NOT_SUPPORTED,
+
     /** Attempt to call interface function which is not implemented.
      */
     OSAL_STATUS_NULL_FUNC,
