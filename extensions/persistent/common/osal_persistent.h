@@ -63,50 +63,31 @@ osPersistentParams;
  */
 typedef enum
 {
-    OS_PBNR_IO_DEVICE = 0,
-    OS_PBNR_NIC_1 = 1,
-    OS_PBNR_NIC_2 = 2,
-    OS_PBNR_NIC_3_= 3,
-    OS_PBNR_CON_1 = 4,
-    OS_PBNR_CON_2 = 5,
-    OS_PBNR_CON_3 = 6,
-    OS_PBNR_SRV_1 = 7,
-    OS_PBNR_SRV_2 = 8,
-    OS_PBNR_UDP_1 = 9,
-    OS_PBNR_APP_1 = 10,
-    OS_PBNR_APP_2 = 11,
-    OS_PBNR_APP_3 = 12,
-    OS_PBNR_RESERVE_1 = 13,
-    OS_PBNR_RESERVE_2 = 14,
-    OS_PBNR_RESERVE_3 = 15,
+    OS_PBNR_UNKNOWN = 0,
+    OS_PBNR_FLASH_PROGRAM = 1,
+    OS_PBNR_IO_DEVICE_CONFIG = 2,
 
-    OS_N_PBNR = 16
+    OS_N_PBNR = 8
 }
 osPersistentBlockNr;
 
-
+#if 0
 typedef struct
 {
     /* Maximum flash program size in bytes.
      */
     os_memsz flash_sz;
-
-    /* Minumum number of bytes to write at once. The number of program bytes given to
-       os_persistent_program() function must be divisible by this number.
-     */
-    os_memsz min_prog_block_sz;
-
-    /* dual bank support ? do we need to know ? */
 }
 osProgrammingSpecs;
+#endif
 
-typedef enum
+
+typedef struct
 {
-    OS_PROG_WRITE,
-    OS_PROG_INTERRUPT,
-    OS_PROG_COMPLETE
+    osalStream f;
+    os_int flags;
 }
-osProgCommand;
+osPersistentHandle;
 
 
 /**
@@ -136,45 +117,43 @@ void os_persistent_shutdown(
  */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    void **block,
+    os_char **block,
     os_memsz *block_sz);
+
+/* Open persistent block for reading or writing.
+ */
+osPersistentHandle *os_persistent_open(
+    osPersistentBlockNr block_nr,
+    os_int flags);
+
+/* Close persistent storage block. If this is flash program transfer, the boot bank
+   may also be switched, etc, depending on flags.
+ */
+void os_persistent_close(
+    osPersistentHandle *handle,
+    os_int flags);
 
 /* Load parameter structure identified by block number from persistant storage. Load all
    parameters when micro controller starts, not during normal operation. If data cannot
    be loaded, leaves the block as is. Returned value maxes at block_sz.
  */
-os_memsz os_persistent_load(
-    osPersistentBlockNr block_nr,
-    void *block,
-    os_memsz block_sz);
+os_memsz os_persistent_read(
+    osPersistentHandle *handle,
+    os_char *buf,
+    os_memsz buf_sz);
 
-/* Save parameter structure to persistent storage and identify it by block number.
+/* Write data to persistent storage block.
  */
-osalStatus os_persistent_save(
-    osPersistentBlockNr block_nr,
-    const void *block,
-    os_memsz block_sz,
-    os_boolean commit);
-
-/* Commit changes by os_persistent_save() to persistent storage.
- */
-osalStatus os_persistent_commit(
-    void);
+osalStatus os_persistent_write(
+    osPersistentHandle *handle,
+    os_char *buf,
+    os_memsz buf_sz);
 
 /* Get block size, dual bank support, etc. info for writing the
    micro controller code on this specific platform.
  */
-osalStatus os_persistent_programming_specs(
-    osProgrammingSpecs *specs);
-
-/* Program micro controller's flash. Return value OSAL_STATUS_NOT_SUPPORTED
-   indicates that flash cannot be programmed on this system.
- */
-osalStatus os_persistent_program(
-    osProgCommand cmd,
-    const os_char *buf,
-    os_int addr,
-    os_memsz nbytes);
+/* osalStatus os_persistent_programming_specs(
+    osProgrammingSpecs *specs); */
 
 #endif
 #endif

@@ -27,6 +27,13 @@ static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/coderoot/tmp";
 
 static os_boolean initialized = OS_FALSE;
 
+/* Maximum number of streamers when using static memory allocation.
+ */
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
+static osPersistentHandle osal_persistent_handle[OSAL_MAX_PERSISTENT_HANDLES];
+#endif
+
+
 /* Forward referred static functions.
  */
 static void os_persistent_make_path(
@@ -53,6 +60,10 @@ static void os_persistent_make_path(
 void os_persistent_initialze(
     osPersistentParams *prm)
 {
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
+    os_memclear(osal_persistent_handle, sizeof(osal_persistent_handle));
+#endif
+
     if (prm) {
         if (prm->path) {
             os_strncpy(rootpath, prm->path, sizeof(rootpath));
@@ -103,7 +114,7 @@ void os_persistent_shutdown(
 */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    void **block,
+    os_char **block,
     os_memsz *block_sz)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
@@ -113,33 +124,130 @@ osalStatus os_persistent_get_ptr(
 /**
 ****************************************************************************************************
 
-  @brief Load parameter block (usually structure) from persistent storage.
-  @anchor os_persistent_load
-
-  The os_persistent_load() function loads parameter structure identified by block number
-  from the persistant storage. Load all parameters when micro controller starts, not during
-  normal operation. If data cannot be loaded, the function leaves the block as is.
+  @brief Open persistent block for reading or writing.
+  @anchor os_persistent_open
 
   @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to load.
-  @param   block_sz Block size in bytes.
-  @return  Number of bytes read. Zero if failed. Returned value maxes at block_sz.
+  @param   flags OSAL_STREAM_READ, OSAL_STREAM_WRITE
+
+  @return  Persistant storage block handle, or OS_NULL if the function failed.
 
 ****************************************************************************************************
 */
-os_memsz os_persistent_load(
+osPersistentHandle *os_persistent_open(
     osPersistentBlockNr block_nr,
-    void *block,
-    os_memsz block_sz)
+    os_int flags)
 {
+    osPersistentHandle *handle;
     os_char path[OSAL_PERSISTENT_MAX_PATH];
-    os_memsz n_read;
+    osalStream f;
+
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
+    os_int count;
+#endif
 
     if (!initialized) os_persistent_initialze(OS_NULL);
-
     os_persistent_make_path(block_nr, path, sizeof(path));
-    os_read_file(path, block, block_sz, &n_read, 0);
-    return n_read;
+
+    /* Open file.
+     */
+    f = osal_file_open(path, OS_NULL, OS_NULL, flags);
+    if (f == OS_NULL) goto getout;
+
+    /* Allocate streamer structure, either dynamic or static.
+     */
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION
+    handle = (osPersistentHandle*)os_malloc(sizeof(osPersistentHandle), OS_NULL);
+    if (handle == OS_NULL) goto getout;
+#else
+    handle = osal_persistent_handle;
+    count = OSAL_MAX_PERSISTENT_HANDLES;
+    while (streamer->f != OS_NULL)
+    {
+        if (--count == 0)
+        {
+            handle = OS_NULL;
+            goto getout;
+        }
+        handle++;
+    }
+#endif
+
+    /* Initialize handle structure.
+     */
+    os_memclear(handle, sizeof(osPersistentHandle));
+    handle->f = f;
+    handle->flags = flags;
+    return handle;
+
+getout:
+    osal_debug_error("Opening persistent block failed");
+    return OS_NULL;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Close persistent storage block.
+  @anchor os_persistent_close
+
+  @param   handle Persistant storage handle.
+  @param   flags ?
+  @return  None.
+
+****************************************************************************************************
+*/
+void os_persistent_close(
+    osPersistentHandle *handle,
+    os_int flags)
+{
+    if (handle) if (handle->f)
+    {
+        osal_file_close(handle->f);
+        handle->f = OS_NULL;
+    }
+
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION
+    os_free(handle, sizeof(osPersistentHandle));
+#endif
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Read data from persistent parameter block.
+  @anchor os_persistent_read
+
+  The os_persistent_read() function reads data from persistant storage block. Load all
+  parameters when micro controller starts, not during normal operation.
+
+  @param   handle Persistant storage handle.
+  @param   block Pointer to buffer where to load persistent data.
+  @param   buf_sz Number of bytes to read to buffer.
+  @return  Number of bytes read. Can be less than buf_sz if end of persistent block data has
+           been reached.
+
+****************************************************************************************************
+*/
+os_memsz os_persistent_read(
+    osPersistentHandle *handle,
+    os_char *buf,
+    os_memsz buf_sz)
+{
+    os_memsz n_read;
+    osalStatus s;
+
+    if (handle) if (handle->f)
+    {
+        s = osal_file_read(handle->f, buf, buf_sz, &n_read, OSAL_STREAM_DEFAULT);
+        if (s) goto getout;
+        return n_read;
+    }
+
+getout:
+    return 0;
 }
 
 
@@ -159,18 +267,23 @@ os_memsz os_persistent_load(
 
 ****************************************************************************************************
 */
-osalStatus os_persistent_save(
-    osPersistentBlockNr block_nr,
-    const void *block,
-    os_memsz block_sz,
-    os_boolean commit)
+osalStatus os_persistent_write(
+    osPersistentHandle *handle,
+    os_char *buf,
+    os_memsz buf_sz)
 {
-    os_char path[OSAL_PERSISTENT_MAX_PATH];
+    os_memsz n_written;
+    osalStatus s;
 
-    if (!initialized) os_persistent_initialze(OS_NULL);
+    if (handle) if (handle->f)
+    {
+        s = osal_file_write(handle->f, buf, buf_sz, &n_written, OSAL_STREAM_DEFAULT);
+        if (s) goto getout;
+        return n_written == buf_sz ? OSAL_SUCCESS : OSAL_STATUS_DISC_FULL;
+    }
 
-    os_persistent_make_path(block_nr, path, sizeof(path));
-    return os_write_file(path, block, block_sz, OS_FILE_DEFAULT);
+getout:
+    return s;
 }
 
 
@@ -186,11 +299,12 @@ osalStatus os_persistent_save(
 
 ****************************************************************************************************
 */
+/*
 osalStatus os_persistent_commit(
     void)
 {
     return OSAL_SUCCESS;
-}
+} */
 
 
 /**
@@ -245,44 +359,12 @@ static void os_persistent_make_path(
 
 ****************************************************************************************************
 */
-osalStatus os_persistent_programming_specs(
+/* osalStatus os_persistent_programming_specs(
     osProgrammingSpecs *specs)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
-}
+} */
 
-
-/**
-****************************************************************************************************
-
-  @brief Get platform specifications for programming the flash.
-  @anchor os_persistent_programming_specs
-
-  @param   cmd Programming command:
-           - OS_PROG_WRITE write n bytes of pgrogram to flags.
-           - OS_PROG_INTERRUPT interrupt programming.
-           - OS_PROG_COMPLETE programming complete, prepare to start the new program.
-  @param   buf Pointer to program data to write to flash.
-  @param   addr Flash address to write to. Not real flasg address, but offset within the program
-           being written. Zero is always beginning of program.
-  @param   nbytes Number of bytes to write from buffer. Must be divisible by min_prog_block_sz.
-
-  Hint: In practice nbytes can be expected to be power of 2, like 32, 64, 128, etc.
-  It may be safe to assume that program can always be written for example 256 bytes at a time.
-
-  @return  OSAL_SUCCESS if all is good. Return value OSAL_STATUS_NOT_SUPPORTED indicates
-           that flash cannot be programmed on this system.
-
-****************************************************************************************************
-*/
-osalStatus os_persistent_program(
-    osProgCommand cmd,
-    const os_char *buf,
-    os_int addr,
-    os_memsz nbytes)
-{
-    return OSAL_STATUS_NOT_SUPPORTED;
-}
 
 
 #endif
