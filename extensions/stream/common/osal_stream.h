@@ -177,12 +177,14 @@ typedef enum
     /** Timeout for reading data, milliseconds.
      */
 	OSAL_STREAM_READ_TIMEOUT_MS,
+
+    /** Amount of free spacee in TX buffer, bytes
+     */
+    OSAL_STREAM_TX_AVAILABLE
 }
 osalStreamParameterIx;
 
 /*@}*/
-
-
 
 
 /** 

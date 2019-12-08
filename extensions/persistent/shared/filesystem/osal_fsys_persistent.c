@@ -273,7 +273,7 @@ osalStatus os_persistent_write(
     os_memsz buf_sz)
 {
     os_memsz n_written;
-    osalStatus s;
+    osalStatus s = OSAL_STATUS_FAILED;
 
     if (handle) if (handle->f)
     {
