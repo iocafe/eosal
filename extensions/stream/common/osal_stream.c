@@ -35,11 +35,12 @@ osalStream osal_stream_open(
 }
 
 void osal_stream_close(
-	osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
 	if (stream)
 	{
-		stream->iface->stream_close(stream);
+        stream->iface->stream_close(stream, flags);
 	}
 }
 

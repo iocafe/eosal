@@ -123,7 +123,8 @@ osalStream osal_socket_open(
 /* Close socket.
  */
 void osal_socket_close(
-    osalStream stream);
+    osalStream stream,
+    os_int flags);
 
 /* Accept connection from listening socket.
  */

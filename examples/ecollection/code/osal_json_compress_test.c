@@ -89,8 +89,8 @@ osalStatus osal_json_compress_test(
     }
 
 getout:
-    osal_stream_buffer_close(uncompressed);
-    osal_stream_buffer_close(compressed);
+    osal_stream_buffer_close(uncompressed, OSAL_STREAM_DEFAULT);
+    osal_stream_buffer_close(compressed, OSAL_STREAM_DEFAULT);
 
     os_free(json_text, json_text_sz);
     return s;

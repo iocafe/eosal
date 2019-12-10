@@ -113,7 +113,8 @@ getout:
 ****************************************************************************************************
 */
 void osal_stream_buffer_close(
-    osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
     osalStreamBuffer *sbuf;
 

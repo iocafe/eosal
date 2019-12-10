@@ -60,7 +60,8 @@ osalStream osal_file_open(
 /* Close file.
  */
 void osal_file_close(
-	osalStream stream);
+    osalStream stream,
+    os_int flags);
 
 /* Flush written data to file.
  */

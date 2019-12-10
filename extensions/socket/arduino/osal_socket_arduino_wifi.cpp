@@ -535,7 +535,8 @@ osalStatus osal_socket_check(
 ****************************************************************************************************
 */
 void osal_socket_close(
-	osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
     osalSocket *mysocket;
     os_short ix;

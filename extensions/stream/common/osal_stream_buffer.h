@@ -54,7 +54,8 @@ osalStream osal_stream_buffer_open(
 /* Close stream buffer.
  */
 void osal_stream_buffer_close(
-    osalStream stream);
+    osalStream stream,
+    os_int flags);
 
 /* Get or set current read or write position.
  */

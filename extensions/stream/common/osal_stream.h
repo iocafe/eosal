@@ -145,6 +145,11 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_SEEK_SET 0x10000
 
+/** This flag can be given to osal_stream_close (some streams only) to indicate
+    that transferring data, etc, has failed and transferred content should be ignored.
+ */
+#define OSAL_STREAM_INTERRUPTED 0x20000
+
 
 /* Note: bit 0x0100000 and larger are reserved to eStream
  */
@@ -252,7 +257,8 @@ typedef struct osalStreamInterface
 		os_int flags);
 
 	void (*stream_close)(
-		osalStream stream);
+        osalStream stream,
+        os_int flags);
 
 	osalStream (*stream_accept)(
 		osalStream stream,
@@ -371,7 +377,8 @@ osalStream osal_stream_open(
 	os_int flags);
 
 void osal_stream_close(
-	osalStream stream);
+    osalStream stream,
+    os_int flags);
 
 osalStream osal_stream_accept(
 	osalStream stream,

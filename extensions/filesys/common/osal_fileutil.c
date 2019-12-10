@@ -80,7 +80,7 @@ osalStatus os_read_file(
     }
 
 getout:
-    osal_file_close(f);
+    osal_file_close(f, OSAL_STREAM_DEFAULT);
     return s;
 }
 
@@ -146,7 +146,7 @@ osalStatus os_append_file_to_stream(
     }
 
 getout:
-    osal_file_close(f);
+    osal_file_close(f, OSAL_STREAM_DEFAULT);
     return s;
 }
 #endif
@@ -194,11 +194,11 @@ os_char *os_read_file_alloc(
         buf = os_malloc(data_sz, OS_NULL);
         if (buf == OS_NULL) goto failed;
         os_memcpy(buf, data, data_sz);
-        osal_stream_close(stream);
+        osal_stream_close(stream, OSAL_STREAM_DEFAULT);
         *n_read = data_sz;
         return buf;
 failed:
-        osal_stream_close(stream);
+        osal_stream_close(stream, OSAL_STREAM_DEFAULT);
         *n_read = 0;
         return OS_NULL;
     }
@@ -277,7 +277,7 @@ osalStatus os_write_file(
      */
     s = osal_file_write(f, buf, n, &n_written, OSAL_STREAM_DEFAULT);
 
-    osal_file_close(f);
+    osal_file_close(f, OSAL_STREAM_DEFAULT);
     return s;
 }
 

@@ -281,7 +281,8 @@ getout:
 ****************************************************************************************************
 */
 void osal_serial_close(
-	osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
     osalSerial *myserial;
 

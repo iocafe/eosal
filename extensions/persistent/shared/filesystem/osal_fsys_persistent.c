@@ -204,7 +204,7 @@ void os_persistent_close(
 {
     if (handle) if (handle->f)
     {
-        osal_file_close(handle->f);
+        osal_file_close(handle->f, OSAL_STREAM_DEFAULT);
         handle->f = OS_NULL;
     }
 

@@ -188,10 +188,10 @@ osalStatus osal_compress_json(
 getout:
     /* Release temporary buffers.
      */
-    osal_stream_buffer_close(state.str);
-    osal_stream_buffer_close(state.content);
-    osal_stream_buffer_close(state.dictionary);
-    osal_stream_buffer_close(state.dict_pos);
+    osal_stream_buffer_close(state.str, OSAL_STREAM_DEFAULT);
+    osal_stream_buffer_close(state.content, OSAL_STREAM_DEFAULT);
+    osal_stream_buffer_close(state.dictionary, OSAL_STREAM_DEFAULT);
+    osal_stream_buffer_close(state.dict_pos, OSAL_STREAM_DEFAULT);
     return s;
 
 timeout:

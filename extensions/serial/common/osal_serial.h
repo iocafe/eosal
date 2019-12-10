@@ -61,7 +61,8 @@ osalStream osal_serial_open(
 /* Close serial.
  */
 void osal_serial_close(
-	osalStream stream);
+    osalStream stream,
+    os_int flags);
 
 /* Accept connection from listening serial.
  */

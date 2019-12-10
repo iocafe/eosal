@@ -414,7 +414,8 @@ getout:
 ****************************************************************************************************
 */
 void osal_socket_close(
-	osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
 	osalSocket *mysocket;
 	SOCKET handle;

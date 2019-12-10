@@ -388,7 +388,7 @@ osalStream osal_socket_open(
 getout:
     /* Clean up all resources.
      */
-    osal_socket_close((osalStream)w);
+    osal_socket_close((osalStream)w, OSAL_STREAM_DEFAULT);
 
     /* Set status code and return NULL pointer to indicate failure.
      */
@@ -414,7 +414,8 @@ getout:
 ****************************************************************************************************
 */
 void osal_socket_close(
-    osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
     osalSocket *w;
 

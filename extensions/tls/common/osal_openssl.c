@@ -275,7 +275,7 @@ getout:
      */    
     if (tcpsocket)
 	{
-        osal_socket_close(tcpsocket);
+        osal_socket_close(tcpsocket, OSAL_STREAM_DEFAULT);
     }
 
 	/* Set status code and return NULL pointer.
@@ -302,7 +302,8 @@ getout:
 ****************************************************************************************************
 */
 static void osal_openssl_close(
-	osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
     osalSSLSocket *sslsocket;
 
@@ -321,7 +322,7 @@ static void osal_openssl_close(
 
     /* Close the socket.
      */
-    osal_socket_close(sslsocket->tcpsocket);
+    osal_socket_close(sslsocket->tcpsocket, flags);
 
 #if OSAL_DEBUG
     /* Mark the socket closed. This is used to detect if memory is accessed after it is freed.
@@ -420,7 +421,7 @@ getout:
      */    
     if (newtcpsocket)
 	{
-        osal_socket_close(newtcpsocket);
+        osal_socket_close(newtcpsocket, OSAL_STREAM_DEFAULT);
 	}
 
 	/* Set status code and return NULL pointer.

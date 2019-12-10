@@ -394,7 +394,8 @@ getout:
 ****************************************************************************************************
 */
 void osal_tls_close(
-    osalStream stream)
+    osalStream stream,
+    os_int flags)
 {
     osalSocket *w;
 
