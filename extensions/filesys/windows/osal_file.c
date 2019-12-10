@@ -212,7 +212,8 @@ getout:
 ****************************************************************************************************
 */
 void osal_file_close(
-	osalStream stream)
+	osalStream stream,
+    os_int flags)
 {
     osalFile *myfile;
     FILE *handle;
