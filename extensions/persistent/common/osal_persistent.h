@@ -71,17 +71,6 @@ typedef enum
 }
 osPersistentBlockNr;
 
-#if 0
-typedef struct
-{
-    /* Maximum flash program size in bytes.
-     */
-    os_memsz flash_sz;
-}
-osProgrammingSpecs;
-#endif
-
-
 typedef struct
 {
     osalStream f;
@@ -148,12 +137,6 @@ osalStatus os_persistent_write(
     osPersistentHandle *handle,
     os_char *buf,
     os_memsz buf_sz);
-
-/* Get block size, dual bank support, etc. info for writing the
-   micro controller code on this specific platform.
- */
-/* osalStatus os_persistent_programming_specs(
-    osProgrammingSpecs *specs); */
 
 #endif
 #endif

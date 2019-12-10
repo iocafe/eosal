@@ -450,7 +450,8 @@ static osalStatus os_persistent_delete_block(
   @param   buf Buffer where to store the data.
   @param   addr First address to read.
   @param   n Number of bytes to read.
-  @return  None.
+  @return  Number of bytes read. Can be less than buf_sz if end of persistent block data has
+           been reached. 0 is fine if at end. -1 Indicates an error.
 
 ****************************************************************************************************
 */

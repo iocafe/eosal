@@ -181,7 +181,7 @@ osPersistentHandle *os_persistent_open(
     return handle;
 
 getout:
-    osal_debug_error("Opening persistent block failed");
+    osal_debug_error_str("Reading persistent block from file failed: ", path);
     return OS_NULL;
 }
 
@@ -193,7 +193,8 @@ getout:
   @anchor os_persistent_close
 
   @param   handle Persistant storage handle.
-  @param   flags ?
+  @param   flags OSAL_STREAM_DEFAULT (0) is all was written to persistant storage.
+           OSAL_STREAM_INTERRUPT flag is set if transfer was interrupted.
   @return  None.
 
 ****************************************************************************************************
@@ -227,7 +228,7 @@ void os_persistent_close(
   @param   block Pointer to buffer where to load persistent data.
   @param   buf_sz Number of bytes to read to buffer.
   @return  Number of bytes read. Can be less than buf_sz if end of persistent block data has
-           been reached.
+           been reached. 0 is fine if at end. -1 Indicates an error.
 
 ****************************************************************************************************
 */
@@ -247,7 +248,7 @@ os_memsz os_persistent_read(
     }
 
 getout:
-    return 0;
+    return -1;
 }
 
 
@@ -290,26 +291,6 @@ getout:
 /**
 ****************************************************************************************************
 
-  @brief Commit changes to persistent storage.
-  @anchor os_persistent_commit
-
-  The os_os_persistent_commit() function commit unsaved changed to persistent storage.
-
-  @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
-
-****************************************************************************************************
-*/
-/*
-osalStatus os_persistent_commit(
-    void)
-{
-    return OSAL_SUCCESS;
-} */
-
-
-/**
-****************************************************************************************************
-
   @brief Make path to parameter file.
   @anchor os_persistent_make_path
 
@@ -342,29 +323,6 @@ static void os_persistent_make_path(
     os_strncat(path, buf, path_sz);
     os_strncat(path, ".dat", path_sz);
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Get platform info for writing a flash program.
-  @anchor os_persistent_programming_specs
-
-  Get block size, etc. info for writing the micro controller code on this specific platform.
-
-  @param   specs Pointer to programming specs structure to fill in. Set up only if return
-           value is OSAL_SUCCESS.
-  @return  OSAL_SUCCESS if all is good. Return value OSAL_STATUS_NOT_SUPPORTED indicates
-           that flash cannot be programmed on this system.
-
-****************************************************************************************************
-*/
-/* osalStatus os_persistent_programming_specs(
-    osProgrammingSpecs *specs)
-{
-    return OSAL_STATUS_NOT_SUPPORTED;
-} */
-
 
 
 #endif
