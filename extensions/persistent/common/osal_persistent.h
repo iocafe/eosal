@@ -50,7 +50,11 @@ typedef struct
 {
     /** Path where to save persistent data during PC simulation.
      */
-    os_char *path;
+    const os_char *path;
+
+    /** Device name (without number).
+     */
+    const os_char *device_name;
 
     /** If set (nonzero) sets minimum required EEPROM size.
      */

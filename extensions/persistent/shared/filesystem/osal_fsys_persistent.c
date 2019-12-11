@@ -25,6 +25,8 @@ static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "c:\\coderoot\\tmp";
 static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/coderoot/tmp";
 #endif
 
+static os_char device_name[16] = "noname";
+
 static os_boolean initialized = OS_FALSE;
 
 /* Maximum number of streamers when using static memory allocation.
@@ -67,6 +69,10 @@ void os_persistent_initialze(
     if (prm) {
         if (prm->path) {
             os_strncpy(rootpath, prm->path, sizeof(rootpath));
+        }
+
+        if (prm->device_name) {
+            os_strncpy(device_name, prm->device_name, sizeof(device_name));
         }
     }
 
@@ -317,8 +323,8 @@ static void os_persistent_make_path(
         os_strncat(path, "/", path_sz);
     }
 
-    os_strncat(path, "iodevprm-", path_sz);
-    os_strncat(path, "-", path_sz);
+    os_strncat(path, device_name, path_sz);
+    os_strncat(path, "-persistent-", path_sz);
     osal_int_to_str(buf, sizeof(buf), block_nr);
     os_strncat(path, buf, path_sz);
     os_strncat(path, ".dat", path_sz);

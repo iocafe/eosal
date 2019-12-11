@@ -148,7 +148,13 @@ typedef struct osalStreamHeader *osalStream;
 /** This flag can be given to osal_stream_close (some streams only) to indicate
     that transferring data, etc, has failed and transferred content should be ignored.
  */
-#define OSAL_STREAM_INTERRUPT 0x20000
+#define OSAL_STREAM_INTERRUPT 0x10000
+
+/** In special case (streaming over iocom memory block) this value fill tell
+    stream that transfer is written completed successfull and final handshake
+    needs to take place.
+ */
+#define OSAL_STREAM_FINAL_HANDSHAKE 0x20000
 
 
 /* Note: bit 0x0100000 and larger are reserved to eStream
