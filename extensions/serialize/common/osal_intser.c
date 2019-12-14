@@ -102,7 +102,7 @@ os_int osal_intser_writer(
 ****************************************************************************************************
 */
 os_int osal_intser_reader(
-    os_char *buf,
+    const os_char *buf,
 	os_long *x)
 {
     os_int shift;

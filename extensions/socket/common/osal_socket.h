@@ -120,6 +120,10 @@ osalWifiNetworkConfig;
  */
 typedef struct osalNetworkInterface2
 {
+    /* Network interface name
+     */
+    const os_char *nic_name;
+
     const os_char *host_name;
 
     /* We keep network setup in global variables for micro controllers.

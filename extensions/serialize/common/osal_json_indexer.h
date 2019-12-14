@@ -25,18 +25,18 @@ typedef struct osalJsonIndex
 {
     /** First byte of dictionary data and end (one byte past) of dictionary data.
      */
-    os_char *dict_start;
-    os_char *dict_end;
+    const os_char *dict_start;
+    const os_char *dict_end;
 
     /** First byte of compressed JSON items and end (one byte past) of item data.
      */
-    os_char *data_start;
-    os_char *data_end;
+    const os_char *data_start;
+    const os_char *data_end;
 
     /** Current read position within compressed data. Set to data_start by
         osal_create_json_indexer().
      */
-    os_char *read_pos;
+    const os_char *read_pos;
 
     /** Current recursion depth while processing compressed data.
      */

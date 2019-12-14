@@ -41,7 +41,7 @@ os_int osal_intser_writer(
 /* Get integer from packed serial format.
  */
 os_int osal_intser_reader(
-	os_char *buf,
+    const os_char *buf,
 	os_long *x);
 
 /* Get number of bytes following first byte
