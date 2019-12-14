@@ -84,7 +84,7 @@ static const os_ushort crc_table[] = {
 ****************************************************************************************************
 */
 os_ushort os_checksum(
-    os_char *buf,
+    const os_char *buf,
     os_memsz n,
     os_ushort *append_to_checksum)
 {

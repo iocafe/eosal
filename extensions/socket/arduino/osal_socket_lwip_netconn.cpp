@@ -182,7 +182,7 @@ typedef struct osalLWIPThread
 {
     /** Network interface configuration.
      */
-    osalNetworkInterface nic[OSAL_DEFAULT_NRO_NICS];
+    osalNetworkInterface nic[OSAL_MAX_NRO_NICS];
     os_int n_nics;
 
 #if OSAL_MULTITHREAD_SUPPORT
@@ -1596,7 +1596,7 @@ void osal_socket_initialize(
     osal_sockets_initialized = OS_FALSE;
     osal_wifi_initialized = OS_FALSE;
 
-    if (n_nics > OSAL_DEFAULT_NRO_NICS) n_nics = OSAL_DEFAULT_NRO_NICS;
+    if (n_nics > OSAL_MAX_NRO_NICS) n_nics = OSAL_MAX_NRO_NICS;
     os_memcpy(&osal_lwip.nic, nic, n_nics*sizeof(osalNetworkInterface));
     osal_lwip.n_nics = n_nics;
 

@@ -63,6 +63,20 @@ extern const osalStreamInterface osal_socket_iface;
  */
 #define OSAL_SOCKET_IFACE &osal_socket_iface
 
+
+/* Number of network interfaces that should be supported troughout the code.
+ */
+#ifndef OSAL_MAX_NRO_NICS
+#define OSAL_MAX_NRO_NICS 2
+#endif
+
+/* Maximum number Number of network interfaces that should be supported troughout the code.
+ */
+#ifndef OSAL_MAX_NRO_WIFI_NETWORKS
+#define OSAL_MAX_NRO_WIFI_NETWORKS 2
+#endif
+
+
 /* Simple network interface configuration structure.
  * THIS MAY BE OBSOLETED AND REPLACED BY osalNetworkInterface2
  */
@@ -92,39 +106,40 @@ typedef struct
 }
 osalNetworkInterface;
 
+/* Wifi network name and password
+ */
+typedef struct
+{
+    const os_char *wifi_net_name;
+    const os_char *wifi_net_password;
+}
+osalWifiNetworkConfig;
+
 /* Simple network interface configuration structure.
  * Will replace osalNetworkInterface for less RAM use when passing information.
  */
 typedef struct osalNetworkInterface2
 {
-    os_char *host_name;
+    const os_char *host_name;
 
     /* We keep network setup in global variables for micro controllers.
      */
-    os_char *ip_address;
-    os_char *subnet_mask;
-    os_char *gateway_address;
-    os_char *dns_address;
-    os_char *dns_address_2;
+    const os_char *ip_address;
+    const os_char *subnet_mask;
+    const os_char *gateway_address;
+    const os_char *dns_address;
+    const os_char *dns_address_2;
 
     /* Locally administered MAC address ranges safe for testing: x2:xx:xx:xx:xx:xx,
        x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
     */
-    os_char *mac;
+    const os_char *mac;
     os_boolean no_dhcp;
 
-    os_char *wifi_net_name_1;
-    os_char *wifi_net_password_1;
-
-    os_char *wifi_net_name_2[OSAL_WIFI_PRM_SZ];
-    os_char *wifi_net_password_2[OSAL_WIFI_PRM_SZ];
+    osalWifiNetworkConfig wifinet[OSAL_MAX_NRO_WIFI_NETWORKS];
 }
 osalNetworkInterface2;
 
-
-/* Number of network interfaces that should be supported troughout the code.
- */
-#define OSAL_DEFAULT_NRO_NICS 2
 
 /* Socket library initialized flag.
  */

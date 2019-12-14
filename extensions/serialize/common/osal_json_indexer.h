@@ -83,7 +83,7 @@ osalJsonItem;
  */
 osalStatus osal_create_json_indexer(
     osalJsonIndex *jindex,
-    os_char *compressed,
+    const os_char *compressed,
     os_memsz compressed_sz,
     os_int flags);
 
