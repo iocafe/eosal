@@ -1106,7 +1106,7 @@ static void osal_pipe_signal_handler(int signum)
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics)
 {
     /* Do not terminate program if socket breaks.

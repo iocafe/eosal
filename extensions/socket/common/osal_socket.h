@@ -237,7 +237,7 @@ osalStatus osal_socket_select(
 /* Initialize OSAL sockets library.
  */
 void osal_socket_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics);
 
 /* Shut down OSAL sockets library.

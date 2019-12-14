@@ -43,7 +43,7 @@ extern os_boolean osal_tls_initialized;
 /* Initialize OSAL sockets library.
  */
 void osal_tls_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics,
     osalSecurityConfig *prm);
 

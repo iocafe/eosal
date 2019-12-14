@@ -826,7 +826,7 @@ static osalStatus osal_openssl_select(
 ****************************************************************************************************
 */
 void osal_tls_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics,
     osalSecurityConfig *prm)
 {
