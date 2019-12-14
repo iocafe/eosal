@@ -1247,7 +1247,7 @@ osalStatus osal_socket_select(
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics)
 {
     /** Windows socket library version information.
