@@ -828,7 +828,7 @@ static osalStatus osal_openssl_select(
 void osal_tls_initialize(
     osalNetworkInterface *nic,
     os_int n_nics,
-    osalTLSParam *prm)
+    osalSecurityConfig *prm)
 {
     const os_char
         *certfile = OS_NULL,

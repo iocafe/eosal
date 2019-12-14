@@ -701,7 +701,7 @@ static osalSocket *osal_get_unused_socket(void)
 void osal_tls_initialize(
     osalNetworkInterface *nic,
     os_int n_nics,
-    osalTLSParam *prm)
+    osalSecurityConfig *prm)
 {
     os_int i;
 

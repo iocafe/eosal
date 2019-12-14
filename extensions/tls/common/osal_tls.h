@@ -17,12 +17,14 @@
 #define OSAL_OPENSSL_INCLUDED
 
 
-typedef struct osalTLSParam
+/* Security configuration, user name, password, trusted parties, certificates
+ */
+typedef struct osalSecurityConfig
 {
     const os_char *certfile;
     const os_char *keyfile;
 }
-osalTLSParam;
+osalSecurityConfig;
 
 #if OSAL_TLS_SUPPORT
 
@@ -43,7 +45,7 @@ extern os_boolean osal_tls_initialized;
 void osal_tls_initialize(
     osalNetworkInterface *nic,
     os_int n_nics,
-    osalTLSParam *prm);
+    osalSecurityConfig *prm);
 
 /* Shut down OSAL sockets library.
  */

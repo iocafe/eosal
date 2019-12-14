@@ -64,6 +64,7 @@ extern const osalStreamInterface osal_socket_iface;
 #define OSAL_SOCKET_IFACE &osal_socket_iface
 
 /* Simple network interface configuration structure.
+ * THIS MAY BE OBSOLETED AND REPLACED BY osalNetworkInterface2
  */
 typedef struct
 {
@@ -81,7 +82,7 @@ typedef struct
        x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
     */
     os_char mac[OSAL_MAC_SZ];
-    os_char no_dhcp;
+    os_boolean no_dhcp;
 
     os_char wifi_net_name_1[OSAL_WIFI_PRM_SZ];
     os_char wifi_net_password_1[OSAL_WIFI_PRM_SZ];
@@ -90,6 +91,36 @@ typedef struct
     os_char wifi_net_password_2[OSAL_WIFI_PRM_SZ];
 }
 osalNetworkInterface;
+
+/* Simple network interface configuration structure.
+ * Will replace osalNetworkInterface for less RAM use when passing information.
+ */
+typedef struct osalNetworkInterface2
+{
+    os_char *host_name;
+
+    /* We keep network setup in global variables for micro controllers.
+     */
+    os_char *ip_address;
+    os_char *subnet_mask;
+    os_char *gateway_address;
+    os_char *dns_address;
+    os_char *dns_address_2;
+
+    /* Locally administered MAC address ranges safe for testing: x2:xx:xx:xx:xx:xx,
+       x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
+    */
+    os_char *mac;
+    os_boolean no_dhcp;
+
+    os_char *wifi_net_name_1;
+    os_char *wifi_net_password_1;
+
+    os_char *wifi_net_name_2[OSAL_WIFI_PRM_SZ];
+    os_char *wifi_net_password_2[OSAL_WIFI_PRM_SZ];
+}
+osalNetworkInterface2;
+
 
 /* Number of network interfaces that should be supported troughout the code.
  */
