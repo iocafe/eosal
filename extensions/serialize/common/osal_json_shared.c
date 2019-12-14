@@ -47,9 +47,13 @@ const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
     "pins",     /* OSAL_JSON_DICT_PINS = 27 */
     "inputs",   /* OSAL_JSON_DICT_INPUTS = 28 */
     "outputs",  /* OSAL_JSON_DICT_OUTPUTS = 29 */
-    "controls",   /* OSAL_JSON_DICT_CONTROLS = 30 */
-    "frequency",  /* OSAL_JSON_DICT_FREQUENCY = 31 */
-    "resolution"  /* OSAL_JSON_DICT_RESOLUTION = 32 */
+    "controls",     /* OSAL_JSON_DICT_CONTROLS = 30 */
+    "frequency",    /* OSAL_JSON_DICT_FREQUENCY = 31 */
+    "resolution",   /* OSAL_JSON_DICT_RESOLUTION = 32 */
+    "device_name",  /* OSAL_JSON_DICT_DEVICE_NAME = 33 */
+    "device_nr",    /* OSAL_JSON_DICT_DEVICE_NR = 34 */
+    "network_name", /* OSAL_JSON_DICT_NETWORK_NAME = 35 */
+    "password"      /* OSAL_JSON_DICT_PASSWORDE = 36 */
    };
 
 /* Find static dictionary item number by string, OSAL_JSON_DICT_NO_ENTRY is none.

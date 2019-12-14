@@ -189,6 +189,27 @@ osalStatus os_persistent_get_ptr(
 /**
 ****************************************************************************************************
 
+  @brief Open persistent block for reading or writing.
+  @anchor os_persistent_open
+
+  @param   block_nr Parameter block number, see osal_persistent.h.
+  @param   flags OSAL_STREAM_READ, OSAL_STREAM_WRITE
+
+  @return  Persistant storage block handle, or OS_NULL if the function failed.
+
+****************************************************************************************************
+*/
+osPersistentHandle *os_persistent_open(
+    osPersistentBlockNr block_nr,
+    os_int flags)
+{
+
+}
+
+
+/**
+****************************************************************************************************
+
   @brief Load parameter block (usually structure) from persistent storage.
   @anchor os_persistent_load
 

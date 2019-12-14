@@ -29,10 +29,20 @@ static os_char device_name[16] = "noname";
 
 static os_boolean initialized = OS_FALSE;
 
+/* Persistent handle used with file system.
+ */
+typedef struct
+{
+    osalStream f;
+    os_int flags;
+}
+osFsysPersistentHandle;
+
+
 /* Maximum number of streamers when using static memory allocation.
  */
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
-static osPersistentHandle osal_persistent_handle[OSAL_MAX_PERSISTENT_HANDLES];
+static osFsysPersistentHandle osal_persistent_handle[OSAL_MAX_PERSISTENT_HANDLES];
 #endif
 
 
@@ -144,7 +154,7 @@ osPersistentHandle *os_persistent_open(
     osPersistentBlockNr block_nr,
     os_int flags)
 {
-    osPersistentHandle *handle;
+    osFsysPersistentHandle *handle;
     os_char path[OSAL_PERSISTENT_MAX_PATH];
     osalStream f;
 
@@ -163,7 +173,7 @@ osPersistentHandle *os_persistent_open(
     /* Allocate streamer structure, either dynamic or static.
      */
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION
-    handle = (osPersistentHandle*)os_malloc(sizeof(osPersistentHandle), OS_NULL);
+    handle = (osFsysPersistentHandle*)os_malloc(sizeof(osFsysPersistentHandle), OS_NULL);
     if (handle == OS_NULL) goto getout;
 #else
     handle = osal_persistent_handle;
@@ -181,10 +191,10 @@ osPersistentHandle *os_persistent_open(
 
     /* Initialize handle structure.
      */
-    os_memclear(handle, sizeof(osPersistentHandle));
+    os_memclear(handle, sizeof(osFsysPersistentHandle));
     handle->f = f;
     handle->flags = flags;
-    return handle;
+    return (osPersistentHandle*)handle;
 
 getout:
     osal_debug_error_str("Reading persistent block from file failed: ", path);
@@ -209,14 +219,17 @@ void os_persistent_close(
     osPersistentHandle *handle,
     os_int flags)
 {
-    if (handle) if (handle->f)
+    osFsysPersistentHandle *h;
+    h = (osFsysPersistentHandle*)handle;
+
+    if (h) if (h->f)
     {
-        osal_file_close(handle->f, OSAL_STREAM_DEFAULT);
-        handle->f = OS_NULL;
+        osal_file_close(h->f, OSAL_STREAM_DEFAULT);
+        h->f = OS_NULL;
     }
 
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION
-    os_free(handle, sizeof(osPersistentHandle));
+    os_free(handle, sizeof(osFsysPersistentHandle));
 #endif
 }
 
@@ -245,10 +258,12 @@ os_memsz os_persistent_read(
 {
     os_memsz n_read;
     osalStatus s;
+    osFsysPersistentHandle *h;
+    h = (osFsysPersistentHandle*)handle;
 
-    if (handle) if (handle->f)
+    if (h) if (h->f)
     {
-        s = osal_file_read(handle->f, buf, buf_sz, &n_read, OSAL_STREAM_DEFAULT);
+        s = osal_file_read(h->f, buf, buf_sz, &n_read, OSAL_STREAM_DEFAULT);
         if (s) goto getout;
         return n_read;
     }
@@ -281,10 +296,12 @@ osalStatus os_persistent_write(
 {
     os_memsz n_written;
     osalStatus s = OSAL_STATUS_FAILED;
+    osFsysPersistentHandle *h;
+    h = (osFsysPersistentHandle*)handle;
 
-    if (handle) if (handle->f)
+    if (h) if (h->f)
     {
-        s = osal_file_write(handle->f, buf, buf_sz, &n_written, OSAL_STREAM_DEFAULT);
+        s = osal_file_write(h->f, buf, buf_sz, &n_written, OSAL_STREAM_DEFAULT);
         if (s) goto getout;
         return n_written == buf_sz ? OSAL_SUCCESS : OSAL_STATUS_DISC_FULL;
     }

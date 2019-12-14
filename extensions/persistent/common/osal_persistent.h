@@ -78,10 +78,11 @@ typedef enum
 }
 osPersistentBlockNr;
 
+/* This structure exists only for type checking, it is never really used.
+ */
 typedef struct
 {
-    osalStream f;
-    os_int flags;
+    os_int justfortypecheck;
 }
 osPersistentHandle;
 

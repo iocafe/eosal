@@ -74,7 +74,7 @@ static osalStatus osal_parse_json_tag(
 static osalStatus parse_json_value(
     osalJsonCompressor *state,
     os_long tag_dict_ix,
-    os_boolean allow_null);
+    os_boolean in_quotes);
 
 static osalStatus osal_parse_json_quoted_string(
     osalJsonCompressor *state);
@@ -310,7 +310,7 @@ static osalStatus osal_parse_json_recursive(
         {
             s = osal_parse_json_quoted_string(state);
             if (s) return s;
-            s = parse_json_value(state, tag_dict_ix, OS_FALSE);
+            s = parse_json_value(state, tag_dict_ix, OS_TRUE);
             if (s) return s;
         }
 
@@ -324,7 +324,7 @@ static osalStatus osal_parse_json_recursive(
              */
             s = osal_parse_json_number(state);
             if (s) return s;
-            s = parse_json_value(state, tag_dict_ix, OS_TRUE);
+            s = parse_json_value(state, tag_dict_ix, OS_FALSE);
             if (s) return s;
         }
 
@@ -417,8 +417,8 @@ static osalStatus osal_parse_json_tag(
   @param  state JSON compression state.
   @param  tag_dict_ix Tag position in dictionary. This can be static dictionary item (values 0 ...
           OSAL_JSON_DICT_N_STATIC - 1), or byte index within dictionary + OSAL_JSON_DICT_N_STATIC.
-  @param  allow_null Allow null word to mean empty value flag. This flag is true when parsing
-          unquoted value and false when parsing a value within quotes.
+  @param  in_quotes If not in quotes, allow null word to mean empty value flag and
+          convert numbers.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -426,7 +426,7 @@ static osalStatus osal_parse_json_tag(
 static osalStatus parse_json_value(
     osalJsonCompressor *state,
     os_long tag_dict_ix,
-    os_boolean allow_null)
+    os_boolean in_quotes)
 {
     os_long ivalue, z, value_dict_ix, m;
     os_short e;
@@ -451,64 +451,63 @@ static osalStatus parse_json_value(
         return s;
     }
 
-    ivalue = osal_str_to_int(data, &count);
-    if (count == data_n)
+    if (!in_quotes)
     {
-        if (ivalue == 0)
+        ivalue = osal_str_to_int(data, &count);
+        if (count == data_n)
         {
-            z = OSAL_JSON_VALUE_INTEGER_ZERO + tag_dict_ix;
-        }
-        else if (ivalue == 1)
-        {
-            z = OSAL_JSON_VALUE_INTEGER_ONE + tag_dict_ix;
-        }
-        else
-        {
-            z = OSAL_JSON_VALUE_INTEGER + tag_dict_ix;
-        }
-        s = osal_stream_write_long(state->content, z, 0);
-        if ((z & OSAL_JSON_CODE_MASK) == OSAL_JSON_VALUE_INTEGER && !s)
-        {
-            s = osal_stream_write_long(state->content, ivalue, 0);
-        }
-
-        return s;
-    }
-
-    dvalue = osal_str_to_double(data, &count);
-    if (count == data_n)
-    {
-        if (dvalue == 0.0)
-        {
-            z = OSAL_JSON_VALUE_INTEGER_ZERO + tag_dict_ix;
-        }
-        else if (dvalue == 1.0)
-        {
-            z = OSAL_JSON_VALUE_INTEGER_ONE + tag_dict_ix;
-        }
-        else
-        {
-            z = OSAL_JSON_VALUE_FLOAT + tag_dict_ix;
-        }
-        s = osal_stream_write_long(state->content, z, 0);
-        if (s) return s;
-        if ((z & OSAL_JSON_CODE_MASK) == OSAL_JSON_VALUE_FLOAT)
-        {
-            osal_float2ints((os_float)dvalue, &m, &e);
-            s = osal_stream_write_long(state->content, m, 0);
-            if (m && !s)
+            if (ivalue == 0)
             {
-                s = osal_stream_write_long(state->content, e, 0);
+                z = OSAL_JSON_VALUE_INTEGER_ZERO + tag_dict_ix;
             }
+            else if (ivalue == 1)
+            {
+                z = OSAL_JSON_VALUE_INTEGER_ONE + tag_dict_ix;
+            }
+            else
+            {
+                z = OSAL_JSON_VALUE_INTEGER + tag_dict_ix;
+            }
+            s = osal_stream_write_long(state->content, z, 0);
+            if ((z & OSAL_JSON_CODE_MASK) == OSAL_JSON_VALUE_INTEGER && !s)
+            {
+                s = osal_stream_write_long(state->content, ivalue, 0);
+            }
+
+            return s;
         }
 
-        return s;
-    }
+        dvalue = osal_str_to_double(data, &count);
+        if (count == data_n)
+        {
+            if (dvalue == 0.0)
+            {
+                z = OSAL_JSON_VALUE_INTEGER_ZERO + tag_dict_ix;
+            }
+            else if (dvalue == 1.0)
+            {
+                z = OSAL_JSON_VALUE_INTEGER_ONE + tag_dict_ix;
+            }
+            else
+            {
+                z = OSAL_JSON_VALUE_FLOAT + tag_dict_ix;
+            }
+            s = osal_stream_write_long(state->content, z, 0);
+            if (s) return s;
+            if ((z & OSAL_JSON_CODE_MASK) == OSAL_JSON_VALUE_FLOAT)
+            {
+                osal_float2ints((os_float)dvalue, &m, &e);
+                s = osal_stream_write_long(state->content, m, 0);
+                if (m && !s)
+                {
+                    s = osal_stream_write_long(state->content, e, 0);
+                }
+            }
 
-    if (allow_null)
-    {
+            return s;
+        }
+
         flags = state->flags;
-
         if (!os_strcmp(data, "null"))
         {
             s = osal_stream_write_long(state->content,
