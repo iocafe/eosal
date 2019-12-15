@@ -1257,14 +1257,14 @@ void osal_socket_initialize(
     os_memclear(osal_client_state, sizeof(osal_client_state));
     os_memclear(osal_server_state, sizeof(osal_server_state));
 
-    os_strncpy(osal_wifi_nic.ip_address, nic[0]->ip_address, OSAL_HOST_BUF_SZ);
-    osal_arduino_ip_from_str(osal_wifi_nic.dns_address, nic[0]->dns_address);
-    osal_arduino_ip_from_str(osal_wifi_nic.dns_address_2, nic[0]->dns_address_2);
-    osal_arduino_ip_from_str(osal_wifi_nic.gateway_address, nic[0]->gateway_address);
-    osal_arduino_ip_from_str(osal_wifi_nic.subnet_mask, nic[0]->subnet_mask);
-    os_strncpy(osal_wifi_nic.no_dhcp = nic[0]->no_dhcp;
-    os_strncpy(osal_wifi_nic.wifi_net_name, nic[0]->wifi_net_name,OSAL_WIFI_PRM_SZ);
-    os_strncpy(osal_wifi_nic.wifi_net_password, nic[0]->wifi_net_password,OSAL_WIFI_PRM_SZ);
+    os_strncpy(osal_wifi_nic.ip_address, nic[0].ip_address, OSAL_HOST_BUF_SZ);
+    osal_arduino_ip_from_str(osal_wifi_nic.dns_address, nic[0].dns_address);
+    osal_arduino_ip_from_str(osal_wifi_nic.dns_address_2, nic[0].dns_address_2);
+    osal_arduino_ip_from_str(osal_wifi_nic.gateway_address, nic[0].gateway_address);
+    osal_arduino_ip_from_str(osal_wifi_nic.subnet_mask, nic[0].subnet_mask);
+    osal_wifi_nic.no_dhcp = nic[0].no_dhcp;
+    os_strncpy(osal_wifi_nic.wifi_net_name, nic[0].wifinet[0].wifi_net_name, OSAL_WIFI_PRM_SZ);
+    os_strncpy(osal_wifi_nic.wifi_net_password, nic[0].wifinet[0].wifi_net_password,OSAL_WIFI_PRM_SZ);
 
     /* Start wifi initialization.
      */
@@ -1385,7 +1385,7 @@ osalStatus osal_is_wifi_initialized(
                         }
                     }
 
-                    WiFi.begin(osal_wifi_nic.wifi_net_name_1, osal_wifi_nic.wifi_net_password_1);
+                    WiFi.begin(osal_wifi_nic.wifi_net_name, osal_wifi_nic.wifi_net_password);
                 }
 
                 os_get_timer(&osal_wifi_step_timer);
