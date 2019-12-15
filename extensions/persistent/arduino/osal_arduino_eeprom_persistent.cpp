@@ -6,8 +6,10 @@
   @version 1.0
   @date    21.9.2019
 
-  Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash,
-  in case EEPROM omulation.
+  Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash
+  for EEPROM emulation.
+
+  ONLY ONE BLOCK CAN BE OPEN AT THE TIME FOR WRITING.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -24,21 +26,14 @@
 
 typedef struct
 {
-    /* Block address in EEPROM
-     */
-    os_ushort pos;
-
-    /* Number of bytes reserved for the block.
-     */
-    os_ushort sz;
-
-    /* Number of bytes currently used.
-     */
-    os_ushort data_sz;
-
-    os_ushort checksum;
+    os_ushort pos;      /* Block address in EEPROM.  */
+    os_ushort sz;       /* Block size in bytes. */
+    os_ushort read_ix;  /* Current read position */
+    os_ushort checksum; /* Check sum. */
+    os_int flags;       /* Operation, OSAL_STREAM_WRITE or OSAL_STREAM_WRITE bits */
 }
 myEEPROMBlock;
+
 
 typedef struct
 {
@@ -47,8 +42,8 @@ typedef struct
     os_uchar initialized;
     os_uchar touched;
 }
-
 myEEPROMHeader;
+
 
 /* Some random number to mark initialized header.
  */
@@ -62,15 +57,18 @@ static os_boolean os_persistent_lib_initialized = OS_FALSE;
 
 /* Forward referred static functions.
  */
+static osalStatus os_persistent_commit(
+    void);
+
 static osalStatus os_persistent_delete_block(
     osPersistentBlockNr block_nr);
 
-static void os_persistent_read(
+static void os_persistent_read_internal(
     os_char *buf,
     os_ushort addr,
     os_ushort n);
 
-static void os_persistent_write(
+static void os_persistent_write_internal(
     const os_char *buf,
     os_ushort addr,
     os_ushort n);
@@ -157,6 +155,7 @@ void os_persistent_shutdown(
 }
 
 
+
 /**
 ****************************************************************************************************
 
@@ -203,65 +202,126 @@ osPersistentHandle *os_persistent_open(
     osPersistentBlockNr block_nr,
     os_int flags)
 {
+    myEEPROMBlock *block;
+    os_ushort first_free, pos, cscalc, n, nnow;
+    os_char tmp[64];
+    int i;
 
+    block = hdr.blk + block_nr;
+    block->flags = flags;
+
+    if (flags & OSAL_STREAM_WRITE)
+    {
+        first_free = (os_ushort)sizeof(hdr);
+        for (i = 0; i< OS_N_PBNR; i++)
+        {
+            pos = hdr.blk[i].pos + hdr.blk[i].sz;
+            if (pos > first_free) first_free = pos;
+        }
+
+        /* If this is not the last block, delete it.
+         */
+        if (block->sz && block->pos + block->sz == first_free)
+        {
+            os_persistent_delete_block(block_nr);
+        }
+        block->pos = first_free;
+        block->sz = 0;
+        block->checksum = OSAL_CHECKSUM_INIT;
+    }
+    else
+    {
+        if (block->sz == 0) return OS_NULL;
+        block->read_ix = block->pos;
+
+        /* Verify checksum
+         */
+        n = block->sz;
+        p = block->pos;
+        cscalc = OSAL_CHECKSUM_INIT;
+
+        while (n > 0)
+        {
+            nnow = n;
+            if (sizeof(tmp) < nnow) nnow = sizeof(tmp)
+            os_persistent_read_internal(tmp, p, block->read_ix, nnow);
+            os_checksum(tmp, nnow, &cscalc);
+            p += nnow;
+            n -= nnow;
+        }
+
+        if (cscalc != block->checksum) return OS_NULL;
+    }
+
+    return (osPersistentHandle*)block;
 }
 
 
 /**
 ****************************************************************************************************
 
-  @brief Load parameter block (usually structure) from persistent storage.
-  @anchor os_persistent_load
+  @brief Close persistent storage block.
+  @anchor os_persistent_close
 
-  The os_persistent_load() function loads parameter structure identified by block number
-  from the persistant storage. Load all parameters when micro controller starts, not during
-  normal operation. If data cannot be loaded, the function leaves the block as is.
-
-  @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to load.
-  @param   block_sz Block size in bytes.
-  @return  Number of bytes read. Zero if failed. Returned value maxes at block_sz.
+  @param   handle Persistant storage handle.
+  @param   flags OSAL_STREAM_DEFAULT (0) is all was written to persistant storage.
+           OSAL_STREAM_INTERRUPT flag is set if transfer was interrupted.
+  @return  None.
 
 ****************************************************************************************************
 */
-os_memsz os_persistent_load(
-    osPersistentBlockNr block_nr,
-    void *block,
-    os_memsz block_sz)
+void os_persistent_close(
+    osPersistentHandle *handle,
+    os_int flags)
 {
-    os_ushort saved_pos, data_sz;
+    myEEPROMBlock *block;
+    block = (myEEPROMBlock*)handle;
 
-    if (!os_persistent_lib_initialized)
+    if (block) if (block->flags & OSAL_STREAM_WRITE)
     {
-        os_persistent_initialze(OS_NULL);
+        os_persistent_commit();
     }
+}
 
-    if (block_nr < 0 || block_nr >= OS_N_PBNR || hdr.initialized != MY_HEADER_INITIALIZED) return 0;
 
-    saved_pos = hdr.blk[block_nr].pos;
-    data_sz = hdr.blk[block_nr].data_sz;
-    if (saved_pos < sizeof(hdr) || saved_pos + (os_uint)data_sz > eeprom_sz
-        || data_sz == 0 || block_sz <= 0)
+/**
+****************************************************************************************************
+
+  @brief Read data from persistent parameter block.
+  @anchor os_persistent_read
+
+  The os_persistent_read() function reads data from persistant storage block. Load all
+  parameters when micro controller starts, not during normal operation.
+
+  @param   handle Persistant storage handle.
+  @param   block Pointer to buffer where to load persistent data.
+  @param   buf_sz Number of bytes to read to buffer.
+  @return  Number of bytes read. Can be less than buf_sz if end of persistent block data has
+           been reached. 0 is fine if at end. -1 Indicates an error.
+
+****************************************************************************************************
+*/
+os_memsz os_persistent_read(
+    osPersistentHandle *handle,
+    os_char *buf,
+    os_memsz buf_sz)
+{
+    os_ushort n;
+    myEEPROMBlock *block;
+    block = (myEEPROMBlock*)handle;
+
+    if (block)
     {
-        return 0;
+        n = block->sz = block->read_ix;
+        if ((os_ushort)buf_sz < n) n = (os_ushort)buf_sz;
+
+        os_persistent_read_internal(buf, block->pos + block->read_ix, n);
+        block->read_ix += n;
+        return n;
     }
-    if (block_sz > data_sz) block_sz = data_sz;
-
-    /* tmp = (os_uchar*)os_malloc(data_sz, OS_NULL); */
-    os_char tmp[data_sz];
-    os_persistent_read(tmp, saved_pos, data_sz);
-
-    if (os_checksum(tmp, data_sz, OS_NULL) != hdr.blk[block_nr].checksum)
-    {
-        block_sz = 0;
-        goto getout;
-    }
-
-    os_memcpy(block, tmp, block_sz);
 
 getout:
-    /* os_free(tmp, data_sz); */
-    return block_sz;
+    return -1;
 }
 
 
@@ -277,75 +337,30 @@ getout:
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block Pointer to block (structure) to save.
   @param   block_sz Block size in bytes.
-  @param   commit If OS_TRUE, parameters are immediately committed to persistant storage.
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
 
 ****************************************************************************************************
 */
-osalStatus os_persistent_save(
-    osPersistentBlockNr block_nr,
-    const void *block,
-    os_memsz block_sz,
-    os_boolean commit)
+osalStatus os_persistent_write(
+    osPersistentHandle *handle,
+    os_char *buf,
+    os_memsz buf_sz)
 {
-    os_ushort first_free, pos;
-    osalStatus s = OSAL_SUCCESS;
-    int i;
+    os_ushort n;
+    myEEPROMBlock *block;
+    block = (myEEPROMBlock*)handle;
 
-    if (!os_persistent_lib_initialized)
+    if (block)
     {
-        os_persistent_initialze(OS_NULL);
+        os_persistent_write_internal(buf, block->pos + block->sz, buf_sz);
+        os_checksum(buf, buf_sz, &block->checksum);
+        block->sz += (os_ushort)buf_sz;
+        hdr.touched = 1;
+        return OSAL_SUCCESS;
     }
-
-    if (block_nr < 0 || block_nr >= (os_memsz)OS_N_PBNR) return OSAL_STATUS_FAILED;
-
-    hdr.touched = OS_TRUE;
-
-    /* If the block has gotten larger, delete old one.
-     */
-    if (block_sz > hdr.blk[block_nr].sz)
-    {
-        s = os_persistent_delete_block(block_nr);
-        if (s)
-        {
-            os_memclear(&hdr, sizeof(hdr));
-            goto getout;
-        }
-    }
-
-    /* If we need to allocate space for the block.
-     */
-    if (hdr.blk[block_nr].sz == 0)
-    {
-        first_free = (os_ushort)sizeof(hdr);
-        for (i = 0; i< OS_N_PBNR; i++)
-        {
-            pos = hdr.blk[i].pos + hdr.blk[i].sz;
-            if (pos > first_free) first_free = pos;
-        }
-
-        hdr.blk[block_nr].pos = first_free;
-        hdr.blk[block_nr].sz = block_sz;
-
-        if (first_free + block_sz > eeprom_sz)
-        {
-            os_memclear(&hdr, sizeof(hdr));
-            goto getout;
-        }
-    }
-
-    hdr.blk[block_nr].data_sz = block_sz;
-    hdr.blk[block_nr].checksum = os_checksum((os_char*)block, block_sz, OS_NULL);
-
-    os_persistent_write((os_char*)block, hdr.blk[block_nr].pos, block_sz);
 
 getout:
-    if (commit)
-    {
-        os_persistent_commit();
-    }
-
-    return s;
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -362,7 +377,7 @@ getout:
 
 ****************************************************************************************************
 */
-osalStatus os_persistent_commit(
+static osalStatus os_persistent_commit(
     void)
 {
     if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
@@ -476,7 +491,7 @@ static osalStatus os_persistent_delete_block(
 
 ****************************************************************************************************
 */
-static void os_persistent_read(
+static void os_persistent_read_internal(
     os_char *buf,
     os_ushort addr,
     os_ushort n)
@@ -503,7 +518,7 @@ static void os_persistent_read(
 
 ****************************************************************************************************
 */
-static void os_persistent_write(
+static void os_persistent_write_internal(
     const os_char *buf,
     os_ushort addr,
     os_ushort n)
@@ -543,61 +558,5 @@ static void os_persistent_move(
         EEPROM.write(dstaddr++, c);
     }
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Get platform info for writing a flash program.
-  @anchor os_persistent_programming_specs
-
-  Get block size, etc. info for writing the micro controller code on this specific platform.
-
-  @param   specs Pointer to programming specs structure to fill in. Set up only if return
-           value is OSAL_SUCCESS.
-  @return  OSAL_SUCCESS if all is good. Return value OSAL_STATUS_NOT_SUPPORTED indicates
-           that flash cannot be programmed on this system.
-
-****************************************************************************************************
-*/
-osalStatus os_persistent_programming_specs(
-    osProgrammingSpecs *specs)
-{
-    return OSAL_STATUS_NOT_SUPPORTED;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get platform specifications for programming the flash.
-  @anchor os_persistent_programming_specs
-
-  @param   cmd Programming command:
-           - OS_PROG_WRITE write n bytes of pgrogram to flags.
-           - OS_PROG_INTERRUPT interrupt programming.
-           - OS_PROG_COMPLETE programming complete, prepare to start the new program.
-  @param   buf Pointer to program data to write to flash.
-  @param   addr Flash address to write to. Not real flasg address, but offset within the program
-           being written. Zero is always beginning of program.
-  @param   nbytes Number of bytes to write from buffer. Must be divisible by min_prog_block_sz.
-
-  Hint: In practice nbytes can be expected to be power of 2, like 32, 64, 128, etc.
-  It may be safe to assume that program can always be written for example 256 bytes at a time.
-
-  @return  OSAL_SUCCESS if all is good. Return value OSAL_STATUS_NOT_SUPPORTED indicates
-           that flash cannot be programmed on this system.
-
-****************************************************************************************************
-*/
-osalStatus os_persistent_program(
-    osProgCommand cmd,
-    const os_char *buf,
-    os_int addr,
-    os_memsz nbytes)
-{
-    return OSAL_STATUS_NOT_SUPPORTED;
-}
-
 
 #endif
