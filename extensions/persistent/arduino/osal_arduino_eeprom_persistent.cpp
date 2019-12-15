@@ -127,7 +127,7 @@ void os_persistent_initialze(
 
     /* Read header.
      */
-    os_persistent_read((os_char*)&hdr, 0, sizeof(hdr));
+    os_persistent_read_internal((os_char*)&hdr, 0, sizeof(hdr));
 
     /* Validate header checksum and that header is initialized.
      */
@@ -203,7 +203,7 @@ osPersistentHandle *os_persistent_open(
     os_int flags)
 {
     myEEPROMBlock *block;
-    os_ushort first_free, pos, cscalc, n, nnow;
+    os_ushort first_free, pos, cscalc, n, nnow, p;
     os_char tmp[64];
     int i;
 
@@ -243,8 +243,8 @@ osPersistentHandle *os_persistent_open(
         while (n > 0)
         {
             nnow = n;
-            if (sizeof(tmp) < nnow) nnow = sizeof(tmp)
-            os_persistent_read_internal(tmp, p, block->read_ix, nnow);
+            if (sizeof(tmp) < nnow) nnow = sizeof(tmp);
+            os_persistent_read_internal(tmp, p, nnow);
             os_checksum(tmp, nnow, &cscalc);
             p += nnow;
             n -= nnow;
@@ -320,7 +320,6 @@ os_memsz os_persistent_read(
         return n;
     }
 
-getout:
     return -1;
 }
 
@@ -346,7 +345,6 @@ osalStatus os_persistent_write(
     os_char *buf,
     os_memsz buf_sz)
 {
-    os_ushort n;
     myEEPROMBlock *block;
     block = (myEEPROMBlock*)handle;
 
@@ -385,7 +383,7 @@ static osalStatus os_persistent_commit(
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 
-    os_persistent_write((os_char*)&hdr, 0, sizeof(hdr));
+    os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
 
     EEPROM.commit();
     return OSAL_SUCCESS;
