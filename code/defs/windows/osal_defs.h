@@ -51,6 +51,13 @@
 #define OSAL_TRACE 1
 #endif
 
+/** Define 1 is this is micro-controller environment. This is used to get sensible default
+    defines for some features.
+ */
+#ifndef OSAL_MICROCONTROLLER
+#define OSAL_MICROCONTROLLER 0
+#endif
+
 /** Include memory debug code. If OSAL_MEMORY_DEBUG flags is nonzero, the memory
     block overwflows and freed block size are checked.
  */

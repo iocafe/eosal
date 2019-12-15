@@ -53,6 +53,13 @@
 #define OSAL_DEBUG 1
 #endif
 
+/** Define 1 is this is micro-controller environment. This is used to get sensible default
+    defines for some features.
+ */
+#ifndef OSAL_MICROCONTROLLER
+#define OSAL_MICROCONTROLLER 1
+#endif
+
 /** Byte order. If OSAL_SMALL_ENDIAN flags is nonzero, the small endian byte format is assumed,
     otherwise big endian.
  */

@@ -1213,7 +1213,7 @@ static String DisplayAddress(IPAddress address)
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics)
 {
     if (nic == OS_NULL && n_nics < 1)

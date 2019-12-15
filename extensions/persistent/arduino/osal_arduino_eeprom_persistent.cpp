@@ -357,7 +357,6 @@ osalStatus os_persistent_write(
         return OSAL_SUCCESS;
     }
 
-getout:
     return OSAL_STATUS_FAILED;
 }
 
