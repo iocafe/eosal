@@ -60,10 +60,31 @@ WiFiMulti wifiMulti;
  */
 static os_boolean osal_wifi_multi_on = OS_FALSE;
 
+
+typedef struct
+{
+    // os_char host_name[OSAL_IPADDR_SZ];
+
+    os_char ip_address[OSAL_HOST_BUF_SZ];
+
+    IPAddress
+        dns_address,
+        dns_address_2,
+        gateway_address,
+        subnet_mask;
+
+    os_boolean no_dhcp;
+
+    os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
+
+}
+osalArduinoNetParams;
+
 /* The osal_socket_initialize() stores application's network setting here. The values in
    are then used and changed by initialization to reflect initialized state.
  */
-static osalNetworkInterface osal_wifi_nic;
+static osalArduinoNetParams osal_wifi_nic;
 
 /* Socket library initialized flag.
  */
@@ -1220,25 +1241,30 @@ void osal_socket_initialize(
     {
         osal_debug_error("osal_socket_initialize(): No NIC configuration");
     }
-    else
-    {
-        os_memcpy(&osal_wifi_nic, nic, sizeof(osalNetworkInterface));
-    }
 
 #if OSAL_WIFI_MULTI
     /* Use WiFiMulti if we have second access point.
      */
-    osal_wifi_multi_on = (osal_wifi_nic.wifi_net_name_2[0] != '\0');
+    osal_wifi_multi_on = (nic[0].wifinet[1].wifi_net_name[0] != '\0');
     if (osal_wifi_multi_on)
     {
-        wifiMulti.addAP(osal_wifi_nic.wifi_net_name_1, osal_wifi_nic.wifi_net_password_1);
-        wifiMulti.addAP(osal_wifi_nic.wifi_net_name_2, osal_wifi_nic.wifi_net_password_2);
+        wifiMulti.addAP(nic[0].wifinet[0].wifi_net_name, nic[0].wifinet[0].wifi_net_password);
+        wifiMulti.addAP(nic[0].wifinet[1].wifi_net_name, nic[0].wifinet[1].wifi_net_password);
     }
 #endif
 
     os_memclear(osal_socket, sizeof(osal_socket));
     os_memclear(osal_client_state, sizeof(osal_client_state));
     os_memclear(osal_server_state, sizeof(osal_server_state));
+
+    os_strncpy(osal_wifi_nic.ip_address, nic[0]->ip_address, OSAL_HOST_BUF_SZ);
+    osal_arduino_ip_from_str(osal_wifi_nic.dns_address, nic[0]->dns_address);
+    osal_arduino_ip_from_str(osal_wifi_nic.dns_address_2, nic[0]->dns_address_2);
+    osal_arduino_ip_from_str(osal_wifi_nic.gateway_address, nic[0]->gateway_address);
+    osal_arduino_ip_from_str(osal_wifi_nic.subnet_mask, nic[0]->subnet_mask);
+    os_strncpy(osal_wifi_nic.no_dhcp = nic[0]->no_dhcp;
+    os_strncpy(osal_wifi_nic.wifi_net_name, nic[0]->wifi_net_name,OSAL_WIFI_PRM_SZ);
+    os_strncpy(osal_wifi_nic.wifi_net_password, nic[0]->wifi_net_password,OSAL_WIFI_PRM_SZ);
 
     /* Start wifi initialization.
      */
@@ -1344,22 +1370,16 @@ osalStatus osal_is_wifi_initialized(
                         /* Some default network parameters.
                          */
                         IPAddress
-                            ip_address(192, 168, 1, 195),
-                            dns_address(8, 8, 8, 8),
-                            dns_address_2(0, 0, 0, 0),
-                            gateway_address(192, 168, 199, 254),
-                            subnet_mask(255, 255, 255, 0);
+                            ip_address(192, 168, 1, 195);
 
                         osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
-                        osal_arduino_ip_from_str(dns_address, osal_wifi_nic.dns_address);
-                        osal_arduino_ip_from_str(dns_address_2, osal_wifi_nic.dns_address_2);
-                        osal_arduino_ip_from_str(gateway_address, osal_wifi_nic.gateway_address);
-                        osal_arduino_ip_from_str(subnet_mask, osal_wifi_nic.subnet_mask);
 
                         /* Warning: ESP does not follow same argument order as arduino,
                            one below is for ESP32.
                          */
-                        if (!WiFi.config(ip_address, gateway_address, subnet_mask, dns_address, dns_address_2))
+                        if (!WiFi.config(ip_address, osal_wifi_nic.gateway_address,
+                            osal_wifi_nic.subnet_mask,
+                            osal_wifi_nic.dns_address, osal_wifi_nic.dns_address_2))
                         {
                             osal_debug_error("Static IP configuration failed");
                         }
@@ -1452,7 +1472,6 @@ osalStatus osal_is_wifi_initialized(
 
             break;
     }
-
 
     return s;
 }

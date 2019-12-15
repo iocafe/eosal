@@ -80,6 +80,7 @@ extern const osalStreamInterface osal_socket_iface;
 /* Simple network interface configuration structure.
  * THIS MAY BE OBSOLETED AND REPLACED BY osalNetworkInterface2
  */
+#if 0
 typedef struct
 {
     os_char host_name[OSAL_IPADDR_SZ];
@@ -105,6 +106,7 @@ typedef struct
     os_char wifi_net_password_2[OSAL_WIFI_PRM_SZ];
 }
 osalNetworkInterface;
+#endif
 
 /* Wifi network name and password
  */
