@@ -192,6 +192,8 @@ osalStatus os_persistent_get_ptr(
   @anchor os_persistent_open
 
   @param   block_nr Parameter block number, see osal_persistent.h.
+  @param   block_sz Pointer to integer where to store block size when reading the persistent block.
+           This is intended to know memory size to allocate before reading.
   @param   flags OSAL_STREAM_READ, OSAL_STREAM_WRITE
 
   @return  Persistant storage block handle, or OS_NULL if the function failed.
@@ -200,6 +202,7 @@ osalStatus os_persistent_get_ptr(
 */
 osPersistentHandle *os_persistent_open(
     osPersistentBlockNr block_nr,
+    os_memsz *block_sz,
     os_int flags)
 {
     myEEPROMBlock *block;
@@ -238,6 +241,7 @@ osPersistentHandle *os_persistent_open(
     }
     else
     {
+        if (block_sz) *block_sz = block->sz;
         if (block->sz == 0) return OS_NULL;
         block->read_ix = block->pos;
 
