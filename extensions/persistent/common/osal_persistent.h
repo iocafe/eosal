@@ -114,13 +114,14 @@ void os_persistent_shutdown(
  */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    os_char **block,
+    const os_char **block,
     os_memsz *block_sz);
 
 /* Open persistent block for reading or writing.
  */
 osPersistentHandle *os_persistent_open(
     osPersistentBlockNr block_nr,
+    os_memsz *block_sz,
     os_int flags);
 
 /* Close persistent storage block. If this is flash program transfer, the boot bank

@@ -207,6 +207,13 @@ osPersistentHandle *os_persistent_open(
     os_char tmp[64];
     int i;
 
+    /* This implementation doesn not support nor simulate flash programming.
+     */
+    if (block_nr == OS_PBNR_FLASH_PROGRAM)
+    {
+        return OSAL_STATUS_FAILED;
+    }
+
     block = hdr.blk + block_nr;
     block->flags = flags;
 

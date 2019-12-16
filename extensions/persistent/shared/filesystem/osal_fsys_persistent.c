@@ -130,7 +130,7 @@ void os_persistent_shutdown(
 */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    os_char **block,
+    const os_char **block,
     os_memsz *block_sz)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
@@ -144,6 +144,8 @@ osalStatus os_persistent_get_ptr(
   @anchor os_persistent_open
 
   @param   block_nr Parameter block number, see osal_persistent.h.
+  @param   block_sz Pointer to integer where to store block size when reading the persistent block.
+           This is intended to know memory size to allocate before reading.
   @param   flags OSAL_STREAM_READ, OSAL_STREAM_WRITE
 
   @return  Persistant storage block handle, or OS_NULL if the function failed.
@@ -152,11 +154,14 @@ osalStatus os_persistent_get_ptr(
 */
 osPersistentHandle *os_persistent_open(
     osPersistentBlockNr block_nr,
+    os_memsz *block_sz,
     os_int flags)
 {
     osFsysPersistentHandle *handle;
     os_char path[OSAL_PERSISTENT_MAX_PATH];
     osalStream f;
+    osalFileStat filestat;
+    osalStatus s;
 
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
     os_int count;
@@ -164,6 +169,22 @@ osPersistentHandle *os_persistent_open(
 
     if (!initialized) os_persistent_initialze(OS_NULL);
     os_persistent_make_path(block_nr, path, sizeof(path));
+
+    /* If we need to get block size?
+     */
+    if (block_sz)
+    {
+        if (flags & OSAL_STREAM_READ)
+        {
+            s = osal_filestat(path, &filestat);
+            if (s) return OS_NULL;
+            *block_sz = filestat.sz;
+        }
+        else
+        {
+            *block_sz = 0;
+        }
+    }
 
     /* Open file.
      */
@@ -194,6 +215,7 @@ osPersistentHandle *os_persistent_open(
     os_memclear(handle, sizeof(osFsysPersistentHandle));
     handle->f = f;
     handle->flags = flags;
+
     return (osPersistentHandle*)handle;
 
 getout:
