@@ -21,8 +21,21 @@
  */
 typedef struct osalSecurityConfig
 {
-    const os_char *certfile;
-    const os_char *keyfile;
+    /* Path to directory containing certificates and keys. OS_NULL to use testing default.
+     */
+    const os_char *certs_dir;
+
+    /* Server certificate file (PEM)
+     */
+    const os_char *server_cert_file;
+
+    /* Server key
+     */
+    const os_char *server_key_file;
+
+    /* Client certificate chain file (PEM, bundle)
+     */
+    const os_char *client_cert_chain_file;
 }
 osalSecurityConfig;
 

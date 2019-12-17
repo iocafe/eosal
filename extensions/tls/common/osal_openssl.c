@@ -117,8 +117,7 @@ os_boolean osal_tls_initialized = OS_FALSE;
 /* Prototypes for forward referred static functions.
  */
 static void osal_openssl_init(
-    const os_char *certfile,
-    const os_char *keyfile);
+    osalSecurityConfig *prm);
 
 static void osal_openssl_cleanup(void);
 
@@ -151,6 +150,10 @@ static osalStatus osal_openssl_do_encrypt(
 
 static osalStatus osal_openssl_do_sock_write(
     osalSSLSocket *sslsocket);
+
+static int osal_openssl_verify_callback(
+    int preverify,
+    X509_STORE_CTX* x509_ctx);
 
 
 /**
@@ -240,6 +243,7 @@ static osalStream osal_openssl_open(
     sslsocket->hdr.iface = &osal_tls_iface;
 
     /* If we are connecting socket.
+     *
      */
     if ((flags & (OSAL_STREAM_LISTEN|OSAL_STREAM_CONNECT)) == OSAL_STREAM_CONNECT)
 	{
@@ -830,19 +834,8 @@ void osal_tls_initialize(
     os_int n_nics,
     osalSecurityConfig *prm)
 {
-    const os_char
-        *certfile = OS_NULL,
-        *keyfile = OS_NULL;
-
     osal_socket_initialize(nic, n_nics);
-
-    if (prm)
-    {
-        certfile = prm->certfile;
-        keyfile = prm->keyfile;
-    }
-
-    osal_openssl_init(certfile, keyfile);
+    osal_openssl_init(prm);
 
     /* Set socket library initialized flag.
      */
@@ -887,9 +880,11 @@ void osal_tls_shutdown(
 ****************************************************************************************************
 */
 static void osal_openssl_init(
-    const os_char *certfile,
-    const os_char *keyfile)
+    osalSecurityConfig *prm)
 {
+    const os_char *certs_dir;
+    os_char path[128];
+
     printf("initialising SSL\n");
 
     /* SSL library initialisation.
@@ -909,16 +904,28 @@ static void osal_openssl_init(
         return;
     }
 
+    /* If we have no path to directory containing certificates and keys, set testing default.
+     */
+    certs_dir = prm->certs_dir;
+    if (certs_dir == OS_NULL)
+    {
+        certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/";
+    }
+
     /* Load certificate and private key files, and check consistency.
      */
-    if (certfile && keyfile)
+    if (prm->server_cert_file && prm->server_key_file)
     {
-        if (SSL_CTX_use_certificate_file(ctx, certfile,  SSL_FILETYPE_PEM) != 1)
+        os_strncpy(path, certs_dir, sizeof(path));
+        os_strncat(path, prm->server_cert_file, sizeof(path));
+        if (SSL_CTX_use_certificate_file(ctx, path,  SSL_FILETYPE_PEM) != 1)
         {
             osal_debug_error("SSL_CTX_use_certificate_file failed");
         }
 
-        if (SSL_CTX_use_PrivateKey_file(ctx, keyfile, SSL_FILETYPE_PEM) != 1)
+        os_strncpy(path, certs_dir, sizeof(path));
+        os_strncat(path, prm->server_key_file, sizeof(path));
+        if (SSL_CTX_use_PrivateKey_file(ctx, path, SSL_FILETYPE_PEM) != 1)
         {
             osal_debug_error("SSL_CTX_use_PrivateKey_file failed");
         }
@@ -933,6 +940,21 @@ static void osal_openssl_init(
         {
             osal_trace("certificate and private key loaded and verified\n");
         }
+    }
+
+    /* Client verify server certificate
+     */
+    if (prm->client_cert_chain_file)
+    {
+        os_strncpy(path, certs_dir, sizeof(path));
+        os_strncat(path, prm->client_cert_chain_file, sizeof(path));
+        if ( SSL_CTX_load_verify_locations(ctx, path, NULL) != 1 )
+        {
+            osal_debug_error("SSL_CTX_load_verify_locations failed");
+        }
+
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, osal_openssl_verify_callback);
+        SSL_CTX_set_verify_depth(ctx, 1);
     }
 
     /* Recommended to avoid SSLv2 & SSLv3.
@@ -1278,6 +1300,53 @@ static osalStatus osal_openssl_do_sock_write(
     return (s == OSAL_SUCCESS && n == 0) ? OSAL_STATUS_NOTHING_TO_DO : s;
 }
 
+
+static int osal_openssl_verify_callback(
+    int preverify,
+    X509_STORE_CTX* x509_ctx)
+{
+    /* For error codes, see http://www.openssl.org/docs/apps/verify.html  */
+    int err = X509_STORE_CTX_get_error(x509_ctx);
+
+    if (preverify == 0)
+    {
+        if(err == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY)
+        {
+            osal_debug_error("Error = X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY");
+        }
+        else if(err == X509_V_ERR_CERT_UNTRUSTED)
+        {
+            osal_debug_error("Error = X509_V_ERR_CERT_UNTRUSTED");
+        }
+        else if(err == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN)
+        {
+            osal_debug_error("Error = X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN");
+        }
+        else if(err == X509_V_ERR_CERT_NOT_YET_VALID)
+        {
+            osal_trace2("Remark = X509_V_ERR_CERT_NOT_YET_VALID (ignored)");
+        }
+        else if(err == X509_V_ERR_CERT_HAS_EXPIRED)
+        {
+            osal_trace2("Remark = X509_V_ERR_CERT_HAS_EXPIRED (ignored)");
+        }
+        else if(err == X509_V_OK)
+        {
+            osal_trace2("X509_V_OK");
+        }
+        else
+        {
+            osal_debug_error_int("Error = ", err);
+        }
+    }
+
+    if (err == X509_V_OK ||
+        err == X509_V_ERR_CERT_HAS_EXPIRED ||
+        err == X509_V_ERR_CERT_NOT_YET_VALID)
+        return 1;
+
+    return preverify;
+}
 
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
