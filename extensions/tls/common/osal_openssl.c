@@ -916,6 +916,8 @@ static void osal_openssl_init(
      */
     if (prm->server_cert_file && prm->server_key_file)
     {
+osal_debug_error_str("HERE cert", prm->server_cert_file)   ;
+osal_debug_error_str("HERE key", prm->server_key_file)   ;
         os_strncpy(path, certs_dir, sizeof(path));
         os_strncat(path, prm->server_cert_file, sizeof(path));
         if (SSL_CTX_use_certificate_file(ctx, path,  SSL_FILETYPE_PEM) != 1)
