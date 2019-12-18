@@ -178,7 +178,7 @@ void os_persistent_shutdown(
 */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    void **block,
+    const os_char **block,
     os_memsz *block_sz)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
@@ -214,7 +214,7 @@ osPersistentHandle *os_persistent_open(
      */
     if (block_nr == OS_PBNR_FLASH_PROGRAM)
     {
-        return OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
     block = hdr.blk + block_nr;
