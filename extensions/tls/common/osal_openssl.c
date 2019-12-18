@@ -904,6 +904,14 @@ static void osal_openssl_init(
         return;
     }
 
+    /* If no parameters, skip
+     */
+    if (prm == OS_NULL)
+    {
+        osal_debug_error("No TLS parameters");
+        goto skipit;
+    }
+
     /* If we have no path to directory containing certificates and keys, set testing default.
      */
     certs_dir = prm->certs_dir;
@@ -957,6 +965,7 @@ static void osal_openssl_init(
         SSL_CTX_set_verify_depth(ctx, 1);
     }
 
+skipit:
     /* Recommended to avoid SSLv2 & SSLv3.
      */
     SSL_CTX_set_options(ctx, SSL_OP_ALL|SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
