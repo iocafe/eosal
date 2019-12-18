@@ -29,19 +29,6 @@
 #include "WiFi.h"
 #include <WiFiClientSecure.h>
 
-/* Global network setup. Micro-controllers typically have one (or two)
-   network interfaces. The network interface configuration is managed
-   here, not by operating system.
- */
-static osalNetworkInterface osal_net_iface
-  = {"BRASS",              /* host_name */
-     "192.168.1.201",      /* ip_address */
-     "255.255.255.0",      /* subnet_mask */
-     "192.168.1.254",      /* gateway_address */
-     "8.8.8.8",            /* dns_address */
-     "66-7F-18-67-A1-D3",  /* mac */
-     0};                   /* dhcp */
-
 
 // www.howsmyssl.com root certificate authority, to verify the server
 // change it to your server root CA
@@ -699,7 +686,7 @@ static osalSocket *osal_get_unused_socket(void)
 ****************************************************************************************************
 */
 void osal_tls_initialize(
-    osalNetworkInterface *nic,
+    osalNetworkInterface2 *nic,
     os_int n_nics,
     osalSecurityConfig *prm)
 {

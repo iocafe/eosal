@@ -178,7 +178,7 @@ void os_persistent_shutdown(
 */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    void **block,
+    const os_char **block,
     os_memsz *block_sz)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
