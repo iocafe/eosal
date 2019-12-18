@@ -214,7 +214,7 @@ osPersistentHandle *os_persistent_open(
      */
     if (block_nr == OS_PBNR_FLASH_PROGRAM)
     {
-        return OSAL_STATUS_FAILED;
+        return OS_NULL;
     }
 
     block = hdr.blk + block_nr;
