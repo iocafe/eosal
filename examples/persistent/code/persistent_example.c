@@ -73,40 +73,81 @@ osalStatus osal_loop(
     void *app_context)
 {
     os_char buf[OSAL_NBUF_SZ];
-    // os_memsz sz;
+    osPersistentHandle *h;
+    os_memsz block_sz, sz;
 
-    /* Show count once per second.
-     */
-    if (os_elapsed(&t, 10000))
+    if (os_elapsed(&t, 3000))
     {
         os_memclear(&prm_a, sizeof(prm_a));
-        os_persistent_load(OS_PBNR_APP_1, (void*)&prm_a, sizeof(prm_a));
-        osal_console_write("A = ");
-        osal_console_write(prm_a.txt1);
-        osal_console_write(", ");
-        osal_console_write(prm_a.txt2);
-        osal_console_write("\n");
+        h = os_persistent_open(OS_PBNR_CUST_A, &block_sz, OSAL_STREAM_READ);
+        if (h)
+        {
+            sz = sizeof(prm_a);
+            if (block_sz == sz)
+            {
+                if (os_persistent_read(h, (void*)&prm_a, sz) == sz)
+                {
+                    osal_console_write("A = ");
+                    osal_console_write(prm_a.txt1);
+                    osal_console_write(", ");
+                    osal_console_write(prm_a.txt2);
+                    osal_console_write("\n");
+                }
+            }
+            os_persistent_close(h, 0);
+        }
 
         os_memclear(&prm_b, sizeof(prm_b));
-        os_persistent_load(OS_PBNR_APP_2, (void*)&prm_b, sizeof(prm_b));
-        osal_console_write("B = ");
-        osal_console_write(prm_b.txt1);
-        osal_console_write(", ");
-        osal_console_write(prm_b.txt2);
-        osal_console_write("\n");
+        h = os_persistent_open(OS_PBNR_CUST_B, &block_sz, OSAL_STREAM_READ);
+        if (h)
+        {
+            sz = sizeof(prm_b);
+            if (block_sz == sz)
+            {
+                if (os_persistent_read(h, (void*)&prm_b, sz) == sz)
+                {
+                    osal_console_write("B = ");
+                    osal_console_write(prm_b.txt1);
+                    osal_console_write(", ");
+                    osal_console_write(prm_b.txt2);
+                    osal_console_write("\n");
+                }
+            }
+            os_persistent_close(h, 0);
+        }
+
 
         osal_int_to_str(buf, sizeof(buf), count--);
         os_strncpy(prm_a.txt1, "txt a1: ", TXT_SZ);
         os_strncat(prm_a.txt1, buf, TXT_SZ);
         os_strncpy(prm_a.txt2, "txt a2: ", TXT_SZ);
         os_strncat(prm_a.txt2, buf, TXT_SZ);
-        os_persistent_save(OS_PBNR_APP_1, (void*)&prm_a, sizeof(prm_a), OS_TRUE);
+        h = os_persistent_open(OS_PBNR_CUST_A, OS_NULL, OSAL_STREAM_WRITE);
+        if (h)
+        {
+            sz = sizeof(prm_a);
+            if (os_persistent_write(h, (void*)&prm_a, sz) == OSAL_SUCCESS)
+            {
+                osal_console_write("A written ok\n");
+            }
+            os_persistent_close(h, 0);
+        }
+
 
         os_strncpy(prm_b.txt1, "txt b1: ", TXT_SZ);
         os_strncat(prm_b.txt1, buf, TXT_SZ);
         os_strncpy(prm_b.txt2, "txt b2: ", TXT_SZ);
         os_strncat(prm_b.txt2, buf, TXT_SZ);
-        os_persistent_save(OS_PBNR_APP_2, (void*)&prm_b, sizeof(prm_b), OS_TRUE);
+        h = os_persistent_open(OS_PBNR_CUST_B, OS_NULL, OSAL_STREAM_WRITE);
+        if (h)
+        {
+            sz = sizeof(prm_b);
+            if (os_persistent_write(h, (void*)&prm_b, sz) == OSAL_SUCCESS)
+            {
+                osal_console_write("B written ok\n");
+            }
+            os_persistent_close(h, 0);
+        }
 
         os_get_timer(&t);
     }

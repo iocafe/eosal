@@ -33,11 +33,6 @@
  */
 #define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
-#define EXAMPLE_TCP_SOCKET_PORT "6368"
-#define EXAMPLE_TLS_SOCKET_PORT "6369"
-#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/alice.crt"
-#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/alice.key"
-
 /* Parameters to start a worker thread.
  */
 typedef struct MyThreadParams
@@ -72,7 +67,7 @@ static void mythread_func(
     osalStatus status;
     osalSelectData selectdata;
     os_int i;
-    os_uchar buf[64];
+    os_char buf[64];
     os_memsz n_read, n_written;
     const char keypressedtext[] = "<server-key>";
 
@@ -90,11 +85,11 @@ static void mythread_func(
         if (handle[0] == OS_NULL)
         {
             #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-                handle[0] = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT,
+                handle[0] = osal_stream_open(OSAL_SOCKET_IFACE, OS_NULL,
                     OS_NULL, &status, OSAL_STREAM_LISTEN|OSAL_STREAM_SELECT);
             #endif
             #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-                handle[0] = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT,
+                handle[0] = osal_stream_open(OSAL_TLS_IFACE, OS_NULL,
                     OS_NULL, &status, OSAL_STREAM_LISTEN|OSAL_STREAM_SELECT);
             #endif
 
@@ -133,17 +128,17 @@ static void mythread_func(
             {
                 if (handle[i] == OS_NULL)
                 {
-                    handle[i] = osal_stream_accept(handle[0], &status, OSAL_STREAM_DEFAULT);
+                    handle[i] = osal_stream_accept(handle[0], OS_NULL, 0, &status, OSAL_STREAM_DEFAULT);
                     break;
                 }
             }
             if (i == OSAL_SOCKET_SELECT_MAX)
             {
-                /* Handle table full. Accept and close the sockets.
+                /* Handle table full. Accept and close the socket.
                  */
                 osal_debug_error("handle table full");
-                st = osal_stream_accept(handle[0], &status, OSAL_STREAM_DEFAULT);
-                osal_stream_close(st);
+                st = osal_stream_accept(handle[0], OS_NULL, 0, &status, OSAL_STREAM_DEFAULT);
+                osal_stream_close(st, OSAL_STREAM_DEFAULT);
             }
         }
 
@@ -159,7 +154,7 @@ static void mythread_func(
                     os_strlen(keypressedtext)-1, &n_written, OSAL_STREAM_DEFAULT))
                 {
                     osal_debug_error("write: connection broken");
-                    osal_stream_close(st);
+                    osal_stream_close(st, OSAL_STREAM_DEFAULT);
                     handle[i] = OS_NULL;
                 }
             }
@@ -196,7 +191,7 @@ static void mythread_func(
                 buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
             {
                 osal_debug_error("read: connection broken");
-                osal_stream_close(st);
+                osal_stream_close(st, OSAL_STREAM_DEFAULT);
                 handle[selectdata.stream_nr] = OS_NULL;
             }
             else if (n_read)
@@ -216,7 +211,7 @@ static void mythread_func(
 
             if (osal_stream_flush(st, OSAL_STREAM_DEFAULT))
             {
-                osal_stream_close(st);
+                osal_stream_close(st, OSAL_STREAM_DEFAULT);
                 handle[selectdata.stream_nr] = OS_NULL;
             }
         }
@@ -226,7 +221,7 @@ static void mythread_func(
      */
     for (i = 0; i < OSAL_SOCKET_SELECT_MAX; i++)
     {
-        if (handle[i]) osal_stream_close(handle[i]);
+        if (handle[i]) osal_stream_close(handle[i], OSAL_STREAM_DEFAULT);
     }
 }
 
@@ -259,19 +254,21 @@ osalStatus osal_main(
     osal_socket_initialize(OS_NULL, 0);
 #endif
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-    static osalSecurityConfig prm = {EXAMPLE_TLS_SERVER_CERT, EXAMPLE_TLS_SERVER_KEY};
-    /* Never call boath osal_socket_initialize() and osal_tls_initialize().
-       These use the same underlying library
+    osalSecurityConfig security_prm;
+
+    os_memclear(&security_prm, sizeof(security_prm));
+    security_prm.server_cert_file = "alice.crt";
+    security_prm.server_key_file = "alice.key";
+
+    /* Initialize the transport, socket, TLS, serial, etc..
      */
-    osal_tls_initialize(OS_NULL, 0, &prm);
+    osal_tls_initialize(OS_NULL, 0, &security_prm);
 #endif
 
     /* Create worker thread to do actual coommunication.
      */
     os_memclear(&mythreadprm, sizeof(mythreadprm));
     mythreadprm.myevent = osal_event_create();
-
-    OS_NULL,
     mythread = osal_thread_create(mythread_func, &mythreadprm, OS_NULL, OSAL_THREAD_ATTACHED);
 
     /* Read keyboard and set event if key pressed.

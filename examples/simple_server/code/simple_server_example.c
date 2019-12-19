@@ -35,21 +35,10 @@
  */
 #define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
-/* Modify connection parameters here: These apply to different communication types
-   EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET_PORT sets unsecured TCP socket port number 
-   to listen.
-   EXAMPLE_USE_TLS_SOCKET: Define EXAMPLE_TLS_SOCKET_PORT sets secured TCP socket port number 
-   to listen.
-   EXAMPLE_USE_TLS_SOCKET: Defines EXAMPLE_TLS_SERVER_CERT and EXAMPLE_TLS_SERVER_KEY set path
-   to cerver certificate and key files.
-   EXAMPLE_USE_SERIAL_PORT, define EXAMPLE_SERIAL_PORT: Serial port can be selected using Windows
+/* EXAMPLE_USE_SERIAL_PORT, define EXAMPLE_SERIAL_PORT: Serial port can be selected using Windows
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific 
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
-#define EXAMPLE_TCP_SOCKET_PORT "6368"
-#define EXAMPLE_TLS_SOCKET_PORT "6369"
-#define EXAMPLE_TLS_SERVER_CERT "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/alice.crt"
-#define EXAMPLE_TLS_SERVER_KEY "/coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/alice.key"
 #define EXAMPLE_SERIAL_PORT "COM3,baud=115200"
 
 
@@ -85,11 +74,15 @@ osalStatus osal_main(
     osal_socket_initialize(OS_NULL, 0);
 #endif
 #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-    static osalSecurityConfig prm = {EXAMPLE_TLS_SERVER_CERT, EXAMPLE_TLS_SERVER_KEY};
-    /* Never call boath osal_socket_initialize() and osal_tls_initialize().
-       These use the same underlying library
+    osalSecurityConfig security_prm;
+
+    os_memclear(&security_prm, sizeof(security_prm));
+    security_prm.server_cert_file = "alice.crt";
+    security_prm.server_key_file = "alice.key";
+
+    /* Initialize the transport, socket, TLS, serial, etc..
      */
-    osal_tls_initialize(OS_NULL, 0, &prm);
+    osal_tls_initialize(OS_NULL, 0, &security_prm);
 #endif
 #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
     osal_serial_initialize();
@@ -144,11 +137,11 @@ osalStatus osal_loop(
     if (stream == OS_NULL)
     {
         #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-            stream = osal_stream_open(OSAL_SOCKET_IFACE, ":" EXAMPLE_TCP_SOCKET_PORT, OS_NULL,
+            stream = osal_stream_open(OSAL_SOCKET_IFACE, OS_NULL, OS_NULL,
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
         #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-            stream = osal_stream_open(OSAL_TLS_IFACE, ":" EXAMPLE_TLS_SOCKET_PORT, OS_NULL,
+            stream = osal_stream_open(OSAL_TLS_IFACE, OS_NULL, OS_NULL,
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
         #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
@@ -169,12 +162,12 @@ osalStatus osal_loop(
      */
     if (stream)
     {
-        accepted_socket = osal_stream_accept(stream, OS_NULL, OSAL_STREAM_DEFAULT);
+        accepted_socket = osal_stream_accept(stream, OS_NULL, 0, OS_NULL, OSAL_STREAM_DEFAULT);
         if (accepted_socket)
         {
             if (mystream)
             {
-                osal_stream_close(mystream);
+                osal_stream_close(mystream, OSAL_STREAM_DEFAULT);
 
                 osal_debug_error("socket already open. this example allows only one socket. "
                     "old connection closed");
@@ -192,7 +185,7 @@ osalStatus osal_loop(
         if (osal_stream_read(mystream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("read: connection broken");
-            osal_stream_close(mystream);
+            osal_stream_close(mystream, OSAL_STREAM_DEFAULT);
             mystream = OS_NULL;
         }
         else if (n_read)
@@ -213,7 +206,7 @@ osalStatus osal_loop(
             if (osal_stream_write(mystream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
             {
                 osal_debug_error("write: connection broken");
-                osal_stream_close(mystream);
+                osal_stream_close(mystream, OSAL_STREAM_DEFAULT);
                 mystream = OS_NULL;
             }
         }
@@ -226,7 +219,7 @@ osalStatus osal_loop(
     {
         if (osal_stream_flush(mystream, OSAL_STREAM_DEFAULT))
         {
-            osal_stream_close(mystream);
+            osal_stream_close(mystream, OSAL_STREAM_DEFAULT);
             mystream = OS_NULL;
         }
     }
@@ -252,8 +245,8 @@ osalStatus osal_loop(
 void osal_main_cleanup(
     void *app_context)
 {
-    osal_stream_close(mystream);
-    osal_stream_close(stream);
+    osal_stream_close(mystream, OSAL_STREAM_DEFAULT);
+    osal_stream_close(stream, OSAL_STREAM_DEFAULT);
 
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
     osal_socket_shutdown();

@@ -41,8 +41,8 @@
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
-#define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
-#define EXAMPLE_TLS_SOCKET "192.168.1.220:6369"
+#define EXAMPLE_TCP_SOCKET "127.0.0.1"
+#define EXAMPLE_TLS_SOCKET "192.168.1.220"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 /* Parameters to start a worker thread.
@@ -84,14 +84,6 @@ static void mythread_func(
 
     mythreadprm = (MyThreadParams*)prm;
     osal_event_set(done);
-
-    /* Initialize socket library and connect a socket. Notice flag OSAL_STREAM_TCP_NODELAY.
-       If OSAL_STREAM_TCP_NODELAY is given, the nagle algorithm is disabled and writes
-       are buffered until enough data for a packet collected, or osal_stream_flush is
-       called. This is very useful for fast IO, etc, but not so for data transfer over
-       internet, like user interfaces.
-     */
-//    osal_socket_initialize(OS_NULL, 0);
 
     while (!mythreadprm->stopthread)
     {
@@ -150,7 +142,7 @@ static void mythread_func(
                 os_strlen(keypressedtext)-1, &n_written, OSAL_STREAM_DEFAULT))
             {
                 osal_debug_error("write: connection broken");
-                osal_stream_close(handle);
+                osal_stream_close(handle, OSAL_STREAM_DEFAULT);
                 handle = OS_NULL;
             }
         }
@@ -179,10 +171,10 @@ static void mythread_func(
 
         /* Print data received from the stream to console.
          */
-        if (osal_stream_read(handle, (os_uchar*)buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
+        if (osal_stream_read(handle, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("read: connection broken");
-            osal_stream_close(handle);
+            osal_stream_close(handle, OSAL_STREAM_DEFAULT);
             handle = OS_NULL;
         }
         else if (n_read)
@@ -197,14 +189,14 @@ static void mythread_func(
         if (osal_stream_flush(handle, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("flush: connection broken");
-            osal_stream_close(handle);
+            osal_stream_close(handle, OSAL_STREAM_DEFAULT);
             handle = OS_NULL;
         }
     }
 
     /* Close the socket handle
      */
-    osal_stream_close(handle);
+    osal_stream_close(handle, OSAL_STREAM_DEFAULT);
 }
 
 
@@ -239,7 +231,14 @@ osalStatus osal_main(
         /* Never call boath osal_socket_initialize() and osal_tls_initialize().
            These use the same underlying library
          */
-        osal_tls_initialize(OS_NULL, 0, OS_NULL);
+        osalSecurityConfig security_prm;
+
+        os_memclear(&security_prm, sizeof(security_prm));
+        security_prm.client_cert_chain_file = "bob-bundle.crt";
+
+        /* Initialize the transport, socket, TLS, serial, etc..
+         */
+        osal_tls_initialize(OS_NULL, 0, &security_prm);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
         osal_serial_initialize();

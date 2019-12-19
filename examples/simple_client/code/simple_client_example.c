@@ -75,10 +75,14 @@ osalStatus osal_main(
         osal_socket_initialize(OS_NULL, 0);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-        /* Never call boath osal_socket_initialize() and osal_tls_initialize().
-           These use the same underlying library
+        osalSecurityConfig security_prm;
+
+        os_memclear(&security_prm, sizeof(security_prm));
+        security_prm.client_cert_chain_file = "bob-bundle.crt";
+
+        /* Initialize the transport, socket, TLS, serial, etc..
          */
-        osal_tls_initialize(OS_NULL, 0, OS_NULL);
+        osal_tls_initialize(OS_NULL, 0, &security_prm);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
         osal_serial_initialize();
@@ -155,7 +159,7 @@ osalStatus osal_loop(
         if (osal_stream_read(stream, buf, sizeof(buf) - 1, &n_read, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("read: connection broken");
-            osal_stream_close(stream);
+            osal_stream_close(stream, OSAL_STREAM_DEFAULT);
             stream = OS_NULL;
         }
         else if (n_read)
@@ -176,7 +180,7 @@ osalStatus osal_loop(
             if (osal_stream_write(stream, buf, bytes, &n_written, OSAL_STREAM_DEFAULT))
             {
                 osal_debug_error("write: connection broken");
-                osal_stream_close(stream);
+                osal_stream_close(stream, OSAL_STREAM_DEFAULT);
                 stream = OS_NULL;
             }
         }
@@ -190,7 +194,7 @@ osalStatus osal_loop(
         if (osal_stream_flush(stream, OSAL_STREAM_DEFAULT))
         {
             osal_debug_error("flush: connection broken");
-            osal_stream_close(stream);
+            osal_stream_close(stream, OSAL_STREAM_DEFAULT);
             stream = OS_NULL;
         }
     }
@@ -216,7 +220,7 @@ osalStatus osal_loop(
 void osal_main_cleanup(
     void *app_context)
 {
-    osal_stream_close(stream);
+    osal_stream_close(stream, OSAL_STREAM_DEFAULT);
     stream = OS_NULL;
 
 #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
