@@ -274,7 +274,8 @@ osPersistentHandle *os_persistent_open(
   @brief Close persistent storage block.
   @anchor os_persistent_close
 
-  @param   handle Persistant storage handle.
+  @param   handle Persistant storage handle. It is ok to call the function with NULL handle,
+           just nothing happens.
   @param   flags OSAL_STREAM_DEFAULT (0) is all was written to persistant storage.
            OSAL_STREAM_INTERRUPT flag is set if transfer was interrupted.
   @return  None.
