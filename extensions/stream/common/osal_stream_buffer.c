@@ -310,7 +310,6 @@ osalStatus osal_stream_buffer_realloc(
 
     sbuf->ptr = new_ptr;
     sbuf->sz = new_sz;
-    sbuf->n = n;
 
     return OSAL_SUCCESS;
 }
