@@ -72,11 +72,12 @@ typedef enum
     OS_PBNR_FLASH_PROGRAM = 1,
     OS_PBNR_IO_DEVICE_CONFIG = 2,
     OS_PBNR_IO_DEVICE_CONFIG_DEFAULTS = 3,
-    OS_PBNR_SEACRET = 4,
+    OS_PBNR_USER_ACCOUNT_CONFIG = 4,
+    OS_PBNR_SEACRET = 5,
 
-    OS_PBNR_CUST_A = 6,
-    OS_PBNR_CUST_B = 7,
-    OS_N_PBNR = 8
+    OS_PBNR_CUST_A = 7,
+    OS_PBNR_CUST_B = 8,
+    OS_N_PBNR = 10
 }
 osPersistentBlockNr;
 
