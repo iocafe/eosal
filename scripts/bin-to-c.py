@@ -70,9 +70,6 @@ def mymain():
         print("No source files")
         exit()
 
-#    sourcefiles.append('/coderoot/retiredcode/ioc_memory_block.hold')
-#    outpath = '/tmp/aaaa.c'
-
     if outpath is None:
         outpath = sourcefiles[0]
 
