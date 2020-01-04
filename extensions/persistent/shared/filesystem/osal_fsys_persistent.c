@@ -17,15 +17,21 @@
 #if OSAL_PERSISTENT_SUPPORT
 #if OSAL_USE_SHARED_FSYS_PERSISTENT
 
-#define OSAL_PERSISTENT_MAX_PATH 128
-
+/* Default location where to keep persistent configuration data on Linux, Windows, etc.
+   This can be overridden by compiler define OSAL_PERSISTENT_ROOT. Location is important
+   since security keys and passwords are kept here and file permissions must be set.
+ */
+#ifndef OSAL_PERSISTENT_ROOT
 #ifdef OSAL_WIN32
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "c:\\coderoot\\tmp";
+  #define OSAL_PERSISTENT_ROOT "c:\\coderoot\\config"
 #else
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = "/coderoot/tmp";
+  #define OSAL_PERSISTENT_ROOT "/coderoot/config"
+#endif
 #endif
 
-static os_char device_name[16] = "noname";
+
+#define OSAL_PERSISTENT_MAX_PATH 128
+static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = OSAL_PERSISTENT_ROOT;
 
 static os_boolean initialized = OS_FALSE;
 
@@ -80,9 +86,12 @@ void os_persistent_initialze(
         if (prm->path) {
             os_strncpy(rootpath, prm->path, sizeof(rootpath));
         }
+        osal_mkdir(rootpath, 0);
 
         if (prm->device_name) {
-            os_strncpy(device_name, prm->device_name, sizeof(device_name));
+            os_strncat(rootpath, "/", sizeof(rootpath));
+            os_strncpy(rootpath, prm->device_name, sizeof(rootpath));
+            osal_mkdir(rootpath, 0);
         }
     }
 
@@ -357,13 +366,7 @@ static void os_persistent_make_path(
     os_char buf[OSAL_NBUF_SZ];
 
     os_strncpy(path, rootpath, path_sz);
-    if (path[os_strlen(path)-1] != '/')
-    {
-        os_strncat(path, "/", path_sz);
-    }
-
-    os_strncat(path, device_name, path_sz);
-    os_strncat(path, "-persistent-", path_sz);
+    os_strncat(path, "/persistent-", path_sz);
     osal_int_to_str(buf, sizeof(buf), block_nr);
     os_strncat(path, buf, path_sz);
     os_strncat(path, ".dat", path_sz);

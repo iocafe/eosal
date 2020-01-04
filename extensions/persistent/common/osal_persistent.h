@@ -52,7 +52,9 @@ typedef struct
      */
     const os_char *path;
 
-    /** Device name (without number).
+    /** In Windows/linux environment, the device name is used to change persistent file
+        folder to keep settings for multiple IO device processess separate. Device name
+        is without number.
      */
     const os_char *device_name;
 
@@ -86,6 +88,7 @@ osPersistentBlockNr;
 typedef struct
 {
     os_int justfortypecheck;
+
 }
 osPersistentHandle;
 
