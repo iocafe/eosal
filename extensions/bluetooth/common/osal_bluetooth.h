@@ -16,9 +16,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_BLUETOOTH_INCLUDED
-#define OSAL_BLUETOOTH_INCLUDED
-
 #if OSAL_BLUETOOTH_SUPPORT
 
 /** Stream interface structure for bluetooths.
@@ -58,5 +55,4 @@ void osal_bluetooth_shutdown(
  */
 #define OSAL_BLUETOOTH_IFACE OS_NULL
 
-#endif
 #endif

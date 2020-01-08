@@ -16,8 +16,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_STREAM_BUFFER_INCLUDED
-#define OSAL_STREAM_BUFFER_INCLUDED
 
 /** Stream interface structure for the stream buffer class.
  */
@@ -96,11 +94,8 @@ os_char *osal_stream_buffer_content(
 
 /*@}*/
 
-#endif
-
 /* No stream buffer interface, allow build even if the define is used.
  */
 #ifndef OSAL_STREAM_BUFFER_IFACE
-#define OSAL_STREAM_BUFFER_IFACE OS_NULL
-
+    #define OSAL_STREAM_BUFFER_IFACE OS_NULL
 #endif

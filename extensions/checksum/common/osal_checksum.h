@@ -17,8 +17,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_CHECKSUM_INCLUDED
-#define OSAL_CHECKSUM_INCLUDED
 
 /* Enable/disable checksum test code.
  */
@@ -40,7 +38,4 @@ os_ushort os_checksum(
  */
 int osal_test_checksum(
     void);
-#endif
-
-
 #endif

@@ -15,8 +15,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_TIME_INCLUDED
-#define OSAL_TIME_INCLUDED
 #if OSAL_TIME_SUPPORT
 
 /** 
@@ -43,5 +41,4 @@ osalStatus os_settime(
 
 /*@}*/
 
-#endif
 #endif

@@ -13,8 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_FILEUTIL_INCLUDED
-#define OSAL_FILEUTIL_INCLUDED
 #if OSAL_FILESYS_SUPPORT
 
 /* Flags for file utility functions.
@@ -60,5 +58,4 @@ osalStatus os_write_file(
 
 /*@}*/
 
-#endif
 #endif

@@ -13,8 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_SERIALIZE_INCLUDED
-#define OSAL_SERIALIZE_INCLUDED
 #if OSAL_SERIALIZE_SUPPORT
 
 /**
@@ -97,5 +95,4 @@ void osal_float2ints(
 
 /*@}*/
 
-#endif
 #endif

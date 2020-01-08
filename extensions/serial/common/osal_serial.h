@@ -17,9 +17,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_SERIAL_INCLUDED
-#define OSAL_SERIAL_INCLUDED
-
 #if OSAL_SERIAL_SUPPORT
 
 /** Stream interface structure for serials.
@@ -144,5 +141,4 @@ void osal_serial_shutdown(
  */
 #define OSAL_SERIAL_IFACE OS_NULL
 
-#endif
 #endif

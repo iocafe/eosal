@@ -13,9 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_UNCOMPRESS_JSON_INCLUDED
-#define OSAL_UNCOMPRESS_JSON_INCLUDED
-#include "eosalx.h"
 #if OSAL_JSON_TEXT_SUPPORT
 
 /* Uncompress JSON from binary data to plain text.
@@ -26,5 +23,4 @@ osalStatus osal_uncompress_json(
     os_memsz compressed_sz,
     os_int flags);
 
-#endif
 #endif

@@ -19,8 +19,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_UTF16_INCLUDED
-#define OSAL_UTF16_INCLUDED
 
 /* Make sure that base OSAL headers have been included.
  */
@@ -30,11 +28,6 @@
    characters.
  */
 #if OSAL_UTF16
-
-/* If C++ compilation, all functions, etc. from this point on in this header file are
-   plain C and must be left undecorated.
- */
-OSAL_C_HEADER_BEGINS
 
 /* Convert UTF32 character to UTF16.
  */
@@ -74,10 +67,4 @@ os_ushort *osal_str_utf8_to_utf16_malloc(
     const os_char *str8,
     os_memsz *sz_ptr);
 
-
-/* If C++ compilation, end the undecorated code.
- */
-OSAL_C_HEADER_ENDS
-
-#endif
 #endif

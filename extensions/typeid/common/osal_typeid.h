@@ -18,14 +18,7 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_TYPEID_INCLUDED
-#define OSAL_TYPEID_INCLUDED
 #if OSAL_TYPEID_SUPPORT
-
-/* If C++ compilation, all functions, etc. from this point on in this header file are
-   plain C and must be left undecorated.
- */
-OSAL_C_HEADER_BEGINS
 
 /** Enumeration of type identifiers. Type identifiers are used to save and transfer data 
     type information. 
@@ -130,10 +123,4 @@ const os_char *osal_typeid_to_name(
 os_memsz osal_typeid_size(
     osalTypeId type_id);
 
-
-/* If C++ compilation, end the undecorated code.
- */
-OSAL_C_HEADER_ENDS
-
-#endif
 #endif

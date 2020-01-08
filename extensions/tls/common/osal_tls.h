@@ -13,9 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_OPENSSL_INCLUDED
-#define OSAL_OPENSSL_INCLUDED
-
 
 /* Security configuration, user name, password, trusted parties, certificates
  */
@@ -75,5 +72,4 @@ void osal_tls_shutdown(void);
  */
 #define OSAL_TLS_IFACE OS_NULL
 
-#endif
 #endif

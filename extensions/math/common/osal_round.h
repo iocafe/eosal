@@ -13,11 +13,7 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_ROUND_INCLUDED
-#define OSAL_ROUND_INCLUDED
 
 #define os_round_short(d) ((d)>=0.0 ? (os_short)((d) + 0.5) : -(os_short)((-(d)) + 0.5))
 #define os_round_int(d) ((d)>=0.0 ? (os_int)((d) + 0.5) : -(os_int)((-(d)) + 0.5))
 #define os_round_long(d) ((d)>=0.0 ? (os_long)((d) + 0.5) : -(os_long)((-(d)) + 0.5))
-
-#endif

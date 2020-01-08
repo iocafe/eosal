@@ -19,9 +19,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_DEBUG_INCLUDED
-#define OSAL_DEBUG_INCLUDED
-
 
 /** Define OSAL_DEBUG_FILE_AND_LINE as 1 to include file name and line number in osal_debug 
     and osal_assert macros. Effective only when OSAL_DEBUG is 1.
@@ -168,4 +165,3 @@
 #define osal_trace3_str(text,v)
 #endif
 
-#endif

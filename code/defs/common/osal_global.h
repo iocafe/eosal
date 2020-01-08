@@ -15,9 +15,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_GLOBAL_INCLUDED
-#define OSAL_GLOBAL_INCLUDED
-
 
 #if OSAL_MULTITHREAD_SUPPORT
     struct osalMutexStruct;
@@ -124,6 +121,3 @@ osalGlobalStruct;
 
 #define osal_go() (!osal_global->exit_process)
 #define osal_stop() (osal_global->exit_process)
-
-
-#endif

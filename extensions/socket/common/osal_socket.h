@@ -17,8 +17,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_SOCKET_INCLUDED
-#define OSAL_SOCKET_INCLUDED
 
 /** Stream interface structure for sockets.
  */
@@ -294,5 +292,4 @@ osalStatus osal_is_wifi_initialized(
  */
 #define OSAL_SOCKET_IFACE OS_NULL
 
-#endif
 #endif

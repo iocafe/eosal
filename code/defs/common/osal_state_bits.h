@@ -46,8 +46,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_STATE_BITS_INCLUDED
-#define OSAL_STATE_BITS_INCLUDED
 
 #define OSAL_STATE_YELLOW 8
 #define OSAL_STATE_ORANGE 4
@@ -55,5 +53,3 @@
 #define OSAL_STATE_ERROR_MASK (OSAL_STATE_ORANGE|OSAL_STATE_YELLOW)
 #define OSAL_STATE_CONNECTED 2
 #define OSAL_STATE_BOOLEAN_VALUE 1
-
-#endif

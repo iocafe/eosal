@@ -20,9 +20,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_RESOURCE_MONITOR_INCLUDED
-#define OSAL_RESOURCE_MONITOR_INCLUDED
-
 
 /**
 ****************************************************************************************************
@@ -190,5 +187,3 @@ osalResourceIndex osal_resource_monitor_get_change(
 
 #endif
 /*@}*/
-
-#endif

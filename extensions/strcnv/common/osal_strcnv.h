@@ -16,14 +16,7 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_STRCNV_INCLUDED
-#define OSAL_STRCNV_INCLUDED
 #if OSAL_STRCONV_SUPPORT
-
-/* If C++ compilation, all functions, etc. from this point on in this header file are
-   plain C and must be left undecorated.
- */
-OSAL_C_HEADER_BEGINS
 
 /** Flags for osal_double_to_str() function.
  */
@@ -66,9 +59,4 @@ os_memsz osal_str_to_int64(
         os_int64 *x);
 #endif
 
-/* If C++ compilation, end the undecorated code.
- */
-OSAL_C_HEADER_ENDS
-
-#endif
 #endif

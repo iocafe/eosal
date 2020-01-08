@@ -17,8 +17,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_FILE_INCLUDED
-#define OSAL_FILE_INCLUDED
 #if OSAL_FILESYS_SUPPORT
 
 /** Stream interface structure for files.
@@ -89,5 +87,4 @@ osalStatus osal_file_read(
 
 /*@}*/
 
-#endif
 #endif

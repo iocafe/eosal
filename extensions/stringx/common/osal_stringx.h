@@ -15,8 +15,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_STRINGX_INCLUDED
-#define OSAL_STRINGX_INCLUDED
 #if OSAL_STRINGX_SUPPORT
 
 /** 
@@ -95,5 +93,4 @@ os_boolean osal_pattern_match(
 
 /*@}*/
 
-#endif
 #endif

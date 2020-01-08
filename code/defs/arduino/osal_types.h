@@ -15,8 +15,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_TYPES_INCLUDED
-#define OSAL_TYPES_INCLUDED
 
 /** 
    @name Operating System Independent Types
@@ -114,6 +112,3 @@ typedef void *os_pointer;
 #define OS_FLOAT_MAX 3.402823e+38
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
 /*@}*/
-
-
-#endif

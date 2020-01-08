@@ -15,9 +15,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_SYSMEM_INCLUDED
-#define OSAL_SYSMEM_INCLUDED
-
 #if OSAL_MEMORY_MANAGER
 
 /**
@@ -75,5 +72,3 @@ void osal_sysmem_free(
     os_memsz bytes);
 
 /*@}*/
-
-#endif

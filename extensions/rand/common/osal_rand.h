@@ -13,8 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_RAND_INCLUDED
-#define OSAL_RAND_INCLUDED
 #if OSAL_RAND_SUPPORT
 
 /** 
@@ -37,5 +35,4 @@ os_long osal_rand(
 
 /*@}*/
 
-#endif
 #endif

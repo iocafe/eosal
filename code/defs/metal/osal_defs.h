@@ -16,8 +16,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_DEFS_INCLUDED
-#define OSAL_DEFS_INCLUDED
 
 /** Operating system identifier define. There is define for each supported operating system,
     for example OEAL_WINDOWS, OSAL_LINUX, OSAL_ARDUINO, OSAL_METAL... Compilation can be conditioned
@@ -382,6 +380,4 @@
  */
 #ifndef OS_CONTROL_CONSOLE_SUPPORT
 #define OS_CONTROL_CONSOLE_SUPPORT 0
-#endif
-
 #endif

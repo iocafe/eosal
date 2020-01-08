@@ -21,7 +21,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_MEMORY_INCLUDED
 #ifdef OSAL_WINDOWS
 #include <memory.h>
 #endif
@@ -329,5 +328,3 @@ void os_memmove(
 #endif
 
 /*@}*/
-
-#endif

@@ -39,10 +39,7 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_PERSISTENT_INCLUDED
-#define OSAL_PERSISTENT_INCLUDED
 #if OSAL_PERSISTENT_SUPPORT
-
 
 /** Parameters structure for os_persistent_initialze() function.
  */
@@ -153,5 +150,4 @@ osalStatus os_persistent_write(
     os_char *buf,
     os_memsz buf_sz);
 
-#endif
 #endif

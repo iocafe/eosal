@@ -15,8 +15,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_DIR_INCLUDED
-#define OSAL_DIR_INCLUDED
 #if OSAL_FILESYS_SUPPORT
 
 /** Directory list item.
@@ -89,5 +87,4 @@ osalStatus osal_rmdir(
 
 /*@}*/
 
-#endif
 #endif

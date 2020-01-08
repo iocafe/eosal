@@ -16,8 +16,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_COMMON_DEFS_INCLUDED
-#define OSAL_COMMON_DEFS_INCLUDED
 
 /** Null pointer.
  */
@@ -69,4 +67,3 @@ typedef os_char os_boolean;
 #endif
 #endif
 
-#endif

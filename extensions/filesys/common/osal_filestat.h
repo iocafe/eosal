@@ -13,8 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_FILESTAT_INCLUDED
-#define OSAL_FILESTAT_INCLUDED
 #if OSAL_FILESYS_SUPPORT
 
 /** File status information.
@@ -55,5 +53,4 @@ osalStatus osal_filestat(
 
 /*@}*/
 
-#endif
 #endif
