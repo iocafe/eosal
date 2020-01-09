@@ -62,16 +62,15 @@ typedef struct
 osPersistentParams;
 
 /** Reserved persistent parameter block numbers. We need to have and unique persistant block
-    number for each parameter block which can be saved. The OS_PBNR_IO_DEVICE_CONFIG_DEFAULTS
-    is not actual memory block, but number reseved for marking default network configuration.
+    number for each parameter block which can be saved. The OS_PBNR_CONFIG_DEFAULTS
+    is not actual memory block, but number reseved for marking default configuration.
  */
 typedef enum
 {
     OS_PBNR_UNKNOWN = 0,
     OS_PBNR_FLASH_PROGRAM = 1,
-    OS_PBNR_IO_DEVICE_CONFIG = 2,
-    OS_PBNR_IO_DEVICE_CONFIG_DEFAULTS = 3,
-    OS_PBNR_USER_ACCOUNT_CONFIG = 4,
+    OS_PBNR_CONFIG = 2,
+    OS_PBNR_DEFAULTS = 3,
     OS_PBNR_SEACRET = 5,
 
     OS_PBNR_CUST_A = 7,
