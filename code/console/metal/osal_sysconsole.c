@@ -4,7 +4,7 @@
   @brief   Operating system default console IO.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.12.2017
+  @date    8.1.2020
 
   The osal_sysconsole_write() function writes text to the console or serial port designated
   for debug output, and the osal_sysconsole_read() prosesses input from system console or

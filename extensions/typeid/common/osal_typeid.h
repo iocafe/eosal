@@ -4,7 +4,7 @@
   @brief   Enumeration of data types and type name - type id conversions.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This is typeid module header file. This module enumerates data types and implements functions
   for converting type name (text) to type identifier (integer) and vice versa, plus function

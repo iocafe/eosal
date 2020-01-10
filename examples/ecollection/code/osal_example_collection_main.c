@@ -4,7 +4,7 @@
   @brief   Example code about threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    14.9.2019
+  @date    8.1.2020
 
   Main function for set of example. Multiple simple examples/tests have been packed in this
   project to avoid creating many projets.

@@ -4,7 +4,7 @@
   @brief   Socket client example.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.9.2019
+  @date    8.1.2020
 
   Connects a socket to server
   - Create worker thread to trigger custom event once per two seconds.

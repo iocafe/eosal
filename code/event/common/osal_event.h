@@ -4,7 +4,7 @@
   @brief   Events.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This header file contains functions prototypes and definitions for creating, deleting,
   setting and waiting events. An event is used to suspend a thread to wait for signal from

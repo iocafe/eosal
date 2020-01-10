@@ -4,7 +4,7 @@
   @brief   Micellenous defines common to all operating systems.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This file contains micellenous defines, like OS_NULL, OS_TRUE..., which are common
   to all operating systems.

@@ -4,7 +4,7 @@
   @brief   OSAL bluetooth API - Arduino implementation.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    21.10.2019
+  @date    8.1.2020
 
   Arduino bluetooth wrapper to provide OSAL stream interface.
 

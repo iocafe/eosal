@@ -4,7 +4,7 @@
   @brief   Calculate checksum.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    29.5.2019
+  @date    8.1.2020
 
   From application's view communication status appears the same as data memory and is accessed
   using the same ioc_read(), ioc_get16(), ioc_write(), ioc_set16(), etc. functions. For data

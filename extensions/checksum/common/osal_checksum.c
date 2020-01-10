@@ -4,7 +4,7 @@
   @brief   Calculate checksum.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    29.5.2019
+  @date    8.1.2020
 
   The Communication status refers to general communication information and settings. For example
   number of connections (sockets, etc) connected to a memory block. In future this could

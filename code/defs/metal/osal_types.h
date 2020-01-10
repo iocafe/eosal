@@ -4,7 +4,7 @@
   @brief   Definition of OS dependent primitive types for bare metal micro-controller.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.12.2017
+  @date    8.1.2020
 
   This file defines operating system independent names for data types. 
 

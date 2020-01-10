@@ -4,7 +4,7 @@
   @brief   Stream interface and interface function implementations.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    15.11.2019
+  @date    8.1.2020
 
   A set of intermediate functions are used to access a specific stream. For example
   application which wants to open a stream calls osal_stream_open(). A pointer to

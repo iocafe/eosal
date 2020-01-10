@@ -4,7 +4,7 @@
   @brief   Character conversion from UTF16 to UTF32.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Conversion of UTF16 character to UTF32 character. The UTF16 character takes either 1 or
   two 16 bit words, while the UTF32 character is always 32 bit unsigned integer.

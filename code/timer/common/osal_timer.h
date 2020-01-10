@@ -4,7 +4,7 @@
   @brief   System timer functions.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This header file contains functions prototypes for reading system timer and checking if 
   specified time interval has elapsed.

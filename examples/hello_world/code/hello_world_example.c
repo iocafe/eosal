@@ -4,7 +4,7 @@
   @brief   Just make sure it builds.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This example is just a test code to test if eosal builds on target platform and can write 
   to console.

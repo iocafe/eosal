@@ -1,5 +1,5 @@
 # eosal-defs.txt - Set cmake build environment variables common to all projects.
-# 12.9.2019/pekka
+# 8.1.2020/pekka
 
 # Windows 
 if(WIN32)

@@ -4,7 +4,7 @@
   @brief   OSAL stream API for serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    15.11.2019
+  @date    8.1.2020
 
   Serial communication speficic function prototypes and definitions to implement OSAL stream API.
   OSAL stream API is abstraction which makes streams (including serial ports) look similar to upper

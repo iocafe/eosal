@@ -1,5 +1,5 @@
 Debugging ESP32 using arduino tools
-hobby project notes 7.9.2019/pekka
+hobby project notes 8.1.2020/pekka
 
 https://hackaday.com/2017/03/30/the-2-32-bit-arduino-with-debugging/
 https://youtu.be/D-MbC9N5U7o

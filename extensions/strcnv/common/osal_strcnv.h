@@ -4,7 +4,7 @@
   @brief   Conversions between numbers and strings.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This osal_strcnv module header file. This module includes conversions between floating 
   point numbers, 64 bit integers and strings.

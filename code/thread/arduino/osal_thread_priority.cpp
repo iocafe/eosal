@@ -4,7 +4,7 @@
   @brief   Thread priority and identification.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2017
+  @date    8.1.2020
 
   Thread priority identification for Arduino/FreeRTOS.
 

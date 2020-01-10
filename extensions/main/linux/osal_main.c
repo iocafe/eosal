@@ -4,7 +4,7 @@
   @brief   Linux process entry point function.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This OSAL main process entry point header file. Generally the operating system calls entry
   point function to start the process. Unfortunately name, arguments and character encoding

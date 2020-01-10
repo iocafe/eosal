@@ -4,7 +4,7 @@
   @brief   Uncompress JSON from binary data.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    25.10.2019
+  @date    8.1.2020
 
   The osal_uncompress_json() function uncompresses JSON from binary data to plain text string.
 

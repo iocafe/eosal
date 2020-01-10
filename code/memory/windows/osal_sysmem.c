@@ -4,7 +4,7 @@
   @brief   Operating system memory allocation.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Prototypes for operating system memory allocation functions.
 

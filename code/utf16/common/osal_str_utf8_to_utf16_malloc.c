@@ -4,7 +4,7 @@
   @brief   String conversion from UTF8 to UTF16 into new allocated buffer.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Conversion of UTF8 encoded string to UTF16 encoded string, buffer for the new string
   is allocated by os_malloc() function.

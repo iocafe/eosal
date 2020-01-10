@@ -4,7 +4,7 @@
   @brief   System timer functions.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   The os_get_timer() function gets the system timer as 64 bit integer, this is typically number
   of microseconds since the computer booted up. The os_elapsed() function checks if the

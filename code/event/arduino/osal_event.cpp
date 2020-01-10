@@ -4,7 +4,7 @@
   @brief   Creating, deleting, setting and waiting for events.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2019
+  @date    8.1.2020
 
   This file implements events using FreeRTOS binary semaphores. Generally events are used by
   a thread to wait until something happens.

@@ -4,7 +4,7 @@
   @brief   OSAL stream API implementation for Arduino serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    15.11.2019
+  @date    8.1.2020
 
   Serial communication. Implementation of OSAL stream API for Arduino serial ports.
 

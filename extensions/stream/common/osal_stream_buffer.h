@@ -4,7 +4,7 @@
   @brief   Memory buffer with OSAL stream API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    25.10.2019
+  @date    8.1.2020
 
   Memory buffer, which implements OSAL stream interface. This class presents simple buffer
   in memory as a stream for reading and writing.

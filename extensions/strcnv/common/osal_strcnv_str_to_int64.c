@@ -4,7 +4,7 @@
   @brief   Convert string to 64 bit integer.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Function osal_str_to_int64() to convert string to 64 bit integer.
 

@@ -1,4 +1,4 @@
-16.12.2019/pekka
+8.1.2020/pekka
 
 alice.crt: Certificate for Alice in PEM format. This is public information.
 alice.key: Key for Alice in PEM format. This is seacret and must be known only to Alice.

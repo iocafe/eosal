@@ -4,7 +4,7 @@
   @brief   Monitor operating system resource use.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   It is important to ensure that software doesn't have cumulative hidden programming errors
   which do manifest only after time. Often these are caused by allocating resources which are

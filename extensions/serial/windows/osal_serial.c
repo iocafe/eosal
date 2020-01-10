@@ -4,7 +4,7 @@
   @brief   OSAL stream API implementation for windows serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    15.11.2019
+  @date    8.1.2020
 
   Serial communication. Implementation of OSAL stream API for Windows serial ports.
 
@@ -18,7 +18,7 @@
   Overlapped serial communcation:
   https://docs.microsoft.com/en-us/previous-versions/ff802693(v=msdn.10)
 
-  Copyright 2012 Pekka Lehtikoski. This file is part of the eobjects project and shall only 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only
   be used, modified, and distributed under the terms of the project licensing. By continuing 
   to use, modify, or distribute this file you indicate that you have read the license and 
   understand and accept it fully.

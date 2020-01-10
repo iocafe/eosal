@@ -4,7 +4,7 @@
   @brief   Select persistent storage implementation.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    21.9.2019
+  @date    8.1.2020
 
   The linux/osal_select_persistent.c selects persistent storage implementation to use with
   linux platform, by including the implementation code.

@@ -4,7 +4,7 @@
   @brief   64 bit integer arithmetic, multiplication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Implements 64 bit multiplication on platforms with 32 bit multiplication.
 

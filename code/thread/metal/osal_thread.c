@@ -4,7 +4,7 @@
   @brief   Creating, terminating, scheduling and identifying threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2017
+  @date    8.1.2020
 
   Thread functions for RTOS and bare metal.
   A process can run multiple tasks concurrently, and these concurrently running tasks are called

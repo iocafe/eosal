@@ -4,7 +4,7 @@
   @brief   Get random number.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    25.12.2016
+  @date    8.1.2020
 
   Currently returns just C standard library pseudo random numbers. This implementation is very
   weak for encryprion. Better platform specific implementations are to be done in future.

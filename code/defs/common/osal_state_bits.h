@@ -4,7 +4,7 @@
   @brief   State bits for IO, etc.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   These are IO signal state bits, and defined as part of OSAL for interoperability of
   several libraries that use these.

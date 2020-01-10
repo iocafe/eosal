@@ -4,7 +4,7 @@
   @brief   Main OSAL header file.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This operating system abstraction layer (OSAL) base main header file. If further includes
   rest of OSAL base headers. 

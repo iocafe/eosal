@@ -4,7 +4,7 @@
   @brief   Store persistent parameters.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    21.9.2019
+  @date    8.1.2020
 
   Micro-controllers store persistent board configuration parameters in EEPROM or flash. On Windows/Linux
   these parameters are usually saved in files within OS file system.
@@ -62,7 +62,7 @@ typedef struct
 osPersistentParams;
 
 /** Reserved persistent parameter block numbers. We need to have and unique persistant block
-    number for each parameter block which can be saved. The OS_PBNR_CONFIG_DEFAULTS
+    number for each parameter block which can be saved. The OS_PBNR_DEFAULTS
     is not actual memory block, but number reseved for marking default configuration.
  */
 typedef enum

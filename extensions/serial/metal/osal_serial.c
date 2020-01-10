@@ -4,7 +4,7 @@
   @brief   OSAL stream API implementation for some STM32 core M4 chips.
   @brief   OSAL serial port metal implementation.
   @author  Pekka Lehtikoski
-  @date    15.11.2019
+  @date    8.1.2020
 
   Serial communication. Implementation of OSAL stream for some STM32 core M4 chips.
 

@@ -4,7 +4,7 @@
   @brief   Convert floating point number to string.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Function osal_double_to_str() to convert floating point number to string.
 

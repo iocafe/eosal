@@ -4,7 +4,7 @@
   @brief   Compare two strings.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    2.6.2019
+  @date    8.1.2020
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

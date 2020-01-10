@@ -4,7 +4,7 @@
   @brief   Debug related code.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Debug related code. When OSAL is compiled with nonzero OSAL_DEBUG flag, the code to detect
   program errors is included in compilation. If a programming error is detected, the

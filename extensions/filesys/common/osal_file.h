@@ -4,7 +4,7 @@
   @brief   OSAL stream API for file IO.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    15.11.2019
+  @date    8.1.2020
 
   This header file contains function prototypes and definitions to implement OSAL stream API
   and for basic file IO.  OSAL stream API is abstraction which makes streams (including files)

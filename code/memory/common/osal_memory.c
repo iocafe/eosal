@@ -4,7 +4,7 @@
   @brief   Memory allocation manager.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   Memory allocation manager.
 

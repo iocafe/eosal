@@ -4,7 +4,7 @@
   @brief   Stream interface for OSAL stream API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    15.11.2019
+  @date    8.1.2020
 
   Definition OSAL stream API: defines osalStreamInterface structure. function prototypes
   and preprocessor defines. The OSAL stream API is abstraction which makes streams (including

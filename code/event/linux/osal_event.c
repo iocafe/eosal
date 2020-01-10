@@ -4,7 +4,7 @@
   @brief   Creating, deleting, setting and waiting for events.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This file implements event related functionality for Windows. Generally events are used for
   a thread wait until it needs to do something.

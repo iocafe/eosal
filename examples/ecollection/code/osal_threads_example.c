@@ -4,7 +4,7 @@
   @brief   Example code about threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.11.2011
+  @date    8.1.2020
 
   This example demonstrates how to create threads.
 

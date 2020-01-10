@@ -1,5 +1,5 @@
 STM32 specific - this is needed for Atollic True Studio builds
-30.8.2019/pekka
+8.1.2020/pekka
 
 Use STM32CubeMX to get repositories for used microcontroller families, like STM32F4xx, STM32L4xx..
 

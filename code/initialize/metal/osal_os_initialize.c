@@ -4,7 +4,7 @@
   @brief   Bare metal system specific OSAL initialization.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.12.2017
+  @date    8.1.2020
 
   Operating system specific OSAL initialization and shut down.
 

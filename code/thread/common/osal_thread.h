@@ -4,7 +4,7 @@
   @brief   Creating, terminating, scheduling and identifying threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    29.5.2016
+  @date    8.1.2020
 
   This header file contains functions prototypes and definitions for creating, terminating,
   scheduling and identifying threads of execution.
