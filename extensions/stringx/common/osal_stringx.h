@@ -17,6 +17,12 @@
 */
 #if OSAL_STRINGX_SUPPORT
 
+/* Flags for osal_str_get_next() function.
+ */
+#define OSAL_STR_NEXT_ITEM 0
+#define OSAL_STR_NEXT_LINE 1
+
+
 /** 
 ****************************************************************************************************
 
@@ -47,8 +53,17 @@ os_long osal_str_get_item_int(
 
 /* Find beginning of next line in list string.
  */
-const os_char *osal_str_get_next_line(
-    const os_char *list_str);
+const os_char *osal_str_get_next(
+    const os_char *list_str,
+    os_short flags);
+
+/* Iterate trough items in string list.
+ */
+osalStatus osal_str_list_iter(
+    os_char *buf,
+    os_memsz buf_sz,
+    const os_char **list_str_ptr,
+    os_short flags);
 
 /* Convert string to integer.
  */

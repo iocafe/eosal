@@ -120,47 +120,4 @@ getout:
 	return "";
 }
 
-
-/**
-****************************************************************************************************
-
-  @brief Find beginning of next line in list string.
-  @anchor osal_str_get_next_line
-
-  The osal_str_get_next_line() function returns pointer to beginning of next line 
-  in list string
-  
-
-  @param   list_str Pointer to list string to search. If the str is OS_NULL the function
-		   will return pointer to null character.
-
-  @return  Pointer to first character on next line of list string.
-
-****************************************************************************************************
-*/
-const os_char *osal_str_get_next_line(
-    const os_char *list_str)
-{
-    const os_char *a, *b;
-
-	/* If list string is NULL pointer, return pointer to null character.
-	 */
-	if (list_str) 
-	{
-        a = os_strchr((os_char*)list_str, ';');
-        b = os_strchr((os_char*)list_str, '\n');
-		if (a) 
-		{
-			if (b) if (b < a) a = b;
-			return a+1;
-		}
-		
-		if (b) return b+1;
-	}
-
-	/* No next line.
-	 */
-	return "";
-}
-
 #endif
