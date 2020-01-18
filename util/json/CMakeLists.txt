@@ -17,9 +17,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $ENV{E_BIN})
 # Set path to source files.
 set(E_SOURCE_PATH "$ENV{E_ROOT}/eosal/util/${E_PROJECT}/code")
 
-# Set include paths.
-# include_directories($ENV{E_INCLUDE})
-
 # Add header files, the file(GLOB_RECURSE...) allows for wildcards and recurses subdirs.
 file(GLOB_RECURSE HEADERS "${E_SOURCE_PATH}/*.h")
 
@@ -30,5 +27,3 @@ file(GLOB_RECURSE SOURCES "${E_SOURCE_PATH}/*.c")
 link_directories($ENV{E_LIB})
 add_executable(${E_PROJECT}${E_POSTFIX} ${SOURCES})
 target_link_libraries(${E_PROJECT}${E_POSTFIX} $ENV{OSAL_CONSOLE_APP_LIBS})
-
-

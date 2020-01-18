@@ -70,8 +70,12 @@ osalStatus osal_uncompress_json(
     {
         if (item.depth == prev_depth)
         {
-            s = osal_write_json_str(uncompressed, ",");
-            if (s) goto getout;
+            if (item.code != OSAL_JSON_END_ARRAY &&
+                item.code != OSAL_JSON_END_BLOCK)
+            {
+                s = osal_write_json_str(uncompressed, ",");
+                if (s) goto getout;
+            }
         }
         prev_depth = item.depth;
 

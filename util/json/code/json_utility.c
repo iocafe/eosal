@@ -139,7 +139,7 @@ osalStatus osal_main(
 getout:
     if (extra_args)
     {
-        osal_stream_close(extra_args);
+        osal_stream_close(extra_args, OSAL_STREAM_DEFAULT);
     }
 
     return s;
@@ -183,7 +183,7 @@ static osalStatus osal_json_text_to_binary(
 
 getout:
     os_free(json_text, json_text_sz);
-    osal_stream_close(compressed);
+    osal_stream_close(compressed, OSAL_STREAM_DEFAULT);
 
     return s;
 }
@@ -222,7 +222,7 @@ static osalStatus osal_json_binary_to_text(
 
 getout:
     os_free(json_binary, json_binary_sz);
-    osal_stream_close(uncompressed);
+    osal_stream_close(uncompressed, OSAL_STREAM_DEFAULT);
 
     return s;
 }

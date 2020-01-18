@@ -82,7 +82,8 @@ void os_persistent_initialze(
     os_memclear(osal_persistent_handle, sizeof(osal_persistent_handle));
 #endif
 
-    if (prm) {
+    if (prm)
+    {
         if (prm->path) {
             os_strncpy(rootpath, prm->path, sizeof(rootpath));
         }
@@ -352,9 +353,9 @@ getout:
   and block number.
 
   @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to save.
-  @param   block_sz Block size in bytes.
-  @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
+  @param   path Pointer to buffer where to store generated path.
+  @param   path_sz Size of path buffer.
+  @return  None.
 
 ****************************************************************************************************
 */

@@ -304,6 +304,13 @@ static osalStatus osal_parse_json_recursive(
             }
         }
 
+        /* Empty array or dictionary.
+         */
+        else if (c == ']' || c == '}')
+        {
+            return OSAL_SUCCESS;
+        }
+
         /* If this is a string
          */
         else if (c == '\"')
@@ -335,7 +342,7 @@ static osalStatus osal_parse_json_recursive(
             state->skip_count--;
         }
 
-        /* Skip empty spaces until comma or '}'
+        /* Skip empty spaces until comma, '}' or ']'
          */
         do {
             c = *(state->pos++);

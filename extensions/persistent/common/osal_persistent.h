@@ -61,6 +61,14 @@ typedef struct
 }
 osPersistentParams;
 
+#ifndef OS_PB_MAX_NETWORKS
+#if OSAL_MICROCONTROLLER
+    #define OS_PB_MAX_NETWORKS 4
+#else
+    #define OS_PB_MAX_NETWORKS 20
+#endif
+#endif
+
 /** Reserved persistent parameter block numbers. We need to have and unique persistant block
     number for each parameter block which can be saved. The OS_PBNR_DEFAULTS
     is not actual memory block, but number reseved for marking default configuration.
@@ -75,7 +83,11 @@ typedef enum
 
     OS_PBNR_CUST_A = 7,
     OS_PBNR_CUST_B = 8,
-    OS_N_PBNR = 10
+    OS_PBNR_ACCOUNTS_1 = 11,
+    OS_PBNR_ACCOUNTS_2 = 12,
+    OS_PBNR_ACCOUNTS_3 = 13,
+    OS_PBNR_ACCOUNTS_4 = 14,
+    OS_N_PBNR = (OS_PBNR_ACCOUNTS_1 + OS_PB_MAX_NETWORKS)
 }
 osPersistentBlockNr;
 
