@@ -90,7 +90,7 @@ static os_char osal_hash_asc(
   @brief Calculate SHA-256 cryptographic hash (as string) of password
   @anchor osal_hash_asc
 
-  The osal_hash_password() function calculates SHA-256 cryptographic has of password given as
+  The osal_hash_password() function calculates SHA-256 cryptographic hash of password given as
   argument and stores the result as string into buffer.
 
   @param   buf Buffer where to store the result.
