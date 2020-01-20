@@ -108,7 +108,7 @@ osalStatus osal_create_json_indexer(
 ****************************************************************************************************
 
   @brief Create indexer to access data in compressed JSON.
-  @anchor osal_create_json_indexer
+  @anchor osal_get_json_item
 
   The osal_get_json_item() function gets information about one JSON item. This function can be
   called repeatedly after an indexer has been set up by osal_create_json_indexer(). This allows

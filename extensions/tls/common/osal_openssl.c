@@ -944,10 +944,10 @@ static void osal_openssl_init(
         {
             osal_debug_error("SSL_CTX_check_private_key failed");
         }
-        else
+        /* else
         {
-            osal_trace("certificate and private key loaded and verified\n");
-        }
+            osal_trace2("certificate and private key loaded and verified\n");
+        } */
     }
 
     /* Client verify server certificate
@@ -1298,7 +1298,7 @@ static osalStatus osal_openssl_do_sock_write(
     {
         if ((size_t)n < sslsocket->write_len)
         {
-            memmove(sslsocket->write_buf, sslsocket->write_buf+n, sslsocket->write_len - (size_t)n);
+            memmove(sslsocket->write_buf, sslsocket->write_buf + n, sslsocket->write_len - (size_t)n);
         }
 
         sslsocket->write_len -= (size_t)n;
