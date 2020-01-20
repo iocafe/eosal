@@ -114,6 +114,7 @@ void osal_hash_password(
     p = buf;
     s = md;
 
+    *(p++) = '!';
     count = OSAL_HASH_3_GROUPS;
     while (count--)
     {

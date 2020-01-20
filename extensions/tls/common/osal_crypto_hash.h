@@ -26,9 +26,10 @@
  */
 #define OSAL_HASH_3_GROUPS ((OSAL_HASH_SZ + 2)/3)
 
-/* Each group of three needs 4 bytes in resulting string, plus one byte for terminating '\0'.
+/* Each group of three needs 4 bytes in resulting string, plus one byte for terminating '\0' and
+ * one for '!' in beginning (used to separate encrypted passwords from non encrypted).
  */
-#define OSAL_HASH_STR_SZ (4*OSAL_HASH_3_GROUPS + 1)
+#define OSAL_HASH_STR_SZ (4*OSAL_HASH_3_GROUPS + 2)
 
 /* Crypto hash string type.
  */
