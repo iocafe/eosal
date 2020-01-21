@@ -18,23 +18,6 @@
 ****************************************************************************************************
 */
 
-/* 256 bit hash is 32 bytes. Same as SHA256_DIGEST_LENGTH when openssl is used.
- */
-#define OSAL_HASH_SZ 32
-
-/* This makes 11 three byte groups.
- */
-#define OSAL_HASH_3_GROUPS ((OSAL_HASH_SZ + 2)/3)
-
-/* Each group of three needs 4 bytes in resulting string, plus one byte for terminating '\0' and
- * one for '!' in beginning (used to separate encrypted passwords from non encrypted).
- */
-#define OSAL_HASH_STR_SZ (4*OSAL_HASH_3_GROUPS + 2)
-
-/* Crypto hash string type.
- */
-typedef os_char osal_hash[OSAL_HASH_STR_SZ];
-
 /* Calculate SHA-256 cryptographic hash (as binary) of buffer given as argument
  */
 void osal_sha256(
@@ -45,5 +28,6 @@ void osal_sha256(
 /* Calculate SHA-256 cryptographic hash (as string) of password given as argument
  */
 void osal_hash_password(
-    osal_hash buf,
-    os_char *password);
+    os_char *buf,
+    os_memsz buf_sz,
+    const os_char *password);

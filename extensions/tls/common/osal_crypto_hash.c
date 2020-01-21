@@ -58,71 +58,27 @@ void osal_sha256(
 /**
 ****************************************************************************************************
 
-  @brief Convert 6 bit integer to ascii char
-  @anchor osal_hash_asc
-
-  The osal_hash_asc() function...
-
-  @param   x Integer value 0-63 to convert to ASCII character. Highest two bits are ignored.
-  @return  Ascii character corresponding to integer value x: '0'-'9', 'a'-'z', 'A'-'Z', '_' or '!'
-
-****************************************************************************************************
-*/
-static os_char osal_hash_asc(
-    os_uchar x)
-{
-    const os_uchar n_alpha = 'z' - 'a' + 1; /* 26 characters */
-    x &= 0x3F;
-
-    if (x < 10) return '0' + x;
-    x -= 10;
-    if (x < n_alpha) return 'a' + x;
-    x -= n_alpha;
-    if (x < n_alpha) return 'A' + x;
-    x -= n_alpha;
-    return x ? '!' : '_';
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Calculate SHA-256 cryptographic hash (as string) of password
-  @anchor osal_hash_asc
+  @anchor osal_hash_password
 
   The osal_hash_password() function calculates SHA-256 cryptographic hash of password given as
   argument and stores the result as string into buffer.
 
-  @param   buf Buffer where to store the result.
+  @param   buf Buffer where to store the resulting string. Buffer must be at least 46 bytes.
+  @param   buf_sz Buffer size in bytes.
   @param   password Password to encrypt.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_hash_password(
-    osal_hash buf,
-    os_char *password)
+    os_char *buf,
+    os_memsz buf_sz,
+    const os_char *password)
 {
-    os_uchar *s, md[3*OSAL_HASH_3_GROUPS];
-    os_char *p;
-    os_short count;
+    os_uchar md[OSAL_HASH_SZ];
 
     os_memclear(md, sizeof(md));
     osal_sha256((const os_uchar*)password, os_strlen(password), md);
-
-    os_memclear(buf, OSAL_HASH_STR_SZ);
-    p = buf;
-    s = md;
-
-    *(p++) = '!';
-    count = OSAL_HASH_3_GROUPS;
-    while (count--)
-    {
-        *(p++) = osal_hash_asc(s[0]);
-        *(p++) = osal_hash_asc(s[0] >> 6 | s[1] << 2);
-        *(p++) = osal_hash_asc(s[1] >> 4 | s[2] << 4);
-        *(p++) = osal_hash_asc(s[2] >> 2);
-        s += 3;
-    }
+    osal_password_bin2str(buf, buf_sz, md, OSAL_HASH_SZ, OS_TRUE);
 }
-

@@ -45,4 +45,8 @@ osalStatus osal_rand_test(
     os_int argc,
     os_char *argv[]);
 
+osalStatus osal_password_test(
+    os_int argc,
+    os_char *argv[]);
+
 #endif
