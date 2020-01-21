@@ -59,7 +59,9 @@ void osal_rand_seed(
   @anchor osal_rand
 
   The osal_rand() function returns random number from min_value to max_value (inclusive).
-  All possible retuned values have same propability.
+  All possible retuned values have practically the same propability. But not exactly the same,
+  if 2^64 is not divisible by (max - min + 1), some values get returned more often.
+  If max - min is << 2^64, this difference is insignificant.
 
   @param   min_value Minimum value for random number.
   @param   max_value Maximum value for random number.
