@@ -282,7 +282,7 @@
 #define OSAL_RAND_COMMON 1
 #define OSAL_RAND_PLATFORM 2
 #ifndef OSAL_RAND_SUPPORT
-#define OSAL_RAND_SUPPORT OSAL_RAND_COMMON
+#define OSAL_RAND_SUPPORT OSAL_RAND_PLATFORM
 #endif
 
 /** OSAL extensions: If string to integer or float conversions are supported

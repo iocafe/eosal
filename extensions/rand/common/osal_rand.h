@@ -27,6 +27,12 @@
  */
 /*@{*/
 
+/* Seed the random number generator.
+ */
+void osal_rand_seed(
+    const os_char *ent,
+    os_memsz ent_sz);
+
 /* Get a pseudo random number.
  */
 os_long osal_rand(

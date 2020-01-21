@@ -42,7 +42,8 @@ osalStatus osal_main(
 	// return osal_threads_example_2_main(argc, argv);
     // return osal_int64_test(argc, argv);
     // return osal_intser_test(argc, argv);
-    return osal_json_compress_test(argc, argv);
+    // return osal_json_compress_test(argc, argv);
+    return osal_rand_test(argc, argv);
     // return osal_float_int_conv_test(argc, argv);
 }
 

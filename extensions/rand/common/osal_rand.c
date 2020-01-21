@@ -22,6 +22,8 @@
 #include <stdlib.h>
 
 
+// USE Hash_DRBG with OPENSSL
+
 /**
 ****************************************************************************************************
 
@@ -30,17 +32,30 @@
 
   The osal_rand_seed() function sets pseudo random number generator seed value.
 
-  @param   x Seed value.
+  @param   ent Entroupy (from physical random source) to seed the random number generator.
+  @param   ent_sz Entropy size in bytes.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_rand_seed(
-    os_long x)
+    const os_char *ent,
+    os_memsz ent_sz)
 {
+    os_char *p;
     os_timer z;
+    os_short i, max_sz;
+
     os_get_timer(&z);
-    srand((unsigned int)(x ^ z));
+    p = (os_char*)&z;
+    max_sz = sizeof(z);
+    if (ent_sz > max_sz) max_sz = ent_sz;
+    for (i = 0; i < max_sz; i++)
+    {
+        p[i % sizeof(z)] ^= ent[i % ent_sz];
+    }
+
+    srand((unsigned int)z);
 }
 
 
@@ -55,7 +70,8 @@ void osal_rand_seed(
 
   @param   min_value Minimum value for random number.
   @param   max_value Maximum value for random number.
-  @return  Random number from min_value to max_value.
+  @return  Random number from min_value to max_value. If min_value equals max_value, all
+           64 bits of return value are random data.
 
 ****************************************************************************************************
 */
@@ -64,24 +80,6 @@ os_long osal_rand(
     os_long max_value)
 {
     os_long range, x, z;
-
-#if OSAL_DEBUG
-    static os_boolean range_error_reported = OS_FALSE;
-#endif
-
-    range = max_value - min_value + 1;
-
-    if (range <= 0)
-    {
-#if OSAL_DEBUG
-        if (!range_error_reported)
-        {
-            osal_debug_error("osal_rand: Range cannot be used");
-            range_error_reported = OS_TRUE;
-        }
-#endif
-        range = 0x1000;
-    }
 
     os_get_timer(&x);
     z = rand();
@@ -95,7 +93,9 @@ os_long osal_rand(
     z = rand();
     x ^= z << 56;
 
-    return min_value + x % range;
+    if (max_value == min_value) return x;
+    range = max_value - min_value + 1;
+    return min_value + (os_long)((os_ulong)x % (os_ulong)range);
 }
 
 #endif

@@ -1,12 +1,13 @@
 /**
 
-  @file    rand/arduino/osal_rand.c
+  @file    rand/common/osal_rand.c
   @brief   Get random number.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
 
-  In future this can be replaced with better alternative.
+  Currently returns just C standard library pseudo random numbers. This implementation is very
+  weak for encryprion. Better platform specific implementations are to be done in future.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -18,7 +19,13 @@
 #include "eosalx.h"
 #if OSAL_RAND_SUPPORT == OSAL_RAND_PLATFORM
 
-#include <Arduino.h>
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <unistd.h>
+#include <sys/syscall.h>
+#include "linux/random.h"
 
 
 /**
@@ -27,10 +34,9 @@
   @brief Set pseudo random number generator seed.
   @anchor osal_rand_seed
 
-  The osal_rand() function returns random number from min_value to max_value (inclusive).
-  All possible retuned values have same propability.
-
-  Arduino specific: 32 bits used.
+  The osal_rand_seed() function is not needed in linux. The kernel device /dev/urandom collects
+  the entropy. Function is provided just to allow linux build of code which tries to seed the
+  random generator.
 
   @param   ent Entroupy (from physical random source) to seed the random number generator.
   @param   ent_sz Entropy size in bytes.
@@ -42,20 +48,6 @@ void osal_rand_seed(
     const os_char *ent,
     os_memsz ent_sz)
 {
-    os_char *p;
-    os_timer z;
-    os_int i;
-
-    os_get_timer(&z);
-    p = (os_char*)&z;
-    max_sz = sizeof(z);
-    if (ent_sz > max_sz) max_sz = ent_sz;
-    for (i = 0; i < max_sz; i++)
-    {
-        p[i % sizeof(z)] ^= ent[i % ent_sz];
-    }
-
-    randomSeed((unsigned long)z);
 }
 
 
@@ -79,14 +71,16 @@ os_long osal_rand(
     os_long min_value,
     os_long max_value)
 {
-    os_long x, z, range;
-    os_timer t;
+    os_long range, x;
+    os_timer r;
 
-    x = random(-2147483648, 2147483647);
-    z = random(-2147483648, 2147483647);
-    x ^= z << 32;
-    os_get_timer(&t);
-    x ^= t;
+    r = syscall(SYS_getrandom, &x, sizeof(x), 0);
+    if (r == -1)
+    {
+        os_get_timer(&r);
+        x = r;
+        osal_debug_error("osal_rand() failed");
+    }
 
     if (max_value == min_value) return x;
     range = max_value - min_value + 1;

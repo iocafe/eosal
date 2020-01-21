@@ -41,4 +41,8 @@ osalStatus osal_threads_example_2_main(
     os_int argc,
     os_char *argv[]);
 
+osalStatus osal_rand_test(
+    os_int argc,
+    os_char *argv[]);
+
 #endif
