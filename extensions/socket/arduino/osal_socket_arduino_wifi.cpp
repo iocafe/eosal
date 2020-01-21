@@ -63,8 +63,6 @@ static os_boolean osal_wifi_multi_on = OS_FALSE;
 
 typedef struct
 {
-    // os_char host_name[OSAL_IPADDR_SZ];
-
     os_char ip_address[OSAL_HOST_BUF_SZ];
 
     IPAddress
