@@ -1,13 +1,14 @@
 /**
 
-  @file    rand/common/osal_rand.c
+  @file    rand/linux/osal_rand_linux.c
   @brief   Get random number.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    20.1.2020
 
-  Currently returns just C standard library pseudo random numbers. This implementation is very
-  weak for encryprion. Better platform specific implementations are to be done in future.
+  Uses Linux system function getrandom to generate random numbers. This is based on linux
+  /dev/urandom, which is seeded by entropy colledted by operating system and does provide
+  strong random number.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -38,7 +39,7 @@
   the entropy. Function is provided just to allow linux build of code which tries to seed the
   random generator.
 
-  @param   ent Entroupy (from physical random source) to seed the random number generator.
+  @param   ent Entropy (from physical random source) to seed the random number generator.
   @param   ent_sz Entropy size in bytes.
   @return  None.
 

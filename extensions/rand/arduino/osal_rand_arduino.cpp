@@ -1,6 +1,6 @@
 /**
 
-  @file    rand/arduino/osal_rand.c
+  @file    rand/arduino/osal_rand_arduino.c
   @brief   Get random number.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -32,7 +32,7 @@
 
   Arduino specific: 32 bits used.
 
-  @param   ent Entroupy (from physical random source) to seed the random number generator.
+  @param   ent Entropy (from physical random source) to seed the random number generator.
   @param   ent_sz Entropy size in bytes.
   @return  None.
 

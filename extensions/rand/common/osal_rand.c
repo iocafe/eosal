@@ -32,7 +32,7 @@
 
   The osal_rand_seed() function sets pseudo random number generator seed value.
 
-  @param   ent Entroupy (from physical random source) to seed the random number generator.
+  @param   ent Entropy (from physical random source) to seed the random number generator.
   @param   ent_sz Entropy size in bytes.
   @return  None.
 
