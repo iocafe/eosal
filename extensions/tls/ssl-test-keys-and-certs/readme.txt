@@ -1,7 +1,7 @@
 8.1.2020/pekka
 
 alice.crt: Certificate for Alice in PEM format. This is public information.
-alice.key: Key for Alice in PEM format. This is seacret and must be known only to Alice.
+alice.key: Key for Alice in PEM format. This is secret and must be known only to Alice.
 bob.crt, bob.key, carol.crt and caarol.key: Same as alice.*, but for Bob and Carol (peers of Alice).
 Server loads for example alice.crt and alice.key to identify itself to clients. 
 ca.crt: Self signed root certificate, PEM format. This is public information.

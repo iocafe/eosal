@@ -17,12 +17,6 @@
 #include "osal_example_collection_main.h"
 #include <stdio.h>
 
-static void osal_rand_test_range(
-    os_long min_value,
-    os_long max_value,
-    os_int n,
-    os_boolean print_numbers);
-
 
 /**
 ****************************************************************************************************
@@ -39,12 +33,12 @@ osalStatus osal_password_test(
     os_int argc,
     os_char *argv[])
 {
-    os_char password[OSAL_SEACRET_STR_SZ], hashed[OSAL_SEACRET_STR_SZ];
+    os_char password[OSAL_SECRET_STR_SZ], hashed[OSAL_SECRET_STR_SZ];
     os_short i;
 
     for (i = 0; i<10; ++i)
     {
-        osal_make_random_seacret();
+        osal_make_random_secret();
         osal_get_password(password, sizeof(password));
 
         printf("random password = %s\n", password);
@@ -52,7 +46,7 @@ osalStatus osal_password_test(
         osal_hash_password(hashed, sizeof(hashed), password);
         printf("hashed password = %s\n", hashed);
 
-        /* osal_forget_seacret(); */
+        /* osal_forget_secret(); */
     }
 
     return OSAL_SUCCESS;

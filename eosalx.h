@@ -69,7 +69,7 @@ OSAL_C_HEADER_BEGINS
 #include "extensions/serial/common/osal_serial.h"
 #include "extensions/bluetooth/common/osal_bluetooth.h"
 
-#include "extensions/seacret/common/osal_seacret.h"
+#include "extensions/secret/common/osal_secret.h"
 
 #if OSAL_FILESYS_SUPPORT
   #include "extensions/filesys/common/osal_file.h"

@@ -79,7 +79,7 @@ typedef enum
     OS_PBNR_FLASH_PROGRAM = 1,
     OS_PBNR_CONFIG = 2,
     OS_PBNR_DEFAULTS = 3,
-    OS_PBNR_SEACRET = 5,
+    OS_PBNR_SECRET = 5,
 
     OS_PBNR_CUST_A = 7,
     OS_PBNR_CUST_B = 8,
@@ -104,7 +104,7 @@ osPersistentHandle;
 #define OSAL_PERSISTENT_DEFAULT 0
 #define OSAL_PERSISTENT_READ 1
 #define OSAL_PERSISTENT_WRITE 2
-#define OSAL_PERSISTENT_SEACRET 4
+#define OSAL_PERSISTENT_SECRET 4
 
 
 /**

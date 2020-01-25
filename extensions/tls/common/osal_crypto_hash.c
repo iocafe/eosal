@@ -7,7 +7,7 @@
   @date    20.1.2020
 
   Passwords are cryptographically hashed. Cryptographic hashes of two passwords can be used to
-  check if passwords do match, but are not seacret. One cannot get original password from
+  check if passwords do match, but are not secret. One cannot get original password from
   it's cryptographic hash.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,

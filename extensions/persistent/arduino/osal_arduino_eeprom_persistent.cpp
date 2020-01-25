@@ -170,7 +170,7 @@ void os_persistent_shutdown(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block Pointer to block (structure) to load.
   @param   block_sz Block size in bytes.
-  @param   flags OSAL_PERSISTENT_SEACRET flag enables accessing the seacret. It must be only
+  @param   flags OSAL_PERSISTENT_SECRET flag enables accessing the secret. It must be only
            given in safe context.
   @return  OSAL_SUCCESS of successfull. Value OSAL_STATUS_NOT_SUPPORTED indicates that
            pointer cannot be aquired on this platform and os_persistent_load() must be
@@ -197,8 +197,8 @@ osalStatus os_persistent_get_ptr(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block_sz Pointer to integer where to store block size when reading the persistent block.
            This is intended to know memory size to allocate before reading.
-  @param   flags OSAL_PERSISTENT_READ or OSAL_PERSISTENT_WRITE. Flag OSAL_PERSISTENT_SEACRET
-           enables reading or writing the seacret, and must be only given in safe context.
+  @param   flags OSAL_PERSISTENT_READ or OSAL_PERSISTENT_WRITE. Flag OSAL_PERSISTENT_SECRET
+           enables reading or writing the secret, and must be only given in safe context.
 
   @return  Persistant storage block handle, or OS_NULL if the function failed.
 
@@ -221,11 +221,11 @@ osPersistentHandle *os_persistent_open(
         return OS_NULL;
     }
 
-    /* Reading or writing seacred block requires seacret flag. When this function
-       is called for data transfer, there is no secure flag and thus seacret block
+    /* Reading or writing seacred block requires secret flag. When this function
+       is called for data transfer, there is no secure flag and thus secret block
        cannot be accessed to break security.
      */
-    if (block_nr == OS_PBNR_SEACRET && (flags & OSAL_PERSISTENT_SEACRET) == 0)
+    if (block_nr == OS_PBNR_SECRET && (flags & OSAL_PERSISTENT_SECRET) == 0)
     {
         return OS_NULL;
     }
