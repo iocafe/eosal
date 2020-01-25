@@ -19,6 +19,7 @@
  */
 #define OSAL_JSON_SIMPLIFY 0
 #define OSAL_JSON_KEEP_QUIRKS 1
+#define OSAL_JSON_HASH_PASSWORDS 2
 
 /* Compress JSON from normal string presentation to binary format.
  */

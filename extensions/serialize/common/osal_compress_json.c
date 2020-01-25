@@ -57,6 +57,10 @@ typedef struct
         as much as original without simplifying it.
      */
     os_int flags;
+
+    /* Current tag is "password
+     */
+    os_boolean is_password;
 }
 osalJsonCompressor;
 
@@ -118,6 +122,10 @@ osalStatus osal_compress_json(
     os_ushort checksum;
     os_char tmp[OSAL_INTSER_BUF_SZ];
     os_int tmp_n;
+
+#if OSAL_SECRET_SUPPORT == 0
+    osal_debug_assert((flags & OSAL_JSON_HASH_PASSWORDS) == 0)
+#endif
 
     os_memclear(&state, sizeof(state));
     state.pos = json_source;
@@ -225,6 +233,7 @@ static osalStatus osal_parse_json_recursive(
 
     do
     {
+        state->is_password = OS_FALSE;
         if (!expect_array)
         {
             /* Parse tag. If we need to ignore tag content.
@@ -404,6 +413,16 @@ static osalStatus osal_parse_json_tag(
             *dict_ix = 0;
             return OSAL_STATUS_NOTHING_TO_DO;
         }
+
+#if OSAL_SECRET_SUPPORT
+        if (state->flags & OSAL_JSON_HASH_PASSWORDS)
+        {
+            if (!os_strcmp(data, "password"))
+            {
+                state->is_password = OS_TRUE;
+            }
+        }
+#endif
     }
 
     *dict_ix = osal_add_string_to_json_dict(state);
@@ -442,6 +461,11 @@ static osalStatus parse_json_value(
     os_memsz data_n, count;
     os_int flags;
     osalStatus s;
+#if OSAL_SECRET_SUPPORT
+    os_char hashbuf[OSAL_SECRET_STR_SZ];
+    os_long seekzero = 0;
+    os_memsz n_written;
+#endif
 
     /* If we are ignoring the tag content.
      */
@@ -457,6 +481,22 @@ static osalStatus parse_json_value(
         s = osal_stream_write_long(state->content, OSAL_JSON_VALUE_EMPTY + tag_dict_ix, 0);
         return s;
     }
+
+#if OSAL_SECRET_SUPPORT
+    /* If this is password and not "auto", and we are hashing passwords.
+     */
+    if (state->is_password)
+    {
+        if (os_strcmp(data, "auto") && os_strcmp(data, "*"))
+        {
+            osal_hash_password(hashbuf, data, sizeof(hashbuf));
+            osal_stream_buffer_seek(state->str, &seekzero, OSAL_STREAM_SEEK_WRITE_POS|OSAL_STREAM_SEEK_SET);
+            osal_stream_buffer_write(state->str, hashbuf, os_strlen(hashbuf), &n_written, 0);
+            data = osal_stream_buffer_content(state->str, &data_n);
+            data_n--; /* -1 for terminating '\0'. */
+        }
+    }
+#endif
 
     if (!in_quotes)
     {

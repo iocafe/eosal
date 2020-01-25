@@ -83,6 +83,10 @@ osalStatus osal_main(
             {
                 flags |= OSAL_JSON_KEEP_QUIRKS;
             }
+            else if (!os_strnicmp(argv[i], "--hash-pw", -1))
+            {
+                flags |= OSAL_JSON_HASH_PASSWORDS;
+            }
             else if (!os_strcmp(argv[i], "-?") ||
                 !os_strnicmp(argv[i], "-h", -1) ||
                 !os_strnicmp(argv[i], "--help", -1))
