@@ -43,7 +43,7 @@ osalStatus osal_password_test(
 
         printf("random password = %s\n", password);
 
-        osal_hash_password(hashed, sizeof(hashed), password);
+        osal_hash_password(hashed, password, sizeof(hashed));
         printf("hashed password = %s\n", hashed);
 
         /* osal_forget_secret(); */

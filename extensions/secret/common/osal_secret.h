@@ -76,8 +76,8 @@ void osal_get_password(
  */
 void osal_hash_password(
     os_char *buf,
-    os_memsz buf_sz,
-    const os_char *password);
+    const os_char *password,
+    os_memsz buf_sz);
 
 /* Forget the secret (and password).
  */

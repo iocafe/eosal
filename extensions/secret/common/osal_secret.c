@@ -86,16 +86,16 @@ void osal_get_password(
   argument and stores the result as string into buffer.
 
   @param   buf Buffer where to store the resulting string. Buffer must be at least 46 bytes.
-  @param   buf_sz Buffer size in bytes.
   @param   password Password to encrypt.
+  @param   buf_sz Buffer size in bytes.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_hash_password(
     os_char *buf,
-    os_memsz buf_sz,
-    const os_char *password)
+    const os_char *password,
+    os_memsz buf_sz)
 {
     os_uchar md[OSAL_HASH_SZ];
 

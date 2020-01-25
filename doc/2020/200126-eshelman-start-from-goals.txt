@@ -1,0 +1,3 @@
+Matthew Eshleman
+
+It can be very tempting to specify the platform based on the technologies we want to work with. I would recommend to avoid such an approach to product design. The requirements of the project should be the primary driving force of the design, not the microcontroller or SoC or language we want to work with. 

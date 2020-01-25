@@ -19,7 +19,8 @@
 
 /* Default location where to keep persistent configuration data on Linux, Windows, etc.
    This can be overridden by compiler define OSAL_PERSISTENT_ROOT. Location is important
-   since security keys and passwords are kept here and file permissions must be set.
+   since security seacret (persistent block 5) may be kept kept here and file permissions
+   must be set.
  */
 #ifndef OSAL_PERSISTENT_ROOT
 #ifdef OSAL_WIN32
