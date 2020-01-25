@@ -1020,17 +1020,14 @@ static osalStatus osal_openssl_client_init(
     if (mode == OSAL_SSLMODE_SERVER)
     {
         SSL_set_accept_state(sslsocket->ssl);  /* ssl server mode */
-  //      s = OSAL_STATUS_FAILED;
     }
     else if (mode == OSAL_SSLMODE_CLIENT)
     {
         SSL_set_connect_state(sslsocket->ssl); /* ssl client mode */
-//        s = OSAL_STATUS_FAILED;
     }
 
     SSL_set_bio(sslsocket->ssl, sslsocket->rbio, sslsocket->wbio);
 
-//    sslsocket->io_on_read = print_unencrypted_data; ???????????????????????????????????????????????????????????????????????
     return s;
 }
 
@@ -1349,12 +1346,16 @@ static int osal_openssl_verify_callback(
         }
     }
 
+#if EOSAL_RELAX_SECURITY
+    return 1;
+#else
     if (err == X509_V_OK ||
         err == X509_V_ERR_CERT_HAS_EXPIRED ||
         err == X509_V_ERR_CERT_NOT_YET_VALID)
         return 1;
 
     return preverify;
+#endif
 }
 
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with

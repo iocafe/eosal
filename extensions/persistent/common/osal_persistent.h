@@ -91,14 +91,20 @@ typedef enum
 }
 osPersistentBlockNr;
 
-/* This structure exists only for type checking, it is never really used.
+/* This structure is defined only for pointer type checking, it is never used.
  */
 typedef struct
 {
-    os_int justfortypecheck;
-
+    os_int just_for_type_check;
 }
 osPersistentHandle;
+
+/* Flags for persistent API functions.
+ */
+#define OSAL_PERSISTENT_DEFAULT 0
+#define OSAL_PERSISTENT_READ 1
+#define OSAL_PERSISTENT_WRITE 2
+#define OSAL_PERSISTENT_SEACRET 4
 
 
 /**
@@ -129,7 +135,8 @@ void os_persistent_shutdown(
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
     const os_char **block,
-    os_memsz *block_sz);
+    os_memsz *block_sz,
+    os_int flags);
 
 /* Open persistent block for reading or writing.
  */

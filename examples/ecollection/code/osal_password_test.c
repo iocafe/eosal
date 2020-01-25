@@ -39,16 +39,20 @@ osalStatus osal_password_test(
     os_int argc,
     os_char *argv[])
 {
-    os_char password[OSAL_HASH_STR_SZ], hashed[OSAL_HASH_STR_SZ];
+    os_char password[OSAL_SEACRET_STR_SZ], hashed[OSAL_SEACRET_STR_SZ];
     os_short i;
 
     for (i = 0; i<10; ++i)
     {
-        osal_make_random_password(password, sizeof(password));
+        osal_make_random_seacret();
+        osal_get_password(password, sizeof(password));
+
         printf("random password = %s\n", password);
 
         osal_hash_password(hashed, sizeof(hashed), password);
         printf("hashed password = %s\n", hashed);
+
+        /* osal_forget_seacret(); */
     }
 
     return OSAL_SUCCESS;

@@ -364,6 +364,13 @@
 #define OSAL_PERSISTENT_SUPPORT 1
 #endif
 
+/** OSAL extensions: Do we support seacret for device identification and encrypting
+    local confidential data.
+ */
+#ifndef OSAL_SEACRET_SUPPORT
+#define OSAL_SEACRET_SUPPORT OSAL_PERSISTENT_SUPPORT
+#endif
+
 /** Having a console for testing makes sense in linux and windows PC environments,
     and may be used also in micro-controller systems trough serial port.
  */

@@ -66,9 +66,10 @@ OSAL_C_HEADER_BEGINS
 #include "extensions/socket/common/osal_socket.h"
 #include "extensions/tls/common/osal_tls.h"
 #include "extensions/tls/common/osal_crypto_hash.h"
-#include "extensions/tls/common/osal_make_password.h"
 #include "extensions/serial/common/osal_serial.h"
 #include "extensions/bluetooth/common/osal_bluetooth.h"
+
+#include "extensions/seacret/common/osal_seacret.h"
 
 #if OSAL_FILESYS_SUPPORT
   #include "extensions/filesys/common/osal_file.h"

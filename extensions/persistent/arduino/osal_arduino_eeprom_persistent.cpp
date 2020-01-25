@@ -30,7 +30,7 @@ typedef struct
     os_ushort sz;       /* Block size in bytes. */
     os_ushort read_ix;  /* Current read position */
     os_ushort checksum; /* Check sum. */
-    os_int flags;       /* Operation, OSAL_STREAM_WRITE or OSAL_STREAM_WRITE bits */
+    os_int flags;       /* Operation, OSAL_PERSISTENT_WRITE or OSAL_PERSISTENT_WRITE bits */
 }
 myEEPROMBlock;
 
@@ -170,6 +170,8 @@ void os_persistent_shutdown(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block Pointer to block (structure) to load.
   @param   block_sz Block size in bytes.
+  @param   flags OSAL_PERSISTENT_SEACRET flag enables accessing the seacret. It must be only
+           given in safe context.
   @return  OSAL_SUCCESS of successfull. Value OSAL_STATUS_NOT_SUPPORTED indicates that
            pointer cannot be aquired on this platform and os_persistent_load() must be
            called instead. Other values indicate an error.
@@ -179,7 +181,8 @@ void os_persistent_shutdown(
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
     const os_char **block,
-    os_memsz *block_sz)
+    os_memsz *block_sz,
+    os_int flags)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
 }
@@ -194,7 +197,8 @@ osalStatus os_persistent_get_ptr(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block_sz Pointer to integer where to store block size when reading the persistent block.
            This is intended to know memory size to allocate before reading.
-  @param   flags OSAL_STREAM_READ, OSAL_STREAM_WRITE
+  @param   flags OSAL_PERSISTENT_READ or OSAL_PERSISTENT_WRITE. Flag OSAL_PERSISTENT_SEACRET
+           enables reading or writing the seacret, and must be only given in safe context.
 
   @return  Persistant storage block handle, or OS_NULL if the function failed.
 
@@ -217,10 +221,19 @@ osPersistentHandle *os_persistent_open(
         return OS_NULL;
     }
 
+    /* Reading or writing seacred block requires seacret flag. When this function
+       is called for data transfer, there is no secure flag and thus seacret block
+       cannot be accessed to break security.
+     */
+    if (block_nr == OS_PBNR_SEACRET && (flags & OSAL_PERSISTENT_SEACRET) == 0)
+    {
+        return OS_NULL;
+    }
+
     block = hdr.blk + block_nr;
     block->flags = flags;
 
-    if (flags & OSAL_STREAM_WRITE)
+    if (flags & OSAL_PERSISTENT_WRITE)
     {
         first_free = (os_ushort)sizeof(hdr);
         for (i = 0; i< OS_N_PBNR; i++)
@@ -289,7 +302,7 @@ void os_persistent_close(
     myEEPROMBlock *block;
     block = (myEEPROMBlock*)handle;
 
-    if (block) if (block->flags & OSAL_STREAM_WRITE)
+    if (block) if (block->flags & OSAL_PERSISTENT_WRITE)
     {
         os_persistent_commit();
     }

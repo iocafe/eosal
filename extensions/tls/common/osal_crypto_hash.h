@@ -25,9 +25,3 @@ void osal_sha256(
     os_memsz n,
     os_uchar *md);
 
-/* Calculate SHA-256 cryptographic hash (as string) of password given as argument
- */
-void osal_hash_password(
-    os_char *buf,
-    os_memsz buf_sz,
-    const os_char *password);

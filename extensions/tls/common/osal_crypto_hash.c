@@ -55,30 +55,3 @@ void osal_sha256(
 #endif
 
 
-/**
-****************************************************************************************************
-
-  @brief Calculate SHA-256 cryptographic hash (as string) of password
-  @anchor osal_hash_password
-
-  The osal_hash_password() function calculates SHA-256 cryptographic hash of password given as
-  argument and stores the result as string into buffer.
-
-  @param   buf Buffer where to store the resulting string. Buffer must be at least 46 bytes.
-  @param   buf_sz Buffer size in bytes.
-  @param   password Password to encrypt.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_hash_password(
-    os_char *buf,
-    os_memsz buf_sz,
-    const os_char *password)
-{
-    os_uchar md[OSAL_HASH_SZ];
-
-    os_memclear(md, sizeof(md));
-    osal_sha256((const os_uchar*)password, os_strlen(password), md);
-    osal_password_bin2str(buf, buf_sz, md, OSAL_HASH_SZ, OS_TRUE);
-}

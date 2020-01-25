@@ -79,7 +79,7 @@ osalStatus osal_loop(
     if (os_elapsed(&t, 3000))
     {
         os_memclear(&prm_a, sizeof(prm_a));
-        h = os_persistent_open(OS_PBNR_CUST_A, &block_sz, OSAL_STREAM_READ);
+        h = os_persistent_open(OS_PBNR_CUST_A, &block_sz, OSAL_PERSISTENT_READ);
         if (h)
         {
             sz = sizeof(prm_a);
@@ -94,11 +94,11 @@ osalStatus osal_loop(
                     osal_console_write("\n");
                 }
             }
-            os_persistent_close(h, 0);
+            os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
         }
 
         os_memclear(&prm_b, sizeof(prm_b));
-        h = os_persistent_open(OS_PBNR_CUST_B, &block_sz, OSAL_STREAM_READ);
+        h = os_persistent_open(OS_PBNR_CUST_B, &block_sz, OSAL_PERSISTENT_READ);
         if (h)
         {
             sz = sizeof(prm_b);
@@ -113,7 +113,7 @@ osalStatus osal_loop(
                     osal_console_write("\n");
                 }
             }
-            os_persistent_close(h, 0);
+            os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
         }
 
 
@@ -122,7 +122,7 @@ osalStatus osal_loop(
         os_strncat(prm_a.txt1, buf, TXT_SZ);
         os_strncpy(prm_a.txt2, "txt a2: ", TXT_SZ);
         os_strncat(prm_a.txt2, buf, TXT_SZ);
-        h = os_persistent_open(OS_PBNR_CUST_A, OS_NULL, OSAL_STREAM_WRITE);
+        h = os_persistent_open(OS_PBNR_CUST_A, OS_NULL, OSAL_PERSISTENT_WRITE);
         if (h)
         {
             sz = sizeof(prm_a);
@@ -130,7 +130,7 @@ osalStatus osal_loop(
             {
                 osal_console_write("A written ok\n");
             }
-            os_persistent_close(h, 0);
+            os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
         }
 
 
@@ -138,7 +138,7 @@ osalStatus osal_loop(
         os_strncat(prm_b.txt1, buf, TXT_SZ);
         os_strncpy(prm_b.txt2, "txt b2: ", TXT_SZ);
         os_strncat(prm_b.txt2, buf, TXT_SZ);
-        h = os_persistent_open(OS_PBNR_CUST_B, OS_NULL, OSAL_STREAM_WRITE);
+        h = os_persistent_open(OS_PBNR_CUST_B, OS_NULL, OSAL_PERSISTENT_WRITE);
         if (h)
         {
             sz = sizeof(prm_b);
@@ -146,7 +146,7 @@ osalStatus osal_loop(
             {
                 osal_console_write("B written ok\n");
             }
-            os_persistent_close(h, 0);
+            os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
         }
 
         os_get_timer(&t);

@@ -71,6 +71,12 @@
   #define E_OS_linux
 #endif
 
+/* Security and testing is difficult with security on, define to turn much of it off.
+ */
+#ifndef EOSAL_RELAX_SECURITY
+  #define EOSAL_RELAX_SECURITY 0
+#endif
+
 /* Include definitions common to all operating systems.
  */
 #include "code/defs/common/osal_common_defs.h"

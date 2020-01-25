@@ -51,7 +51,8 @@
 
   @param  jindex JSON data indexer to set up.
   @param  compressed Compressed binary data.
-  @param  compressed_sz Size of compressed data in bytes.
+  @param  compressed_sz Size of compressed data in bytes. JSON content can be fhorted than this,
+          but not longer.
   @param  flags Reserved for future, set 0 for now.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 
@@ -70,14 +71,9 @@ osalStatus osal_create_json_indexer(
 
     os_memclear(jindex, sizeof(osalJsonIndex));
 
-    /* Must be at least four bytes. One for dictionary size, one byte for data
-       size and two for checksum.
+    /* Must be at least four bytes.
      */
     if (compressed_sz < sizeof(os_ushort) + 2) return OSAL_STATUS_FAILED;
-    sz_without_checksum = compressed_sz - sizeof(os_short);
-    os_memcpy(&checksum, compressed + sz_without_checksum, sizeof(os_short));
-    if (checksum != os_checksum(compressed, sz_without_checksum, OS_NULL))
-        return OSAL_CHECKSUM_ERROR;
 
     /* Calculate number of dictionary entries.
      */
@@ -94,13 +90,23 @@ osalStatus osal_create_json_indexer(
 
     /* Verify that all pointers make sense
      */
-    return (jindex->dict_start <= compressed ||
+    sz_without_checksum = jindex->data_end - compressed;
+    if (jindex->dict_start <= compressed ||
         jindex->dict_start > jindex->dict_end ||
         jindex->dict_end >= jindex->data_start ||
         jindex->data_start > jindex->data_end ||
-        sz_without_checksum != jindex->data_end - compressed)
-        ? OSAL_STATUS_FAILED
-        : OSAL_SUCCESS;
+        sz_without_checksum > compressed_sz - sizeof(os_short))
+    {
+        return OSAL_STATUS_FAILED;
+    }
+
+    /* Verify check sum.
+     */
+    os_memcpy(&checksum, jindex->data_end, sizeof(os_short));
+    if (checksum != os_checksum(compressed, sz_without_checksum, OS_NULL))
+        return OSAL_CHECKSUM_ERROR;
+
+    return OSAL_SUCCESS;
 }
 
 

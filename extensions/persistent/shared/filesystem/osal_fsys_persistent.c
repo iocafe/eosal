@@ -29,6 +29,7 @@
 #endif
 #endif
 
+/* STATIC VARIABLES HERE SHOULD BE MOVED TO GLOBAL STRUCTURE FOR WINDOWS DLLS */
 
 #define OSAL_PERSISTENT_MAX_PATH 128
 static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = OSAL_PERSISTENT_ROOT;
@@ -40,7 +41,6 @@ static os_boolean initialized = OS_FALSE;
 typedef struct
 {
     osalStream f;
-    os_int flags;
 }
 osFsysPersistentHandle;
 
@@ -48,7 +48,7 @@ osFsysPersistentHandle;
 /* Maximum number of streamers when using static memory allocation.
  */
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
-static osFsysPersistentHandle osal_persistent_handle[OSAL_MAX_PERSISTENT_HANDLES];
+static osFsysPersistentHandle osal_persistent_handle[OS_N_PBNR];
 #endif
 
 
@@ -98,6 +98,13 @@ void os_persistent_initialze(
 
     osal_mkdir(rootpath, 0);
     initialized = OS_TRUE;
+
+    /* Initialize also seacret for security. Mark persistent initialized before
+       initializing the seacret.
+     */
+#if OSAL_SEACRET_SUPPORT
+    osal_initialize_seacret();
+#endif
 }
 
 
@@ -132,6 +139,8 @@ void os_persistent_shutdown(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block Pointer to block (structure) to load.
   @param   block_sz Block size in bytes.
+  @param   flags OSAL_PERSISTENT_SEACRET flag enables accessing the seacret. It must be only
+           given in safe context.
   @return  OSAL_SUCCESS of successfull. Value OSAL_STATUS_NOT_SUPPORTED indicates that
            pointer cannot be aquired on this platform and os_persistent_load() must be
            called instead. Other values indicate an error.
@@ -141,7 +150,8 @@ void os_persistent_shutdown(
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
     const os_char **block,
-    os_memsz *block_sz)
+    os_memsz *block_sz,
+    os_int flags)
 {
     return OSAL_STATUS_NOT_SUPPORTED;
 }
@@ -156,7 +166,8 @@ osalStatus os_persistent_get_ptr(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block_sz Pointer to integer where to store block size when reading the persistent block.
            This is intended to know memory size to allocate before reading.
-  @param   flags OSAL_STREAM_READ, OSAL_STREAM_WRITE
+  @param   flags OSAL_PERSISTENT_READ or OSAL_PERSISTENT_WRITE. Flag OSAL_PERSISTENT_SEACRET
+           enables reading or writing the seacret, and must be only given in safe context.
 
   @return  Persistant storage block handle, or OS_NULL if the function failed.
 
@@ -177,6 +188,15 @@ osPersistentHandle *os_persistent_open(
     os_int count;
 #endif
 
+    /* Reading or writing seacred block requires seacret flag. When this function
+       is called for data transfer, there is no secure flag and thus seacret block
+       cannot be accessed to break security.
+     */
+    if (block_nr == OS_PBNR_SEACRET && (flags & OSAL_PERSISTENT_SEACRET) == 0)
+    {
+        return OS_NULL;
+    }
+
     if (!initialized) os_persistent_initialze(OS_NULL);
     os_persistent_make_path(block_nr, path, sizeof(path));
 
@@ -184,7 +204,7 @@ osPersistentHandle *os_persistent_open(
      */
     if (block_sz)
     {
-        if (flags & OSAL_STREAM_READ)
+        if (flags & OSAL_PERSISTENT_READ)
         {
             s = osal_filestat(path, &filestat);
             if (s) return OS_NULL;
@@ -198,7 +218,8 @@ osPersistentHandle *os_persistent_open(
 
     /* Open file.
      */
-    f = osal_file_open(path, OS_NULL, OS_NULL, flags);
+    f = osal_file_open(path, OS_NULL, OS_NULL,
+        (flags & OSAL_PERSISTENT_READ) ? OSAL_STREAM_READ : OSAL_STREAM_WRITE);
     if (f == OS_NULL) goto getout;
 
     /* Allocate streamer structure, either dynamic or static.
@@ -208,7 +229,7 @@ osPersistentHandle *os_persistent_open(
     if (handle == OS_NULL) goto getout;
 #else
     handle = osal_persistent_handle;
-    count = OSAL_MAX_PERSISTENT_HANDLES;
+    count = OS_N_PBNR;
     while (streamer->f != OS_NULL)
     {
         if (--count == 0)
@@ -224,7 +245,6 @@ osPersistentHandle *os_persistent_open(
      */
     os_memclear(handle, sizeof(osFsysPersistentHandle));
     handle->f = f;
-    handle->flags = flags;
 
     return (osPersistentHandle*)handle;
 

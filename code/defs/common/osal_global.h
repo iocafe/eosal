@@ -27,6 +27,14 @@ typedef void osal_shutdown_func(void);
 #endif
 
 
+/** Seacret (random number used as security basis) size as binary, 256 bits = 32 bytes.
+ */
+#define OSAL_SEACRET_BIN_SZ 32
+
+/** Size of string buffer for storing the seacret or passowrd.
+ */
+#define OSAL_SEACRET_STR_SZ 46
+
 /** 
 ****************************************************************************************************
 
@@ -89,6 +97,27 @@ typedef struct
     /** Memory manager state structure, see osal_memory.h.
      */
     osalMemManagerState memstate;
+#endif
+
+    /* Security "seacret"
+     */
+#if OSAL_SEACRET_SUPPORT
+    /** Seacret initialized flag.
+     */
+    os_boolean seacret_initialized;
+
+    /** Seacret as string.
+     */
+    os_char seacret_bin[OSAL_SEACRET_BIN_SZ];
+
+    /** Seacret as string. This is used for encrypting private key of TLS server
+        so it can be saved as normal data, etc.
+     */
+    os_char seacret_str[OSAL_SEACRET_STR_SZ];
+
+    /** Automatically generated IO node password.
+     */
+    os_char auto_password[OSAL_SEACRET_STR_SZ];
 #endif
 
 	/* Resource monitor related, see osal_resource_monitor.c.
