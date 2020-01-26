@@ -90,7 +90,7 @@ os_int osal_str_to_list(
   The IPv4-mapped IPv6 address 192.0.2.128 ::ffff:c000:0280 is written as ::ffff:192.0.2.128,
   thus expressing clearly the original IPv4 address that was mapped to IPv6.
 
-  @param   ip Pointer where to store IP v4 as binary, 4 bytes.
+  @param   ip Pointer where to store IP v4 as binary, 4 bytes. Or v6 16 bytes.
   @param   ip_sz IP buffer size in bytes: 4 to accept IP v4 addressess or 16 to accept
            both IP v6 and IPv4 addresses.
   @param   str Input, IP address as string.
@@ -107,6 +107,9 @@ osalStatus osal_ip_from_str(
 {
     os_ushort buf[8];
     os_int count, i;
+
+    os_memclear(ip, ip_sz);
+    if (str == OS_NULL) return OSAL_STATUS_FAILED;
 
     if (ip_sz >= 16)
     {
