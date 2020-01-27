@@ -47,7 +47,7 @@ void osal_sha256(
     SHA256_CTX c;
 
     SHA256_Init(&c);
-    SHA256_Update(&c, d, n);
+    SHA256_Update(&c, d, (size_t)n);
     SHA256_Final(md, &c);
     OPENSSL_cleanse(&c, sizeof(c));
 }
