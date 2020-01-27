@@ -1374,9 +1374,10 @@ const osalStreamInterface osal_tls_iface
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
-    osal_openssl_select};
+    osal_openssl_select,
 #else
-    osal_stream_default_select};
+    osal_stream_default_select,
 #endif
+    OS_TRUE}; /* is_secure */
 
 #endif

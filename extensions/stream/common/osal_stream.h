@@ -319,6 +319,9 @@ typedef struct osalStreamInterface
 		osalSelectData *selectdata,
         os_int timeout_ms,
         os_int flags);
+
+    /* Secured connection (TLS) */
+    os_boolean is_secure;
 }
 osalStreamInterface;
 

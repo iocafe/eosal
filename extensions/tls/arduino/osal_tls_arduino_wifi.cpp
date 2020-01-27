@@ -771,7 +771,8 @@ const osalStreamInterface osal_tls_iface
     osal_stream_default_read_value,
     osal_tls_get_parameter,
     osal_tls_set_parameter,
-    OS_NULL};
+    OS_NULL,
+    OS_TRUE}; /* is_secure */
 
 #endif
 
