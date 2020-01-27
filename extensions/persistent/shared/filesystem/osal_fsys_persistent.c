@@ -193,7 +193,8 @@ osPersistentHandle *os_persistent_open(
        is called for data transfer, there is no secure flag and thus secret block
        cannot be accessed to break security.
      */
-    if (block_nr == OS_PBNR_SECRET && (flags & OSAL_PERSISTENT_SECRET) == 0)
+    if ((block_nr == OS_PBNR_SECRET || block_nr == OS_PBNR_SERVER_KEY) &&
+        (flags & OSAL_PERSISTENT_SECRET) == 0)
     {
         return OS_NULL;
     }
@@ -393,7 +394,6 @@ static void os_persistent_make_path(
     os_strncat(path, buf, path_sz);
     os_strncat(path, ".dat", path_sz);
 }
-
 
 #endif
 #endif

@@ -72,6 +72,10 @@ osPersistentParams;
 /** Reserved persistent parameter block numbers. We need to have and unique persistant block
     number for each parameter block which can be saved. The OS_PBNR_DEFAULTS
     is not actual memory block, but number reseved for marking default configuration.
+    Do not change persistent block numbers used by iocom, these are also in Python
+    code and documentation.
+    Values OS_PBNR_CUST_A ... OS_PBNR_CUST_C can be used for storing any application specific
+    persistent data.
  */
 typedef enum
 {
@@ -79,10 +83,13 @@ typedef enum
     OS_PBNR_FLASH_PROGRAM = 1,
     OS_PBNR_CONFIG = 2,
     OS_PBNR_DEFAULTS = 3,
+    OS_PBNR_SERVER_KEY = 4,
     OS_PBNR_SECRET = 5,
-
-    OS_PBNR_CUST_A = 7,
-    OS_PBNR_CUST_B = 8,
+    OS_PBNR_SERVER_CERT = 6,
+    OS_PBNR_CLIENT_CERT_CHAIN = 7,
+    OS_PBNR_CUST_A = 8,
+    OS_PBNR_CUST_B = 9,
+    OS_PBNR_CUST_C = 10,
     OS_PBNR_ACCOUNTS_1 = 11,
     OS_PBNR_ACCOUNTS_2 = 12,
     OS_PBNR_ACCOUNTS_3 = 13,
