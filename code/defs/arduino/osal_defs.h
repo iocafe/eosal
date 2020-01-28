@@ -255,17 +255,34 @@
   #endif
 #endif
 
-/** Generic TLS support on/off switch.
+/** Possible values for OSAL_TLS_SUPPORT (TLS wrapper implementation).
+ */
+#define OSAL_TLS_NONE 0
+#define OSAL_TLS_OPENSSL_WRAPPER 1
+#define OSAL_TLS_MBED_WRAPPER 2
+#define OSAL_TLS_ARDUINO_WRAPPER 3
+
+/** Select TLS wrapper implementation to use.
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_TLS_SUPPORT
-#define OSAL_TLS_SUPPORT 0
+#define OSAL_TLS_SUPPORT OSAL_TLS_ARDUINO_WRAPPER
 #endif
 
-/** If TLS based on OpenSSL define OSAL_OPENSSL_SUPPORT is nonzero. If TLS is based on platform specific
- *  code or there is no TLS support, then define OSAL_OPENSSL_SUPPORT is zero.
+/** If OpenSSL functionality is available (separate from TLS wrapper selection,
+    OpenSSL functions can be used for other purposes outside the TLS wrapper,
+    like SHA-256 hashes, random number, etc).
  */
+#ifndef OSAL_OPENSSL_SUPPORT
 #define OSAL_OPENSSL_SUPPORT 0
+#endif
+
+/** If MBed TLS functionality is available. (similarly to OSAL_OPENSSL_SUPPORT,
+    the MBed TLS functions can be used outside the TLS wrapper).
+ */
+#ifndef OSAL_MBED_TLS_SUPPORT
+#define OSAL_MBED_TLS_SUPPORT ESP_PLATFORM
+#endif
 
 /** If serial communication is supported for the platform, define 1.
  */

@@ -22,8 +22,7 @@
 // #define OSAL_TRACE 3
 
 #include "eosalx.h"
-#if OSAL_TLS_SUPPORT
-#if OSAL_OPENSSL_SUPPORT==0
+#if OSAL_TLS_SUPPORT==OSAL_TLS_ARDUINO_WRAPPER
 
 #include <Arduino.h>
 #include "WiFi.h"
@@ -776,5 +775,4 @@ const osalStreamInterface osal_tls_iface
 
 #endif
 
-#endif
 #endif

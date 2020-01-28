@@ -22,7 +22,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_OPENSSL_SUPPORT
+#if OSAL_TLS_SUPPORT==OSAL_TLS_OPENSSL_WRAPPER
 
 #include <openssl/bio.h>
 #include <openssl/err.h>
