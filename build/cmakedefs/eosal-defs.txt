@@ -62,13 +62,12 @@ else()
 endif()
 
 # Include path.
-set(E_INCLUDE "$ENV{E_ROOT}/eosal")
-include_directories(${E_INCLUDE})
-set(E_INCLUDE "$ENV{E_ROOT}/${E_PROJECT}")
-include_directories(${E_INCLUDE})
+include_directories("$ENV{E_ROOT}/eosal")
+include_directories("$ENV{E_ROOT}/${E_PROJECT}")
 
 # Library path.
 set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_COMPILER}")
+set(ENV{E_LIBOUT} "$ENV{E_LIB}")
 
 # Binary path.
 set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OSVER}")
@@ -99,12 +98,14 @@ set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
 # Follow target build to select system libraries, not the build environment
 if($ENV{E_OS} MATCHES "windows")
   set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};WS2_32")
-  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};crypto;ssl;pthread")
+  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl;crypto;pthread")
   set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};WS2_32")
 endif()
 if($ENV{E_OS} MATCHES "linux")
+  include_directories("$ENV{E_ROOT}/eosal/dependencies/linux/include")
+  set(ENV{E_LIB} "$ENV{E_ROOT}/eosal/dependencies/linux/linux_gcc" "$ENV{E_LIB}")
   set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};pthread")
-  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};crypto;ssl;pthread")
+  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl${E_POSTFIX};crypto${E_POSTFIX};dl;pthread")
   set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};pthread")
 endif()
 

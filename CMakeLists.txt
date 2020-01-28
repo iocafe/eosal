@@ -9,8 +9,8 @@ project(${E_PROJECT})
 include(build/cmakedefs/eosal-defs.txt)
 
 # Set path to where to keep libraries.
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIB})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $ENV{E_LIB})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
 
 # Set path to source files.
 set(BACKBONE "$ENV{E_ROOT}/${E_PROJECT}/code")
