@@ -1,9 +1,11 @@
 notes 27.1.2020/pekka
-The dependencies directory contains mostly pre compiled library dependencies (for convinience). 
+The dependencies directory contains mostly pre compiled library dependencies.
+
+There are for convinience. THERE IS POTENTIAL SECURITY UNCERTAINTY: THE LIBRARIES ARE BINARIES. DO YOU TRUST THEM? If not, build yourself.
 
 Linux, OpenSSL: You can use libraries which come with your distribution, or ones here. Reason to use libraries from here is to link with a tested library version or link with library containing debug symbols.
 
-Used liibrary paths, etc. set in /coderoot/eosal/build/cmakedefs/eosal-defs.txt.
+Used library paths, etc. set in /coderoot/eosal/build/cmakedefs/eosal-defs.txt.
 
 The OpenSSL library build configuration (before make) 
 ./config --debug no-deprecated no-shared -static no-dgram no-legacy no-dtls no-tls1 no-tls1_1
