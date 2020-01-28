@@ -44,12 +44,12 @@ void osal_rand_seed(
 {
     os_char *p;
     os_timer z;
-    os_int i;
+    os_int i, max_sz;
 
     os_get_timer(&z);
     p = (os_char*)&z;
     max_sz = sizeof(z);
-    if (ent_sz > max_sz) max_sz = ent_sz;
+    if (ent_sz > max_sz) max_sz = (os_int)ent_sz;
     for (i = 0; i < max_sz; i++)
     {
         p[i % sizeof(z)] ^= ent[i % ent_sz];
