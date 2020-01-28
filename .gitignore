@@ -4,6 +4,7 @@
 *.lo
 *.o
 *.a
+!dependencies/linux/linux_gcc/*.a
 *.la
 *.lai
 *.so
