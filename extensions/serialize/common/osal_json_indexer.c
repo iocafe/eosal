@@ -95,7 +95,7 @@ osalStatus osal_create_json_indexer(
         jindex->dict_start > jindex->dict_end ||
         jindex->dict_end >= jindex->data_start ||
         jindex->data_start > jindex->data_end ||
-        sz_without_checksum > compressed_sz - sizeof(os_short))
+        sz_without_checksum > compressed_sz - (os_memsz)sizeof(os_short))
     {
         return OSAL_STATUS_FAILED;
     }
