@@ -50,7 +50,7 @@ osalSSLStatus;
 
 /* Global SSL context.
  */
-SSL_CTX *ctx;
+static SSL_CTX *ctx;
 
 #define OSAL_SSL_DEFAULT_BUF_SIZE 512
 
@@ -222,7 +222,7 @@ static osalStream osal_openssl_open(
     /* Connect or listen socket. Make sure to use TLS default port if unspecified.
      */
     osal_socket_embed_default_port(parameters,
-        host, sizeof(host), flags, IOC_DEFAULT_TLS_PORT);
+        host, sizeof(host), IOC_DEFAULT_TLS_PORT);
     tcpsocket = osal_socket_open(host, option, status, flags);
     if (tcpsocket == OS_NULL) return OS_NULL;
 

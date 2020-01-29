@@ -59,7 +59,12 @@
 #include "mbedtls/error.h"
 #include "mbedtls/certs.h"
 
-#include <string.h>
+// #include <string.h>
+
+/* Random number generator context.
+ */
+static mbedtls_ctr_drbg_context ctr_drbg;
+static mbedtls_entropy_context entropy;
 
 
 /** This enum contols whether the SSL connection needs to initiate the SSL handshake.
@@ -71,18 +76,10 @@ typedef enum osalSSLMode
 }
 osalSSLMode;
 
-/** Simplified return codes.
- */
-typedef enum osalSSLStatus
-{
-    OSAL_SSLSTATUS_OK,
-    OSAL_SSLSTATUS_WANT_IO,
-    OSAL_SSLSTATUS_FAIL,
-}
-osalSSLStatus;
 
 /* Global SSL context.
  */
+
 // SSL_CTX *ctx;
 
 #define OSAL_SSL_DEFAULT_BUF_SIZE 512
@@ -93,51 +90,25 @@ osalSSLStatus;
 #define OSAL_READ_BUF_SZ 512
 
 
-/** OpenSSL specific socket data structure. OSAL functions cast their own stream structure
+/** Mbed TLS specific socket data structure. OSAL functions cast their own stream structure
     pointers to osalStream pointers.
  */
 typedef struct osalSSLSocket
 {
-    /** A stream structure must start with this generic stream header structure, which contains
-        parameters common to every stream.
+    /** A stream structure must start with stream header, common to all streams.
      */
     osalStreamHeader hdr;
 
     /** Pointer to TCP socket handle structure.
-	 */
+     */
     osalStream tcpsocket;
 
-    /** Stream open flags. Flags which were given to osal_mbedtls_open() or osal_mbedtls_accept()
-        function. 
+    /** Flags which were given to osal_mbedtls_open() or osal_mbedtls_accept() function.
 	 */
 	os_int open_flags;
 
-//    SSL *ssl;
+    mbedtls_net_context fd;
 
-    /** SSL reads from, we write to.
-     */
-//    BIO *rbio;
-
-    /** SSL writes to, we read from.
-     */
-//    BIO *wbio;
-
-    /** Bytes waiting to be written to socket. This is data that has been generated
-        by the SSL object, either due to encryption of user input, or, writes
-        requires due to peer-requested SSL renegotiation.
-     */
-    char* write_buf;
-    size_t write_len;
-
-    /** Bytes waiting to be encrypted by the SSL object.
-     */
-    char* encrypt_buf;
-    size_t encrypt_len;
-
-    /** Read buffer
-     */
-    os_char read_buf[OSAL_READ_BUF_SZ];
-    os_int read_buf_n;
 }
 osalSSLSocket;
 
@@ -153,40 +124,6 @@ static void osal_mbedtls_init(
     osalSecurityConfig *prm);
 
 static void osal_mbedtls_cleanup(void);
-
-static osalStatus osal_mbedtls_client_init(
-    osalSSLSocket *sslsocket,
-    osalSSLMode mode);
-
-static void osal_mbedtls_client_cleanup(
-    osalSSLSocket *sslsocket);
-
-//static osalSSLStatus osal_mbedtls_get_sslstatus(
-//    SSL* ssl,
-//    os_int n);
-
-static void osal_mbedtls_send_unencrypted_bytes(
-    osalSSLSocket *sslsocket,
-    const char *buf,
-    size_t len);
-
-static void osal_mbedtls_queue_encrypted_bytes(
-    osalSSLSocket *sslsocket,
-    const char *buf,
-    size_t len);
-
-static osalSSLStatus osal_mbedtls_do_ssl_handshake(
-    osalSSLSocket *sslsocket);
-
-static osalStatus osal_mbedtls_do_encrypt(
-    osalSSLSocket *sslsocket);
-
-static osalStatus osal_mbedtls_do_sock_write(
-    osalSSLSocket *sslsocket);
-
-//static int osal_mbedtls_verify_callback(
-//    int preverify,
-//    X509_STORE_CTX* x509_ctx);
 
 
 /**
@@ -252,13 +189,16 @@ static osalStream osal_mbedtls_open(
         return OS_NULL;
     }
 
+parameters = "stalin:6367";
+
     /* Connect or listen socket. Make sure to use TLS default port if unspecified.
      */
     osal_socket_embed_default_port(parameters,
-        host, sizeof(host), flags, IOC_DEFAULT_TLS_PORT);
+        host, sizeof(host), IOC_DEFAULT_TLS_PORT);
     tcpsocket = osal_socket_open(host, option, status, flags);
     if (tcpsocket == OS_NULL) return OS_NULL;
 
+#if 0
     /* Allocate and clear socket structure.
 	 */
     sslsocket = (osalSSLSocket*)os_malloc(sizeof(osalSSLSocket), OS_NULL);
@@ -318,6 +258,7 @@ getout:
 	/* Set status code and return NULL pointer.
 	 */
     if (status) *status = s;
+#endif
 	return OS_NULL;
 }
 
@@ -353,13 +294,6 @@ static void osal_mbedtls_close(
     sslsocket = (osalSSLSocket*)stream;
     osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
 
-    /* Clean up the OpenSSL related stuff.
-     */
-    osal_mbedtls_client_cleanup(sslsocket);
-
-    /* Close the socket.
-     */
-    osal_socket_close(sslsocket->tcpsocket, flags);
 
 #if OSAL_DEBUG
     /* Mark the socket closed. This is used to detect if memory is accessed after it is freed.
@@ -401,6 +335,7 @@ static osalStream osal_mbedtls_accept(
     osalStatus *status,
 	os_int flags)
 {
+#if 0
     osalSSLSocket *sslsocket, *newsslsocket = OS_NULL;
     osalStream newtcpsocket = OS_NULL;
     osalStatus s = OSAL_STATUS_FAILED;
@@ -464,6 +399,7 @@ getout:
 	/* Set status code and return NULL pointer.
 	 */
     if (status) *status = s;
+#endif
 	return OS_NULL;
 }
 
@@ -492,6 +428,7 @@ static osalStatus osal_mbedtls_flush(
     osalStream stream,
     os_int flags)
 {
+#if 0
     osalSSLSocket *sslsocket;
     osalStatus s;
     os_boolean work_done;
@@ -534,6 +471,7 @@ static osalStatus osal_mbedtls_flush(
         s = osal_socket_flush(sslsocket->tcpsocket, flags);
         return s;
     }
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -566,6 +504,7 @@ static osalStatus osal_mbedtls_write(
 	os_memsz *n_written,
 	os_int flags)
 {
+#if 0
     osalSSLSocket *sslsocket;
     os_memsz n_now;
     osalStatus s;
@@ -615,7 +554,7 @@ static osalStatus osal_mbedtls_write(
          */
         if (sslsocket->encrypt_len >= OSAL_ENCRYPT_BUFFER_SZ) break;
     }
-
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -783,7 +722,7 @@ static osalStatus osal_mbedtls_read(
 }
 
 
-#if OSAL_SOCKET_SELECT_SUPPORT
+#if 0
 /**
 ****************************************************************************************************
 
@@ -850,7 +789,7 @@ static osalStatus osal_mbedtls_select(
 /**
 ****************************************************************************************************
 
-  @brief Initialize the OpenSSL library.
+  @brief Initialize the Mbed TLS library.
   @anchor osal_tls_initialize
 
   The osal_tls_initialize() initializes the underlying sockets library.
@@ -880,10 +819,10 @@ void osal_tls_initialize(
 /**
 ****************************************************************************************************
 
-  @brief Shut down the OpenSSL library.
+  @brief Shut down the Mbed TLS library.
   @anchor osal_tls_shutdown
 
-  The osal_tls_shutdown() shuts down the underlying OpenSSL library.
+  The osal_tls_shutdown() shuts down the underlying Mbed TLS library.
 
   @return  None.
 
@@ -916,101 +855,26 @@ void osal_tls_shutdown(
 static void osal_mbedtls_init(
     osalSecurityConfig *prm)
 {
-#if 0
-    const os_char *certs_dir;
-    os_char path[128];
+    int ret;
+    const os_char personalization[] = "we could collect data from IO";
 
-    printf("initialising SSL\n");
-
-    /* SSL library initialisation.
+    /* Initialize random number generator
      */
-    SSL_library_init();
-    OpenSSL_add_all_algorithms();
-    SSL_load_error_strings();
-    ERR_load_BIO_strings();
-    ERR_load_crypto_strings();
-
-    /* Create the SSL server context.
-     */
-    ctx = SSL_CTX_new(SSLv23_method());
-    if (ctx == 0)
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+    mbedtls_entropy_init(&entropy);
+    ret = mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy,
+        (const os_uchar*)personalization, os_strlen(personalization));
+    if (ret != 0)
     {
-        osal_debug_error("SSL_CTX_new()");
-        return;
+        osal_debug_error_int("mbedtls_ctr_drbg_seed returned %d\n", ret);
     }
-
-    /* If no parameters, skip
-     */
-    if (prm == OS_NULL)
-    {
-        osal_debug_error("No TLS parameters");
-        goto skipit;
-    }
-
-    /* If we have no path to directory containing certificates and keys, set testing default.
-     */
-    certs_dir = prm->certs_dir;
-    if (certs_dir == OS_NULL)
-    {
-        certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/";
-    }
-
-    /* Load certificate and private key files, and check consistency.
-     */
-    if (prm->server_cert_file && prm->server_key_file)
-    {
-        os_strncpy(path, certs_dir, sizeof(path));
-        os_strncat(path, prm->server_cert_file, sizeof(path));
-        if (SSL_CTX_use_certificate_file(ctx, path,  SSL_FILETYPE_PEM) != 1)
-        {
-            osal_debug_error("SSL_CTX_use_certificate_file failed");
-        }
-
-        os_strncpy(path, certs_dir, sizeof(path));
-        os_strncat(path, prm->server_key_file, sizeof(path));
-        if (SSL_CTX_use_PrivateKey_file(ctx, path, SSL_FILETYPE_PEM) != 1)
-        {
-            osal_debug_error("SSL_CTX_use_PrivateKey_file failed");
-        }
-
-        /* Make sure the key and certificate file match.
-         */
-        if (SSL_CTX_check_private_key(ctx) != 1)
-        {
-            osal_debug_error("SSL_CTX_check_private_key failed");
-        }
-        /* else
-        {
-            osal_trace2("certificate and private key loaded and verified\n");
-        } */
-    }
-
-    /* Client verify server certificate
-     */
-    if (prm->client_cert_chain_file)
-    {
-        os_strncpy(path, certs_dir, sizeof(path));
-        os_strncat(path, prm->client_cert_chain_file, sizeof(path));
-        if ( SSL_CTX_load_verify_locations(ctx, path, NULL) != 1 )
-        {
-            osal_debug_error("SSL_CTX_load_verify_locations failed");
-        }
-
-        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, osal_mbedtls_verify_callback);
-        SSL_CTX_set_verify_depth(ctx, 1);
-    }
-
-skipit:
-    /* Recommended to avoid SSLv2 & SSLv3.
-     */
-    SSL_CTX_set_options(ctx, SSL_OP_ALL|SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
-#endif
 }
+
 
 /**
 ****************************************************************************************************
 
-  @brief Clean up OpenSSL library.
+  @brief Clean up Mbed TLS library.
   @anchor osal_mbedtls_cleanup
 
   The osal_mbedtls_cleanup() function...
@@ -1022,394 +886,15 @@ skipit:
 */
 static void osal_mbedtls_cleanup(void)
 {
-//    ERR_free_strings();
-//    EVP_cleanup();
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Initialize SSL client and memory BIOs.
-  @anchor osal_mbedtls_client_init
-
-  The osal_mbedtls_client_init() function...
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  OSAL_SUCCESS if all fine. Other return values indicate an error.
-
-****************************************************************************************************
-*/
-static osalStatus osal_mbedtls_client_init(
-    osalSSLSocket *sslsocket,
-//    int fd,
-    osalSSLMode mode)
-{
-#if 0
-    osalStatus s = OSAL_SUCCESS;
-
-    // sslsocket->fd = fd;
-
-    sslsocket->rbio = BIO_new(BIO_s_mem());
-    sslsocket->wbio = BIO_new(BIO_s_mem());
-    sslsocket->ssl = SSL_new(ctx);
-
-    if (mode == OSAL_SSLMODE_SERVER)
-    {
-        SSL_set_accept_state(sslsocket->ssl);  /* ssl server mode */
-    }
-    else if (mode == OSAL_SSLMODE_CLIENT)
-    {
-        SSL_set_connect_state(sslsocket->ssl); /* ssl client mode */
-    }
-
-    SSL_set_bio(sslsocket->ssl, sslsocket->rbio, sslsocket->wbio);
-
-    return s;
-#endif
-    return OSAL_SUCCESS;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Clean up the SSL client memory BIO.
-  @anchor osal_mbedtls_client_cleanup
-
-  The osal_mbedtls_client_cleanup() function...
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_mbedtls_client_cleanup(
-    osalSSLSocket *sslsocket)
-{
-#if 0
-    if (sslsocket->ssl)
-    {
-        SSL_shutdown(sslsocket->ssl);
-        SSL_free(sslsocket->ssl);   /* free the SSL object and its BIO's */
-        free(sslsocket->write_buf);
-        free(sslsocket->encrypt_buf);
-    }
-#endif
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get return code of a SLL operation.
-  @anchor osal_mbedtls_get_sslstatus
-
-  The osal_mbedtls_get_sslstatus() function obtains the return value of a SSL operation and
-  converts into a simplified code, which is easier to examine for failure.
-
-  @return  Simplified SSL return code, one of OSAL_SSLSTATUS_OK, OSAL_SSLSTATUS_WANT_IO or
-           OSAL_SSLSTATUS_FAIL.
-
-****************************************************************************************************
-*/
-#if 0
-static osalSSLStatus osal_mbedtls_get_sslstatus(
-    SSL* ssl,
-    os_int n)
-{
-    switch (SSL_get_error(ssl, n))
-    {
-        case SSL_ERROR_NONE:
-            return OSAL_SSLSTATUS_OK;
-
-        case SSL_ERROR_WANT_WRITE:
-        case SSL_ERROR_WANT_READ:
-            return OSAL_SSLSTATUS_WANT_IO;
-
-        case SSL_ERROR_ZERO_RETURN:
-        case SSL_ERROR_SYSCALL:
-        default:
-            return OSAL_SSLSTATUS_FAIL;
-    }
-}
-#endif
-
-
-/**
-****************************************************************************************************
-
-  @brief Send unencrypted data.
-  @anchor osal_mbedtls_send_unencrypted_bytes
-
-  The osal_mbedtls_send_unencrypted_bytes() function handles request to send unencrypted data
-  to the SSL.  All we do here is just queue the data into the encrypt_buf for later processing
-  by the SSL object.
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @param   buf Pointer to data to send.
-  @param   len Number of bytes in buffer.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_mbedtls_send_unencrypted_bytes(
-    osalSSLSocket *sslsocket,
-    const char *buf,
-    size_t len)
-{
-    sslsocket->encrypt_buf = (char*)realloc(sslsocket->encrypt_buf, sslsocket->encrypt_len + len);
-    memcpy(sslsocket->encrypt_buf + sslsocket->encrypt_len, buf, len);
-    sslsocket->encrypt_len += len;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Queue encrypted bytes.
-  @anchor osal_mbedtls_queue_encrypted_bytes
-
-  The osal_mbedtls_queue_encrypted_bytes() function queues encrypted bytes. Should only be used
-  when the SSL object has requested a write operation.
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @param   buf Pointer to data to send.
-  @param   len Number of bytes in buffer.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_mbedtls_queue_encrypted_bytes(
-    osalSSLSocket *sslsocket,
-    const char *buf,
-    size_t len)
-{
-    sslsocket->write_buf = (char*)realloc(sslsocket->write_buf, sslsocket->write_len + len);
-    memcpy(sslsocket->write_buf + sslsocket->write_len, buf, len);
-    sslsocket->write_len += len;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief SSL handshake.
-  @anchor osal_mbedtls_do_ssl_handshake
-
-  The osal_mbedtls_do_ssl_handshake() function...
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  SSL status.
-
-****************************************************************************************************
-*/
-static osalSSLStatus osal_mbedtls_do_ssl_handshake(
-    osalSSLSocket *sslsocket)
-{
-#if 0
-    char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
-    osalSSLStatus status;
-
-    os_int n = SSL_do_handshake(sslsocket->ssl);
-    status = osal_mbedtls_get_sslstatus(sslsocket->ssl, n);
-
-    /* Did SSL request to write bytes?
+    /* Free memory allocated for random number generator and entropy.
      */
-    if (status == OSAL_SSLSTATUS_WANT_IO)
-    {
-        do {
-            n = BIO_read(sslsocket->wbio, buf, sizeof(buf));
-            if (n > 0)
-            {
-                osal_mbedtls_queue_encrypted_bytes(sslsocket, buf, n);
-            }
-            else if (!BIO_should_retry(sslsocket->wbio))
-            {
-                return OSAL_SSLSTATUS_FAIL;
-            }
-        }
-        while (n > 0);
-    }
-
-    return status;
-#endif
-    return OSAL_STATUS_FAILED;
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_entropy_free(&entropy);
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Encrypt data to SLL socket.
-  @anchor osal_mbedtls_do_encrypt
-
-  The osal_mbedtls_do_encrypt() function processes outbound unencrypted data that is waiting
-  to be encrypted. The waiting data resides in encrypt_buf. It needs to be passed into the SSL
-  object for encryption, which in turn generates the encrypted bytes that then
-  will be queued for later socket write.
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
-           Return value OSAL_STATUS_NOTHING_TO_DO indicates that there is nothing to
-           encrypt. Other return values indicate an error.
-
-****************************************************************************************************
-*/
-static osalStatus osal_mbedtls_do_encrypt(
-    osalSSLSocket *sslsocket)
-{
-#if 0
-    char buf[OSAL_SSL_DEFAULT_BUF_SIZE];
-    osalSSLStatus status;
-    osalStatus s;
-    os_int n;
-
-    if (!SSL_is_init_finished(sslsocket->ssl))
-        return OSAL_STATUS_NOTHING_TO_DO;
-
-    s = OSAL_STATUS_NOTHING_TO_DO;
-    while (sslsocket->encrypt_len > 0)
-    {
-        n = SSL_write(sslsocket->ssl, sslsocket->encrypt_buf, (int)sslsocket->encrypt_len);
-        status = osal_mbedtls_get_sslstatus(sslsocket->ssl, n);
-
-        if (n > 0)
-        {
-            s = OSAL_SUCCESS;
-
-            /* Consume the waiting bytes that have been used by SSL.
-             */
-            if ((size_t) n < sslsocket->encrypt_len)
-            {
-                memmove(sslsocket->encrypt_buf, sslsocket->encrypt_buf + n, sslsocket->encrypt_len - n);
-            }
-            sslsocket->encrypt_len -= n;
-            sslsocket->encrypt_buf = (char*)realloc(sslsocket->encrypt_buf, sslsocket->encrypt_len);
-
-            /* Take the output of the SSL object and queue it for socket write.
-             */
-            do
-            {
-                n = BIO_read(sslsocket->wbio, buf, sizeof(buf));
-                if (n > 0)
-                {
-                    osal_mbedtls_queue_encrypted_bytes(sslsocket, buf, n);
-                }
-                else if (!BIO_should_retry(sslsocket->wbio))
-                {
-                    return OSAL_STATUS_FAILED;
-                }
-            }
-            while (n > 0);
-        }
-
-        if (status == OSAL_SSLSTATUS_FAIL)
-            return OSAL_STATUS_FAILED;
-
-        if (n==0)
-            break;
-    }
-    return s;
-#endif
-    return OSAL_STATUS_FAILED;
-}
 
 
-/**
-****************************************************************************************************
-
-  @brief Write encrypted bytes to the socket.
-  @anchor osal_mbedtls_do_sock_write
-
-  The osal_mbedtls_do_sock_write() function...
-
-  @param   sslsocket Stream pointer representing the SSL socket.
-  @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
-           Return value OSAL_STATUS_NOTHING_TO_DO indicates that there is nothing to
-           encrypt. Other return values indicate an error.
-
-****************************************************************************************************
-*/
-static osalStatus osal_mbedtls_do_sock_write(
-    osalSSLSocket *sslsocket)
-{
-#if 0
-    os_memsz n;
-    osalStatus s;
-
-    s = osal_socket_write(sslsocket->tcpsocket, sslsocket->write_buf,
-        sslsocket->write_len, &n, OSAL_STREAM_DEFAULT);
-
-    if (n > 0)
-    {
-        if ((size_t)n < sslsocket->write_len)
-        {
-            memmove(sslsocket->write_buf, sslsocket->write_buf + n, sslsocket->write_len - (size_t)n);
-        }
-
-        sslsocket->write_len -= (size_t)n;
-        sslsocket->write_buf = (char*)realloc(sslsocket->write_buf, sslsocket->write_len);
-        return OSAL_SUCCESS;
-    }
-
-    return (s == OSAL_SUCCESS && n == 0) ? OSAL_STATUS_NOTHING_TO_DO : s;
-#endif
-    return OSAL_STATUS_FAILED;
-}
-
-#if 0
-static int osal_mbedtls_verify_callback(
-    int preverify,
-    X509_STORE_CTX* x509_ctx)
-{
-    /* For error codes, see http://www.mbedtls.org/docs/apps/verify.html  */
-    int err = X509_STORE_CTX_get_error(x509_ctx);
-
-    if (preverify == 0)
-    {
-        if(err == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY)
-        {
-            osal_debug_error("Error = X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY");
-        }
-        else if(err == X509_V_ERR_CERT_UNTRUSTED)
-        {
-            osal_debug_error("Error = X509_V_ERR_CERT_UNTRUSTED");
-        }
-        else if(err == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN)
-        {
-            osal_debug_error("Error = X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN");
-        }
-        else if(err == X509_V_ERR_CERT_NOT_YET_VALID)
-        {
-            osal_trace2("Remark = X509_V_ERR_CERT_NOT_YET_VALID (ignored)");
-        }
-        else if(err == X509_V_ERR_CERT_HAS_EXPIRED)
-        {
-            osal_trace2("Remark = X509_V_ERR_CERT_HAS_EXPIRED (ignored)");
-        }
-        else if(err == X509_V_OK)
-        {
-            osal_trace2("X509_V_OK");
-        }
-        else
-        {
-            osal_debug_error_int("Error = ", err);
-        }
-    }
-
-#if EOSAL_RELAX_SECURITY
-    return 1;
-#else
-    if (err == X509_V_OK ||
-        err == X509_V_ERR_CERT_HAS_EXPIRED ||
-        err == X509_V_ERR_CERT_NOT_YET_VALID)
-        return 1;
-
-    return preverify;
-#endif
-}
-#endif
 
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
@@ -1426,7 +911,7 @@ const osalStreamInterface osal_tls_iface
 	osal_stream_default_read_value,
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
-#if OSAL_SOCKET_SELECT_SUPPORT
+#if 0
     osal_mbedtls_select,
 #else
     osal_stream_default_select,

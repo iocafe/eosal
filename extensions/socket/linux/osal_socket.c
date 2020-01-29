@@ -146,18 +146,14 @@ osalStream osal_socket_open(
 {
 	osalSocket *mysocket = OS_NULL;
 	os_int port_nr;
-    os_char host[OSAL_HOST_BUF_SZ], nbuf[OSAL_NBUF_SZ];
-    struct addrinfo *addrinfo = NULL;
-    struct addrinfo *ptr = NULL;
-    struct addrinfo hints;
+    os_char addr[16];
 	osalStatus rval;
     os_int handle = -1;
 	struct sockaddr_in saddr;
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
-    void *sa_data;
     os_boolean is_ipv6;
-    int af, udp, on = 1, s, sa_sz;
+    int af, on = 1, s, sa_sz;
 
     /* If not initialized.
      */
@@ -169,80 +165,39 @@ osalStream osal_socket_open(
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
 	 */
-    osal_socket_get_host_name_and_port(parameters,
-        &port_nr, host, sizeof(host), &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-    udp = (flags & OSAL_STREAM_UDP_MULTICAST) ? OS_TRUE : OS_FALSE;
-
-    af = is_ipv6 ? AF_INET6 : AF_INET;
-
-    os_memclear(&hints, sizeof(hints));
-    hints.ai_family = af;
-    hints.ai_socktype = udp ? SOCK_DGRAM : SOCK_STREAM;
-    hints.ai_protocol = udp ? IPPROTO_UDP : IPPROTO_TCP;
+    s = osal_socket_get_host_name_and_port(parameters, addr, sizeof(addr),
+        &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
+    if (s)
+    {
+        if (status) *status = s;
+        return OS_NULL;
+    }
 
     if (is_ipv6)
     {
+        af = AF_INET6;
         os_memclear(&saddr6, sizeof(saddr6));
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
         saddr6.sin6_family = AF_INET6;
-        memcpy(&saddr6.sin6_addr, &in6addr_any, sizeof(in6addr_any));
+        memcpy(&saddr6.sin6_addr, &addr, sizeof(in6addr_any));
         saddr6.sin6_port = htons(port_nr);
-        sa_data = &saddr6.sin6_addr.s6_addr;
     }
     else
     {
+        af = AF_INET;
         os_memclear(&saddr, sizeof(saddr));
         sa = (struct sockaddr *)&saddr;
         sa_sz = sizeof(saddr);
         saddr.sin_family = AF_INET;
-        saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        memcpy(&saddr.sin_addr.s_addr, addr, 4);
         saddr.sin_port = htons(port_nr);
-        sa_data = &saddr.sin_addr.s_addr;
-    }
-    
-    if (host[0] != '\0')
-    {
-        if (inet_pton(af, host, sa_data) <= 0)
-        {
-            osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
-            s = getaddrinfo(host, nbuf, &hints, &addrinfo);
-
-            if (s || addrinfo == NULL) 
-		    {
-                if (addrinfo) freeaddrinfo(addrinfo);
-			    rval = OSAL_STATUS_FAILED;
-			    goto getout;
-            }
-
-            for (ptr = addrinfo; ptr != NULL; ptr = ptr->ai_next) 
-            {
-                if (ptr->ai_family == af) 
-                {
-                    os_memcpy(sa,  ptr->ai_addr, sa_sz);
-                    break;
-                }
-            }
-
-            freeaddrinfo(addrinfo);
-
-            /* If no match found
-             */
-            if (ptr == NULL)
-            {
-			    rval = OSAL_STATUS_FAILED;
-			    goto getout;
-            }
-	    }
-        /* else
-        {
-            hostaddr = gethostbyname(host);
-        } */
     }
 
     /* Create socket.
      */
-    handle = socket(af, hints.ai_socktype, hints.ai_protocol);
+    handle = socket(af, (flags & OSAL_STREAM_UDP_MULTICAST)
+        ? SOCK_DGRAM : SOCK_STREAM, IPPROTO_IP);
     if (handle == -1)
 	{
 		rval = OSAL_STATUS_FAILED;

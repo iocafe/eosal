@@ -255,11 +255,11 @@ void osal_socket_maintain(void);
 
 /* Get host and port from network address string (osal_socket_util.c).
  */
-void osal_socket_get_host_name_and_port(
+osalStatus osal_socket_get_host_name_and_port(
     const os_char *parameters,
+    os_char *addr,
+    os_memsz addr_sz,
     os_int  *port_nr,
-    os_char *buf,
-    os_memsz buf_sz,
     os_boolean *is_ipv6,
     os_int default_use_flags,
     os_int default_port_nr);
@@ -270,7 +270,6 @@ void osal_socket_embed_default_port(
     const os_char *parameters,
     os_char *buf,
     os_memsz buf_sz,
-    os_int default_use_flags,
     os_int default_port_nr);
 
 /* For Arduino. Called repeatedly to maintain wifi state.
