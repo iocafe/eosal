@@ -165,7 +165,7 @@ osalStream osal_socket_open(
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
 	 */
-    s = osal_socket_get_host_name_and_port(parameters, addr, sizeof(addr),
+    s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
         &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
     if (s)
     {

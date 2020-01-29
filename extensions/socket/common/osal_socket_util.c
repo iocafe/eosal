@@ -22,9 +22,9 @@
 ****************************************************************************************************
 
   @brief Get host and port from network address string.
-  @anchor osal_socket_get_host_name_and_port
+  @anchor osal_socket_get_ip_and_port
 
-  The osal_socket_get_host_name_and_port() function examines the network address string within 
+  The osal_socket_get_ip_and_port() function examines the network address string within
   long parameter string. If the host name or numeric IP address is specified, the function
   returns pointer to it. If port number is specified in parameter string, the function
   stores it to port.
@@ -57,7 +57,7 @@
 
 ****************************************************************************************************
 */
-osalStatus osal_socket_get_host_name_and_port(
+osalStatus osal_socket_get_ip_and_port(
     const os_char *parameters,
     os_char *addr,
     os_memsz addr_sz,
@@ -153,6 +153,5 @@ void osal_socket_embed_default_port(
     osal_int_to_str(nbuf, sizeof(nbuf), default_port_nr);
     os_strncat(buf, nbuf, buf_sz);
 }
-
 
 #endif

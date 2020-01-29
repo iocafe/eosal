@@ -255,7 +255,7 @@ void osal_socket_maintain(void);
 
 /* Get host and port from network address string (osal_socket_util.c).
  */
-osalStatus osal_socket_get_host_name_and_port(
+osalStatus osal_socket_get_ip_and_port(
     const os_char *parameters,
     os_char *addr,
     os_memsz addr_sz,

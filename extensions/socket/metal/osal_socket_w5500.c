@@ -228,7 +228,7 @@ osalStream osal_socket_open(
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
 	 */
-    osal_socket_get_host_name_and_port(parameters,
+    osal_socket_get_ip_and_port(parameters,
         &port_nr, host, sizeof(host), &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
 
     /* Get first unused osal_socket structure.

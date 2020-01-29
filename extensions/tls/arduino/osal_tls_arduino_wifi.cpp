@@ -313,7 +313,7 @@ osalStream osal_tls_open(
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
      */
-    osal_socket_get_host_name_and_port(parameters,
+    osal_socket_get_ip_and_port(parameters,
         &port_nr, host, sizeof(host), &is_ipv6, flags, IOC_DEFAULT_TLS_PORT);
 
     /* Get first unused osal_tls structure.

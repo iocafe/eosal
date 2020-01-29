@@ -341,7 +341,7 @@ osalStream osal_socket_open(
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
      */
-    osal_socket_get_host_name_and_port(parameters,
+    osal_socket_get_ip_and_port(parameters,
         &w->port_nr, w->host, OSAL_IPADDR_SZ, &w->is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
 
     /* Allocate ring buffers.
