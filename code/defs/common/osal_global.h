@@ -21,9 +21,13 @@
 #endif
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
-/* Extension module shutdown function type.
- */
-typedef void osal_shutdown_func(void);
+    /* Extension module shutdown function type.
+     */
+    typedef void osal_shutdown_func(void);
+#endif
+
+#if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
+    struct osalTLS;
 #endif
 
 
@@ -133,6 +137,10 @@ typedef struct
 	/** Console state structure.
 	 */
 	osalConsoleState constate;
+#endif
+
+#if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
+    struct osalTLS *tls;
 #endif
 
 	/** System timer parameter. Values differ for each operating system.

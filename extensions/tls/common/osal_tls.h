@@ -86,7 +86,7 @@ extern const osalStreamInterface osal_tls_iface;
 
 /* TLS initialized flag.
  */
-extern os_boolean osal_tls_initialized;
+// extern os_boolean osal_tls_initialized;
 
 /* Initialize OSAL sockets library.
  */
