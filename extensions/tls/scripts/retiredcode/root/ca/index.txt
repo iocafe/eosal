@@ -1,2 +1,0 @@
-V	260615120021Z		1000	unknown	/C=AQ/ST=Antarctica/O=eosal/CN=eppo/emailAddress=pekka.lehtikoski@gmail.com
-V	260619150308Z		1001	unknown	/C=AQ/ST=Antarctica/O=eosal/CN=intca/emailAddress=pekka.lehtikoski@gmail.com
