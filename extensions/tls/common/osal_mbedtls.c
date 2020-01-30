@@ -59,33 +59,6 @@
 #include "mbedtls/error.h"
 #include "mbedtls/certs.h"
 
-// #include <string.h>
-
-
-
-/** This enum contols whether the SSL connection needs to initiate the SSL handshake.
- */
-/* typedef enum osalSSLMode
-{
-    OSAL_SSLMODE_SERVER,
-    OSAL_SSLMODE_CLIENT
-}
-osalSSLMode;
-*/
-
-
-/* Global SSL context.
- */
-
-// SSL_CTX *ctx;
-
-// #define OSAL_SSL_DEFAULT_BUF_SIZE 512
-
-// #define OSAL_ENCRYPT_BUFFER_SZ 256
-
-
-// #define OSAL_READ_BUF_SZ 512
-
 
 /** Mbed TLS specific socket data structure. OSAL functions cast their own stream structure
     pointers to osalStream pointers.
@@ -100,6 +73,11 @@ typedef struct osalTLS
     /* Certificate authority certificate
      */
     mbedtls_x509_crt cacert;
+
+    /* Server only
+     */
+    mbedtls_x509_crt srvcert;
+    mbedtls_pk_context pkey;
 }
 osalTLS;
 
@@ -117,10 +95,16 @@ typedef struct osalTlsSocket
 	 */
 	os_int open_flags;
 
+/* Both client and server
+ */
     mbedtls_net_context fd;
-
     mbedtls_ssl_context ssl;
     mbedtls_ssl_config conf;
+
+/* Server
+ */
+//    mbedtls_net_context client_fd;
+
 }
 osalTlsSocket;
 
@@ -128,6 +112,10 @@ osalTlsSocket;
 
 /* Prototypes for forward referred static functions.
  */
+static void osal_mbedtls_close(
+    osalStream stream,
+    os_int flags);
+
 static osalStatus osal_mbedtls_write(
     osalStream stream,
     const os_char *buf,
@@ -238,83 +226,120 @@ static osalStream osal_mbedtls_open(
     }
     os_memclear(so, sizeof(osalTlsSocket));
     so->hdr.iface = &osal_tls_iface;
+    so->open_flags = flags;
+
+    mbedtls_net_init(&so->fd);
+    mbedtls_ssl_init(&so->ssl);
+    mbedtls_ssl_config_init(&so->conf);
+    osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
+
+    /* Listen socket.
+     */
+    if (flags & OSAL_STREAM_LISTEN)
+    {
+        ret = mbedtls_net_bind(&so->fd, host[0] == '\0' ? NULL : host, nbuf, MBEDTLS_NET_PROTO_TCP );
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_net_bind failed ", ret);
+            goto getout;
+        }
+#if 0
+        ret = mbedtls_ssl_config_defaults(&so->conf, MBEDTLS_SSL_IS_SERVER,
+            MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_ssl_config_defaults failed ", ret);
+            goto getout;
+        }
+
+        mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
+        mbedtls_ssl_conf_dbg(&so->conf, my_debug, stdout);
+
+        mbedtls_ssl_conf_ca_chain(&so->conf, t->srvcert.next, NULL);
+        ret = mbedtls_ssl_conf_own_cert(&so->conf, &t->srvcert, &t->pkey);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_ssl_conf_own_cert failed ", ret);
+            goto getout;
+        }
+
+        ret = mbedtls_ssl_setup(&so->ssl, &so->conf);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_ssl_setup failed ", ret);
+            goto getout;
+        }
+#endif
+    }
 
     /* Connect socket.
      */
-    mbedtls_net_init(&so->fd);
-    osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
-    ret = mbedtls_net_connect(&so->fd, host, nbuf, MBEDTLS_NET_PROTO_TCP);
-    if (ret)
+    else
     {
-        osal_debug_error_int("mbedtls_net_connect returned ", ret);
-        mbedtls_net_free(&so->fd);
-        os_free(so, sizeof(osalTlsSocket));
-        if (status) *status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-        return OS_NULL;
-    }
-
-    /* Initialize TLS related structures.
-     */
-    mbedtls_ssl_init(&so->ssl);
-    mbedtls_ssl_config_init(&so->conf);
-
-    if( ( ret = mbedtls_ssl_config_defaults( &so->conf,
-                    MBEDTLS_SSL_IS_CLIENT,
-                    MBEDTLS_SSL_TRANSPORT_STREAM,
-                    MBEDTLS_SSL_PRESET_DEFAULT ) ) != 0 )
-    {
-        osal_debug_error_int("mbedtls_ssl_config_defaults returned ", ret);
-        goto getout;
-    }
-
-    /* OPTIONAL is not optimal for security,
-     * but makes interop easier in this simplified example */
-    mbedtls_ssl_conf_authmode(&so->conf, MBEDTLS_SSL_VERIFY_OPTIONAL);
-    mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
-    mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
-    mbedtls_ssl_conf_dbg(&so->conf, my_debug, stdout);
-
-    ret = mbedtls_ssl_setup(&so->ssl, &so->conf);
-    if (ret)
-    {
-        osal_debug_error_int("mbedtls_ssl_setup returned", ret);
-        goto getout;
-    }
-
-    ret = mbedtls_ssl_set_hostname(&so->ssl, host);
-    if (ret)
-    {
-        osal_debug_error_int("mbedtls_ssl_set_hostname returned", ret);
-        goto getout;
-    }
-
-    mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, NULL );
-
-    /*
-     * 4. Handshake
-     */
-
-    while (( ret = mbedtls_ssl_handshake(&so->ssl) ))
-    {
-        if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
+        ret = mbedtls_net_connect(&so->fd, host, nbuf, MBEDTLS_NET_PROTO_TCP);
+        if (ret)
         {
-            osal_debug_error_int("mbedtls_ssl_handshake returned", ret);
+            osal_debug_error_int("mbedtls_net_connect returned ", ret);
             goto getout;
         }
-    }
 
-    /*
-     * 5. Verify the server certificate
-     */
-    /* In real life, we probably want to bail out when ret != 0 */
-    xflags = mbedtls_ssl_get_verify_result(&so->ssl);
-    if (xflags)
-    {
-        char vrfy_buf[512];
+        /* Initialize TLS related structures.
+         */
 
-        mbedtls_x509_crt_verify_info(vrfy_buf, sizeof( vrfy_buf ), "  ! ", xflags);
+        if( ( ret = mbedtls_ssl_config_defaults( &so->conf,
+                        MBEDTLS_SSL_IS_CLIENT,
+                        MBEDTLS_SSL_TRANSPORT_STREAM,
+                        MBEDTLS_SSL_PRESET_DEFAULT ) ) != 0 )
+        {
+            osal_debug_error_int("mbedtls_ssl_config_defaults returned ", ret);
+            goto getout;
+        }
 
-        osal_debug_error_str("mbedtls failed ", vrfy_buf);
+        /* OPTIONAL is not optimal for security,
+         * but makes interop easier in this simplified example */
+        mbedtls_ssl_conf_authmode(&so->conf, MBEDTLS_SSL_VERIFY_OPTIONAL);
+        mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
+        mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
+        mbedtls_ssl_conf_dbg(&so->conf, my_debug, stdout);
+
+        ret = mbedtls_ssl_setup(&so->ssl, &so->conf);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_ssl_setup returned ", ret);
+            goto getout;
+        }
+
+        ret = mbedtls_ssl_set_hostname(&so->ssl, host);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_ssl_set_hostname returned ", ret);
+            goto getout;
+        }
+
+        mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, NULL );
+
+        /* 4. Handshake
+         */
+        while (( ret = mbedtls_ssl_handshake(&so->ssl) ))
+        {
+            if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
+            {
+                osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
+                goto getout;
+            }
+        }
+
+        /* 5. Verify the server certificate
+         */
+        /* In real life, we probably want to bail out when ret != 0 */
+        xflags = mbedtls_ssl_get_verify_result(&so->ssl);
+        if (xflags)
+        {
+            char vrfy_buf[512];
+
+            mbedtls_x509_crt_verify_info(vrfy_buf, sizeof( vrfy_buf ), "  ! ", xflags);
+            osal_debug_error_str("mbedtls failed ", vrfy_buf);
+        }
     }
 
     /* Success: Set status code and cast socket structure pointer to stream
@@ -324,68 +349,15 @@ static osalStream osal_mbedtls_open(
     return (osalStream)so;
 
 getout:
-    mbedtls_net_free(&so->fd);
+    osal_mbedtls_close((osalStream)so, 0);
+
+    /* mbedtls_net_free(&so->fd);
     mbedtls_ssl_free(&so->ssl);
     mbedtls_ssl_config_free(&so->conf);
-    os_free(so, sizeof(osalTlsSocket));
+    os_free(so, sizeof(osalTlsSocket)); */
 
     if (status) *status = OSAL_STATUS_FAILED;
     return OS_NULL;
-
-
-
-#if 0
-    /* Save socket stucture pointer, open flags and interface pointer.
-	 */
-    so->tcpsocket = tcpsocket;
-    so->open_flags = flags;
-    so->hdr.iface = &osal_tls_iface;
-
-    /* If we are connecting socket.
-     *
-     */
-    if ((flags & (OSAL_STREAM_LISTEN|OSAL_STREAM_CONNECT)) == OSAL_STREAM_CONNECT)
-	{
-        /* Initialize SSL client and memory BIOs.
-        */
-        s = osal_mbedtls_client_init(so, OSAL_SSLMODE_CLIENT);
-        if (s) goto getout;
-
-        if (osal_mbedtls_do_ssl_handshake(so) == OSAL_SSLSTATUS_FAIL)
-        {
-            s = OSAL_STATUS_FAILED;
-            goto getout;
-        }
-	}
-
-    /* Success: Set status code and cast socket structure pointer to stream
-       pointer and return it.
-     */
-	if (status) *status = OSAL_SUCCESS;
-    return (osalStream)so;
-
-getout:
-    /* If we got far enough to allocate the socket structure.
-       Close the event handle (if any) and free memory allocated
-       for the socket structure.
-     */
-    if (so)
-    {
-        os_free(so, sizeof(osalTlsSocket));
-    }
-
-    /* Close socket
-     */    
-    if (tcpsocket)
-	{
-        osal_socket_close(tcpsocket, OSAL_STREAM_DEFAULT);
-    }
-
-	/* Set status code and return NULL pointer.
-	 */
-    if (status) *status = s;
-#endif
-	return OS_NULL;
 }
 
 
@@ -466,71 +438,110 @@ static osalStream osal_mbedtls_accept(
     osalStatus *status,
 	os_int flags)
 {
-#if 0
-    osalTlsSocket *so, *newsslsocket = OS_NULL;
-    osalStream newtcpsocket = OS_NULL;
+    osalTlsSocket *so, *newso = OS_NULL;
     osalStatus s = OSAL_STATUS_FAILED;
+    mbedtls_net_context client_fd;
+    osalTLS *t;
+    int ret;
 
     /* If called with NULL argument, do nothing.
      */
     if (stream == OS_NULL) goto getout;
 
+
     so = (osalTlsSocket*)stream;
     osal_debug_assert(so->hdr.iface == &osal_tls_iface);
 
+// mbedtls_ssl_session_reset(&so->ssl);
+    os_memclear(&client_fd, sizeof(mbedtls_net_context));
+
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
-    newtcpsocket = osal_socket_accept(so->tcpsocket, remote_ip_addr,
-        remote_ip_addr_sz, status, flags);
-    if (newtcpsocket == OS_NULL) return OS_NULL;
+    ret = mbedtls_net_accept( &so->fd, &client_fd, NULL, 0, NULL);
+    if (ret)
+    {
+        osal_debug_error_int("mbedtls_net_accept failed ", ret);
+        if (status) *status = OSAL_SUCCESS;
+        return OS_NULL;
+    }
 
     /* Allocate and clear socket structure.
      */
-    newsslsocket = (osalTlsSocket*)os_malloc(sizeof(osalTlsSocket), OS_NULL);
-    if (newsslsocket == OS_NULL)
+    newso = (osalTlsSocket*)os_malloc(sizeof(osalTlsSocket), OS_NULL);
+    if (newso == OS_NULL)
     {
-        s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-        goto getout;
+        mbedtls_net_free(&client_fd);
+        if (status) *status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+        return OS_NULL;
     }
-    os_memclear(newsslsocket, sizeof(osalTlsSocket));
+    os_memclear(newso, sizeof(osalTlsSocket));
+
 
     /* Save socket stucture pointer, open flags and interface pointer.
      */
-    newsslsocket->tcpsocket = newtcpsocket;
-    newsslsocket->open_flags = flags;
-    newsslsocket->hdr.iface = &osal_tls_iface;
+    t = osal_global->tls;
+    newso->open_flags = flags;
+    newso->hdr.iface = &osal_tls_iface;
+    newso->fd = client_fd;
+    mbedtls_ssl_init(&newso->ssl);
+    mbedtls_ssl_config_init(&newso->conf);
 
-    /* Initialize SSL client and memory BIOs.
+    ret = mbedtls_ssl_config_defaults(&newso->conf, MBEDTLS_SSL_IS_SERVER,
+        MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
+    if (ret)
+    {
+        osal_debug_error_int("mbedtls_ssl_config_defaults failed ", ret);
+        goto getout;
+    }
+
+    mbedtls_ssl_conf_rng(&newso->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
+    mbedtls_ssl_conf_dbg(&newso->conf, my_debug, stdout);
+
+    mbedtls_ssl_conf_ca_chain(&newso->conf, t->srvcert.next, NULL);
+    ret = mbedtls_ssl_conf_own_cert(&newso->conf, &t->srvcert, &t->pkey);
+    if (ret)
+    {
+        osal_debug_error_int("mbedtls_ssl_conf_own_cert failed ", ret);
+        goto getout;
+    }
+
+    ret = mbedtls_ssl_setup(&newso->ssl, &newso->conf);
+    if (ret)
+    {
+        osal_debug_error_int("mbedtls_ssl_setup failed ", ret);
+        goto getout;
+    }
+
+    mbedtls_ssl_set_bio(&newso->ssl, &newso->fd, mbedtls_net_send, mbedtls_net_recv, NULL);
+
+    /* 5. Handshake
      */
-    s = osal_mbedtls_client_init(newsslsocket, OSAL_SSLMODE_SERVER);
-    if (s) goto getout;
+    while((ret = mbedtls_ssl_handshake(&newso->ssl)) != 0)
+    {
+        if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
+        {
+            osal_debug_error_int("mbedtls_ssl_handshake failed ", ret);
+            goto getout;
+        }
+    }
 
     /* Success set status code and cast socket structure pointer to stream pointer
        and return it.
      */
     if (status) *status = OSAL_SUCCESS;
-    return (osalStream)newsslsocket;
+    return (osalStream)newso;
 
 getout:
-	/* Opt out on error. If we got far enough to allocate the socket structure.
-       Close the event handle (if any) and free memory allocated  for the socket structure.
-     */
-    if (newsslsocket)
-    {
-        os_free(newsslsocket, sizeof(osalTlsSocket));
-    }
-
-    /* Close socket
-     */    
-    if (newtcpsocket)
-	{
-        osal_socket_close(newtcpsocket, OSAL_STREAM_DEFAULT);
-	}
-
+    osal_mbedtls_close((osalStream)newso, 0);
+/*
+    mbedtls_net_free(&newso->fd);
+    mbedtls_ssl_free(&newso->ssl);
+    mbedtls_ssl_config_free(&newso->conf);
+    os_free(newso, sizeof(osalTlsSocket));
+*/
 	/* Set status code and return NULL pointer.
 	 */
     if (status) *status = s;
-#endif
 	return OS_NULL;
 }
 
@@ -877,14 +888,49 @@ static void osal_mbedtls_init(
     mbedtls_entropy_init(&t->entropy);
     ret = mbedtls_ctr_drbg_seed(&t->ctr_drbg, mbedtls_entropy_func, &t->entropy,
         (const os_uchar*)personalization, os_strlen(personalization));
-    if (ret != 0)
+    if (ret)
     {
-        osal_debug_error_int("mbedtls_ctr_drbg_seed returned %d\n", ret);
+        osal_debug_error_int("mbedtls_ctr_drbg_seed returned ", ret);
     }
 
+/* Client
+ */
     mbedtls_x509_crt_init(&t->cacert);
     ret = mbedtls_x509_crt_parse(&t->cacert, (const unsigned char *)mbedtls_test_cas_pem,
                           mbedtls_test_cas_pem_len );
+
+
+
+/* Server
+ */
+    mbedtls_x509_crt_init(&t->srvcert);
+    mbedtls_pk_init(&t->pkey);
+
+    /*
+     * This demonstration program uses embedded test certificates.
+     * Instead, you may want to use mbedtls_x509_crt_parse_file() to read the
+     * server and CA certificates, as well as mbedtls_pk_parse_keyfile().
+     */
+    ret = mbedtls_x509_crt_parse(&t->srvcert, (const unsigned char *) mbedtls_test_srv_crt,
+        mbedtls_test_srv_crt_len);
+    if (ret)
+    {
+        osal_debug_error_int( "mbedtls_x509_crt_parse failed A ", ret);
+    }
+
+    ret = mbedtls_x509_crt_parse( &t->srvcert, (const unsigned char *) mbedtls_test_cas_pem,
+        mbedtls_test_cas_pem_len );
+    if (ret)
+    {
+        osal_debug_error_int( "mbedtls_x509_crt_parse failed B ", ret);
+    }
+
+    ret = mbedtls_pk_parse_key(&t->pkey, (const unsigned char *) mbedtls_test_srv_key,
+        mbedtls_test_srv_key_len, NULL, 0 );
+    if (ret)
+    {
+        osal_debug_error_int("mbedtls_pk_parse_key failed ", ret );
+    }
 
 }
 
@@ -910,6 +956,13 @@ static void osal_mbedtls_cleanup(void)
     osalTLS *t;
     t = osal_global->tls;
 
+/* Server
+ */
+    mbedtls_x509_crt_free(&t->srvcert);
+    mbedtls_pk_free(&t->pkey);
+
+/* Client
+ */
     mbedtls_x509_crt_free(&t->cacert);
 
     mbedtls_ctr_drbg_free(&t->ctr_drbg);

@@ -383,7 +383,11 @@ static osalStream osal_openssl_accept(
      */
     newtcpsocket = osal_socket_accept(sslsocket->tcpsocket, remote_ip_addr,
         remote_ip_addr_sz, status, flags);
-    if (newtcpsocket == OS_NULL) return OS_NULL;
+    if (newtcpsocket == OS_NULL)
+    {
+        if (status) *status = OSAL_SUCCESS;
+        return OS_NULL;
+    }
 
     /* Allocate and clear socket structure.
      */
