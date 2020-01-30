@@ -1,6 +1,12 @@
 notes 29.1.2020/pekka
+This is short and simple:
+- A top level CA runs cloud server.
+- A server in local net requests top level CA for certificate and received it.
+
+Chain of trust can be as complex as needed.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN BY ROOT CERTIFICATE AUTHORITY
 This generates self signed root CA certificate. This means the top level of the trust.  
 - If you are top level of the trust and use your own root, only devices which you certify (or authenticate otherts to certify by issuing them certificate) 
   can connect your IO network. 
@@ -21,4 +27,25 @@ python3 create-root-CA-certificate.py
 => The private key is created in /coderoot/eosal/extensions/tls/keys-and-certs/secret/rootca.key. This is the SECRET, do not give this to anyone.
 => The root CA certificate is created in /coderoot/eosal/extensions/tls/keys-and-certs/rootca.crt. This can be shared freely.
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN BY LOCAL NETWORK SERVER ADMIN
+To certify a server in local network you need to create certificate request for it. This also creates private key for the server in local net.
+This can be run by separate person at different location as root CA sertificate was prepared. The certificate request must be emailed
+to root CA and ready certificate back. Steps 1 and 2 are the same as above.
+
+3. Modify file "create-certificate-request.py" to have your information
+gedit create-certificate-request.py
+
+4. Run the "create-certificate-request.py"
+python3 create-certificate-request.py
+=> The private key is created in /coderoot/eosal/extensions/tls/keys-and-certs/secret/myhome.key. This is the SECRET, do not give this to anyone.
+=> The certificate request is created in /coderoot/eosal/extensions/tls/keys-and-certs/myhome-certificate-request.crt. This needs to be sent to root CA.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN BY ROOT CERTIFICATE AUTHORITY
+This generates self signed root CA certificate. This means the top level of the trust.  
+- If you are top level of the trust and use your own root, only devices which you certify (or authenticate otherts to certify by issuing them certificate) 
+  can connect your IO network. 
+- You may choose not to be top level of the network, but instead request certificate intermediate to certify your devices. This is useful when cloud
+  server is operated by someone else and you want your devices to connect to your network through the cloud server.
 

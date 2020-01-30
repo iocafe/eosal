@@ -1,6 +1,7 @@
-#Following script will create a self signed root ca cert.
+# STEP A: Create a self signed root ca cert.
+# RUN BY ROOT CERTIFICATE AUTHORITY
 from OpenSSL import crypto, SSL
-from os.path import join
+import os
 import random
 
 CN = "rootca" # Common name of the certificate you want (if you leave this as is, matches to examples)
@@ -8,8 +9,8 @@ pubkey = "%s.crt" % CN
 privkey = "secret/%s.key" % CN
 
 targetdir = "/coderoot/eosal/extensions/tls/keys-and-certs"
-pubkey = join(targetdir, pubkey)
-privkey = join(targetdir, privkey)
+pubkey = os.path.join(targetdir, pubkey)
+privkey = os.path.join(targetdir, privkey)
 
 k = crypto.PKey()
 k.generate_key(crypto.TYPE_RSA, 2048)
@@ -31,5 +32,10 @@ cert.set_pubkey(k)
 cert.sign(k, 'sha256')
 pub=crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
 priv=crypto.dump_privatekey(crypto.FILETYPE_PEM, k)
+
+if os.path.exists(pubkey):
+    print("Root CA certificate" + pubkey + " exists, aborting. Delete the file to recreate.")
+    exit()
+
 open(pubkey,"wt").write(pub.decode("utf-8"))
 open(privkey, "wt").write(priv.decode("utf-8") )
