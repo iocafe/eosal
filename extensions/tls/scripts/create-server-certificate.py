@@ -4,11 +4,11 @@ from OpenSSL import crypto, SSL
 import os
 import random
 
-CN = "myhome" # Common name of the certificate you want (if you leave this as is, matches to examples)
+CN = "myhome" # Common name of the certificate you want to create
 reqfile = "%s-certificate-request.crt" % CN 
 certfile = "%s.crt" % CN 
 
-ROOTCN = "rootca" # Common name of the certificate you want (if you leave this as is, matches to examples)
+ROOTCN = "rootca" # Name of the CA root certificate used to sign the server sertificate
 root_pubkey = "%s.crt" % ROOTCN
 root_privkey = "secret/%s.key" % ROOTCN
 
