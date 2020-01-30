@@ -917,7 +917,7 @@ static void osal_openssl_init(
     certs_dir = prm->certs_dir;
     if (certs_dir == OS_NULL)
     {
-        certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/ssl-test-keys-and-certs/";
+        certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/keys-and-certs/";
     }
 
     /* Load certificate and private key files, and check consistency.

@@ -44,7 +44,7 @@
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
 #define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
-#define EXAMPLE_TLS_SOCKET "192.168.1.221:6369"
+#define EXAMPLE_TLS_SOCKET "127.0.0.1:6369"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 static osalStream stream;
@@ -78,7 +78,7 @@ osalStatus osal_main(
         osalSecurityConfig security_prm;
 
         os_memclear(&security_prm, sizeof(security_prm));
-        security_prm.client_cert_chain_file = "bob-bundle.crt";
+        security_prm.client_cert_chain_file = "myhome-bundle.crt";
 
         /* Initialize the transport, socket, TLS, serial, etc..
          */

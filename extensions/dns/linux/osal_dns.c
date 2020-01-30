@@ -59,7 +59,7 @@ osalStatus osal_gethostbyname(
     os_int default_use_flags)
 {
     struct hostent hostbuf, *hp;
-    os_char *buf, smallbuf[256];
+    os_char *buf = OS_NULL, smallbuf[256];
     os_memsz buf_sz;
     int res, herr;
     os_uint uaddr;
