@@ -559,8 +559,8 @@ static osalStatus osal_mbedtls_flush(
     osalStream stream,
     os_int flags)
 {
-    //os_memsz n_written;
-    // return osal_mbedtls_write(stream, "", 0, &n_written, 0);
+    os_memsz n_written;
+    return osal_mbedtls_write(stream, "", 0, &n_written, 0);
     return OSAL_SUCCESS;
 
 #if 0

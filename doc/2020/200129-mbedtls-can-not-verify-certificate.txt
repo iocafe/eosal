@@ -1,0 +1,8 @@
+mbedtls can not verify certificate - note 29.1.2020/pekka
+
+The solution that worked for me to switch to mbedtls:
+
++ change to RSA 2048
++ change certificate digest from MD5 to SHA256 (use option "default_md = sha256").
+
+The default digest used by easy-rsa key generation scripts was "md5", and it was rejected by mbedtls.
