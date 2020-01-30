@@ -7,7 +7,7 @@ Chain of trust can be as complex as needed.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 RUN BY ROOT CERTIFICATE AUTHORITY
-This generates self signed root CA certificate. This means the top level of the trust.  
+This generates self signed root CA certificate, the top level of the trust.  
 - If you are top level of the trust and use your own root, only devices which you certify (or authenticate otherts to certify by issuing them certificate) 
   can connect your IO network. 
 - You may choose not to be top level of the network, but instead request certificate intermediate to certify your devices. This is useful when cloud
@@ -43,7 +43,7 @@ python3 create-certificate-request.py
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 RUN BY ROOT CERTIFICATE AUTHORITY
-This generates self signed root CA certificate. This means the top level of the trust.  
+This generates certificate for server, local.  
 - If you are top level of the trust and use your own root, only devices which you certify (or authenticate otherts to certify by issuing them certificate) 
   can connect your IO network. 
 - You may choose not to be top level of the network, but instead request certificate intermediate to certify your devices. This is useful when cloud

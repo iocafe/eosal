@@ -19,7 +19,7 @@ req.get_subject().C = "US" # Change you country here (2 characters max)
 req.get_subject().ST = "GA" # I live in Georgia state
 req.get_subject().L = "JohnsCreek" # City name
 req.get_subject().O = "myhome" # Organization
-req.get_subject().OU = "myionet" # Organizational Unit
+req.get_subject().OU = "iocafenet" # Organizational Unit, IO network name
 req.get_subject().CN = CN
 req.set_pubkey(k)
 req.sign(k, 'sha256')
