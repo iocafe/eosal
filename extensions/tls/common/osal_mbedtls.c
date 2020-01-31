@@ -94,6 +94,10 @@ typedef struct osalTlsSocket
 	 */
 	os_int open_flags;
 
+    /** Remote peer is connected and needs to be notified on close.
+     */
+    os_boolean peer_connected;
+
 /* Both client and server
  */
     mbedtls_net_context fd;
@@ -103,6 +107,7 @@ typedef struct osalTlsSocket
 /* Server
  */
 //    mbedtls_net_context client_fd;
+
 
 }
 osalTlsSocket;
@@ -261,6 +266,13 @@ static osalStream osal_mbedtls_open(
             goto getout;
         }
 
+        ret = mbedtls_net_set_nonblock(&so->fd);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_net_set_nonblock failed ", ret);
+            goto getout;
+        }
+
         /* Initialize TLS related structures.
          */
 
@@ -287,12 +299,14 @@ static osalStream osal_mbedtls_open(
             goto getout;
         }
 
+        /* We cannot set host name for security validation, because
+         * we often connect by IP address
         ret = mbedtls_ssl_set_hostname(&so->ssl, host);
         if (ret)
         {
             osal_debug_error_int("mbedtls_ssl_set_hostname returned ", ret);
             goto getout;
-        }
+        } */
 
         mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, NULL );
 
@@ -305,7 +319,9 @@ static osalStream osal_mbedtls_open(
                 osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
                 goto getout;
             }
+            so->peer_connected = OS_TRUE;
         }
+        so->peer_connected = OS_TRUE;
 
         /* 5. Verify the server certificate
          */
@@ -370,7 +386,10 @@ static void osal_mbedtls_close(
     so = (osalTlsSocket*)stream;
     osal_debug_assert(so->hdr.iface == &osal_tls_iface);
 
-    mbedtls_ssl_close_notify(&so->ssl);
+    if (so->peer_connected)
+    {
+        mbedtls_ssl_close_notify(&so->ssl);
+    }
 
     mbedtls_net_free(&so->fd);
     mbedtls_ssl_free(&so->ssl);
@@ -460,15 +479,22 @@ static osalStream osal_mbedtls_accept(
     }
     os_memclear(newso, sizeof(osalTlsSocket));
 
-
     /* Save socket stucture pointer, open flags and interface pointer.
      */
     t = osal_global->tls;
     newso->open_flags = flags;
     newso->hdr.iface = &osal_tls_iface;
     newso->fd = client_fd;
+    newso->peer_connected = OS_TRUE;
     mbedtls_ssl_init(&newso->ssl);
     mbedtls_ssl_config_init(&newso->conf);
+
+    ret = mbedtls_net_set_nonblock(&newso->fd);
+    if (ret)
+    {
+        osal_debug_error_int("mbedtls_net_set_nonblock failed C ", ret);
+        goto getout;
+    }
 
     ret = mbedtls_ssl_config_defaults(&newso->conf, MBEDTLS_SSL_IS_SERVER,
         MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
@@ -556,8 +582,8 @@ static osalStatus osal_mbedtls_flush(
     osalStream stream,
     os_int flags)
 {
-    os_memsz n_written;
-    return osal_mbedtls_write(stream, "", 0, &n_written, 0);
+    // os_memsz n_written;
+    // return osal_mbedtls_write(stream, "", 0, &n_written, 0);
     return OSAL_SUCCESS;
 
 #if 0
@@ -650,6 +676,13 @@ static osalStatus osal_mbedtls_write(
     {
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
+            if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
+            {
+                so->peer_connected = OS_FALSE;
+                osal_trace2("mbedtls_ssl_write peer closed");
+                return OSAL_STATUS_STREAM_CLOSED;
+            }
+
             osal_trace_int("mbedtls_ssl_write failed", ret);
             return OSAL_STATUS_FAILED;
         }
@@ -702,9 +735,15 @@ static osalStatus osal_mbedtls_read(
     {
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
-            osal_trace_int("mbedtls_ssl_read failed", ret);
-            return (ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
-                ? OSAL_STATUS_STREAM_CLOSED : OSAL_STATUS_FAILED;
+            if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
+            {
+                so->peer_connected = OS_FALSE;
+                osal_trace2("mbedtls_ssl_read peer closed");
+                return OSAL_STATUS_STREAM_CLOSED;
+            }
+
+            osal_trace2_int("mbedtls_ssl_read failed", ret);
+            return OSAL_STATUS_FAILED;
         }
         ret = 0;
     }
