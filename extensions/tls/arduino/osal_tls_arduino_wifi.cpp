@@ -286,8 +286,9 @@ osalStream osal_tls_open(
     osalStatus *status,
     os_int flags)
 {
-    os_int port_nr;
+    os_int port_nr, i;
     os_char host[OSAL_HOST_BUF_SZ];
+    os_char addr[16], nbuf[OSAL_NBUF_SZ];
     os_boolean is_ipv6;
     osalSocket *w;
     osalStatus rval = OSAL_STATUS_FAILED;
@@ -312,8 +313,16 @@ osalStream osal_tls_open(
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
      */
-    osal_socket_get_ip_and_port(parameters,
-        &port_nr, host, sizeof(host), &is_ipv6, flags, IOC_DEFAULT_TLS_PORT);
+    osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
+        &port_nr, &is_ipv6, flags, IOC_DEFAULT_TLS_PORT);
+
+    host[0] = '\0';
+    for (i = 0; i<4; i++)
+    {
+        if (i) os_strncat(host, ".", OSAL_IPADDR_SZ);
+        osal_int_to_str(nbuf, sizeof(nbuf), addr[i]);
+        os_strncat(host, nbuf, OSAL_IPADDR_SZ);
+    }
 
     /* Get first unused osal_tls structure.
      */

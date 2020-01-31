@@ -266,16 +266,12 @@
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_TLS_SUPPORT
-#define OSAL_TLS_SUPPORT OSAL_TLS_ARDUINO_WRAPPER
+#define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
 #endif
 
-/** If OpenSSL functionality is available (separate from TLS wrapper selection,
-    OpenSSL functions can be used for other purposes outside the TLS wrapper,
-    like SHA-256 hashes, random number, etc).
+/** OpenSSL cannot be used with Arduino.
  */
-#ifndef OSAL_OPENSSL_SUPPORT
 #define OSAL_OPENSSL_SUPPORT 0
-#endif
 
 /** If MBed TLS functionality is available. (similarly to OSAL_OPENSSL_SUPPORT,
     the MBed TLS functions can be used outside the TLS wrapper).
