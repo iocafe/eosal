@@ -60,8 +60,7 @@
 #include "mbedtls/certs.h"
 
 
-/** Mbed TLS specific socket data structure. OSAL functions cast their own stream structure
-    pointers to osalStream pointers.
+/** Mbed TLS specific global data related to TLS.
  */
 typedef struct osalTLS
 {

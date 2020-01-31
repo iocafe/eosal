@@ -29,6 +29,17 @@
 #include <openssl/pem.h>
 #include <openssl/ssl.h>
 
+
+/** OpenSSL TLS specific global data related to TLS.
+ */
+typedef struct osalTLS
+{
+    /** Global SSL context.
+     */
+    SSL_CTX *ctx;
+}
+osalTLS;
+
 /** This enum contols whether the SSL connection needs to initiate the SSL handshake.
  */
 typedef enum osalSSLMode
@@ -48,17 +59,10 @@ typedef enum osalSSLStatus
 }
 osalSSLStatus;
 
-/* Global SSL context.
- */
-static SSL_CTX *ctx;
 
 #define OSAL_SSL_DEFAULT_BUF_SIZE 512
-
 #define OSAL_ENCRYPT_BUFFER_SZ 256
-
-
 #define OSAL_READ_BUF_SZ 512
-
 
 /** OpenSSL specific socket data structure. OSAL functions cast their own stream structure
     pointers to osalStream pointers.
@@ -107,11 +111,6 @@ typedef struct osalSSLSocket
     os_int read_buf_n;
 }
 osalSSLSocket;
-
-
-/** Socket library initialized flag.
- */
-os_boolean osal_tls_initialized = OS_FALSE;
 
 
 /* Prototypes for forward referred static functions.
@@ -213,7 +212,7 @@ static osalStream osal_openssl_open(
 
     /* If not initialized.
      */
-    if (!osal_tls_initialized)
+    if (osal_global->tls == OS_NULL)
     {
         if (status) *status = OSAL_STATUS_FAILED;
         return OS_NULL;
@@ -385,7 +384,8 @@ static osalStream osal_openssl_accept(
         remote_ip_addr_sz, status, flags);
     if (newtcpsocket == OS_NULL)
     {
-        if (status) *status = OSAL_SUCCESS;
+        /* Status is already set by osal_socket_accept()
+         */
         return OS_NULL;
     }
 
@@ -838,12 +838,15 @@ void osal_tls_initialize(
     os_int n_nics,
     osalSecurityConfig *prm)
 {
-    osal_socket_initialize(nic, n_nics);
-    osal_openssl_init(prm);
+    if (osal_global->tls) return;
 
-    /* Set socket library initialized flag.
-     */
-    osal_tls_initialized = OS_TRUE;
+    osal_socket_initialize(nic, n_nics);
+
+    osal_global->tls = (osalTLS*)os_malloc(sizeof(osalTLS), OS_NULL);
+    if (osal_global->tls == OS_NULL) return;
+    os_memclear(osal_global->tls, sizeof(osalTLS));
+
+    osal_openssl_init(prm);
 }
 
 
@@ -862,12 +865,14 @@ void osal_tls_initialize(
 void osal_tls_shutdown(
 	void)
 {
-    if (osal_tls_initialized)
-    {
-        osal_openssl_cleanup();
-        osal_tls_initialized = OS_FALSE;
-        osal_socket_shutdown();
-    }
+    if (osal_global->tls == OS_NULL) return;
+
+    osal_openssl_cleanup();
+
+    os_free(osal_global->tls, sizeof(osalTLS));
+    osal_global->tls = OS_NULL;
+
+    osal_socket_shutdown();
 }
 
 
@@ -886,6 +891,7 @@ void osal_tls_shutdown(
 static void osal_openssl_init(
     osalSecurityConfig *prm)
 {
+    SSL_CTX *ctx;
     const os_char *certs_dir;
     os_char path[128];
 
@@ -902,6 +908,7 @@ static void osal_openssl_init(
     /* Create the SSL server context.
      */
     ctx = SSL_CTX_new(SSLv23_method());
+    osal_global->tls->ctx = ctx;
     if (ctx == 0)
     {
         osal_debug_error("SSL_CTX_new()");
@@ -1010,16 +1017,13 @@ static void osal_openssl_cleanup(void)
 */
 static osalStatus osal_openssl_client_init(
     osalSSLSocket *sslsocket,
-//    int fd,
     osalSSLMode mode)
 {
     osalStatus s = OSAL_SUCCESS;
 
-    // sslsocket->fd = fd;
-
     sslsocket->rbio = BIO_new(BIO_s_mem());
     sslsocket->wbio = BIO_new(BIO_s_mem());
-    sslsocket->ssl = SSL_new(ctx);
+    sslsocket->ssl = SSL_new(osal_global->tls->ctx);
 
     if (mode == OSAL_SSLMODE_SERVER)
     {

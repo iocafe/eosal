@@ -139,7 +139,7 @@ typedef struct
 	osalConsoleState constate;
 #endif
 
-#if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
+#if OSAL_TLS_SUPPORT
     struct osalTLS *tls;
 #endif
 
