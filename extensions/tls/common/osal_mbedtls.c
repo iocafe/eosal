@@ -206,6 +206,14 @@ static osalStream osal_mbedtls_open(
         return OS_NULL;
     }
 
+    /* If WiFi network is not connected, we can do nothing.
+     */
+    if (osal_is_wifi_initialized())
+    {
+        if (status) *status = OSAL_STATUS_PENDING;
+        return OS_NULL;
+    }
+
     /* Separate port number and host name. Use TLS default port if unspecified.
      */
     os_strncpy(hostbuf, parameters, sizeof(hostbuf));
