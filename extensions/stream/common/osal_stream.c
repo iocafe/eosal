@@ -487,5 +487,7 @@ osalStatus osal_stream_default_select(
     os_int timeout_ms,
 	os_int flags)
 {
-	return OSAL_STATUS_FAILED;
+    /* Return value OSAL_STATUS_NULL_FUNC indicates that select is not implemented.
+     */
+    return OSAL_STATUS_NULL_FUNC;
 }
