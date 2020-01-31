@@ -171,7 +171,6 @@ static void osal_mbedtls_cleanup(void);
             linux, or TCP_NODELAY toggling on windows. If this flag is set, osal_mbedtls_flush()
             must be called to actually transfer data.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
-          - OSAL_STREAM_BLOCKING: Open socket in blocking mode.
 
 		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 

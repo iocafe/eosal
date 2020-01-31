@@ -130,10 +130,6 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_NO_REUSEADDR 0x2000
 
-/** Open socket in blocking mode.
- */
-#define OSAL_STREAM_BLOCKING 0x4000
-
 /** We access write position (seek), not read position.
  */
 #define OSAL_STREAM_SEEK_WRITE_POS 0x8000

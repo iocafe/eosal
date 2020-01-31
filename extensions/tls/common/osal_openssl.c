@@ -191,7 +191,6 @@ static int osal_openssl_verify_callback(
             linux, or TCP_NODELAY toggling on windows. If this flag is set, osal_openssl_flush()
             must be called to actually transfer data.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
-          - OSAL_STREAM_BLOCKING: Open socket in blocking mode.
 
 		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
@@ -571,8 +570,7 @@ static osalStatus osal_openssl_write(
          */
         *n_written += n_now;
         n -= n_now;
-        if ((flags & OSAL_STREAM_BLOCKING) == 0 &&
-            sslsocket->encrypt_len < OSAL_ENCRYPT_BUFFER_SZ) break;
+        if (sslsocket->encrypt_len < OSAL_ENCRYPT_BUFFER_SZ) break;
         buf += n_now;
 
         /* Try to encrypt and send some to make space in buffer.

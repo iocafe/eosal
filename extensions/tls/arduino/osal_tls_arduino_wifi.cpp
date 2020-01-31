@@ -273,7 +273,6 @@ static osalSocket *osal_get_unused_socket(void);
           - OSAL_STREAM_SELECT: Open socket with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
-          - OSAL_STREAM_BLOCKING: Open socket in blocking mode.
 
           See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 

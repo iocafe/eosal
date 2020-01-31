@@ -130,7 +130,6 @@ static void osal_socket_set_cork(
             linux, or TCP_NODELAY toggling on windows. If this flag is set, osal_socket_flush()
             must be called to actually transfer data.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
-          - OSAL_STREAM_BLOCKING: Open socket in blocking mode.
 
 		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
@@ -218,10 +217,7 @@ osalStream osal_socket_open(
 
 	/* Set non blocking mode.
 	 */
-    if ((flags & OSAL_STREAM_BLOCKING) == 0)
-    {
-        osal_socket_blocking_mode(handle, OS_FALSE);
-    }
+    osal_socket_blocking_mode(handle, OS_FALSE);
 
 	/* Allocate and clear socket structure.
 	 */
@@ -473,10 +469,7 @@ osalStream osal_socket_accept(
 
 	    /* Set non blocking mode.
 	     */
-        if ((flags & OSAL_STREAM_BLOCKING) == 0)
-        {
-            osal_socket_blocking_mode(new_handle, OS_FALSE);
-        }
+        osal_socket_blocking_mode(new_handle, OS_FALSE);
 
         /* If we work without Nagel.
          */

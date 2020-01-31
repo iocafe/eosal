@@ -133,7 +133,6 @@ static void osal_socket_setup_ring_buffer(
             linux, or TCP_NODELAY toggling on windows. If this flag is set, osal_socket_flush()
             must be called to actually transfer data.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
-          - OSAL_STREAM_BLOCKING: Open socket in blocking mode.
 
 		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
@@ -270,10 +269,7 @@ osalStream osal_socket_open(
 
 	/* Set non blocking mode.
 	 */
-    if ((flags & OSAL_STREAM_BLOCKING) == 0)
-    {
-    	ioctlsocket(handle, FIONBIO, &on);
-    }
+  	ioctlsocket(handle, FIONBIO, &on);
 
 	/* Allocate and clear socket structure.
 	 */
@@ -571,13 +567,10 @@ osalStream osal_socket_accept(
 
 	    /* Set non blocking mode.
 	     */
-        if ((flags & OSAL_STREAM_BLOCKING) == 0)
+        if (ioctlsocket(new_handle, FIONBIO, &on) == SOCKET_ERROR)
         {
-    	    if (ioctlsocket(new_handle, FIONBIO, &on) == SOCKET_ERROR)
-            {
-		        rval = OSAL_STATUS_FAILED;
-		        goto getout;
-            }
+            rval = OSAL_STATUS_FAILED;
+            goto getout;
         }
 
 		/* Allocate and clear socket structure.
