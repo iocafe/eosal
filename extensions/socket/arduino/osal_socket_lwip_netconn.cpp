@@ -834,7 +834,7 @@ static void osal_socket_lwip_thread(
     while (OS_TRUE)
     {
         osal_event_wait(osal_lwip.trig_lwip_thread_event, OSAL_EVENT_INFINITE);
-        osal_is_wifi_initialized();
+        osal_are_sockets_initialized();
 
         for (i = 0; i < OSAL_MAX_SOCKETS; i++)
         {
@@ -1520,7 +1520,7 @@ void osal_socket_initialize_2(void)
 ****************************************************************************************************
 
   @brief Check if WiFi network is connected.
-  @anchor osal_is_wifi_initialized
+  @anchor osal_are_sockets_initialized
 
   Called to check if WiFi initialization has been completed and if so, the function initializes
   has been initialized and connected. Once connection is detected,
@@ -1532,7 +1532,7 @@ void osal_socket_initialize_2(void)
 
 ****************************************************************************************************
 */
-osalStatus osal_is_wifi_initialized(
+osalStatus osal_are_sockets_initialized(
     void)
 {
     if (!osal_sockets_initialized) return OS_FALSE;

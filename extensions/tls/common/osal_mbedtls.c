@@ -208,7 +208,7 @@ static osalStream osal_mbedtls_open(
 
     /* If WiFi network is not connected, we can do nothing.
      */
-    if (osal_is_wifi_initialized())
+    if (osal_are_sockets_initialized())
     {
         if (status) *status = OSAL_STATUS_PENDING;
         return OS_NULL;

@@ -244,6 +244,12 @@ void osal_socket_initialize(
  */
 void osal_socket_shutdown(void);
 
+/* Are sockets initialized (most important with wifi, call always when opening the
+   socket to maintain wifi state).
+ */
+osalStatus osal_are_sockets_initialized(
+    void);
+
 /* Keep the sockets library alive.
  */
 #if OSAL_SOCKET_MAINTAIN_NEEDED
@@ -271,11 +277,6 @@ void osal_socket_embed_default_port(
     os_char *buf,
     os_memsz buf_sz,
     os_int default_port_nr);
-
-/* For Arduino. Called repeatedly to maintain wifi state.
- */
-osalStatus osal_is_wifi_initialized(
-    void);
 
 /*@}*/
 

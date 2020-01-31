@@ -297,7 +297,7 @@ osalStream osal_socket_open(
 
     /* If not initialized or wifi is pending.
      */
-    wifi_status = osal_is_wifi_initialized();
+    wifi_status = osal_are_sockets_initialized();
     if (wifi_status == OSAL_STATUS_FAILED)
     {
         rval = wifi_status;
@@ -523,7 +523,7 @@ osalStatus osal_socket_check(
     osalStatus  s;
     os_int  ix;
 
-    s = osal_is_wifi_initialized();
+    s = osal_are_sockets_initialized();
     if (s != OSAL_SUCCESS) return s;
 
     ix = mysocket->index;
@@ -1287,7 +1287,7 @@ void osal_socket_initialize(
   @anchor osal_socket_start_wifi_init
 
   The osal_socket_start_wifi_init() function starts wifi initialization. The
-  initialization is continued by repeatedly called osal_is_wifi_initialized() function.
+  initialization is continued by repeatedly called osal_are_sockets_initialized() function.
 
   @return  None.
 
@@ -1308,7 +1308,7 @@ static void osal_socket_start_wifi_init(void)
 
     /* Call wifi init once to move once to start it.
      */
-    osal_is_wifi_initialized();
+    osal_are_sockets_initialized();
 }
 
 
@@ -1316,7 +1316,7 @@ static void osal_socket_start_wifi_init(void)
 ****************************************************************************************************
 
   @brief Check if WiFi network is connected.
-  @anchor osal_is_wifi_initialized
+  @anchor osal_are_sockets_initialized
 
   Called to check if WiFi initialization has been completed and if so, the function initializes
   has been initialized and connected. Once connection is detected,
@@ -1330,7 +1330,7 @@ static void osal_socket_start_wifi_init(void)
 
 ****************************************************************************************************
 */
-osalStatus osal_is_wifi_initialized(
+osalStatus osal_are_sockets_initialized(
     void)
 {
     osalStatus s;

@@ -200,7 +200,7 @@ osalStream osal_socket_esp_open(
 
     /* If WiFi network is not connected, we can do nothing.
      */
-    if (!osal_is_wifi_initialized())
+    if (!osal_are_sockets_initialized())
     {
         rval = OSAL_STATUS_PENDING;
         goto getout;
@@ -1071,16 +1071,16 @@ void osal_socket_initialize(
 ****************************************************************************************************
 
   @brief Check if WiFi network is connected.
-  @anchor osal_is_wifi_initialized
+  @anchor osal_are_sockets_initialized
 
-  The osal_is_wifi_initialized() function is used when opening or staring to listen for incoming
+  The osal_are_sockets_initialized() function is used when opening or staring to listen for incoming
   connections to make sure that WiFi network is connected.
 
   @return  OS_TRUE if we are connected to WiFi network, or OS_FALSE otherwise.
 
 ****************************************************************************************************
 */
-os_boolean osal_is_wifi_initialized(
+os_boolean osal_are_sockets_initialized(
     void)
 {
     if (!osal_sockets_initialized) return OS_FALSE;

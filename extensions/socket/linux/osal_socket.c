@@ -1084,6 +1084,16 @@ void osal_socket_shutdown(
 {
 }
 
+/* Are sockets initialized (most important with wifi, call always when opening the
+   socket to maintain wifi state).
+ */
+osalStatus osal_are_sockets_initialized(
+    void)
+{
+    return OSAL_SUCCESS;
+}
+
+
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
 

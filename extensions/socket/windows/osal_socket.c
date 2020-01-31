@@ -1318,6 +1318,16 @@ void osal_socket_shutdown(
     osal_global->sockets_shutdown_func = OS_NULL;
 }
 
+/* Are sockets initialized (most important with wifi, call always when opening the
+   socket to maintain wifi state).
+ */
+osalStatus osal_are_sockets_initialized(
+    void)
+{
+    return osal_global->sockets_shutdown_func ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
+}
+
+
 /**
 ****************************************************************************************************
 

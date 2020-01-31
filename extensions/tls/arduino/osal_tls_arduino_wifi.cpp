@@ -303,7 +303,7 @@ osalStream osal_tls_open(
 
     /* If WiFi network is not connected, we can do nothing.
      */
-    rval = osal_is_wifi_initialized();
+    rval = osal_are_sockets_initialized();
     if (rval) {
         rval = OSAL_STATUS_PENDING;
         goto getout;
