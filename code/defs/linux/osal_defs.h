@@ -42,7 +42,7 @@
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 2
+#define OSAL_TRACE 3
 #endif
 
 /** Define 1 is this is micro-controller environment. This is used to get sensible default
@@ -222,7 +222,7 @@
 /** Select TLS wrapper implementation to use.
  */
 #ifndef OSAL_TLS_SUPPORT
-#define OSAL_TLS_SUPPORT OSAL_TLS_OPENSSL_WRAPPER
+#define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
 #endif
 
 /** If OpenSSL functionality is available (separate from TLS wrapper selection,

@@ -242,33 +242,13 @@ static osalStream osal_mbedtls_open(
             osal_debug_error_int("mbedtls_net_bind failed ", ret);
             goto getout;
         }
-#if 0
-        ret = mbedtls_ssl_config_defaults(&so->conf, MBEDTLS_SSL_IS_SERVER,
-            MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
+
+        ret = mbedtls_net_set_nonblock(&so->fd);
         if (ret)
         {
-            osal_debug_error_int("mbedtls_ssl_config_defaults failed ", ret);
+            osal_debug_error_int("mbedtls_net_set_nonblock failed ", ret);
             goto getout;
         }
-
-        mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
-        mbedtls_ssl_conf_dbg(&so->conf, my_debug, stdout);
-
-        mbedtls_ssl_conf_ca_chain(&so->conf, t->srvcert.next, NULL);
-        ret = mbedtls_ssl_conf_own_cert(&so->conf, &t->srvcert, &t->pkey);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_ssl_conf_own_cert failed ", ret);
-            goto getout;
-        }
-
-        ret = mbedtls_ssl_setup(&so->ssl, &so->conf);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_ssl_setup failed ", ret);
-            goto getout;
-        }
-#endif
     }
 
     /* Connect socket.
@@ -459,9 +439,15 @@ static osalStream osal_mbedtls_accept(
     ret = mbedtls_net_accept( &so->fd, &client_fd, NULL, 0, NULL);
     if (ret)
     {
-        osal_debug_error_int("mbedtls_net_accept failed ", ret);
-        if (status) *status = OSAL_SUCCESS;
-        return OS_NULL;
+        s = OSAL_STATUS_NO_NEW_CONNECTION;
+        if (ret != MBEDTLS_ERR_SSL_WANT_READ &&
+            ret != MBEDTLS_ERR_SSL_WANT_WRITE)
+        {
+            osal_debug_error_int("mbedtls_net_accept failed ", ret);
+            s = OSAL_STATUS_FAILED;
+        }
+
+        goto optout;
     }
 
     /* Allocate and clear socket structure.
@@ -517,7 +503,8 @@ static osalStream osal_mbedtls_accept(
      */
     while((ret = mbedtls_ssl_handshake(&newso->ssl)) != 0)
     {
-        if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
+        if(ret != MBEDTLS_ERR_SSL_WANT_READ &&
+           ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
             osal_debug_error_int("mbedtls_ssl_handshake failed ", ret);
             goto getout;
@@ -538,6 +525,7 @@ getout:
     mbedtls_ssl_config_free(&newso->conf);
     os_free(newso, sizeof(osalTlsSocket));
 */
+optout:
 	/* Set status code and return NULL pointer.
 	 */
     if (status) *status = s;
