@@ -290,8 +290,9 @@ osalStream osal_socket_open(
 	osalStatus *status,
 	os_int flags)
 {
-    os_short mysocket_ix, ix;
+    os_short mysocket_ix, ix, i;
     osalSocket *mysocket;
+    os_char addr[16], nbuf[OSAL_NBUF_SZ];
     osalStatus rval = OSAL_STATUS_FAILED, wifi_status;
 
     /* If not initialized or wifi is pending.
@@ -322,9 +323,16 @@ osalStream osal_socket_open(
        The host buffer must be released by calling os_free() function,
        unless if host is OS_NULL (unpecified).
      */
-    osal_socket_get_ip_and_port(parameters,
-        &mysocket->port_nr, mysocket->host, OSAL_IPADDR_SZ, &mysocket->is_ipv6,
+    osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
+        &mysocket->port_nr, &mysocket->is_ipv6,
         flags, IOC_DEFAULT_SOCKET_PORT);
+
+    for (i = 0; i<4; i++)
+    {
+        if (i) os_strncat(mysocket->host, ".", OSAL_IPADDR_SZ);
+        osal_int_to_str(nbuf, sizeof(nbuf), addr[i]);
+        os_strncat(mysocket->host, nbuf, OSAL_IPADDR_SZ);
+    }
 
     /* *** If UDP socket ***
      */
