@@ -19,64 +19,6 @@
 /**
 ****************************************************************************************************
 
-  @brief Convert string to list of numbers.
-  @anchor osal_str_to_bin
-
-  The osal_str_to_bin() converts string representation of MAC or IP address to binary.
-
-  @param   x Pointer to array into which to store the parsed numbers in order.
-           This is ushort type to allow IP v6 addresses.
-  @param   n Size of x in bytes. 4 or 6 bytes.
-  @param   str Input: MAC or IP address as string.
-  @param   c Separator character: typically '.' for IP or '-' for MAC.
-  @param   b Base: 10 for decimal numbers (IP address) or 16 for hexadecimal numbers (MAC).
-  @return  How many numbers were successfully parsed.
-
-****************************************************************************************************
-*/
-os_int osal_str_to_bin(
-    os_ushort *x,
-    os_short n,
-    const os_char* str,
-    os_char c,
-    os_short b)
-{
-    os_long v;
-    os_memsz bytes;
-    os_int count;
-
-    count = 0;
-
-    while (OS_TRUE)
-    {
-        if (b == 16)
-        {
-            v = osal_hex_str_to_int(str, &bytes);
-        }
-        else
-        {
-            v = osal_str_to_int(str, &bytes);
-        }
-
-        if (bytes)
-        {
-            x[count++] = (os_ushort)v;
-        }
-
-        if (--n <= 0 || !bytes) break;
-
-        str = os_strchr((os_char*)str, c);
-        if (str == OS_NULL) break;
-        ++str;
-    }
-
-    return count;
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Convert string to binary IP address.
   @anchor osal_ip_from_str
 
@@ -137,44 +79,5 @@ osalStatus osal_ip_from_str(
     osal_debug_error("IP string error");
     return OSAL_STATUS_FAILED;
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary MAC address.
-  @anchor osal_mac_from_str
-
-  The osal_mac_from_str() converts string representation of MAC address to binary.
-  If the function fails, binary MAC is left unchanged.
-
-  @param   mac Pointer to byte array into which to store the MAC, 6 bytes.
-  @param   str Input, MAC address as string.
-  @return  OSAL_SUCCESS if successfull, other return values indicate that the MAC address
-           string count not be interprented.
-
-****************************************************************************************************
-*/
-osalStatus osal_mac_from_str(
-    os_uchar mac[6],
-    const char* str)
-{
-    os_ushort buf[6];
-    os_int count, i;
-
-    count = osal_str_to_bin(buf, 6, str, '-', 16);
-    if (count == 6)
-    {
-        for (i = 0; i < 6; i++)
-        {
-            *(mac++) = (os_uchar)buf[i];
-        }
-        return OSAL_SUCCESS;
-    }
-
-    osal_debug_error("MAC string error");
-    return OSAL_STATUS_FAILED;
-}
-
 
 #endif

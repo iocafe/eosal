@@ -507,7 +507,6 @@ osalStream osal_socket_accept(
 		newsocket->hdr.iface = &osal_socket_iface;
 	#endif
 
-
 		/* Success set status code and cast socket structure pointer to stream pointer 
 		   and return it.
 		 */

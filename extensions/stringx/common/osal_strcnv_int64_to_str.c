@@ -16,7 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_STRCONV_SUPPORT
+#if OSAL_STRINGX_SUPPORT
 
 /* This code is needed only if os_long is not 64 bits.
  */

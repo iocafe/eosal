@@ -22,6 +22,11 @@
 #define OSAL_STR_NEXT_ITEM 0
 #define OSAL_STR_NEXT_LINE 1
 
+/* Flags for osal_double_to_str() function.
+ */
+#define OSAL_FLOAT_DEFAULT 0
+#define OSAL_FLOAT_E_FORMAT 1
+
 
 /** 
 ****************************************************************************************************
@@ -34,6 +39,42 @@
 ****************************************************************************************************
  */
 /*@{*/
+
+/* Convert floating point number to string.
+ */
+os_memsz osal_double_to_str(
+    os_char *buf,
+    os_memsz buf_sz,
+    os_double x,
+    os_int ddigs,
+    os_int flags);
+
+/* Convert string to floating point number.
+ */
+os_double osal_str_to_double(
+    const os_char *str,
+    os_memsz *count);
+
+/* #define osal_int64_to_str(b,s,x) osal_int_to_str((b),(s),*(x)) */
+
+/* Convert a string to 64 bit integer.
+ */
+os_memsz osal_str_to_int64(
+    os_int64 *x,
+    os_char *str);
+
+/* Convert 64 bit integer to string. If operating system supports 64 bit integers as
+   os_long type, we just use macro to map this to osal_int_to_str() function.
+   If operating system has no 64 bit support, the function implementation is used.
+ */
+#if OSAL_LONG_IS_64_BITS
+    #define osal_int64_to_str(b,s,x) osal_int_to_str((b),(s),*(x))
+#else
+    os_memsz osal_int64_to_str(
+        os_char *buf,
+        os_memsz buf_sz,
+        os_int64 *x);
+#endif
 
 /* Find a value of specified list item.
  */
@@ -79,7 +120,7 @@ os_long osal_hex_str_to_int(
 
 /* Convert string to list of numbers.
  */
-os_int osal_str_to_list(
+os_int osal_str_to_bin(
     os_ushort *x,
     os_short n,
     const os_char *str,
@@ -92,6 +133,14 @@ osalStatus osal_ip_from_str(
     os_uchar *ip,
     os_memsz ip_sz,
     const os_char *str);
+
+/* Convert binary IP address to string.
+ */
+void osal_ip_to_str(
+    os_char *str,
+    os_memsz str_sz,
+    const os_uchar *ip,
+    os_memsz ip_sz);
 
 /* Convert string to binary MAC address.
  */

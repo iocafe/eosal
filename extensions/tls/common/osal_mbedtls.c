@@ -451,7 +451,9 @@ static osalStream osal_mbedtls_accept(
     osalTlsSocket *so, *newso = OS_NULL;
     osalStatus s = OSAL_STATUS_FAILED;
     mbedtls_net_context client_fd;
+    size_t addr_sz;
     osalTLS *t;
+    os_uchar addr[16];
     int ret;
 
     /* If called with NULL argument, do nothing.
@@ -467,7 +469,7 @@ static osalStream osal_mbedtls_accept(
 
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
-    ret = mbedtls_net_accept( &so->fd, &client_fd, NULL, 0, NULL);
+    ret = mbedtls_net_accept( &so->fd, &client_fd, addr, sizeof(addr), &addr_sz);
     if (ret)
     {
         s = OSAL_STATUS_NO_NEW_CONNECTION;
@@ -479,6 +481,13 @@ static osalStream osal_mbedtls_accept(
         }
 
         goto optout;
+    }
+
+    /* Convert remote IP address to string.
+     */
+    if (remote_ip_addr)
+    {
+        osal_ip_to_str(remote_ip_addr, remote_ip_addr_sz, addr, addr_sz);
     }
 
     /* Allocate and clear socket structure.

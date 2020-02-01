@@ -17,6 +17,12 @@
 ****************************************************************************************************
 */
 
+/** Security and testing is difficult with security on, define to turn much of it off.
+ */
+#ifndef EOSAL_RELAX_SECURITY
+  #define EOSAL_RELAX_SECURITY 0
+#endif
+
 /** Null pointer.
  */
 #ifndef OS_NULL

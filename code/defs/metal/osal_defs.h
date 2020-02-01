@@ -355,13 +355,6 @@
 #define OSAL_RAND_SUPPORT OSAL_RAND_PLATFORM
 #endif
 
-/** OSAL extensions: If string to integer or float conversions are supported
-    for the platform, define 1.
- */
-#ifndef OSAL_STRCONV_SUPPORT
-#define OSAL_STRCONV_SUPPORT 1
-#endif
-
 /** OSAL extensions: If extended string functions are supported
     for the platform, define 1.
  */

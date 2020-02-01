@@ -45,7 +45,7 @@
  */
 typedef struct
 {
-    /** Path where to save persistent data during PC simulation.
+    /** Path where to save persistent data when using file system as storage.
      */
     const os_char *path;
 
@@ -55,7 +55,7 @@ typedef struct
      */
     const os_char *device_name;
 
-    /** If set (nonzero) sets minimum required EEPROM size.
+    /** If set (nonzero) sets minimum required EEPROM size. This is Arduino specific.
      */
     os_memsz min_eeprom_sz;
 }
@@ -108,7 +108,8 @@ typedef enum
 }
 osPersistentBlockNr;
 
-/* This structure is defined only for pointer type checking, it is never used.
+/** The persistent handle structure defined here is only for pointer type checking,
+    it is never used.
  */
 typedef struct
 {
@@ -169,23 +170,21 @@ void os_persistent_close(
     osPersistentHandle *handle,
     os_int flags);
 
-/* Load parameter structure identified by block number from persistant storage. Load all
-   parameters when micro controller starts, not during normal operation. If data cannot
-   be loaded, leaves the block as is. Returned value maxes at block_sz.
+/* Read data from persisten storage.
  */
 os_memsz os_persistent_read(
     osPersistentHandle *handle,
     os_char *buf,
     os_memsz buf_sz);
 
-/* Write data to persistent storage block.
+/* Write data to persistent storage.
  */
 osalStatus os_persistent_write(
     osPersistentHandle *handle,
     const os_char *buf,
     os_memsz buf_sz);
 
-/* Load or access persistent memory block.
+/* Load or access a persistent memory block.
  */
 osalStatus ioc_load_persistent(
     osPersistentBlockNr block_nr,

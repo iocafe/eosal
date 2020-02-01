@@ -209,12 +209,12 @@ osalStatus osal_mkdir(
   @brief Remove directory.
   @anchor osal_rmdir
 
-  The osal_rmdir() function...
+  The osal_rmdir() function removes a directory. The directory must be empty.
 
   @param  path Path to directory.
   @param  flags Reserved for future, set zero for now.
-  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
-          indicate an error, specifically OSAL_DIR_NOT_EMPTY means that directory is not empty.
+  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values indicate
+          an error, specifically OSAL_DIR_NOT_EMPTY means that directory is not empty.
 
 ****************************************************************************************************
 */
@@ -226,7 +226,7 @@ osalStatus osal_rmdir(
     os_memsz path_sz;
     osalStatus rval = OSAL_SUCCESS;
 
-    /* Convert path and wild card to UTF16.
+    /* Convert path and wildcard to UTF16.
      */
     path_utf16 = osal_str_utf8_to_utf16_malloc(path, &path_sz);
 
@@ -234,7 +234,16 @@ osalStatus osal_rmdir(
      */
     if (!RemoveDirectoryW(path_utf16))
     {
-        rval = OSAL_STATUS_FAILED;
+        switch (GetLastError())
+        {
+            case ERROR_DIR_NOT_EMPTY:
+                rval = OSAL_DIR_NOT_EMPTY;
+                break;
+
+            default:
+                rval = OSAL_STATUS_FAILED;
+                break;
+        }
     }
 
     os_free(path_utf16, path_sz);

@@ -44,11 +44,6 @@ OSAL_C_HEADER_BEGINS
    environments.
  */
 #include "extensions/main/common/osal_main.h"
-
-#if OSAL_STRCONV_SUPPORT
-  #include "extensions/strcnv/common/osal_strcnv.h"
-#endif
-
 #include "extensions/stream/common/osal_stream.h"
 #include "extensions/stream/common/osal_stream_buffer.h"
 

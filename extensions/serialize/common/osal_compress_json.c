@@ -103,6 +103,7 @@ static os_long osal_add_string_to_json_dict(
   @param  skip_tags List of tags to skip (not include in compressed data). For example
           "title,help" to exclude title and help texts from compressed binary JSON.
   @param  flags OSAL_JSON_KEEP_QUIRKS not keep compressed JSON as much as original without
+          simplifying empty values, etc. OSAL_JSON_HASH_PASSWORDS turns on hasing passwords.
            Set 0 for default operation.
   @return OSAL_SUCCESS to indicate success. Other return values indicate an error.
 

@@ -184,6 +184,18 @@ osalStatus os_persistent_get_ptr(
     os_memsz *block_sz,
     os_int flags)
 {
+#if EOSAL_RELAX_SECURITY == 0
+    /* Reading or writing seacred block requires secret flag. When this function
+       is called for data transfer, there is no secure flag and thus secret block
+       cannot be accessed to break security.
+     */
+    if ((block_nr == OS_PBNR_SECRET || block_nr == OS_PBNR_SERVER_KEY) &&
+        (flags & OSAL_PERSISTENT_SECRET) == 0)
+    {
+        return OSAL_STATUS_NOT_AUTOHORIZED;
+    }
+#endif
+
     return OSAL_STATUS_NOT_SUPPORTED;
 }
 
@@ -221,6 +233,7 @@ osPersistentHandle *os_persistent_open(
         return OS_NULL;
     }
 
+#if EOSAL_RELAX_SECURITY == 0
     /* Reading or writing seacred block requires secret flag. When this function
        is called for data transfer, there is no secure flag and thus secret block
        cannot be accessed to break security.
@@ -230,6 +243,7 @@ osPersistentHandle *os_persistent_open(
     {
         return OS_NULL;
     }
+#endif
 
     block = hdr.blk + block_nr;
     block->flags = flags;
