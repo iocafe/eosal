@@ -108,7 +108,7 @@ os_memsz osal_double_to_str(
 	 */
 	if ((flags & OSAL_FLOAT_E_FORMAT) == 0 && c<0)
 	{
-		if (s + (1-c) > e) goto getout;
+		if (s + (1 - c) > e) goto getout;
 
 		*s++ = '0'; 
 		*s++ = '.';

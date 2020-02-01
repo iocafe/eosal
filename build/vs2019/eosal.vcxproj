@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\code\utf32\common\osal_char_utf32_to_utf8.c" />
     <ClCompile Include="..\..\code\utf32\common\osal_char_utf8_to_utf32.c" />
     <ClCompile Include="..\..\extensions\checksum\common\osal_checksum.c" />
+    <ClCompile Include="..\..\extensions\dns\windows\osal_dns.c" />
     <ClCompile Include="..\..\extensions\filesys\common\osal_fileutil.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_dir.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_file.c" />
@@ -125,14 +126,17 @@
     <ClCompile Include="..\..\extensions\serial\windows\osal_serial.c" />
     <ClCompile Include="..\..\extensions\socket\common\osal_socket_util.c" />
     <ClCompile Include="..\..\extensions\socket\windows\osal_socket.c" />
-    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_float_to_str.c" />
-    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_int64_to_str.c" />
-    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_str_to_float.c" />
-    <ClCompile Include="..\..\extensions\strcnv\common\osal_strcnv_str_to_int64.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream_buffer.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_hex_str_to_int.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_ip_from_str.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_ip_to_str.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_mac_from_str.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_pattern_match.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_float_to_str.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_int64_to_str.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_str_to_float.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_str_to_int64.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_int.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_value.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_next.c" />
@@ -140,6 +144,7 @@
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_int.c" />
     <ClCompile Include="..\..\extensions\time\windows\osal_time.c" />
     <ClCompile Include="..\..\extensions\tls\common\osal_crypto_hash.c" />
+    <ClCompile Include="..\..\extensions\tls\common\osal_mbedtls.c" />
     <ClCompile Include="..\..\extensions\tls\common\osal_openssl.c" />
     <ClCompile Include="..\..\extensions\typeid\common\osal_typeid.c" />
   </ItemGroup>

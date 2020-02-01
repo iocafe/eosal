@@ -102,7 +102,7 @@ os_double osal_str_to_double(
 	 */
 	while (osal_char_isdigit(*p))
 	{
-		number = number * 10. + (*p - '0');
+		number = number * 10.0 + (*p - '0');
 		p++;
 		num_digits++;
 	}
@@ -115,7 +115,7 @@ os_double osal_str_to_double(
 
 		while (osal_char_isdigit(*p))
 		{
-			number = number * 10. + (*p - '0');
+			number = number * 10.0 + (*p - '0');
 			p++;
 			num_digits++;
 			num_decimals++;

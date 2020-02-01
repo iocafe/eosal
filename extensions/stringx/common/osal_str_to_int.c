@@ -90,7 +90,7 @@ os_long osal_str_to_int(
 		c = *p;
 		if (!osal_char_isdigit(c)) break;
 		p++;
-		x = x * 10 + (os_long)(c - '0');
+		x = x * 10 + c - '0';
 	}
 
 	/* If negative, negate.

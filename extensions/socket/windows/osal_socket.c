@@ -23,7 +23,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <winsock2.h>
-#include <Ws2ipdef.h>
+// #include <Ws2ipdef.h>
 #include <Ws2tcpip.h>
 
 /** Windows specific socket data structure. OSAL functions cast their own stream structure
@@ -149,12 +149,13 @@ osalStream osal_socket_open(
 	osalSocket *mysocket = OS_NULL;
     os_memsz sz1 = 0, sz2;
 	os_int port_nr;
-    os_char host[OSAL_HOST_BUF_SZ], nbuf[OSAL_NBUF_SZ];
+    // os_char /* host[OSAL_HOST_BUF_SZ], */ nbuf[OSAL_NBUF_SZ];
     os_ushort *host_utf16 = OS_NULL, *port_utf16;
-    ADDRINFOW *addrinfo = NULL;
+    os_char addr[16];
+    /* ADDRINFOW *addrinfo = NULL;
     ADDRINFOW *ptr = NULL;
-    ADDRINFOW hints;
-	osalStatus rval;
+    ADDRINFOW hints; */
+	osalStatus rval; 
 	SOCKET handle = INVALID_SOCKET;
 	struct sockaddr_in saddr;
     struct sockaddr_in6 saddr6;
@@ -173,38 +174,51 @@ osalStream osal_socket_open(
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
 	 */
-    osal_socket_get_ip_and_port(parameters, &port_nr, host, sizeof(host),
-        &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
+    s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
+        &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
+    if (s)
+    {
+        if (status) *status = s;
+        return OS_NULL;
+    }
+
+    // osal_socket_get_ip_and_port(parameters, &port_nr, host, sizeof(host),
+    //    &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
+
     udp = (flags & OSAL_STREAM_UDP_MULTICAST) ? OS_TRUE : OS_FALSE;
 
     af = is_ipv6 ? AF_INET6 : AF_INET;
-    os_memclear(&hints, sizeof(hints));
+    /* os_memclear(&hints, sizeof(hints));
     hints.ai_family = af;
     hints.ai_socktype = udp ? SOCK_DGRAM : SOCK_STREAM;
-    hints.ai_protocol = udp ? IPPROTO_UDP : IPPROTO_TCP;
+    hints.ai_protocol = udp ? IPPROTO_UDP : IPPROTO_TCP; */
 
     if (is_ipv6)
     {
+        af = AF_INET6;
         os_memclear(&saddr6, sizeof(saddr6));
         os_memcpy(&saddr6.sin6_addr, &in6addr_any, sizeof(in6addr_any));
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
+        memcpy(&saddr6.sin6_addr, &addr, sizeof(in6addr_any));
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
         sa_data = &saddr6.sin6_addr.s6_addr;
     }
     else
     {
+        af = AF_INET;
         os_memclear(&saddr, sizeof(saddr));
         saddr.sin_addr.s_addr = htonl(INADDR_ANY); 
         saddr.sin_family = af;
         saddr.sin_port = htons(port_nr);
+        memcpy(&saddr.sin_addr.s_addr, addr, 4);
         sa = (struct sockaddr *)&saddr;
         sa_sz = sizeof(saddr);
         sa_data = &saddr.sin_addr.s_addr;
     }
     
-    if (host[0] != '\0')
+    /* if (host[0] != '\0')
     {
         host_utf16 = osal_str_utf8_to_utf16_malloc(host, &sz1);
 
@@ -236,19 +250,18 @@ osalStream osal_socket_open(
 
             FreeAddrInfoW(addrinfo);
 
-            /* If no match found
-             */
             if (ptr == NULL)
             {
 			    rval = OSAL_STATUS_FAILED;
 			    goto getout;
             }
 	    }
-    }
+    } */
 
     /* Create socket.
      */
-    handle = socket(af, hints.ai_socktype, hints.ai_protocol);
+    handle = socket(af, udp ? SOCK_DGRAM : SOCK_STREAM,  udp ? IPPROTO_UDP : IPPROTO_TCP);
+    // handle = socket(af, hints.ai_socktype, hints.ai_protocol);
     if (handle == INVALID_SOCKET) 
 	{
 		rval = OSAL_STATUS_FAILED;
