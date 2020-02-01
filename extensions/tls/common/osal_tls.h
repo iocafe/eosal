@@ -67,6 +67,10 @@ typedef struct osalSecurityConfig
      */
     const os_char *server_key_file;
 
+    /** Root certificate.
+     */
+    const os_char *root_cert_file;
+
     /** Client certificate chain file (PEM, bundle)
      */
     const os_char *client_cert_chain_file;

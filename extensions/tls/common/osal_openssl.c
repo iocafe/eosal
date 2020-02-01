@@ -891,7 +891,7 @@ static void osal_openssl_init(
 {
     SSL_CTX *ctx;
     const os_char *certs_dir;
-    os_char path[128];
+    os_char path[OSAL_PATH_SZ];
 
     printf("initialising SSL\n");
 
@@ -928,6 +928,8 @@ static void osal_openssl_init(
     {
         certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/keys-and-certs/";
     }
+
+// root_cert_file ?
 
     /* Load certificate and private key files, and check consistency.
      */

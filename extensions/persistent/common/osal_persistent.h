@@ -87,13 +87,23 @@ typedef enum
     OS_PBNR_SECRET = 5,
     OS_PBNR_SERVER_CERT = 6,
     OS_PBNR_CLIENT_CERT_CHAIN = 7,
-    OS_PBNR_CUST_A = 8,
-    OS_PBNR_CUST_B = 9,
-    OS_PBNR_CUST_C = 10,
-    OS_PBNR_ACCOUNTS_1 = 11,
-    OS_PBNR_ACCOUNTS_2 = 12,
-    OS_PBNR_ACCOUNTS_3 = 13,
-    OS_PBNR_ACCOUNTS_4 = 14,
+    OS_PBNR_ROOT_CERT = 8,
+    OS_PBNR_SYS_RESERVED_A = 9,
+    OS_PBNR_SYS_RESERVED_B = 10,
+    OS_PBNR_CUST_A = 11,
+    OS_PBNR_CUST_B = 12,
+    OS_PBNR_CUST_C = 13,
+    OS_PBNR_CUST_D = 14,
+    OS_PBNR_CUST_E = 15,
+    OS_PBNR_CUST_F = 16,
+    OS_PBNR_CUST_G = 17,
+    OS_PBNR_CUST_H = 18,
+    OS_PBNR_CUST_I = 19,
+    OS_PBNR_CUST_J = 20,
+    OS_PBNR_ACCOUNTS_1 = 21,
+    OS_PBNR_ACCOUNTS_2 = 22,
+    OS_PBNR_ACCOUNTS_3 = 23,
+    OS_PBNR_ACCOUNTS_4 = 24,
     OS_N_PBNR = (OS_PBNR_ACCOUNTS_1 + OS_PB_MAX_NETWORKS)
 }
 osPersistentBlockNr;
@@ -172,7 +182,22 @@ os_memsz os_persistent_read(
  */
 osalStatus os_persistent_write(
     osPersistentHandle *handle,
-    os_char *buf,
+    const os_char *buf,
     os_memsz buf_sz);
+
+/* Load or access persistent memory block.
+ */
+osalStatus ioc_load_persistent(
+    osPersistentBlockNr block_nr,
+    os_char **pblock,
+    os_memsz *pblock_sz);
+
+/* Save persistent block.
+ */
+osalStatus ioc_save_block(
+    osPersistentBlockNr block_nr,
+    const os_char *block,
+    os_memsz block_sz,
+    os_boolean delete_block);
 
 #endif

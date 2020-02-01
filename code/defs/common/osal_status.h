@@ -49,6 +49,10 @@ typedef enum
      */
     OSAL_STATUS_COMPLETED,
 
+    /** General "memory has been allocated" status (not indicating an error).
+     */
+    OSAL_STATUS_MEMORY_ALLOCATED,
+
     /** Indicating that we are dealing with IP v6 address (not indicating an error).
      */
     OSAL_STATUS_IS_IPV6,

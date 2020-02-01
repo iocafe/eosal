@@ -348,15 +348,25 @@ static osalStatus ioc_load_secret(void)
 /**
 ****************************************************************************************************
 
-  @brief Load secret from persistent storage.
+  @brief Save secret to persistent storage.
 
-  The ioc_save_secret function...
+  The ioc_save_secret function writes 256 bit (32 bytes) seacret to persistent block OS_PBNR_SECRET.
+
+  @param   delete_secret OS_TRUE to write a seacret with empty content.
   @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
 
 ****************************************************************************************************
 */
 static osalStatus ioc_save_secret(os_boolean delete_secret)
 {
+    return ioc_save_block(OS_PBNR_SECRET, osal_global->secret_bin,
+        OSAL_SECRET_BIN_SZ, delete_secret);
+
+    /* osPersistentBlockNr block_nr,
+    const os_char *block,
+    os_memsz block_sz,
+    os_boolean delete_block);
+
     osPersistentHandle *h;
     osalStatus s;
 
@@ -372,7 +382,7 @@ static osalStatus ioc_save_secret(os_boolean delete_secret)
         s = os_persistent_write(h, osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
     }
     os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
-    return s;
+    return s; */
 }
 
 #endif

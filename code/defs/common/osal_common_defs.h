@@ -43,6 +43,12 @@ typedef os_char os_boolean;
 #define os_timer os_uint
 #endif
 
+/** Default OS path buffer size in bytes.
+ */
+#ifndef OSAL_PATH_SZ
+#define OSAL_PATH_SZ 128
+#endif
+
 /** C++ compilation: The OSAL_C_HEADER_BEGINS marks beginning of header file text,
     which is to be left undecorated. Undecorated code is used to call C from inside
     C++ code. If compiling a C file, the OSAL_C_HEADER_BEGINS does nothing.

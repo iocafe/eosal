@@ -98,17 +98,11 @@ typedef struct osalTlsSocket
      */
     os_boolean peer_connected;
 
-/* Both client and server
- */
+    /* Both client and server
+     */
     mbedtls_net_context fd;
     mbedtls_ssl_context ssl;
     mbedtls_ssl_config conf;
-
-/* Server
- */
-//    mbedtls_net_context client_fd;
-
-
 }
 osalTlsSocket;
 
@@ -136,6 +130,13 @@ static void my_debug(
 
 static void osal_mbedtls_init(
     osalSecurityConfig *prm);
+
+static void osal_mbedtls_setup_cert_or_key(
+    mbedtls_x509_crt *cert,
+    mbedtls_pk_context *pkey,
+    osPersistentBlockNr default_block_nr,
+    const os_char *certs_dir,
+    const os_char *file_name);
 
 static void osal_mbedtls_cleanup(void);
 
@@ -248,7 +249,8 @@ static osalStream osal_mbedtls_open(
      */
     if (flags & OSAL_STREAM_LISTEN)
     {
-        ret = mbedtls_net_bind(&so->fd, host[0] == '\0' ? NULL : host, nbuf, MBEDTLS_NET_PROTO_TCP );
+        ret = mbedtls_net_bind(&so->fd, host[0] == '\0' ? NULL : host,
+            nbuf, MBEDTLS_NET_PROTO_TCP );
         if (ret)
         {
             osal_debug_error_int("mbedtls_net_bind failed ", ret);
@@ -919,8 +921,9 @@ void osal_tls_shutdown(
 static void osal_mbedtls_init(
     osalSecurityConfig *prm)
 {
-    int ret;
+    const os_char *certs_dir;
     const os_char personalization[] = "we could collect data from IO";
+    int ret;
 
     osalTLS *t;
     t = osal_global->tls;
@@ -934,45 +937,125 @@ static void osal_mbedtls_init(
         osal_debug_error_int("mbedtls_ctr_drbg_seed returned ", ret);
     }
 
-/* Client
- */
+    /* If we have no path to directory containing certificates and keys, set testing default.
+     */
+    certs_dir = prm->certs_dir;
+    if (certs_dir == OS_NULL)
+    {
+        certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/keys-and-certs/";
+    }
+
+    /* ************* client *************
+     */
     mbedtls_x509_crt_init(&t->cacert);
-    ret = mbedtls_x509_crt_parse(&t->cacert, (const unsigned char *)mbedtls_test_cas_pem,
-                          mbedtls_test_cas_pem_len );
+    osal_mbedtls_setup_cert_or_key(&t->cacert, OS_NULL, OS_PBNR_CLIENT_CERT_CHAIN,
+        certs_dir, prm->client_cert_chain_file);
 
-
-
-/* Server
- */
+    /* ************* server *************
+     */
     mbedtls_x509_crt_init(&t->srvcert);
     mbedtls_pk_init(&t->pkey);
+    osal_mbedtls_setup_cert_or_key(&t->srvcert, OS_NULL, OS_PBNR_SERVER_CERT,
+        certs_dir, prm->server_cert_file);
+    osal_mbedtls_setup_cert_or_key(&t->srvcert, OS_NULL, OS_PBNR_ROOT_CERT,
+        certs_dir, prm->root_cert_file);
 
-    /*
-     * This demonstration program uses embedded test certificates.
-     * Instead, you may want to use mbedtls_x509_crt_parse_file() to read the
-     * server and CA certificates, as well as mbedtls_pk_parse_keyfile().
+    osal_mbedtls_setup_cert_or_key(OS_NULL, &t->pkey, OS_PBNR_SERVER_KEY,
+        certs_dir, prm->server_key_file);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Load certificate/key from file system or persistent block.
+  @anchor osal_mbedtls_setup_cert_or_key
+
+  The osal_mbedtls_setup_cert_or_key() function reads and parses certificate from either file system
+  (if we have file system support) or from persistent memory, depending on file_name. If the
+  file_name is number, like "7" or empty string, for persistent storage is assumed. Otherwise
+  the data is used with normail file operations.
+
+  Note: Now files are read using Mbed TLS file operation. If needed, these can be changed
+  to eosal file operations.
+
+  @param   cert Initialized certificate structure into which to append the certificate.
+  @param   default_block_nr If reading from persistent storage, this is default block
+           number for the case when file name doesn't specify one.
+  @param   cert_dir Directory from where certificates are read, if using file system.
+  @oaram   file_name Specifies file name or persistent block number.
+  @return  OSAL_SUCCESS if all fine. Other return values indicate an error.
+
+****************************************************************************************************
+*/
+static void osal_mbedtls_setup_cert_or_key(
+    mbedtls_x509_crt *cert,
+    mbedtls_pk_context *pkey,
+    osPersistentBlockNr default_block_nr,
+    const os_char *certs_dir,
+    const os_char *file_name)
+{
+    osPersistentBlockNr block_nr;
+    osalStatus s;
+    os_char *block;
+    os_memsz block_sz;
+    int ret;
+
+#if OSAL_FILESYS_SUPPORT
+    os_char path[OSAL_PATH_SZ];
+
+    /* If we have file name which doesn't start with number, we will read from file.
      */
-    ret = mbedtls_x509_crt_parse(&t->srvcert, (const unsigned char *) mbedtls_test_srv_crt,
-        mbedtls_test_srv_crt_len);
-    if (ret)
+    if (file_name) if (!osal_char_isdigit(*file_name) && *file_name != '\0')
     {
-        osal_debug_error_int( "mbedtls_x509_crt_parse failed A ", ret);
+        os_strncpy(path, certs_dir, sizeof(path));
+        os_strncat(path, file_name, sizeof(path));
+        if (cert)
+        {
+            ret = mbedtls_x509_crt_parse_file(cert, path);
+            if (!ret) return;
+            osal_debug_error_str("mbedtls_x509_crt_parse_file failed ", path);
+        }
+        else
+        {
+            ret = mbedtls_pk_parse_keyfile(pkey, path, 0);
+            if (!ret) return;
+            osal_debug_error_str("mbedtls_pk_parse_keyfile failed ", path);
+        }
+    }
+#endif
+
+    block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
+    if (block_nr == 0) block_nr = default_block_nr;
+
+    s = ioc_load_persistent(block_nr, &block, &block_sz);
+    if (s != OSAL_SUCCESS && s != OSAL_STATUS_MEMORY_ALLOCATED)
+    {
+        osal_debug_error_int("ioc_load_persistent failed ", block_nr);
+        return;
     }
 
-    ret = mbedtls_x509_crt_parse( &t->srvcert, (const unsigned char *) mbedtls_test_cas_pem,
-        mbedtls_test_cas_pem_len );
-    if (ret)
+    if (cert)
     {
-        osal_debug_error_int( "mbedtls_x509_crt_parse failed B ", ret);
+        ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)block, block_sz);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_x509_crt_parse failed ", ret);
+        }
+    }
+    else
+    {
+        ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, block_sz, NULL, 0);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_pk_parse_key failed ", ret);
+        }
     }
 
-    ret = mbedtls_pk_parse_key(&t->pkey, (const unsigned char *) mbedtls_test_srv_key,
-        mbedtls_test_srv_key_len, NULL, 0 );
-    if (ret)
+    if (s == OSAL_STATUS_MEMORY_ALLOCATED)
     {
-        osal_debug_error_int("mbedtls_pk_parse_key failed ", ret );
+        os_free(block, block_sz);
     }
-
 }
 
 

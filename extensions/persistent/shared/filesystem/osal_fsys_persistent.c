@@ -138,8 +138,8 @@ void os_persistent_shutdown(
   os_persistent_load() must be called to read the data to local RAM.
 
   @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to load.
-  @param   block_sz Block size in bytes.
+  @param   block Block pointer to set.
+  @param   block_sz Pointer to integer where to store block size.
   @param   flags OSAL_PERSISTENT_SECRET flag enables accessing the secret. It must be only
            given in safe context.
   @return  OSAL_SUCCESS of successfull. Value OSAL_STATUS_NOT_SUPPORTED indicates that
@@ -298,7 +298,7 @@ void os_persistent_close(
   parameters when micro controller starts, not during normal operation.
 
   @param   handle Persistant storage handle.
-  @param   block Pointer to buffer where to load persistent data.
+  @param   buf Pointer to buffer where to load persistent data.
   @param   buf_sz Number of bytes to read to buffer.
   @return  Number of bytes read. Can be less than buf_sz if end of persistent block data has
            been reached. 0 is fine if at end. -1 Indicates an error.
@@ -330,22 +330,21 @@ getout:
 /**
 ****************************************************************************************************
 
-  @brief Save parameter block to persistent storage.
-  @anchor os_persistent_save
+  @brief Write data to persistent block.
+  @anchor os_persistent_write
 
-  The os_persistent_save() function saves a parameter structure to persistent storage and
-  identifies it by block number.
+  The os_persistent_write() function...
 
-  @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to save.
-  @param   block_sz Block size in bytes.
+  @param   handle Persistant storage handle.
+  @param   buf Pointer to buffe.
+  @param   buf_sz Number of bytes to write.
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
 
 ****************************************************************************************************
 */
 osalStatus os_persistent_write(
     osPersistentHandle *handle,
-    os_char *buf,
+    const os_char *buf,
     os_memsz buf_sz)
 {
     os_memsz n_written;
