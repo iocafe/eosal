@@ -22,8 +22,8 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+
 #include <winsock2.h>
-// #include <Ws2ipdef.h>
 #include <Ws2tcpip.h>
 
 /** Windows specific socket data structure. OSAL functions cast their own stream structure
@@ -147,14 +147,9 @@ osalStream osal_socket_open(
 	os_int flags)
 {
 	osalSocket *mysocket = OS_NULL;
-    os_memsz sz1 = 0, sz2;
+    os_memsz sz1 = 0;
 	os_int port_nr;
-    // os_char /* host[OSAL_HOST_BUF_SZ], */ nbuf[OSAL_NBUF_SZ];
-    os_ushort *host_utf16 = OS_NULL, *port_utf16;
     os_char addr[16];
-    /* ADDRINFOW *addrinfo = NULL;
-    ADDRINFOW *ptr = NULL;
-    ADDRINFOW hints; */
 	osalStatus rval; 
 	SOCKET handle = INVALID_SOCKET;
 	struct sockaddr_in saddr;
@@ -182,16 +177,7 @@ osalStream osal_socket_open(
         return OS_NULL;
     }
 
-    // osal_socket_get_ip_and_port(parameters, &port_nr, host, sizeof(host),
-    //    &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-
     udp = (flags & OSAL_STREAM_UDP_MULTICAST) ? OS_TRUE : OS_FALSE;
-
-    af = is_ipv6 ? AF_INET6 : AF_INET;
-    /* os_memclear(&hints, sizeof(hints));
-    hints.ai_family = af;
-    hints.ai_socktype = udp ? SOCK_DGRAM : SOCK_STREAM;
-    hints.ai_protocol = udp ? IPPROTO_UDP : IPPROTO_TCP; */
 
     if (is_ipv6)
     {
@@ -217,51 +203,10 @@ osalStream osal_socket_open(
         sa_sz = sizeof(saddr);
         sa_data = &saddr.sin_addr.s_addr;
     }
-    
-    /* if (host[0] != '\0')
-    {
-        host_utf16 = osal_str_utf8_to_utf16_malloc(host, &sz1);
-
-        if (InetPtonW(af, host_utf16, sa_data) <= 0)
-        {
-            osal_int_to_str(nbuf, sizeof(nbuf), port_nr);
-            port_utf16 = osal_str_utf8_to_utf16_malloc(nbuf, &sz2);
-
-            s = GetAddrInfoW(host_utf16, port_utf16,
-                &hints, &addrinfo);
-
-            os_free(port_utf16, sz2);
-
-            if (s || addrinfo == NULL) 
-		    {
-                if (addrinfo) FreeAddrInfoW(addrinfo);
-			    rval = OSAL_STATUS_FAILED;
-			    goto getout;
-            }
-
-            for (ptr = addrinfo; ptr != NULL; ptr = ptr->ai_next) 
-            {
-                if (ptr->ai_family == af) 
-                {
-                    os_memcpy(sa,  ptr->ai_addr, sa_sz);
-                    break;
-                }
-            }
-
-            FreeAddrInfoW(addrinfo);
-
-            if (ptr == NULL)
-            {
-			    rval = OSAL_STATUS_FAILED;
-			    goto getout;
-            }
-	    }
-    } */
 
     /* Create socket.
      */
     handle = socket(af, udp ? SOCK_DGRAM : SOCK_STREAM,  udp ? IPPROTO_UDP : IPPROTO_TCP);
-    // handle = socket(af, hints.ai_socktype, hints.ai_protocol);
     if (handle == INVALID_SOCKET) 
 	{
 		rval = OSAL_STATUS_FAILED;
@@ -364,20 +309,12 @@ osalStream osal_socket_open(
         }
 	}
 
-	/* Release memory allocated for the host name or address.
-	 */
-    os_free(host_utf16, sz1);
-
 	/* Success set status code and cast socket structure pointer to stream pointer and return it.
 	 */
 	if (status) *status = OSAL_SUCCESS;
 	return (osalStream)mysocket;
 
 getout:
-	/* Opt out on error. First Release memory allocated for the host name or address.
-	 */
-    os_free(host_utf16, sz1);
-
     /* If we got far enough to allocate the socket structure.
        Close the event handle (if any) and free memory allocated
        for the socket structure.
