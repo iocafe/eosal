@@ -1,10 +1,10 @@
 /**
 
   @file    stringx/common/osal_str_to_bin.c
-  @brief   Convert string to binary MAC or IP address.
+  @brief   Convert MAC address from string to binary.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    1.2.2020
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
