@@ -179,7 +179,7 @@
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
   #ifdef ESP_PLATFORM
-    #define OSAL_MULTITHREAD_SUPPORT 1
+    #define OSAL_MULTITHREAD_SUPPORT 0
   #else
     #define OSAL_MULTITHREAD_SUPPORT 0
   #endif
