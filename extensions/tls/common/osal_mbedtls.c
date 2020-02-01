@@ -316,6 +316,9 @@ static osalStream osal_mbedtls_open(
             goto getout;
         } */
 
+        //mbedtls_ssl_conf_read_timeout(&so->conf, 3000);
+        //mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout);
+
         mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, NULL );
 
         /* 4. Handshake
@@ -530,6 +533,9 @@ static osalStream osal_mbedtls_accept(
         goto getout;
     }
 
+    //mbedtls_ssl_conf_read_timeout(&newso->conf, 3000);
+    //mbedtls_ssl_set_bio(&newso->ssl, &newso->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout);
+
     mbedtls_ssl_set_bio(&newso->ssl, &newso->fd, mbedtls_net_send, mbedtls_net_recv, NULL);
 
     /* 5. Handshake
@@ -741,6 +747,8 @@ static osalStatus osal_mbedtls_read(
     ret = mbedtls_ssl_read(&so->ssl, (os_uchar*)buf, n);
     if (ret < 0)
     {
+        // MBEDTLS_ERR_SSL_CONN_EOF
+        // if (ret != MBEDTLS_ERR_SSL_TIMEOUT)
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
             if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
