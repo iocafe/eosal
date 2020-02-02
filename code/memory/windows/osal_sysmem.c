@@ -55,7 +55,11 @@ os_char *osal_sysmem_alloc(
     /* Allocate block from process heap. If fails, then return OS_NULL.
      */
     memory_block = HeapAlloc(heap, 0, (DWORD)request_bytes);
-    if (memory_block == NULL) return OS_NULL;
+    if (memory_block == NULL)
+    {
+        osal_error(OSAL_SYSTEM_ERROR, eosal_mod, OSAL_STATUS_MEMORY_ALLOCATION_FAILED, OS_NULL);
+        return OS_NULL;
+    }
 
     /* If caller wants to know number of bytes actually allocated, return it.
      */

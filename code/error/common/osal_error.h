@@ -87,6 +87,7 @@ typedef enum
     OSAL_INFO,
     OSAL_WARNING,
     OSAL_ERROR,
+    OSAL_SYSTEM_ERROR,
     OSAL_CLEAR_ERROR
 }
 osalErrorLevel;

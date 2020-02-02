@@ -36,7 +36,7 @@ const os_char eosal_mod[] = "eosal";
   error condition.
 
   @param   level Seriousness or error or clear error request. One of: OSAL_INFO, OSAL_WARNING,
-           OSAL_ERROR, or OSAL_CLEAR_ERROR.
+           OSAL_ERROR, OSAL_SYSTEM_ERROR, or OSAL_CLEAR_ERROR.
   @param   Module which reported the error, string. Typically static constant, like eosal_mod
            for the eosal library.
   @param   code Error code or error number, like osalStatus enumeration for the eosal library.
@@ -131,7 +131,7 @@ void osal_set_error_handler(
   needs to be implemented to have report errors in such way that is useful to the end user.
 
   @param   level Seriousness or error or clear error request. One of: OSAL_INFO, OSAL_WARNING,
-           OSAL_ERROR, or OSAL_CLEAR_ERROR.
+           OSAL_ERROR, OSAL_SYSTEM_ERROR, or OSAL_CLEAR_ERROR.
   @param   Module which reported the error, string. Typically static constant, like eosal_mod
            for the eosal library.
   @param   code Error code or error number, like osalStatus enumeration for the eosal library.
@@ -159,6 +159,7 @@ void osal_default_error_handler(
         case OSAL_INFO: level_text = "info"; break;
         case OSAL_WARNING: level_text = "warning"; break;
         case OSAL_ERROR: level_text = "error"; break;
+        case OSAL_SYSTEM_ERROR: level_text = "system"; break;
         default: level_text = "?"; break;
         case OSAL_CLEAR_ERROR: return;
     }

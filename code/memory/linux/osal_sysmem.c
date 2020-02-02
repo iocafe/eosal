@@ -47,8 +47,17 @@ os_char *osal_sysmem_alloc(
     os_memsz request_bytes,
     os_memsz *allocated_bytes)
 {
-    if (allocated_bytes) *allocated_bytes = request_bytes;
-    return malloc(request_bytes);
+    os_char *mem;
+
+    if (allocated_bytes) {
+        *allocated_bytes = request_bytes;
+    }
+
+    mem = malloc(request_bytes);
+    if (mem == NULL) {
+        osal_error(OSAL_SYSTEM_ERROR, eosal_mod, OSAL_STATUS_MEMORY_ALLOCATION_FAILED, OS_NULL);
+    }
+    return mem;
 }
 
 
