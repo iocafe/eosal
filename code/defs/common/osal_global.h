@@ -153,6 +153,14 @@ typedef struct
      */
     osal_shutdown_func *sockets_shutdown_func;
 #endif
+
+    /** Error handler function.
+     */
+    osal_error_handler *error_handler_func;
+
+    /** Error handler context.
+     */
+    osal_error_handler *error_handler_context;
 }
 osalGlobalStruct;
 

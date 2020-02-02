@@ -12,16 +12,16 @@
   by setting an application specific error handler callback.
 
   ***** REPORTING ERRORS *****
-  When an error occurs, the osal_error() function is called to recors it. The status argument
+  When an error occurs, the osal_error() function is called to record it. The code argument
   is error number. eosal status codes are enumerated in osalStatus. Other software modules
   have their own error enumerations. The module argument is module name string, like eosal_mod
-  (constant string "eosal"). Module name together with status is unique definition of an
-  error state.
+  (constant string "eosal"). Module name together with code is unique definition of an
+  error condition.
 
     void osal_error(
         osalErrorLevel level,
         const os_char *module,
-        os_int status,
+        os_int code,
         const os_char *description);
 
   The function osal_clear_error() is provided as generic way to pass information to error
@@ -30,7 +30,7 @@
 
     void osal_clear_error(
         const os_char *module,
-        os_int status);
+        os_int code);
 
   ***** ERROR HANDLER *****
   The default error handler osal_default_error_handler() is useful only for first stages
@@ -43,7 +43,7 @@
     void my_custom_error_handler(
         osalErrorLevel level,
         const os_char *module,
-        os_int status,
+        os_int code,
         const os_char *description,
         void *context)
     {
@@ -93,7 +93,7 @@ osalErrorLevel;
 
 /* Module name used by eosal library to report errors.
  */
-const extern os_char eosal_mod;
+const extern os_char eosal_mod[];
 
 
 /* Report an error
@@ -101,21 +101,21 @@ const extern os_char eosal_mod;
 void osal_error(
     osalErrorLevel level,
     const os_char *module,
-    os_int status,
+    os_int code,
     const os_char *description);
 
 /* Clear an error
  */
 void osal_clear_error(
     const os_char *module,
-    os_int status);
+    os_int code);
 
 /* Error handler function type.
  */
 typedef void osal_error_handler(
     osalErrorLevel level,
     const os_char *module,
-    os_int status,
+    os_int code,
     const os_char *description,
     void *context);
 
@@ -130,6 +130,6 @@ void osal_set_error_handler(
 void osal_default_error_handler(
     osalErrorLevel level,
     const os_char *module,
-    os_int status,
+    os_int code,
     const os_char *description,
     void *context);

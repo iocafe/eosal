@@ -91,6 +91,7 @@ OSAL_C_HEADER_BEGINS
 #include "code/defs/common/osal_status.h"
 #include "code/defs/common/osal_state_bits.h"
 #include "code/timer/common/osal_timer.h"
+#include "code/error/common/osal_error.h"
 #include "code/debugcode/common/osal_debug.h"
 #include "code/resmon/common/osal_resource_monitor.h"
 #include "code/console/common/osal_console.h"
