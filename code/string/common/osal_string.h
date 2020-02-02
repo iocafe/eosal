@@ -87,7 +87,7 @@ os_int os_strnicmp(
     const os_char *str2,
     os_long count);
 
-/* Get string size in bytes.
+/* Get string size in bytes (including terminating '\0' character).
  */
 os_memsz os_strlen(
     const os_char *str);

@@ -18,8 +18,7 @@
 */
 #include "eosal.h"
 
-/* If we need UTF16 support (windows), we need to be ablt to convert between UTF16 and UTF8 
-   characters.
+/* If we need UTF16 support (Windows), include conversions between UTF16 and UTF8 characters.
  */
 #if OSAL_UTF16
 
@@ -33,7 +32,7 @@
   or calculates UTF8 string buffer size needed to store UTF16 string given as argument.
 
   @param   buf8 Pointer to buffer into which to store resulting string. If the buffer is not
-           large enough to store the whole string, the result is trunkated. In any case resulting
+           large enough to store the whole string, the result is truncated. In any case resulting
            string will be null terminated. This can be set to OS_NULL to calculate size
            of UTF8 buffer to store converted UTF16 string.
   @param   buf8_sz Buffer size in bytes. Ignored when size counting.

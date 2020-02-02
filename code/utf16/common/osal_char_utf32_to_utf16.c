@@ -18,8 +18,7 @@
 */
 #include "eosal.h"
 
-/* If we need UTF16 support (windows), we need to be ablt to convert between UTF16 and UTF32 
-   characters.
+/* If we need UTF16 support (Windows), include conversions between UTF16 and UTF32 characters.
  */
 #if OSAL_UTF16
 

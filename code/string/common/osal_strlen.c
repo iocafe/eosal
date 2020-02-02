@@ -23,7 +23,7 @@
   @anchor os_strlen
 
   The os_strlen() function gets size of the string in bytes, including the terminating 
-  null character.
+  null character. Thus os_strlen("") returns 1.
 
   @param   str String pointer. If the str pointer is OS_NULL, the function returns 1.
 

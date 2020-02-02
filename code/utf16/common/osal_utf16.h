@@ -8,8 +8,8 @@
 
   This OSAL utf16 module header file. This module includes conversions between UTF16 and
   UTF32 characters and between UTF16 and UTF8 strings. UTF-16 is the native character encoding
-  for Windows 2000/XP/2003/Vista/CE, Java and .NET bytecode environments, Mac OS X's Cocoa and
-  Core Foundation frameworks and the Nokia Qt. Thus the osal_utf16 module is practically always
+  for Windows, Java and .NET bytecode environments, Mac OS X's Cocoa and Core Foundation
+  frameworks and the Nokia Qt. Thus the osal_utf16 module is practically always
   needed for these environments (OSAL uses UTF8 for ASCII compatibility on low end systems).
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
@@ -24,8 +24,7 @@
  */
 #include "eosal.h"
 
-/* If we need UTF16 support (windows), we need to be ablt to convert between UTF16 and UTF8 
-   characters.
+/* If we need UTF16 support (Windows), include conversions between UTF16 and UTF8 characters.
  */
 #if OSAL_UTF16
 
