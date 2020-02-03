@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\code\defs\common\osal_status.h" />
     <ClInclude Include="..\..\code\defs\windows\osal_defs.h" />
     <ClInclude Include="..\..\code\defs\windows\osal_types.h" />
+    <ClInclude Include="..\..\code\error\common\osal_error.h" />
     <ClInclude Include="..\..\code\event\common\osal_event.h" />
     <ClInclude Include="..\..\code\initialize\common\osal_initialize.h" />
     <ClInclude Include="..\..\code\int64\common\osal_int64.h" />
@@ -72,6 +73,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\code\console\windows\osal_sysconsole.c" />
     <ClCompile Include="..\..\code\debugcode\common\osal_debug.c" />
+    <ClCompile Include="..\..\code\error\common\osal_error.c" />
     <ClCompile Include="..\..\code\event\windows\osal_event.c" />
     <ClCompile Include="..\..\code\initialize\common\osal_initialize.c" />
     <ClCompile Include="..\..\code\initialize\windows\osal_os_initialize.c" />
