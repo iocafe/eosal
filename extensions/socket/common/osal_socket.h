@@ -126,6 +126,10 @@ typedef struct osalNetworkStatus
      */
     osalStatus code;
 
+    /** Wifi networork connecte flags.
+     */
+    os_boolean wifi_connected[OSAL_MAX_NRO_WIFI_NETWORKS];
+
     /** No sertificate chain (transfer automatically?)
      */
     os_boolean no_cert_chain;
