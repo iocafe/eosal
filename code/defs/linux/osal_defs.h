@@ -219,10 +219,11 @@
 #define OSAL_TLS_OPENSSL_WRAPPER 1
 #define OSAL_TLS_MBED_WRAPPER 2
 
-/** Select TLS wrapper implementation to use.
+/** Select TLS wrapper implementation to use. Set this define to select
+    security library.
  */
 #ifndef OSAL_TLS_SUPPORT
-#define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
+#define OSAL_TLS_SUPPORT OSAL_TLS_OPENSSL_WRAPPER
 #endif
 
 /** If OpenSSL functionality is available (separate from TLS wrapper selection,
