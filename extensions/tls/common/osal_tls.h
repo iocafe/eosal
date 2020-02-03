@@ -99,9 +99,15 @@ void osal_tls_initialize(
  */
 void osal_tls_shutdown(void);
 
+/* Get network and security status.
+ */
+void osal_tls_get_network_status(
+    osalNetworkStatus *net_status,
+    os_int nic_nr);
+
 #else
 
-/* No socket support, define empty macros that we do not need to #ifdef code.
+/* No TLS support, define empty macros that we do not need to #ifdef code.
  */
 #define osal_tls_initialize(n,c,p)
 #define osal_tls_shutdown()

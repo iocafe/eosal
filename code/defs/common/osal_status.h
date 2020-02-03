@@ -61,6 +61,10 @@ typedef enum
      */
     OSAL_STATUS_FAILED,
 
+    /** Object or software library has not been initialized.
+     */
+    OSAL_STATUS_NOT_INITIALIZED,
+
     /** General time out. Among other things, used by osal_event_wait() function. If event
         doesn't get signaled before timeout interval given as argument, this code is returned.
      */
@@ -103,6 +107,10 @@ typedef enum
 		or sent, because it would otherwise block the calling thread. 
 	 */
 	OSAL_STATUS_STREAM_WOULD_BLOCK,
+
+    /** Not connected to a WiFi network.
+     */
+    OSAL_STATUS_NO_WIFI,
 
 	/** No new incoming connection. The stream function osal_stream_accept() return this 
 	    code to indicate that no new connection was accepted. 

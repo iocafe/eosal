@@ -1083,15 +1083,52 @@ void osal_socket_shutdown(
 {
 }
 
-/* Are sockets initialized (most important with wifi, call always when opening the
-   socket to maintain wifi state).
- */
+
+/**
+****************************************************************************************************
+
+  @brief Check if network is initialized.
+  @anchor osal_are_sockets_initialized
+
+  The osal_are_sockets_initialized function is called to check if socket library initialization
+  has been completed. For Linux there is nothint to do, operating system is in control of this.
+
+  @return  OSAL_SUCCESS if we are connected to a wifi network (always returned in Linux).
+           OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
+           OSAL_STATUS_FALED No network, at least for now.
+
+****************************************************************************************************
+*/
 osalStatus osal_are_sockets_initialized(
     void)
 {
     return OSAL_SUCCESS;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Get network status.
+  @anchor osal_socket_get_network_status
+
+  The osal_socket_get_network_status function retrieves network status information,
+  like is wifi connected?
+
+  For Linux, we always say "All good" by returning empty network status structure.
+
+  @param   net_status Network status structure to fill. Just cleared.
+  @param   nic_nr Network interface number.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_socket_get_network_status(
+    osalNetworkStatus *net_status,
+    os_int nic_nr)
+{
+    os_memclear(net_status, sizeof(osalNetworkStatus));
+}
 
 
 #if OSAL_FUNCTION_POINTER_SUPPORT

@@ -1322,8 +1322,6 @@ static void osal_socket_start_wifi_init(void)
   has been initialized and connected. Once connection is detected,
   the LWIP library is initialized.
 
-  osal_wifi_initialized
-
   @return  OSAL_SUCCESS if we are connected to a wifi network.
            OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
            OSAL_STATUS_FALED No connection, at least for now.
@@ -1478,6 +1476,35 @@ osalStatus osal_are_sockets_initialized(
     }
 
     return s;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get network status.
+  @anchor osal_socket_get_network_status
+
+  The osal_socket_get_network_status function retrieves network status information,
+  like is wifi connected?
+
+  @param   net_status Network status structure to fill.
+  @param   nic_nr Network interface number, ignored here since only one adapter is supported.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_socket_get_network_status(
+    osalNetworkStatus *net_status,
+    os_int nic_nr)
+{
+    os_memclear(net_status, sizeof(osalNetworkStatus));
+
+    if (!osal_wifi_connected)
+    {
+        net_status.code = if (!osal_sockets_initialized || osal_wifi_init_failed_once)
+            ? OSAL_STATUS_PENDING : OSAL_STATUS_NO_WIFI;
+    }
 }
 
 

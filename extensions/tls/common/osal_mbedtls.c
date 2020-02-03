@@ -64,19 +64,23 @@
  */
 typedef struct osalTLS
 {
-    /* Random number generator context.
+    /** Random number generator context.
      */
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_entropy_context entropy;
 
-    /* Certificate authority certificate
+    /** Certificate authority certificate
      */
     mbedtls_x509_crt cacert;
 
-    /* Server only
+    /** Server only
      */
     mbedtls_x509_crt srvcert;
     mbedtls_pk_context pkey;
+
+    /** Flag indicating the we do not have certificate chain.
+     */
+    os_boolean no_certificate_chain;
 }
 osalTLS;
 
@@ -131,7 +135,7 @@ static void my_debug(
 static void osal_mbedtls_init(
     osalSecurityConfig *prm);
 
-static void osal_mbedtls_setup_cert_or_key(
+static osalStatus osal_mbedtls_setup_cert_or_key(
     mbedtls_x509_crt *cert,
     mbedtls_pk_context *pkey,
     osPersistentBlockNr default_block_nr,
@@ -932,6 +936,7 @@ static void osal_mbedtls_init(
 {
     const os_char *certs_dir;
     const os_char personalization[] = "we could collect data from IO";
+    osalStatus s;
     int ret;
 
     osalTLS *t;
@@ -957,8 +962,9 @@ static void osal_mbedtls_init(
     /* ************* client *************
      */
     mbedtls_x509_crt_init(&t->cacert);
-    osal_mbedtls_setup_cert_or_key(&t->cacert, OS_NULL, OS_PBNR_CLIENT_CERT_CHAIN,
+    s = osal_mbedtls_setup_cert_or_key(&t->cacert, OS_NULL, OS_PBNR_CLIENT_CERT_CHAIN,
         certs_dir, prm->client_cert_chain_file);
+    t->no_certificate_chain = (os_boolean)(s != OSAL_SUCCESS);
 
     /* ************* server *************
      */
@@ -993,11 +999,12 @@ static void osal_mbedtls_init(
            number for the case when file name doesn't specify one.
   @param   cert_dir Directory from where certificates are read, if using file system.
   @oaram   file_name Specifies file name or persistent block number.
-  @return  OSAL_SUCCESS if all fine. Other return values indicate an error.
+  @return  OSAL_SUCCESS if certificate or key was loaded. Other return values indicate that it
+           was not loaded (missing or error).
 
 ****************************************************************************************************
 */
-static void osal_mbedtls_setup_cert_or_key(
+static osalStatus osal_mbedtls_setup_cert_or_key(
     mbedtls_x509_crt *cert,
     mbedtls_pk_context *pkey,
     osPersistentBlockNr default_block_nr,
@@ -1005,7 +1012,7 @@ static void osal_mbedtls_setup_cert_or_key(
     const os_char *file_name)
 {
     osPersistentBlockNr block_nr;
-    osalStatus s;
+    osalStatus s, rval;
     os_char *block;
     os_memsz block_sz;
     int ret;
@@ -1022,15 +1029,16 @@ static void osal_mbedtls_setup_cert_or_key(
         if (cert)
         {
             ret = mbedtls_x509_crt_parse_file(cert, path);
-            if (!ret) return;
+            if (!ret) return OSAL_SUCCESS;
             osal_debug_error_str("mbedtls_x509_crt_parse_file failed ", path);
         }
         else
         {
             ret = mbedtls_pk_parse_keyfile(pkey, path, 0);
-            if (!ret) return;
+            if (!ret) return OSAL_SUCCESS;
             osal_debug_error_str("mbedtls_pk_parse_keyfile failed ", path);
         }
+        return OSAL_STATUS_FAILED;
     }
 #endif
 
@@ -1041,15 +1049,17 @@ static void osal_mbedtls_setup_cert_or_key(
     if (s != OSAL_SUCCESS && s != OSAL_STATUS_MEMORY_ALLOCATED)
     {
         osal_debug_error_int("ioc_load_persistent failed ", block_nr);
-        return;
+        return OSAL_STATUS_FAILED;
     }
 
+    rval = OSAL_SUCCESS;
     if (cert)
     {
         ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)block, block_sz);
         if (ret)
         {
             osal_debug_error_int("mbedtls_x509_crt_parse failed ", ret);
+            rval = OSAL_STATUS_FAILED;
         }
     }
     else
@@ -1058,6 +1068,7 @@ static void osal_mbedtls_setup_cert_or_key(
         if (ret)
         {
             osal_debug_error_int("mbedtls_pk_parse_key failed ", ret);
+            rval = OSAL_STATUS_FAILED;
         }
     }
 
@@ -1065,6 +1076,8 @@ static void osal_mbedtls_setup_cert_or_key(
     {
         os_free(block, block_sz);
     }
+
+    return rval;
 }
 
 
@@ -1089,17 +1102,49 @@ static void osal_mbedtls_cleanup(void)
     osalTLS *t;
     t = osal_global->tls;
 
-/* Server
- */
+    /* Server
+     */
     mbedtls_x509_crt_free(&t->srvcert);
     mbedtls_pk_free(&t->pkey);
 
-/* Client
- */
+    /* Client
+     */
     mbedtls_x509_crt_free(&t->cacert);
 
     mbedtls_ctr_drbg_free(&t->ctr_drbg);
     mbedtls_entropy_free(&t->entropy);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get network and security status.
+  @anchor osal_tls_get_network_status
+
+  The osal_tls_get_network_status function retrieves network and security status information,
+  like is wifi connected? Do we have client certificate chain?
+
+  @param   net_status Network status structure to fill.
+  @param   nic_nr Network interface number, ignored here since only one adapter is supported.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_tls_get_network_status(
+    osalNetworkStatus *net_status,
+    os_int nic_nr)
+{
+    osalTLS *t;
+    t = osal_global->tls;
+
+    /* Get underlying socket library status (WiFi)
+     */
+    osal_socket_get_network_status(net_status, nic_nr);
+
+    /* Return "no certificate chain" flag.
+     */
+    net_status->no_cert_chain = t->no_certificate_chain;
 }
 
 

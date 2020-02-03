@@ -1268,13 +1268,57 @@ void osal_socket_shutdown(
     osal_global->sockets_shutdown_func = OS_NULL;
 }
 
-/* Are sockets initialized (most important with wifi, call always when opening the
-   socket to maintain wifi state).
- */
+/**
+****************************************************************************************************
+
+  @brief Check if network is initialized.
+  @anchor osal_are_sockets_initialized
+
+  The osal_are_sockets_initialized function is called to check if socket library initialization
+  has been completed. For Windows there is not much to do, we just return if sockect library
+  has been initialized.
+
+  @return  OSAL_SUCCESS if we are connected to a wifi network.
+           OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
+           OSAL_STATUS_FALED No network, at least for now.
+
+****************************************************************************************************
+*/
 osalStatus osal_are_sockets_initialized(
     void)
 {
     return osal_global->sockets_shutdown_func ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get network status.
+  @anchor osal_socket_get_network_status
+
+  The osal_socket_get_network_status function retrieves network status information,
+  like is wifi connected?
+
+  For Windows, we practically always say "All good" by returning empty network status structure.
+  Only checked thing is that the socket library has been initialized.
+
+  @param   net_status Network status structure to fill.
+  @param   nic_nr Network interface number.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_socket_get_network_status(
+    osalNetworkStatus *net_status,
+    os_int nic_nr)
+{
+    os_memclear(net_status, sizeof(osalNetworkStatus));
+
+    if (osal_global->sockets_shutdown_func == OS_NULL)
+    {
+        net_status->code = OSAL_STATUS_NOT_INITIALIZED;
+    }
 }
 
 

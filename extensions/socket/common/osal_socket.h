@@ -74,39 +74,7 @@ extern const osalStreamInterface osal_socket_iface;
 #define OSAL_MAX_NRO_WIFI_NETWORKS 2
 #endif
 
-
-/* Simple network interface configuration structure.
- * THIS MAY BE OBSOLETED AND REPLACED BY osalNetworkInterface2
- */
-#if 0
-typedef struct
-{
-    os_char host_name[OSAL_IPADDR_SZ];
-
-    /* We keep network setup in global variables for micro controllers.
-     */
-    os_char ip_address[OSAL_IPADDR_SZ];
-    os_char subnet_mask[OSAL_IPADDR_SZ];
-    os_char gateway_address[OSAL_IPADDR_SZ];
-    os_char dns_address[OSAL_IPADDR_SZ];
-    os_char dns_address_2[OSAL_IPADDR_SZ];
-
-    /* Locally administered MAC address ranges safe for testing: x2:xx:xx:xx:xx:xx,
-       x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
-    */
-    os_char mac[OSAL_MAC_SZ];
-    os_boolean no_dhcp;
-
-    os_char wifi_net_name_1[OSAL_WIFI_PRM_SZ];
-    os_char wifi_net_password_1[OSAL_WIFI_PRM_SZ];
-
-    os_char wifi_net_name_2[OSAL_WIFI_PRM_SZ];
-    os_char wifi_net_password_2[OSAL_WIFI_PRM_SZ];
-}
-osalNetworkInterface;
-#endif
-
-/* Wifi network name and password
+/** Wifi network name and password.
  */
 typedef struct
 {
@@ -115,12 +83,11 @@ typedef struct
 }
 osalWifiNetworkConfig;
 
-/* Simple network interface configuration structure.
- * Will replace osalNetworkInterface for less RAM use when passing information.
+/** Simple network interface configuration structure.
  */
 typedef struct osalNetworkInterface2
 {
-    /* Network interface name
+    /** Network interface name
      */
     const os_char *nic_name;
 
@@ -140,9 +107,30 @@ typedef struct osalNetworkInterface2
     const os_char *mac;
     os_boolean no_dhcp;
 
+    /** WiFi network configuration (SSID/pre shared key pairs).
+     */
     osalWifiNetworkConfig wifinet[OSAL_MAX_NRO_WIFI_NETWORKS];
 }
 osalNetworkInterface2;
+
+
+/** Network status information structure.
+ */
+typedef struct osalNetworkStatus
+{
+    /** General network status:
+       - OSAL_SUCCESS = network ready
+       - OSAL_STATUS_PENDING = currently initializing.
+       - OSAL_STATUS_NO_WIFI = not connected to a wifi network.
+       - OSAL_STATUS_NOT_INITIALIZED = Socket library has not been initialized.
+     */
+    osalStatus code;
+
+    /** No sertificate chain (transfer automatically?)
+     */
+    os_boolean no_cert_chain;
+}
+osalNetworkStatus;
 
 
 /* Socket library initialized flag.
@@ -249,6 +237,12 @@ void osal_socket_shutdown(void);
  */
 osalStatus osal_are_sockets_initialized(
     void);
+
+/* Get network status, like is wifi connected?
+ */
+void osal_socket_get_network_status(
+    osalNetworkStatus *net_status,
+    os_int nic_nr);
 
 /* Keep the sockets library alive.
  */
