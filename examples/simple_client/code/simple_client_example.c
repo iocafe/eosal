@@ -72,7 +72,7 @@ osalStatus osal_main(
     /* Initialize underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-        osal_socket_initialize(OS_NULL, 0);
+        osal_socket_initialize(OS_NULL, 0, OS_NULL, 0);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
         osalSecurityConfig security_prm;
@@ -82,7 +82,7 @@ osalStatus osal_main(
 
         /* Initialize the transport, socket, TLS, serial, etc..
          */
-        osal_tls_initialize(OS_NULL, 0, &security_prm);
+        osal_tls_initialize(OS_NULL, 0, OS_NULL, 0, &security_prm);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
         osal_serial_initialize();

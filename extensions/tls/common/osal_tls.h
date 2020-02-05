@@ -91,8 +91,10 @@ extern const osalStreamInterface osal_tls_iface;
 /* Initialize OSAL sockets library.
  */
 void osal_tls_initialize(
-    osalNetworkInterface2 *nic,
+    osalNetworkInterface *nic,
     os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi,
     osalSecurityConfig *prm);
 
 /* Shut down OSAL sockets library.
@@ -109,7 +111,7 @@ void osal_tls_get_network_status(
 
 /* No TLS support, define empty macros that we do not need to #ifdef code.
  */
-#define osal_tls_initialize(n,c,p)
+#define osal_tls_initialize(n,c,w,d,p)
 #define osal_tls_shutdown()
 
 /* No TLS interface, allow build even if the define is used.

@@ -41,7 +41,7 @@ extern SPI_HandleTypeDef hspi1;
     network interfaces. The network interface configuration is managed
     here, not by operating system.
  */
-osalNetworkInterface osal_net_iface
+osalNetworkInterfaceOld osal_net_iface
   = {"METAL",                       /* host_name */
      OSAL_IP_ADDRESS_DEFAULT,       /* ip_address */
      OSAL_SUBNET_MASK_DEFAULT,      /* subnet_mask */
@@ -734,13 +734,18 @@ static os_short osal_get_unused_w5500_port(
 
   @param   nic Pointer to array of network interface structures. Ignored in Linux.
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
     osalNetworkInterface *nic,
-    os_int n_nics)
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     /* Clear memory. Necessary, many micro-controller systems do not clear memory at soft reboot.
      */

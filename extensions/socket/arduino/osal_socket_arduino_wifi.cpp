@@ -1233,13 +1233,18 @@ static String DisplayAddress(IPAddress address)
            and The arduino Wifi implemetation
            supports only one network interface.
   @param   n_nics Number of network interfaces in nic array. 1 or more, only first NIC used.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-    osalNetworkInterface2 *nic,
-    os_int n_nics)
+    osalNetworkInterface *nic,
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     if (nic == OS_NULL && n_nics < 1)
     {

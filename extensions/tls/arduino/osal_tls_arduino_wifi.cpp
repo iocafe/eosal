@@ -686,6 +686,9 @@ static osalSocket *osal_get_unused_socket(void)
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
            This implementation sets up only nic[0].
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @param   prm Parameters related to TLS. Can OS_NULL for client if not needed.
 
   @return  None.
@@ -693,8 +696,10 @@ static osalSocket *osal_get_unused_socket(void)
 ****************************************************************************************************
 */
 void osal_tls_initialize(
-    osalNetworkInterface2 *nic,
+    osalNetworkInterface *nic,
     os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi,
     osalSecurityConfig *prm)
 {
     os_int i;

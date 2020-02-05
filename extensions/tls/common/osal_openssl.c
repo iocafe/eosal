@@ -833,6 +833,9 @@ static osalStatus osal_openssl_select(
 
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @param   prm Parameters related to TLS. Can OS_NULL for client if not needed.
 
   @return  None.
@@ -840,13 +843,15 @@ static osalStatus osal_openssl_select(
 ****************************************************************************************************
 */
 void osal_tls_initialize(
-    osalNetworkInterface2 *nic,
+    osalNetworkInterface *nic,
     os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi,
     osalSecurityConfig *prm)
 {
     if (osal_global->tls) return;
 
-    osal_socket_initialize(nic, n_nics);
+    osal_socket_initialize(nic, n_nics, wifi, n_wifi);
 
     osal_global->tls = (osalTLS*)os_malloc(sizeof(osalTLS), OS_NULL);
     if (osal_global->tls == OS_NULL) return;

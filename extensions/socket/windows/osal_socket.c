@@ -1185,13 +1185,18 @@ osalStatus osal_socket_select(
 
   @param   nic Pointer to array of network interface structures. Ignored in Windows.
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-    osalNetworkInterface2 *nic,
-    os_int n_nics)
+    osalNetworkInterface *nic,
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     /** Windows socket library version information.
      */

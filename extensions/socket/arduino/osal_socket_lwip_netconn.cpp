@@ -54,7 +54,7 @@ extern "C"{
    network interfaces. The network interface configuration is managed
    here, not by operating system.
  */
-static osalNetworkInterface osal_net_iface
+static osalNetworkInterfaceOld osal_net_iface
   = {"BRASS",              /* host_name */
      "192.168.1.201",      /* ip_address */
      "255.255.255.0",      /* subnet_mask */
@@ -182,7 +182,7 @@ typedef struct osalLWIPThread
 {
     /** Network interface configuration.
      */
-    osalNetworkInterface nic[OSAL_MAX_NRO_NICS];
+    osalNetworkInterfaceOld nic[OSAL_MAX_NRO_NICS];
     os_int n_nics;
 
 #if OSAL_MULTITHREAD_SUPPORT
@@ -1579,13 +1579,18 @@ osalStatus osal_are_sockets_initialized(
 
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
     osalNetworkInterface *nic,
-    os_int n_nics)
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     osalThreadOptParams opt;
 
@@ -1596,7 +1601,7 @@ void osal_socket_initialize(
     osal_wifi_initialized = OS_FALSE;
 
     if (n_nics > OSAL_MAX_NRO_NICS) n_nics = OSAL_MAX_NRO_NICS;
-    os_memcpy(&osal_lwip.nic, nic, n_nics*sizeof(osalNetworkInterface));
+    os_memcpy(&osal_lwip.nic, nic, n_nics*sizeof(osalNetworkInterfaceOld));
     osal_lwip.n_nics = n_nics;
 
     /* Defaults for testing, remove

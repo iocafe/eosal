@@ -31,7 +31,7 @@
    network interfaces. The network interface configuration is managed
    here, not by operating system.
  */
-osalNetworkInterface osal_net_iface
+osalNetworkInterfaceOld osal_net_iface
   = {"METAL",              /* host_name */
      "192.168.1.201",      /* ip_address */
      "255.255.255.0",      /* subnet_mask */
@@ -850,13 +850,18 @@ static String DisplayAddress(IPAddress address)
 
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
     osalNetworkInterface *nic,
-    os_int n_nics)
+    os_int n_nics
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     const char* ssid     = "julian";
     const char* password = "talvi333";

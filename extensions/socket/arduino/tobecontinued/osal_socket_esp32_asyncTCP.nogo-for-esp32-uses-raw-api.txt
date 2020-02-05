@@ -35,7 +35,7 @@
    network interfaces. The network interface configuration is managed
    here, not by operating system.
  */
-static osalNetworkInterface osal_net_iface
+static osalNetworkInterfaceOld osal_net_iface
   = {"BRASS",              /* host_name */
      "192.168.1.201",      /* ip_address */
      "255.255.255.0",      /* subnet_mask */
@@ -998,6 +998,9 @@ static osalSocket *osal_get_unused_socket(void)
   @param   nic Pointer to array of network interface structures. Can be OS_NULL to use default.
            This implementation sets up only nic[0].
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
 
   @return  None.
 
@@ -1005,7 +1008,9 @@ static osalSocket *osal_get_unused_socket(void)
 */
 void osal_socket_initialize(
     osalNetworkInterface *nic,
-    os_int n_nics)
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     const os_char *wifi_net_name = "bean24";
     const os_char *wifi_net_password = "talvi333";

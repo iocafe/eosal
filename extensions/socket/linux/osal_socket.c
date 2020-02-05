@@ -1025,22 +1025,6 @@ static void osal_socket_set_cork(
 /**
 ****************************************************************************************************
 
-  @brief SIGPIPE handler
-  @anchor osal_pipe_signal_handler
-
-  The osal_pipe_signal_handler() handles SIGPIPE without terminating the process.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_pipe_signal_handler(int signum)
-{
-    osal_debug_error("osal_socket.c: SIGPIPE");
-}
-
-/**
-****************************************************************************************************
-
   @brief Initialize sockets.
   @anchor osal_socket_initialize
 
@@ -1048,17 +1032,22 @@ static void osal_pipe_signal_handler(int signum)
 
   @param   nic Pointer to array of network interface structures. Ignored in Linux.
   @param   n_nics Number of network interfaces in nic array.
+  @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
+           and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
+  @param   n_wifi Number of wifi networks network interfaces in wifi array.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_initialize(
-    osalNetworkInterface2 *nic,
-    os_int n_nics)
+    osalNetworkInterface *nic,
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi)
 {
     /* Do not terminate program if socket breaks.
      */
-    signal(SIGPIPE, osal_pipe_signal_handler);
+    signal(SIGPIPE, SIG_IGN);
 
     /* Set socket library initialized flag.
      */

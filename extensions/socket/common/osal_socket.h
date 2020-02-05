@@ -62,7 +62,8 @@ extern const osalStreamInterface osal_socket_iface;
 #define OSAL_SOCKET_IFACE &osal_socket_iface
 
 
-/* Number of network interfaces that should be supported troughout the code.
+/* Number of network interfaces that can be configured by eosal. This doesn't limit
+   number of network interfaces when operating system like Linux or Windows manages these.
  */
 #ifndef OSAL_MAX_NRO_NICS
 #define OSAL_MAX_NRO_NICS 2
@@ -81,11 +82,11 @@ typedef struct
     const os_char *wifi_net_name;
     const os_char *wifi_net_password;
 }
-osalWifiNetworkConfig;
+osalWifiNetwork;
 
-/** Simple network interface configuration structure.
+/** Network interface configuration structure.
  */
-typedef struct osalNetworkInterface2
+typedef struct osalNetworkInterface
 {
     /** Network interface name
      */
@@ -109,9 +110,9 @@ typedef struct osalNetworkInterface2
 
     /** WiFi network configuration (SSID/pre shared key pairs).
      */
-    osalWifiNetworkConfig wifinet[OSAL_MAX_NRO_WIFI_NETWORKS];
+    /* osalWifiNetwork wifinet[OSAL_MAX_NRO_WIFI_NETWORKS]; */
 }
-osalNetworkInterface2;
+osalNetworkInterface;
 
 
 /** Network status information structure.
@@ -229,8 +230,10 @@ osalStatus osal_socket_select(
 /* Initialize OSAL sockets library.
  */
 void osal_socket_initialize(
-    osalNetworkInterface2 *nic,
-    os_int n_nics);
+    osalNetworkInterface *nic,
+    os_int n_nics,
+    osalWifiNetwork *wifi,
+    os_int n_wifi);
 
 /* Shut down OSAL sockets library.
  */
@@ -282,7 +285,7 @@ void osal_socket_embed_default_port(
 
 /* No socket support, define empty macros that we do not need to #ifdef code.
  */
-#define osal_socket_initialize(n,c)
+#define osal_socket_initialize(n,c,w,d)
 #define osal_socket_shutdown()
 #define osal_socket_maintain()
 
