@@ -33,7 +33,6 @@ typedef struct osalSecurityConfig
 {
 /* Security stuff in persistent blocks.
  */
-#if OSAL_PERSISTENT_SUPPORT
     /** Server certificate in persistent block. Value OS_PBNR_SERVER_CERT (6) indicates
         that server certificate is stored in persisent block 6. Value OS_PBNR_UNKNOWN (0)
         if server certificate is not stored in persistent block.
@@ -50,11 +49,9 @@ typedef struct osalSecurityConfig
         in persistent block 7, value OS_PBNR_UNKNOWN (0) if not stored in persistent block.
      */
     short client_cert_chain_pbnr;
-#endif
 
 /* Security stuff in file system.
  */
-#if OSAL_FILESYS_SUPPORT
     /** Path to directory containing certificates and keys. OS_NULL to use testing default.
      */
     const os_char *certs_dir;
@@ -74,7 +71,6 @@ typedef struct osalSecurityConfig
     /** Client certificate chain file (PEM, bundle)
      */
     const os_char *client_cert_chain_file;
-#endif
 }
 osalSecurityConfig;
 

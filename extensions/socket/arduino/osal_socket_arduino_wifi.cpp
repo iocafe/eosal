@@ -1254,11 +1254,15 @@ void osal_socket_initialize(
 #if OSAL_WIFI_MULTI
     /* Use WiFiMulti if we have second access point.
      */
-    osal_wifi_multi_on = (nic[0].wifinet[1].wifi_net_name[0] != '\0');
-    if (osal_wifi_multi_on)
+    osal_wifi_multi_on = OS_FALSE;
+    if (n_wifi > 1)
     {
-        wifiMulti.addAP(nic[0].wifinet[0].wifi_net_name, nic[0].wifinet[0].wifi_net_password);
-        wifiMulti.addAP(nic[0].wifinet[1].wifi_net_name, nic[0].wifinet[1].wifi_net_password);
+        osal_wifi_multi_on = (wifi[1].wifi_net_name[0] != '\0');
+        if (osal_wifi_multi_on)
+        {
+            wifiMulti.addAP(wifi[0].wifi_net_name, wifi[0].wifi_net_password);
+            wifiMulti.addAP(wifi[1].wifi_net_name, wifi[1].wifi_net_password);
+        }
     }
 #endif
 
@@ -1272,8 +1276,8 @@ void osal_socket_initialize(
     osal_arduino_ip_from_str(osal_wifi_nic.gateway_address, nic[0].gateway_address);
     osal_arduino_ip_from_str(osal_wifi_nic.subnet_mask, nic[0].subnet_mask);
     osal_wifi_nic.no_dhcp = nic[0].no_dhcp;
-    os_strncpy(osal_wifi_nic.wifi_net_name, nic[0].wifinet[0].wifi_net_name, OSAL_WIFI_PRM_SZ);
-    os_strncpy(osal_wifi_nic.wifi_net_password, nic[0].wifinet[0].wifi_net_password,OSAL_WIFI_PRM_SZ);
+    os_strncpy(osal_wifi_nic.wifi_net_name, wifi[0].wifi_net_name, OSAL_WIFI_PRM_SZ);
+    os_strncpy(osal_wifi_nic.wifi_net_password, wifi[0].wifi_net_password,OSAL_WIFI_PRM_SZ);
 
     /* Start wifi initialization.
      */
@@ -1507,7 +1511,7 @@ void osal_socket_get_network_status(
 
     if (!osal_wifi_connected)
     {
-        net_status.code = if (!osal_sockets_initialized || osal_wifi_init_failed_once)
+        net_status->code = (!osal_sockets_initialized || osal_wifi_init_failed_once)
             ? OSAL_STATUS_PENDING : OSAL_STATUS_NO_WIFI;
     }
 }

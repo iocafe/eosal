@@ -47,8 +47,8 @@ void osal_ip_to_str(
     os_uint u;
     os_int i;
 
-    osal_debug_assert(str);
-    osal_debug_assert(ip);
+    osal_debug_assert(str != OS_NULL);
+    osal_debug_assert(ip != OS_NULL);
 
     str[0] = '\0';
     switch (ip_sz)

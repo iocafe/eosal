@@ -382,7 +382,7 @@ os_memsz os_persistent_read(
 */
 osalStatus os_persistent_write(
     osPersistentHandle *handle,
-    os_char *buf,
+    const os_char *buf,
     os_memsz buf_sz)
 {
     myEEPROMBlock *block;
