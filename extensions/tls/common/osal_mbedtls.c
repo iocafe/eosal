@@ -701,6 +701,7 @@ static osalStatus osal_mbedtls_write(
     so = (osalTlsSocket*)stream;
 
     ret = mbedtls_ssl_write(&so->ssl, (os_uchar*)buf, n);
+osal_debug_error_int("HERE X1", ret);
     if (ret < 0)
     {
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
