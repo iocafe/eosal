@@ -16,12 +16,14 @@
 #include "eosalx.h"
 #if OSAL_PERSISTENT_SUPPORT
 
+
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION
 /**
 ****************************************************************************************************
 
   @brief Load or access persistent memory block.
 
-  The ioc_load_persistent function loads memory block into buffer. If the data on flash
+  The ioc_load_persistent_malloc function loads memory block into buffer. If the data on flash
   memory can be accessed directly, the function just returns pointer to it, much like
   the os_persistent_get_ptr() function. If data must be loaded from file system, etc
   memory is allocated for it and the function returns OSAL_STATUS_MEMORY_ALLOCATED.
@@ -39,7 +41,7 @@
 
 ****************************************************************************************************
 */
-osalStatus ioc_load_persistent(
+osalStatus ioc_load_persistent_malloc(
     osPersistentBlockNr block_nr,
     os_char **pblock,
     os_memsz *pblock_sz)
@@ -98,6 +100,57 @@ osalStatus ioc_load_persistent(
     *pblock = p;
     *pblock_sz = block_sz;
     return OSAL_STATUS_MEMORY_ALLOCATED;
+}
+#endif
+
+
+/**
+****************************************************************************************************
+
+  @brief Load known persistent block of known size into buffer.
+
+  The ioc_load_persistent function floats known size persistent block into buffer given as argument.
+  @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus ioc_load_persistent(
+    osPersistentBlockNr block_nr,
+    os_char *block,
+    os_memsz block_sz)
+{
+    const os_char *sblock;
+    os_memsz sblock_sz, n_read;
+    osPersistentHandle *h;
+    osalStatus s;
+
+    /* In case of errors.
+     */
+    os_memclear(block, block_sz);
+
+    /* If persistant storage is in micro-controller's flash, we can just get pointer to data block
+       and data size.
+     */
+    s = os_persistent_get_ptr(block_nr, &sblock, &sblock_sz, OSAL_PERSISTENT_SECRET);
+    if (s == OSAL_SUCCESS && sblock_sz == block_sz)
+    {
+        os_memcpy(block, sblock, block_sz);
+        return OSAL_SUCCESS;
+    }
+
+    /* No success with direct pointer to flash, try loading from persisten storage.
+     */
+    h = os_persistent_open(block_nr, &sblock_sz, OSAL_PERSISTENT_READ|OSAL_PERSISTENT_SECRET);
+    if (h == OS_NULL) return OSAL_STATUS_FAILED;
+
+    s = OSAL_STATUS_FAILED;
+    if (sblock_sz == block_sz)
+    {
+        n_read = os_persistent_read(h, block, block_sz);
+        if (n_read == block_sz) s = OSAL_SUCCESS;
+    }
+    os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
+    return s;
 }
 
 #endif

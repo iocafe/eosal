@@ -77,7 +77,7 @@ extern const osalStreamInterface osal_socket_iface;
 
 /** Wifi network name and password.
  */
-typedef struct
+typedef struct osalWifiNetwork
 {
     const os_char *wifi_net_name;
     const os_char *wifi_net_password;
@@ -88,14 +88,7 @@ osalWifiNetwork;
  */
 typedef struct osalNetworkInterface
 {
-    /** Network interface name
-     */
-    const os_char *nic_name;
-
     const os_char *host_name;
-
-    /* We keep network setup in global variables for micro controllers.
-     */
     const os_char *ip_address;
     const os_char *subnet_mask;
     const os_char *gateway_address;
@@ -107,13 +100,26 @@ typedef struct osalNetworkInterface
     */
     const os_char *mac;
     os_boolean no_dhcp;
-
-    /** WiFi network configuration (SSID/pre shared key pairs).
-     */
-    /* osalWifiNetwork wifinet[OSAL_MAX_NRO_WIFI_NETWORKS]; */
 }
 osalNetworkInterface;
 
+/** Flat structure to for save into persistWifi network name and password.
+ */
+typedef struct osalWifiNetworkBuf
+{
+    os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
+}
+osalWifiNetworkBuf;
+
+/** Structure to save Wifi configuration as persistent block
+    numer OS_PBNR_WIFI.
+ */
+typedef struct osalWifiPersistent
+{
+    osalWifiNetworkBuf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
+}
+osalWifiPersistent;
 
 /** Network status information structure.
  */

@@ -1041,13 +1041,19 @@ file_name = "myhome-bundle.crt";
 
     block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
     if (block_nr == 0) block_nr = OS_PBNR_CLIENT_CERT_CHAIN;
-    s = ioc_load_persistent(block_nr, &block, &block_sz);
+    s = ioc_load_persistent_malloc(block_nr, &block, &block_sz);
     if (s != OSAL_SUCCESS && s != OSAL_STATUS_MEMORY_ALLOCATED)
     {
-        osal_debug_error_int("ioc_load_persistent failed ", block_nr);
+        osal_debug_error_int("ioc_load_persistent_malloc failed ", block_nr);
         t->no_certificate_chain = OS_TRUE;
     }
 
+
+
+    if (s == OSAL_STATUS_MEMORY_ALLOCATED)
+    {
+        os_free(block, block_sz);
+    }
 
 /*
 C++/OpenSSL: Use root CA from buffer rather than file (SSL_CTX_load_verify_locations)

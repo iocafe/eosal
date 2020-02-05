@@ -315,33 +315,7 @@ void osal_initialize_secret(void)
 */
 static osalStatus ioc_load_secret(void)
 {
-    const os_char *block;
-    os_memsz block_sz, n_read;
-    osPersistentHandle *h;
-    osalStatus s = OSAL_STATUS_FAILED;
-
-    /* If persistant storage is in micro-controller's flash, we can just get pointer to data block
-       and data size.
-     */
-    s = os_persistent_get_ptr(OS_PBNR_SECRET, &block, &block_sz, OSAL_PERSISTENT_SECRET);
-    if (s == OSAL_SUCCESS && block_sz == OSAL_SECRET_BIN_SZ)
-    {
-        os_memcpy(osal_global->secret_bin, block, OSAL_SECRET_BIN_SZ);
-        return OSAL_SUCCESS;
-    }
-
-    /* No success with direct pointer to flash, try loading from persisten storage.
-     */
-    h = os_persistent_open(OS_PBNR_SECRET, &block_sz, OSAL_PERSISTENT_READ|OSAL_PERSISTENT_SECRET);
-    if (h == OS_NULL) return OSAL_STATUS_FAILED;
-
-    if (block_sz == OSAL_SECRET_BIN_SZ)
-    {
-        n_read = os_persistent_read(h, osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
-        if (n_read == OSAL_SECRET_BIN_SZ) s = OSAL_SUCCESS;
-    }
-    os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
-    return s;
+    return ioc_load_persistent(OS_PBNR_SECRET,  osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
 }
 
 
@@ -359,30 +333,8 @@ static osalStatus ioc_load_secret(void)
 */
 static osalStatus ioc_save_secret(os_boolean delete_secret)
 {
-    return ioc_save_block(OS_PBNR_SECRET, osal_global->secret_bin,
+    return ioc_save_persistent(OS_PBNR_SECRET, osal_global->secret_bin,
         OSAL_SECRET_BIN_SZ, delete_secret);
-
-    /* osPersistentBlockNr block_nr,
-    const os_char *block,
-    os_memsz block_sz,
-    os_boolean delete_block);
-
-    osPersistentHandle *h;
-    osalStatus s;
-
-    h = os_persistent_open(OS_PBNR_SECRET, OS_NULL, OSAL_PERSISTENT_WRITE|OSAL_PERSISTENT_SECRET);
-    if (h == OS_NULL) return OSAL_STATUS_FAILED;
-
-    if (delete_secret)
-    {
-        s = os_persistent_write(h, "", 1);
-    }
-    else
-    {
-        s = os_persistent_write(h, osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
-    }
-    os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
-    return s; */
 }
 
 #endif

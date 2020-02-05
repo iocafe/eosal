@@ -88,18 +88,18 @@ typedef enum
     OS_PBNR_SERVER_CERT = 6,
     OS_PBNR_CLIENT_CERT_CHAIN = 7,
     OS_PBNR_ROOT_CERT = 8,
-    OS_PBNR_SYS_RESERVED_A = 9,
-    OS_PBNR_SYS_RESERVED_B = 10,
-    OS_PBNR_CUST_A = 11,
-    OS_PBNR_CUST_B = 12,
-    OS_PBNR_CUST_C = 13,
-    OS_PBNR_CUST_D = 14,
-    OS_PBNR_CUST_E = 15,
-    OS_PBNR_CUST_F = 16,
-    OS_PBNR_CUST_G = 17,
-    OS_PBNR_CUST_H = 18,
-    OS_PBNR_CUST_I = 19,
-    OS_PBNR_CUST_J = 20,
+    OS_PBNR_WIFI = 9,
+    OS_PBNR_SYS_RESERVED_A = 10,
+    OS_PBNR_SYS_RESERVED_B = 11,
+    OS_PBNR_CUST_A = 12,
+    OS_PBNR_CUST_B = 13,
+    OS_PBNR_CUST_C = 14,
+    OS_PBNR_CUST_D = 15,
+    OS_PBNR_CUST_E = 16,
+    OS_PBNR_CUST_F = 17,
+    OS_PBNR_CUST_G = 18,
+    OS_PBNR_CUST_H = 19,
+    OS_PBNR_CUST_I = 20,
     OS_PBNR_ACCOUNTS_1 = 21,
     OS_PBNR_ACCOUNTS_2 = 22,
     OS_PBNR_ACCOUNTS_3 = 23,
@@ -186,14 +186,21 @@ osalStatus os_persistent_write(
 
 /* Load or access a persistent memory block.
  */
-osalStatus ioc_load_persistent(
+osalStatus ioc_load_persistent_malloc(
     osPersistentBlockNr block_nr,
     os_char **pblock,
     os_memsz *pblock_sz);
 
+/* Load known persistent block of known size into buffer.
+ */
+osalStatus ioc_load_persistent(
+    osPersistentBlockNr block_nr,
+    os_char *block,
+    os_memsz block_sz);
+
 /* Save persistent block.
  */
-osalStatus ioc_save_block(
+osalStatus ioc_save_persistent(
     osPersistentBlockNr block_nr,
     const os_char *block,
     os_memsz block_sz,
