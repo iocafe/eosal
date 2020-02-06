@@ -349,7 +349,8 @@ os_char *osal_stream_buffer_content(
     function pointers to OSAL stream_buffers implementation.
  */
 const osalStreamInterface osal_stream_buffer_iface
- = {osal_stream_buffer_open,
+ = {OSAL_STREAM_IFLAG_NONE,
+    osal_stream_buffer_open,
     osal_stream_buffer_close,
     osal_stream_default_accept,
     osal_stream_default_flush,

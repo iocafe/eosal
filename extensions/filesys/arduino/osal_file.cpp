@@ -379,7 +379,8 @@ getout:
     function pointers to OSAL files implementation.
  */
 const osalStreamInterface osal_file_iface
- = {osal_file_open,
+ = {OSAL_STREAM_IFLAG_NONE,
+    osal_file_open,
     osal_file_close,
     osal_stream_default_accept,
     osal_file_flush,

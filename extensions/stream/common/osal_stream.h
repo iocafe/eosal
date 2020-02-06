@@ -153,7 +153,6 @@ typedef struct osalStreamHeader *osalStream;
 /* Note: bit 0x0100000 and larger are reserved to eStream
  */
 
-
 /*@}*/
 
 
@@ -191,6 +190,30 @@ osalStreamParameterIx;
 /*@}*/
 
 
+
+/**
+****************************************************************************************************
+
+  @name Stream interface flags (iflags).
+
+  These flags pass general information about the stream, like is this secure TLS stream, which
+  can be used for transferring security data (passwords, etc).
+
+****************************************************************************************************
+*/
+/*@{*/
+
+/** No interface flags, define used instead of 0 to allow string search.
+ */
+#define OSAL_STREAM_IFLAG_NONE 0
+
+/** Secured transport (TLS).
+ */
+#define OSAL_STREAM_IFLAG_SECURE 1
+
+
+/*@}*/
+
 /** 
 ****************************************************************************************************
 
@@ -198,6 +221,7 @@ osalStreamParameterIx;
 
 ****************************************************************************************************
 */
+/*@{*/
 
 /* Bit fields for eventflags.
  */
@@ -232,6 +256,8 @@ typedef struct osalSelectData
 }
 osalSelectData;
 
+/*@}*/
+
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
@@ -249,13 +275,21 @@ osalSelectData;
  */
 typedef struct osalStreamInterface
 {
+    /* Stream interface flags.
+     */
+    os_int iflags;
+
+    /* Open a stream (connect, listen, open file, etc).
+     */
 	osalStream (*stream_open)(
         const os_char *parameters,
 		void *option,
 		osalStatus *status,
 		os_int flags);
 
-	void (*stream_close)(
+    /* Close an open stream.
+     */
+    void (*stream_close)(
         osalStream stream,
         os_int flags);
 
@@ -317,7 +351,7 @@ typedef struct osalStreamInterface
         os_int flags);
 
     /* Secured connection (TLS) */
-    os_boolean is_secure;
+    // os_boolean is_secure;
 }
 osalStreamInterface;
 
@@ -439,6 +473,7 @@ osalStatus osal_stream_select(
     os_int timeout_ms,
     os_int flags);
 
+/* THIS NEEDS TO MOVE ELSEWHERE, NOT PART OF API */
 #if OSAL_SERIALIZE_SUPPORT
 osalStatus osal_stream_write_long(
     osalStream stream,
@@ -446,6 +481,7 @@ osalStatus osal_stream_write_long(
     os_int flags);
 #endif
 
+/* THIS NEEDS TO MOVE ELSEWHERE, NOT PART OF API */
 osalStatus osal_stream_print_str(
     osalStream stream,
     const os_char *str,

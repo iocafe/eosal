@@ -1623,7 +1623,8 @@ static int osal_openssl_verify_callback(
     function pointers to OSAL sockets implementation.
  */
 const osalStreamInterface osal_tls_iface
- = {osal_openssl_open,
+ = {OSAL_STREAM_IFLAG_SECURE,
+    osal_openssl_open,
     osal_openssl_close,
     osal_openssl_accept,
     osal_openssl_flush,
@@ -1635,10 +1636,9 @@ const osalStreamInterface osal_tls_iface
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
-    osal_openssl_select,
+    osal_openssl_select};
 #else
-    osal_stream_default_select,
+    osal_stream_default_select};
 #endif
-    OS_TRUE}; /* is_secure */
 
 #endif

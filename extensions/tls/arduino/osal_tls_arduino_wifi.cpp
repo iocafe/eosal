@@ -772,7 +772,8 @@ void osal_tls_maintain(
     function pointers to OSAL sockets implementation.
  */
 const osalStreamInterface osal_tls_iface
- = {osal_tls_open,
+ = {OSAL_STREAM_IFLAG_SECURE,
+    osal_tls_open,
     osal_tls_close,
     osal_tls_accept,
     osal_tls_flush,
@@ -783,8 +784,7 @@ const osalStreamInterface osal_tls_iface
     osal_stream_default_read_value,
     osal_tls_get_parameter,
     osal_tls_set_parameter,
-    OS_NULL,
-    OS_TRUE}; /* is_secure */
+    OS_NULL};
 
 #endif
 

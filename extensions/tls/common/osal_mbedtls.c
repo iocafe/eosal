@@ -1160,7 +1160,8 @@ void osal_tls_get_network_status(
     function pointers to OSAL sockets implementation.
  */
 const osalStreamInterface osal_tls_iface
- = {osal_mbedtls_open,
+ = {OSAL_STREAM_IFLAG_SECURE,
+    osal_mbedtls_open,
     osal_mbedtls_close,
     osal_mbedtls_accept,
     osal_mbedtls_flush,
@@ -1172,10 +1173,9 @@ const osalStreamInterface osal_tls_iface
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
 #if 0
-    osal_mbedtls_select,
+    osal_mbedtls_select};
 #else
-    osal_stream_default_select,
+    osal_stream_default_select};
 #endif
-    OS_TRUE}; /* is_secure */
 
 #endif

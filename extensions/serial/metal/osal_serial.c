@@ -967,7 +967,8 @@ void osal_serial_shutdown(
     function pointers to OSAL serials implementation.
  */
 const osalStreamInterface osal_serial_iface
- = {osal_serial_open,
+ = {OSAL_STREAM_IFLAG_NONE,
+    osal_serial_open,
     osal_serial_close,
     osal_stream_default_accept,
     osal_serial_flush,

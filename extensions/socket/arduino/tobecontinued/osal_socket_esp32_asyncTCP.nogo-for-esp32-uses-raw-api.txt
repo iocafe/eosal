@@ -1164,7 +1164,8 @@ void osal_socket_maintain(
     function pointers to OSAL sockets implementation.
  */
 const osalStreamInterface osal_socket_iface
- = {osal_socket_esp_open,
+ = {OSAL_STREAM_IFLAG_NONE,
+    osal_socket_esp_open,
     osal_socket_esp_close,
     osal_socket_esp_accept,
     osal_socket_esp_flush,

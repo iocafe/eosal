@@ -281,7 +281,8 @@ void osal_bluetooth_shutdown(
     function pointers to OSAL bluetooths implementation.
  */
 const osalStreamInterface osal_bluetooth_iface
- = {osal_bluetooth_open,
+ = {OSAL_STREAM_IFLAG_NONE,
+    osal_bluetooth_open,
     osal_bluetooth_close,
     osal_stream_default_accept,
     osal_bluetooth_flush,
