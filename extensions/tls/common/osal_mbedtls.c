@@ -280,12 +280,7 @@ static osalStream osal_mbedtls_open(
             goto getout;
         }
 
-        ret = mbedtls_net_set_nonblock(&so->fd);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_net_set_nonblock failed ", ret);
-            goto getout;
-        }
+/* ==> WAS HERE */
 
         /* Initialize TLS related structures.
          */
@@ -339,6 +334,14 @@ static osalStream osal_mbedtls_open(
             so->peer_connected = OS_TRUE;
         }
         so->peer_connected = OS_TRUE;
+
+/* ==> MOVED */
+        ret = mbedtls_net_set_nonblock(&so->fd);
+        if (ret)
+        {
+            osal_debug_error_int("mbedtls_net_set_nonblock failed ", ret);
+            goto getout;
+        }
 
         /* 5. Verify the server certificate
          */
@@ -701,7 +704,6 @@ static osalStatus osal_mbedtls_write(
     so = (osalTlsSocket*)stream;
 
     ret = mbedtls_ssl_write(&so->ssl, (os_uchar*)buf, n);
-osal_debug_error_int("HERE X1", ret);
     if (ret < 0)
     {
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)

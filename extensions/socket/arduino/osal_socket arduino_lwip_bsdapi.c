@@ -16,8 +16,9 @@
 
 ****************************************************************************************************
 */
+#if 0
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT
+// OSAL_SOCKET_SUPPORT
 
 #include <sys/socket.h>
 #include <netdb.h>
