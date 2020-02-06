@@ -28,6 +28,9 @@
   - Nagle needs to follow NODELAY flags, now always disabled
   - Blocking mode, do we take it completely our or implement it?
 
+            esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
+
+
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
@@ -54,6 +57,10 @@
 #include <WiFiMulti.h>
 WiFiMulti wifiMulti;
 #endif
+
+#include <esp_pm.h>
+#include <esp_wifi.h>
+#include <esp_wifi_types.h>
 
 /* Two known wifi networks to select from in NIC configuration.
  */
@@ -1365,6 +1372,8 @@ osalStatus osal_are_sockets_initialized(
             os_get_timer(&osal_wifi_step_timer);
             osal_wifi_boot_timer = osal_wifi_step_timer;
             osal_wifi_init_step = OSAL_WIFI_INIT_STEP2;
+
+            esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
             break;
 
         case OSAL_WIFI_INIT_STEP2:
