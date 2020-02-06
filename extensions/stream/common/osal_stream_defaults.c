@@ -56,6 +56,9 @@ osalStatus osal_stream_default_write_value(
 	os_ushort c,
 	os_int flags)
 {
+#if OSAL_MICROCONTROLLER
+    return OSAL_STATUS_FAILED;
+#else
     os_char
         c8;
 
@@ -71,6 +74,7 @@ osalStatus osal_stream_default_write_value(
 	if (status) return status;
 
 	return n_written ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
+#endif
 }
 
 
@@ -79,7 +83,10 @@ osalStatus osal_stream_default_read_value(
 	os_ushort *c,
 	os_int flags)
 {
-	os_uchar 
+#if OSAL_MICROCONTROLLER
+    return OSAL_STATUS_FAILED;
+#else
+    os_uchar
 		u = 0;
 
 	os_memsz 
@@ -93,6 +100,7 @@ osalStatus osal_stream_default_read_value(
 
 	if (status) return status;
 	return n_read ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
+#endif
 }
 
 

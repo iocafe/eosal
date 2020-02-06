@@ -414,7 +414,8 @@ void osal_socket_close(
 		   This parameter can be OS_NULL, if no status code is needed. 
   @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
 		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
-  @return  Stream pointer representing the socket, or OS_NULL if the function failed.
+  @return  Stream pointer (handle) representing the stream, or OS_NULL if no new connection
+           was accepted.
 
 ****************************************************************************************************
 */
@@ -786,13 +787,11 @@ getout:
            member is planned to to show reason for return. So far value of eventflags
            is not well defined and is different for different operating systems, so
            it should not be relied on.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
+  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used (infinite).
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
-
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-  @return  None.
+  @return  If successfull, the function returns OSAL_SUCCESS (0) and the selectdata tells which
+           socket or event triggered the thread to continue. Other return values indicate an error.
+           See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */

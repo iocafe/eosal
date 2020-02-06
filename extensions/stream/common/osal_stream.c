@@ -98,16 +98,16 @@ void osal_stream_close(
   @param   remote_ip_address Pointer to string buffer into which to store the IP address
            from which the incoming connection was accepted. Can be OS_NULL if not needed.
   @param   remote_ip_addr_sz Size of remote IP address buffer in bytes.
-
   @param   status Pointer to integer into which to store the function status code. Value
            OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
            The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming
            connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
            This parameter can be OS_NULL, if no status code is needed.
-  @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
+  @param   flags Flags for opening the the socket. Define OSAL_STREAM_DEFAULT for normal operation.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
-  @return  Stream pointer representing the socket, or OS_NULL if the function failed.
+  @return  Stream pointer (handle) representing the stream, or OS_NULL if no new connection
+           was accepted.
 
 ****************************************************************************************************
 */
@@ -127,6 +127,28 @@ osalStream osal_stream_accept(
 	return OS_NULL;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Flush writes to the stream.
+  @anchor osal_stream_flush
+
+  The osal_stream_flush() function flushes data to be written to stream.
+
+  IMPORTANT, FLUSH MUST BE CALLED FOR SOCKETS: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT)
+  must  be called when select call returns even after writing or even if nothing was written, or
+  periodically in in single thread mode. This is necessary even if no data was written
+  previously, the socket may have stored buffered data to avoid blocking.
+
+  @param   stream Stream pointer.
+  @param   flags Often OSAL_STREAM_DEFAULT. See @ref osalStreamFlags "Flags for Stream Functions"
+           for full list of flags.
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_flush(
 	osalStream stream,
 	os_int flags)
@@ -138,6 +160,25 @@ osalStatus osal_stream_flush(
 	return OSAL_STATUS_FAILED;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Get or set file seek position.
+  @anchor osal_stream_seek
+
+  The osal_stream_seek() function is used only for files, it can be used to get or set current
+  read or write position.
+
+  @param   stream Stream pointer representing open file.
+  @param   pos Position, both input and output.
+  @param   flags
+
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_seek(
 	osalStream stream,
 	os_long *pos,
@@ -150,6 +191,32 @@ osalStatus osal_stream_seek(
 	return OSAL_STATUS_FAILED;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Write data to stream.
+  @anchor osal_stream_write
+
+  The osal_stream_write() function writes up to n bytes of data from buffer to socket.
+
+  Writes and reads are always non blocking. Blocking behaviour can be emulated by setting
+  nonzero read and write timeouts. This is important for sockets and serial ports.
+  For many stream types, like files, stream buffers, etc, either succeed or fail immediately.
+
+  @param   stream Stream pointer.
+  @param   buf Pointer to the beginning of data to write to stream.
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
+           actually written, which may be less than n if there is not enough space
+           left in the buffer. If the function fails n_written is set to zero.
+  @param   flags Flags for the function.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_write(
 	osalStream stream,
     const os_char *buf,
@@ -202,6 +269,29 @@ osalStatus osal_stream_write(
 	return OSAL_STATUS_FAILED;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Read data from stream.
+  @anchor osal_stream_read
+
+  The osal_stream_read() function reads up to n bytes of data from socket into buffer.
+
+  @param   stream Stream pointer.
+  @param   buf Pointer to buffer to read into.
+  @param   n Maximum number of bytes to read. The data buffer must large enough to hold
+           at least this many bytes.
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
+
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_read(
 	osalStream stream,
     os_char *buf,
@@ -265,6 +355,26 @@ osalStatus osal_stream_read(
 	return OSAL_STATUS_FAILED;
 }
 
+
+#if OSAL_MICROCONTROLLER == 0
+/**
+****************************************************************************************************
+
+  @brief Write single value.
+  @anchor osal_stream_write_value
+
+  The osal_stream_write_value() function writes one byte value or control code to stream.
+  This function is used by eobjects for serialized object versioning, do not use from iocom, etc.
+
+  @param   stream Stream pointer.
+  @param   c Byte or control code to write.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
+
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_write_value(
 	osalStream stream,
 	os_ushort c,
@@ -307,7 +417,28 @@ osalStatus osal_stream_write_value(
 	}
 	return OSAL_STATUS_FAILED;
 }
+#endif
 
+
+#if OSAL_MICROCONTROLLER == 0
+/**
+****************************************************************************************************
+
+  @brief Write single value.
+  @anchor osal_stream_read_value
+
+  The osal_stream_write_value() function writes one byte value or control code to stream.
+  This function is used by eobjects for serialized object versioning, do not use from iocom, etc.
+
+  @param   stream Stream pointer.
+  @param   c Byte or control code to write.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
+
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_read_value(
 	osalStream stream,
 	os_ushort *c,
@@ -344,7 +475,24 @@ osalStatus osal_stream_read_value(
 	*c = 0;
 	return OSAL_STATUS_FAILED;
 }
+#endif
 
+
+/**
+****************************************************************************************************
+
+  @brief Get stream parameter.
+  @anchor osal_stream_get_parameter
+
+  The osal_stream_get_parameter() function gets stream parameter value.
+
+  @param   stream Stream pointer representing the serial.
+  @param   parameter_ix Index of parameter to get.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+  @return  Parameter value.
+
+****************************************************************************************************
+*/
 os_long osal_stream_get_parameter(
 	osalStream stream,
 	osalStreamParameterIx parameter_ix)
@@ -356,6 +504,23 @@ os_long osal_stream_get_parameter(
 	return 0;
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Set stream parameter.
+  @anchor osal_stream_set_parameter
+
+  The osal_stream_set_parameter() function sets a stream parameter.
+
+  @param   stream Stream pointer representing the serial.
+  @param   parameter_ix Index of parameter to set.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+  @param   value Parameter value.
+  @return  None.
+
+****************************************************************************************************
+*/
 void osal_stream_set_parameter(
 	osalStream stream,
 	osalStreamParameterIx parameter_ix,
@@ -367,8 +532,37 @@ void osal_stream_set_parameter(
 	}
 }
 
-/* Return value OSAL_STATUS_NOT_SUPPORTED indicates that select is not implemented.
- */
+
+/**
+****************************************************************************************************
+
+  @brief Block thread until something is received from stream or event occurs.
+  @anchor osal_stream_select
+
+  The osal_stream_select() function blocks execution of the calling thread until something
+  is received from stream, we can write data to it, or event given as argument is triggered.
+
+  @param   streams Array of streams to wait for. These must be serial ports, no mixing
+           of different stream types is supported.
+  @param   n_streams Number of stream pointers in "streams" array.
+  @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
+  @param   selectdata Pointer to structure to fill in with information why select call
+           returned. The "stream_nr" member is stream number which triggered the return,
+           or OSAL_STREAM_NR_CUSTOM_EVENT if return was triggered by custom evenet given
+           as argument. The "errorcode" member is OSAL_SUCCESS if all is fine. Other
+           values indicate an error (broken or closed socket, etc). The "eventflags"
+           member is planned to to show reason for return. So far value of eventflags
+           is not well defined and is different for different operating systems, so
+           it should not be relied on.
+  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used (infinite).
+  @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
+  @return  If successfull, the function returns OSAL_SUCCESS and the selectdata tells which
+           socket or event triggered the thread to continue. Return value OSAL_STATUS_NOT_SUPPORTED
+           indicates that select is not implemented. Other return values indicate an error.
+           See @ref osalStatus "OSAL function return codes" for full list.
+
+****************************************************************************************************
+*/
 osalStatus osal_stream_select(
 	osalStream *streams,
     os_int nstreams,
@@ -381,7 +575,8 @@ osalStatus osal_stream_select(
 	{
         if (streams[0]->iface->stream_select)
         {
-            return streams[0]->iface->stream_select(streams, nstreams, evnt, selectdata, timeout_ms, flags);
+            return streams[0]->iface->stream_select(streams, nstreams,
+                evnt, selectdata, timeout_ms, flags);
         }
         else
         {
