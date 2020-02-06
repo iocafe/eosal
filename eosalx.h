@@ -45,7 +45,9 @@ OSAL_C_HEADER_BEGINS
  */
 #include "extensions/main/common/osal_main.h"
 #include "extensions/stream/common/osal_stream.h"
+#include "extensions/stream/common/osal_stream_defaults.h"
 #include "extensions/stream/common/osal_stream_buffer.h"
+#include "extensions/stream/common/osal_stream_supplement.h"
 
 #if OSAL_STRINGX_SUPPORT
   #include "extensions/stringx/common/osal_stringx.h"

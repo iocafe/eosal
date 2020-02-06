@@ -560,7 +560,7 @@ osalStatus osal_serial_select(
 {
     osalSerial *myserial;
     fd_set rdset, wrset;
-    os_int i, handle, serial_nr, eventflags, errorcode, maxfd, pipefd, rval;
+    os_int i, handle, serial_nr, maxfd, pipefd, rval;
     struct timespec timeout, *to;
     
     os_memclear(selectdata, sizeof(osalSelectData));
@@ -602,29 +602,29 @@ osalStatus osal_serial_select(
         to = &timeout;
     }
 
-    errorcode = OSAL_SUCCESS;
+    // errorcode = OSAL_SUCCESS;
     rval = pselect(maxfd+1, &rdset, &wrset, NULL, to, NULL);
     if (rval <= 0)
     {
         if (rval == 0)
         {
-            selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
+            //selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
             selectdata->stream_nr = OSAL_STREAM_NR_TIMEOUT_EVENT;
             return OSAL_SUCCESS;
         }
-        errorcode = OSAL_STATUS_FAILED;
+        // errorcode = OSAL_STATUS_FAILED;
     }
 
     if (pipefd >= 0) if (FD_ISSET(pipefd, &rdset))
     {
         osal_event_clearpipe(evnt);
 
-        selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
         return OSAL_SUCCESS;
     }
 
-    eventflags = OSAL_STREAM_UNKNOWN_EVENT;
+    // eventflags = OSAL_STREAM_UNKNOWN_EVENT;
 
     for (serial_nr = 0; serial_nr < nstreams; serial_nr++)
     {
@@ -635,7 +635,7 @@ osalStatus osal_serial_select(
 
             if (FD_ISSET (handle, &rdset))
             {
-                eventflags = OSAL_STREAM_READ_EVENT;
+                // eventflags = OSAL_STREAM_READ_EVENT;
                 break;
             }
 
@@ -643,7 +643,7 @@ osalStatus osal_serial_select(
             {
                 if (FD_ISSET (handle, &wrset))
                 {
-                    eventflags = OSAL_STREAM_WRITE_EVENT;
+                    // eventflags = OSAL_STREAM_WRITE_EVENT;
                     break;
                 }
             }
@@ -655,9 +655,9 @@ osalStatus osal_serial_select(
         serial_nr = OSAL_STREAM_NR_UNKNOWN_EVENT;
     }
 
-    selectdata->eventflags = eventflags;
+    // selectdata->eventflags = eventflags;
     selectdata->stream_nr = serial_nr;
-    selectdata->errorcode = errorcode;
+    // selectdata->errorcode = errorcode;
 
     return OSAL_SUCCESS;
 }

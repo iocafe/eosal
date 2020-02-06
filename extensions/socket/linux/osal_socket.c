@@ -314,12 +314,13 @@ getout:
   @brief Close socket.
   @anchor osal_socket_close
 
-  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
-  function. All resource related to the socket are freed. Any attemp to use the socket after
-  this call may result crash.
+  The osal_socket_close() function closes a socket, which was opened by osal_socket_open()
+  or osal_stream_accept() function. All resource related to the socket are freed. Any attemp
+  to use the socket after this call may result in crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will
 		   point to invalid memory location.
+  @param   flags Reserver, set OSAL_STREAM_DEFAULT (0) for now.
   @return  None.
 
 ****************************************************************************************************
@@ -396,12 +397,15 @@ void osal_socket_close(
 /**
 ****************************************************************************************************
 
-  @brief Accept connection from listening socket.
-  @anchor osal_socket_open
+  @brief Accept connection to listening socket.
+  @anchor osal_socket_accept
 
   The osal_socket_accept() function accepts an incoming connection from listening socket.
 
   @param   stream Stream pointer representing the listening socket.
+  @param   remote_ip_address Pointer to string buffer into which to store the IP address
+           from which the incoming connection was accepted. Can be OS_NULL if not needed.
+  @param   remote_ip_addr_sz Size of remote IP address buffer in bytes.
   @param   status Pointer to integer into which to store the function status code. Value
 		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
 		   The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming 
@@ -802,7 +806,7 @@ osalStatus osal_socket_select(
 {
 	osalSocket *mysocket;
     fd_set rdset, wrset, exset;
-    os_int i, handle, socket_nr, eventflags, errorcode, maxfd, pipefd, rval;
+    os_int i, handle, socket_nr, maxfd, pipefd, rval;
     struct timespec timeout, *to;
 
     os_memclear(selectdata, sizeof(osalSelectData));
@@ -849,29 +853,29 @@ osalStatus osal_socket_select(
         to = &timeout;
     }
 
-    errorcode = OSAL_SUCCESS;
+    // errorcode = OSAL_SUCCESS;
     rval = pselect(maxfd+1, &rdset, &wrset, &exset, to, NULL);
     if (rval <= 0)
     {
         if (rval == 0)
         {
-            selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
+            // selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
             selectdata->stream_nr = OSAL_STREAM_NR_TIMEOUT_EVENT;
             return OSAL_SUCCESS;
         }
-        errorcode = OSAL_STATUS_FAILED;
+        // errorcode = OSAL_STATUS_FAILED;
     }
 
     if (pipefd >= 0) if (FD_ISSET(pipefd, &rdset))
     {
         osal_event_clearpipe(evnt);
 
-        selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
         return OSAL_SUCCESS;
     }
 
-    eventflags = OSAL_STREAM_UNKNOWN_EVENT;
+    // eventflags = OSAL_STREAM_UNKNOWN_EVENT;
 
     for (socket_nr = 0; socket_nr < nstreams; socket_nr++)
     {
@@ -882,34 +886,27 @@ osalStatus osal_socket_select(
 
             if (FD_ISSET (handle, &exset))
             {
-                eventflags = OSAL_STREAM_CLOSE_EVENT;
-                errorcode = OSAL_STATUS_STREAM_CLOSED;
+                // eventflags = OSAL_STREAM_CLOSE_EVENT;
+                // errorcode = OSAL_STATUS_STREAM_CLOSED;
                 break;
             }
 
             if (FD_ISSET (handle, &rdset))
             {
-                if (mysocket->open_flags & OSAL_STREAM_LISTEN)
+                /* if (mysocket->open_flags & OSAL_STREAM_LISTEN)
                 {
                     eventflags = OSAL_STREAM_ACCEPT_EVENT;
                 }
-                /* IT SEEMS THAT THIS CANNOT BE HERE, CHECK WHY, COMMENTED.
-                 * else if (!mysocket->connected)
-                {
-                    eventflags = OSAL_STREAM_CONNECT_EVENT;
-                    mysocket->connected = OS_TRUE;
-                    mysocket->write_blocked = OS_TRUE;
-                } */
                 else
                 {
                     eventflags = OSAL_STREAM_READ_EVENT;
-                }
+                } */
                 break;
             }
 
             if (mysocket->write_blocked || !mysocket->connected) if (FD_ISSET (handle, &wrset))
             {
-                if (!mysocket->connected)
+                /* if (!mysocket->connected)
                 {
                     eventflags = OSAL_STREAM_CONNECT_EVENT;
                     mysocket->connected = OS_TRUE;
@@ -919,7 +916,7 @@ osalStatus osal_socket_select(
                 {
                     eventflags = OSAL_STREAM_WRITE_EVENT;
                     mysocket->write_blocked = OS_FALSE;
-                }
+                } */
                 break;
             }
         }
@@ -930,9 +927,9 @@ osalStatus osal_socket_select(
         socket_nr = OSAL_STREAM_NR_UNKNOWN_EVENT;
     }
 
-    selectdata->eventflags = eventflags;
+    // selectdata->eventflags = eventflags;
     selectdata->stream_nr = socket_nr;
-    selectdata->errorcode = errorcode;
+    // selectdata->errorcode = errorcode;
 
     return OSAL_SUCCESS;
 }

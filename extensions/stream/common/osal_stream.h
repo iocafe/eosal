@@ -4,13 +4,12 @@
   @brief   Stream interface for OSAL stream API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    6.2.2020
 
-  Definition OSAL stream API: defines osalStreamInterface structure. function prototypes
-  and preprocessor defines. The OSAL stream API is abstraction which makes streams (including
-  sockets) look similar to upper levels of code, regardless of operating system, network
-  library, or other transport actually used. In other words, this file defines how a stream
-  looks like to upper layers of code.
+  Definition OSAL stream API: defines osalStreamInterface structure. function prototypes, etc.
+  The OSAL stream API is abstraction which makes all streams (including sockets) look more or less
+  similar to upper levels of code, regardless of operating system, network library, or other
+  transport actually used.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -32,8 +31,6 @@
 
 ****************************************************************************************************
 */
-/*@{*/
-
 /* Declare stream header structure, defined later in this file.
  */
 struct osalStreamHeader;
@@ -41,8 +38,6 @@ struct osalStreamHeader;
 /** Stream pointer returned by osal_stream_open() function.
  */
 typedef struct osalStreamHeader *osalStream;
-
-/*@}*/
 
 
 /**
@@ -54,10 +49,10 @@ typedef struct osalStreamHeader *osalStream;
   These flags nodify how stream functions behave. Some flags are appropriate for many functions,
   and some flags are effect only one.
 
+  Note: bit 0x0100000 and larger are reserved to eStream
+
 ****************************************************************************************************
 */
-/*@{*/
-
 /** No special flags. The OSAL_STREAM_DEFAULT (0) can be given as flag for any stream function,
     which takes flags. It simply specifies no special flags.
  */
@@ -150,27 +145,17 @@ typedef struct osalStreamHeader *osalStream;
 #define OSAL_STREAM_FINAL_HANDSHAKE 0x20000
 
 
-/* Note: bit 0x0100000 and larger are reserved to eStream
- */
-
-/*@}*/
-
-
 /**
 ****************************************************************************************************
 
   @name Stream Parameter Enumeration
   @anchor osalStreamParameterIx
 
-  Streams may have parameters osal_stream_get_parameter() and osal_stream_set_parameter().
+  This enumeration indexes stream parameters which can be accessed by osal_stream_get_parameter()
+  and osal_stream_set_parameter() functions.
 
 ****************************************************************************************************
 */
-/*@{*/
-
-/** Stream parameter enumeration. Indexes of all stream parameters.
-    @anchor osalStreamParameterIx
- */
 typedef enum
 {
     /** Timeout for writing data, milliseconds.
@@ -187,9 +172,6 @@ typedef enum
 }
 osalStreamParameterIx;
 
-/*@}*/
-
-
 
 /**
 ****************************************************************************************************
@@ -201,8 +183,6 @@ osalStreamParameterIx;
 
 ****************************************************************************************************
 */
-/*@{*/
-
 /** No interface flags, define used instead of 0 to allow string search.
  */
 #define OSAL_STREAM_IFLAG_NONE 0
@@ -211,8 +191,6 @@ osalStreamParameterIx;
  */
 #define OSAL_STREAM_IFLAG_SECURE 1
 
-
-/*@}*/
 
 /** 
 ****************************************************************************************************
@@ -223,36 +201,23 @@ osalStreamParameterIx;
 */
 /*@{*/
 
-/* Bit fields for eventflags.
- */
-#define OSAL_STREAM_ACCEPT_EVENT  0x0001
-#define OSAL_STREAM_CONNECT_EVENT 0x0002
-#define OSAL_STREAM_CLOSE_EVENT   0x0004
-#define OSAL_STREAM_READ_EVENT    0x0008
-#define OSAL_STREAM_WRITE_EVENT   0x0010
-
-/* Custom event
+/* Values indicating custom event, timeout and unknown event in stream_nr of select data.
  */
 #define OSAL_STREAM_NR_CUSTOM_EVENT   -1
-#define OSAL_STREAM_CUSTOM_EVENT  0x0100
-
-/* Unknown event
- */
 #define OSAL_STREAM_NR_TIMEOUT_EVENT  -2
-#define OSAL_STREAM_TIMEOUT_EVENT 0x0200
+#define OSAL_STREAM_NR_UNKNOWN_EVENT  -3
 
-/* Unknown event
- */
-#define OSAL_STREAM_NR_UNKNOWN_EVENT -3
-#define OSAL_STREAM_UNKNOWN_EVENT 0x0400
-
-/* Information back from select function
+/** Information back from select function. This tells if this is custom event triggered by
+    application to initiate writing data, select has timed out, or which of the streams
+    given as argument has triggered select to return.
  */
 typedef struct osalSelectData
 {
-    os_int stream_nr;  /* zero based stream number */
-    os_int eventflags; /* which events have occurred, like read possible, write possible */
-    os_int errorcode; /* Error code, 0 = all fine */
+    /** Zero based stream number, 0 = first stream, 1 = second stream... Value can also be
+        one of OSAL_STREAM_NR_CUSTOM_EVENT, OSAL_STREAM_NR_TIMEOUT_EVENT or
+        OSAL_STREAM_NR_UNKNOWN_EVENT
+     */
+    os_int stream_nr;
 }
 osalSelectData;
 
@@ -268,11 +233,10 @@ osalSelectData;
 
   The interface structure contains set of function pointers. These function pointers point 
   generally to functions which do implemen a specific stream. The functions pointer can also 
-  point to default implementations in osal_stream.c. This structure exists only if the compiler 
-  and the operating system support function pointers, see define OSAL_FUNCTION_POINTER_SUPPORT.
+  point to default implementations in osal_stream.c.
 
 ****************************************************************************************************
- */
+*/
 typedef struct osalStreamInterface
 {
     /* Stream interface flags.
@@ -293,6 +257,8 @@ typedef struct osalStreamInterface
         osalStream stream,
         os_int flags);
 
+    /* Accept incoming socket.
+     */
 	osalStream (*stream_accept)(
 		osalStream stream,
         os_char *remote_ip_addr,
@@ -300,15 +266,21 @@ typedef struct osalStreamInterface
         osalStatus *status,
 		os_int flags);
 
+    /* Flush writes to stream (call even nothing was written to flush buffering)
+     */
 	osalStatus (*stream_flush)(
 		osalStream stream,
 		os_int flags);
 
+    /* Set seek position. This can be used for files.
+     */
 	osalStatus (*stream_seek)(
 		osalStream stream,
 		os_long *pos,
 		os_int flags);
 
+    /* Write data to stream.
+     */
 	osalStatus (*stream_write)(
 		osalStream stream,
         const os_char *buf,
@@ -316,42 +288,51 @@ typedef struct osalStreamInterface
 		os_memsz *n_written,
 		os_int flags);
 
-	osalStatus (*stream_read)(
+    /* Read data from stream.
+     */
+    osalStatus (*stream_read)(
 		osalStream stream,
         os_char *buf,
 		os_memsz n,
 		os_memsz *n_read,
 		os_int flags);
 
+    /* Write single value to stream (this is for eobjects, do not use in iocom, etc)
+     */
 	osalStatus (*stream_write_value)(
 		osalStream stream,
 		os_ushort c,
 		os_int flags);
 
-	osalStatus (*stream_read_value)(
+    /* Read single value from stream (this is for eobjects, do not use in iocom, etc)
+     */
+    osalStatus (*stream_read_value)(
 		osalStream stream,
 		os_ushort *c,
 		os_int flags);
 
-	os_long (*stream_get_parameter)(
+    /* Get stream parameter, like timeout, etc.
+     */
+    os_long (*stream_get_parameter)(
 		osalStream stream,
 		osalStreamParameterIx parameter_ix);
 
-	void (*stream_set_parameter)(
+    /* Set stream parameter, like timeout, etc.
+     */
+    void (*stream_set_parameter)(
 		osalStream stream,
 		osalStreamParameterIx parameter_ix,
 		os_long value);
 
-	osalStatus (*stream_select)(
+    /* Block thread until something is received from stream or event occurs.
+     */
+    osalStatus (*stream_select)(
 		osalStream *streams,
         os_int nstreams,
 		osalEvent evnt,
 		osalSelectData *selectdata,
         os_int timeout_ms,
         os_int flags);
-
-    /* Secured connection (TLS) */
-    // os_boolean is_secure;
 }
 osalStreamInterface;
 
@@ -364,8 +345,9 @@ osalStreamInterface;
   Stream header structure.
   @anchor osalStreamHeader
 
-  Stream pointer can be casted to osalStreamHeader to access information what is common to
-  cll streams.
+  All stream class structures start with osalStream header, this is the generic portion of
+  data for a stream object. Type osalStream used to as stream handle is actually pointer
+  to osalStreamHeader.
 
 ****************************************************************************************************
 */
@@ -388,8 +370,6 @@ typedef struct osalStreamHeader
 osalStreamHeader;
 
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 /** 
 ****************************************************************************************************
 
@@ -402,9 +382,11 @@ osalStreamHeader;
   OSAL_FUNCTION_POINTER_SUPPORT.
 
 ****************************************************************************************************
- */
-/*@{*/
+*/
+#if OSAL_FUNCTION_POINTER_SUPPORT
 
+/* Open a stream (connect, listen, open file, etc).
+ */
 osalStream osal_stream_open(
     const osalStreamInterface *iface,
     const os_char *parameters,
@@ -412,10 +394,14 @@ osalStream osal_stream_open(
 	osalStatus *status,
 	os_int flags);
 
+/* Close a stream.
+ */
 void osal_stream_close(
     osalStream stream,
     os_int flags);
 
+/* Accept an incoming socket.
+ */
 osalStream osal_stream_accept(
 	osalStream stream,
     os_char *remote_ip_addr,
@@ -423,15 +409,21 @@ osalStream osal_stream_accept(
     osalStatus *status,
 	os_int flags);
 
+/* Flush writes to stream (call even nothing was written to flush buffering)
+ */
 osalStatus osal_stream_flush(
 	osalStream stream,
 	os_int flags);
 
+/* Set seek position. This can be used for files.
+ */
 osalStatus osal_stream_seek(
 	osalStream stream,
 	os_long *pos,
 	os_int flags);
 
+/* Write data to stream
+ */
 osalStatus osal_stream_write(
 	osalStream stream,
     const os_char *buf,
@@ -439,6 +431,8 @@ osalStatus osal_stream_write(
 	os_memsz *n_written,
 	os_int flags);
 
+/* Read data from stream
+ */
 osalStatus osal_stream_read(
 	osalStream stream,
     os_char *buf,
@@ -446,25 +440,35 @@ osalStatus osal_stream_read(
 	os_memsz *n_read,
 	os_int flags);
 
+/* Write single value to stream (this is for eobjects, do not use in iocom, etc)
+ */
 osalStatus osal_stream_write_value(
 	osalStream stream,
 	os_ushort c,
 	os_int flags);
 
+/* Read single value from stream (this is for eobjects, do not use in iocom, etc)
+ */
 osalStatus osal_stream_read_value(
 	osalStream stream,
 	os_ushort *c,
 	os_int flags);
 
+/* Get stream parameter, like timeout, etc.
+ */
 os_long osal_stream_get_parameter(
 	osalStream stream,
 	osalStreamParameterIx parameter_ix);
 
+/* Set stream parameter, like timeout, etc.
+ */
 void osal_stream_set_parameter(
 	osalStream stream,
 	osalStreamParameterIx parameter_ix,
 	os_long value);
 
+/* Block thread until something is received from stream or event occurs.
+ */
 osalStatus osal_stream_select(
 	osalStream *streams,
     os_int nstreams,
@@ -473,23 +477,8 @@ osalStatus osal_stream_select(
     os_int timeout_ms,
     os_int flags);
 
-/* THIS NEEDS TO MOVE ELSEWHERE, NOT PART OF API */
-#if OSAL_SERIALIZE_SUPPORT
-osalStatus osal_stream_write_long(
-    osalStream stream,
-    os_long x,
-    os_int flags);
 #endif
 
-/* THIS NEEDS TO MOVE ELSEWHERE, NOT PART OF API */
-osalStatus osal_stream_print_str(
-    osalStream stream,
-    const os_char *str,
-    os_int flags);
-
-/*@}*/
-
-#endif
 
 /** 
 ****************************************************************************************************
@@ -501,9 +490,7 @@ osalStatus osal_stream_print_str(
   or called from stream's own function to handle general part of the job.
 
 ****************************************************************************************************
- */
-/*@{*/
-
+*/
 osalStream osal_stream_default_accept(
 	osalStream stream,
     os_char *remote_ip_addr,
@@ -546,5 +533,3 @@ osalStatus osal_stream_default_select(
 	osalSelectData *selectdata,
     os_int timeout_ms,
 	os_int flags);
-
-/*@}*/
