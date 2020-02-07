@@ -1050,6 +1050,29 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     }
 #endif
 
+/* char b[10000];
+os_memsz nread;
+os_strncpy(path, certs_dir, sizeof(path));
+
+switch (default_block_nr)
+{
+    case OS_PBNR_CLIENT_CERT_CHAIN:
+        file_name = "myhome-bundle.crt";
+        break;
+
+    case OS_PBNR_SERVER_CERT:
+    case OS_PBNR_ROOT_CERT:
+    case OS_PBNR_SERVER_KEY:
+    default:
+        return OSAL_STATUS_FAILED;
+}
+os_strncat(path, file_name, sizeof(path));
+os_read_file(path, b, sizeof(b), &nread, OS_FILE_NULL_CHAR);
+block = b;
+block_sz = nread;
+s = OSAL_SUCCESS;
+goto joodeli; */
+
     block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
     if (block_nr == 0) block_nr = default_block_nr;
 
@@ -1060,6 +1083,7 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
         return OSAL_STATUS_FAILED;
     }
 
+// joodeli:
     rval = OSAL_SUCCESS;
     if (cert)
     {
