@@ -1164,7 +1164,7 @@ static void osal_mbedtls_cleanup(void)
 ****************************************************************************************************
 */
 void osal_tls_get_network_status(
-    osalNetworkStatus *net_status,
+    osalNetworkState *net_status,
     os_int nic_nr)
 {
     osalTLS *t;

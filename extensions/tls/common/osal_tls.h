@@ -74,6 +74,13 @@ typedef struct osalSecurityConfig
 }
 osalSecurityConfig;
 
+
+/* Default TLS socket port number for IOCOM.
+ */
+#define IOC_DEFAULT_TLS_PORT 6369
+#define IOC_DEFAULT_TLS_PORT_STR "6369"
+
+
 #if OSAL_TLS_SUPPORT
 
 /** Stream interface structure for OpenSLL sockets.
@@ -100,7 +107,7 @@ void osal_tls_shutdown(void);
 /* Get network and security status.
  */
 void osal_tls_get_network_status(
-    osalNetworkStatus *net_status,
+    osalNetworkState *net_status,
     os_int nic_nr);
 
 #else

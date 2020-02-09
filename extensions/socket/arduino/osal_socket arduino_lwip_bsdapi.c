@@ -1114,10 +1114,10 @@ osalStatus osal_are_sockets_initialized(
 ****************************************************************************************************
 */
 void osal_socket_get_network_status(
-    osalNetworkStatus *net_status,
+    osalNetworkState *net_status,
     os_int nic_nr)
 {
-    os_memclear(net_status, sizeof(osalNetworkStatus));
+    os_memclear(net_status, sizeof(osalNetworkState));
 }
 
 
