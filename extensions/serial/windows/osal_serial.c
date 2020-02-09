@@ -808,7 +808,7 @@ osalStatus osal_serial_select(
         myserial = (osalSerial*)streams[dwWait - WAIT_OBJECT_0];
         GetOverlappedResult(myserial->h, &myserial->ov, &dwOvRes, FALSE);
 
-        if ( myserial->status_event & EV_TXEMPTY )
+        /* if ( myserial->status_event & EV_TXEMPTY )
         {
             selectdata->eventflags |= OSAL_STREAM_WRITE_EVENT;
             osal_trace3("EV_TXEMPTY");
@@ -818,7 +818,7 @@ osalStatus osal_serial_select(
         {
             selectdata->eventflags |= OSAL_STREAM_READ_EVENT;
             osal_trace3("EV_RXCHAR");
-        }
+        } */
 
          myserial->monitoring_status = OS_FALSE;
          osal_serial_monitor_status(myserial);
@@ -827,21 +827,20 @@ osalStatus osal_serial_select(
     }
     else  if (dwWait == WAIT_OBJECT_0 + n_serials)
     {
-        selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
     }
     else if (dwWait == WAIT_TIMEOUT)
     {
-        selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_TIMEOUT_EVENT;
         return OSAL_SUCCESS;
     }
     else
     {
-        selectdata->eventflags = OSAL_STREAM_UNKNOWN_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_UNKNOWN_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_UNKNOWN_EVENT;
     }
-
 
     return OSAL_SUCCESS;
 }

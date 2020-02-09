@@ -51,6 +51,8 @@
     <ClInclude Include="..\..\extensions\filesys\common\osal_fileutil.h" />
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
     <ClInclude Include="..\..\extensions\math\common\osal_round.h" />
+    <ClInclude Include="..\..\extensions\net\common\osal_net_config.h" />
+    <ClInclude Include="..\..\extensions\net\common\osal_net_state.h" />
     <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
     <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
     <ClInclude Include="..\..\extensions\secret\common\osal_secret.h" />
@@ -61,9 +63,12 @@
     <ClInclude Include="..\..\extensions\serialize\common\osal_uncompress_json.h" />
     <ClInclude Include="..\..\extensions\serial\common\osal_serial.h" />
     <ClInclude Include="..\..\extensions\socket\common\osal_socket.h" />
+    <ClInclude Include="..\..\extensions\socket\common\osal_socket_util.h" />
     <ClInclude Include="..\..\extensions\strcnv\common\osal_strcnv.h" />
     <ClInclude Include="..\..\extensions\stream\common\osal_stream.h" />
     <ClInclude Include="..\..\extensions\stream\common\osal_stream_buffer.h" />
+    <ClInclude Include="..\..\extensions\stream\common\osal_stream_defaults.h" />
+    <ClInclude Include="..\..\extensions\stream\common\osal_stream_supplement.h" />
     <ClInclude Include="..\..\extensions\stringx\common\osal_stringx.h" />
     <ClInclude Include="..\..\extensions\time\common\osal_time.h" />
     <ClInclude Include="..\..\extensions\tls\common\osal_crypto_hash.h" />
@@ -132,6 +137,8 @@
     <ClCompile Include="..\..\extensions\socket\windows\osal_socket.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream_buffer.c" />
+    <ClCompile Include="..\..\extensions\stream\common\osal_stream_defaults.c" />
+    <ClCompile Include="..\..\extensions\stream\common\osal_stream_supplement.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_hex_str_to_int.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_ip_from_str.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_ip_to_str.c" />

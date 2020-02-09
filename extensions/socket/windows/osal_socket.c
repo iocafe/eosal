@@ -1062,7 +1062,7 @@ osalStatus osal_socket_select(
 	WSAEVENT events[OSAL_SOCKET_SELECT_MAX+1];
 	os_int ixtable[OSAL_SOCKET_SELECT_MAX+1];
 	WSANETWORKEVENTS network_events;
-    os_int i, n_sockets, n_events, event_nr, eventflags, errorcode;
+    os_int i, n_sockets, n_events, event_nr /* , eventflags, errorcode */;
     DWORD rval;
     
     os_memclear(selectdata, sizeof(osalSelectData));
@@ -1096,7 +1096,7 @@ osalStatus osal_socket_select(
 
     if (rval == WSA_WAIT_TIMEOUT)
     {
-        selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_TIMEOUT_EVENT;
         return OSAL_SUCCESS;
     }
@@ -1105,7 +1105,7 @@ osalStatus osal_socket_select(
 
     if (evnt && event_nr == n_sockets)
     {
-        selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
+        // selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
         selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
 		return OSAL_SUCCESS;
     }
@@ -1121,7 +1121,7 @@ osalStatus osal_socket_select(
 		return OSAL_STATUS_FAILED;
     }
 
-    eventflags = 0;
+    /* eventflags = 0;
     errorcode = OSAL_SUCCESS;
 	if (network_events.lNetworkEvents & FD_ACCEPT)
 	{
@@ -1164,10 +1164,10 @@ osalStatus osal_socket_select(
 	if (network_events.lNetworkEvents & FD_WRITE)
 	{
         eventflags |= OSAL_STREAM_WRITE_EVENT;
-	}
+	} */
 
-    selectdata->eventflags = eventflags;
-    selectdata->errorcode = errorcode;
+    // selectdata->eventflags = eventflags;
+    // selectdata->errorcode = errorcode;
     selectdata->stream_nr = ixtable[event_nr];
 
     return OSAL_SUCCESS;
