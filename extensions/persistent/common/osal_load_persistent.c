@@ -26,7 +26,7 @@
   The ioc_load_persistent_malloc function loads memory block into buffer. If the data on flash
   memory can be accessed directly, the function just returns pointer to it, much like
   the os_persistent_get_ptr() function. If data must be loaded from file system, etc
-  memory is allocated for it and the function returns OSAL_STATUS_MEMORY_ALLOCATED.
+  memory is allocated for it and the function returns OSAL_MEMORY_ALLOCATED.
   In latter case memory must be freed.
 
   - Alloctes memory for block. If block is set to non NULL, it must be released by os_free().
@@ -35,8 +35,8 @@
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   pblock Block pointer to set.
   @param   pblock_sz Pointer to integer where to store block size.
-  @return  If successfull, the function return OSAL_SUCCESS or OSAL_STATUS_MEMORY_ALLOCATED.
-           If the function returns OSAL_STATUS_MEMORY_ALLOCATED, memory for the block
+  @return  If successfull, the function return OSAL_SUCCESS or OSAL_MEMORY_ALLOCATED.
+           If the function returns OSAL_MEMORY_ALLOCATED, memory for the block
            oas been allocated by os_malloc and has to be freed by os_free().
 
 ****************************************************************************************************
@@ -99,7 +99,7 @@ osalStatus ioc_load_persistent_malloc(
     os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
     *pblock = p;
     *pblock_sz = block_sz;
-    return OSAL_STATUS_MEMORY_ALLOCATED;
+    return OSAL_MEMORY_ALLOCATED;
 }
 #endif
 

@@ -202,7 +202,7 @@ osalStream osal_socket_esp_open(
      */
     if (!osal_are_sockets_initialized())
     {
-        rval = OSAL_STATUS_PENDING;
+        rval = OSAL_PENDING;
         goto getout;
     }
 

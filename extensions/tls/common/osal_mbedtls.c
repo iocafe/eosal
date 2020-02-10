@@ -215,7 +215,7 @@ static osalStream osal_mbedtls_open(
      */
     if (osal_are_sockets_initialized())
     {
-        if (status) *status = OSAL_STATUS_PENDING;
+        if (status) *status = OSAL_PENDING;
         return OS_NULL;
     }
 
@@ -639,7 +639,7 @@ static osalStatus osal_mbedtls_flush(
                 switch (s)
                 {
                     case OSAL_SUCCESS: work_done = OS_TRUE; break;
-                    case OSAL_STATUS_NOTHING_TO_DO: break;
+                    case OSAL_NOTHING_TO_DO: break;
                     default: return s;
                 }
             }
@@ -649,7 +649,7 @@ static osalStatus osal_mbedtls_flush(
                 switch (s)
                 {
                     case OSAL_SUCCESS: work_done = OS_TRUE; break;
-                    case OSAL_STATUS_NOTHING_TO_DO: break;
+                    case OSAL_NOTHING_TO_DO: break;
                     default: return s;
                 }
             }
@@ -1077,7 +1077,7 @@ goto joodeli; */
     if (block_nr == 0) block_nr = default_block_nr;
 
     s = ioc_load_persistent_malloc(block_nr, &block, &block_sz);
-    if (s != OSAL_SUCCESS && s != OSAL_STATUS_MEMORY_ALLOCATED)
+    if (s != OSAL_SUCCESS && s != OSAL_MEMORY_ALLOCATED)
     {
         osal_debug_error_int("ioc_load_persistent_malloc failed ", block_nr);
         return OSAL_STATUS_FAILED;
@@ -1104,7 +1104,7 @@ goto joodeli; */
         }
     }
 
-    if (s == OSAL_STATUS_MEMORY_ALLOCATED)
+    if (s == OSAL_MEMORY_ALLOCATED)
     {
         os_free(block, block_sz);
     }
@@ -1167,8 +1167,8 @@ void osal_tls_get_network_status(
     osalNetworkState *net_status,
     os_int nic_nr)
 {
-    osalTLS *t;
-    t = osal_global->tls;
+    // osalTLS *t;
+    // t = osal_global->tls;
 
     /* Get underlying socket library status (WiFi)
      */
@@ -1176,7 +1176,7 @@ void osal_tls_get_network_status(
 
     /* Return "no certificate chain" flag.
      */
-    net_status->no_cert_chain = t->no_certificate_chain;
+    // net_status->no_cert_chain = t->no_certificate_chain;
 }
 
 

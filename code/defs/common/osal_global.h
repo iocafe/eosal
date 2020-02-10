@@ -16,9 +16,8 @@
 ****************************************************************************************************
 */
 
-#if OSAL_MULTITHREAD_SUPPORT
-    struct osalMutexStruct;
-#endif
+struct osalMutexStruct;
+struct osalNetworkState;
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
     /* Extension module shutdown function type.
@@ -154,13 +153,13 @@ typedef struct
     osal_shutdown_func *sockets_shutdown_func;
 #endif
 
-    /** Error handler function.
+    /** Error handler function and context pointers.
      */
-    osal_error_handler *error_handler_func;
+    osalErrorHandler error_handler[OSAL_MAX_ERROR_HANDLERS];
 
-    /** Error handler context.
+    /** Network state structure pointer (osal_net_state.c).
      */
-    osal_error_handler *error_handler_context;
+    struct osalNetworkState *net_state;
 }
 osalGlobalStruct;
 

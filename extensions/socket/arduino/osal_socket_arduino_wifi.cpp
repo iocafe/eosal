@@ -517,7 +517,7 @@ static osalStatus osal_socket_really_listen(
   The osal_socket_check() function...
 
   @return  OSAL_SUCCESS if we are connected to a wifi network, proceed with operation.
-           OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
+           OSAL_PENDING If currently connecting and have not never failed to connect so far.
                 Return OSAL_SUCCESS with no bytes transferred.
            OSAL_STATUS_FALED No wifi connection of socket has been closed because of
                 break in wifi connection.
@@ -667,7 +667,7 @@ osalStream osal_socket_accept(
     wifi_rval = osal_socket_check(mysocket);
     if (wifi_rval)
     {
-        rval = (wifi_rval == OSAL_STATUS_PENDING
+        rval = (wifi_rval == OSAL_PENDING
             ? OSAL_STATUS_NO_NEW_CONNECTION : wifi_rval);
         goto getout;
     }
@@ -783,7 +783,7 @@ osalStatus osal_socket_flush(
 
     mysocket = (osalSocket*)stream;
     status = osal_socket_check(mysocket);
-    if (status) return status == OSAL_STATUS_PENDING ? OSAL_SUCCESS: status;
+    if (status) return status == OSAL_PENDING ? OSAL_SUCCESS: status;
 
     head = mysocket->head;
     tail = mysocket->tail;
@@ -922,7 +922,7 @@ osalStatus osal_socket_write(
 
     mysocket = (osalSocket*)stream;
     status = osal_socket_check(mysocket);
-    if (status) return status == OSAL_STATUS_PENDING ? OSAL_SUCCESS: status;
+    if (status) return status == OSAL_PENDING ? OSAL_SUCCESS: status;
 
     /* Cast stream pointer to socket structure pointer.
      */
@@ -1047,7 +1047,7 @@ osalStatus osal_socket_read(
 
     mysocket = (osalSocket*)stream;
     status = osal_socket_check(mysocket);
-    if (status) return status == OSAL_STATUS_PENDING ? OSAL_SUCCESS: status;
+    if (status) return status == OSAL_PENDING ? OSAL_SUCCESS: status;
 
     if (mysocket->use != OSAL_SOCKET_CLIENT)
     {
@@ -1339,7 +1339,7 @@ static void osal_socket_start_wifi_init(void)
   the LWIP library is initialized.
 
   @return  OSAL_SUCCESS if we are connected to a wifi network.
-           OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
+           OSAL_PENDING If currently connecting and have not never failed to connect so far.
            OSAL_STATUS_FALED No connection, at least for now.
 
 ****************************************************************************************************
@@ -1352,7 +1352,7 @@ osalStatus osal_are_sockets_initialized(
     if (!osal_sockets_initialized) return OSAL_STATUS_FAILED;
 
     s = osal_wifi_init_failed_once
-        ? OSAL_STATUS_FAILED : OSAL_STATUS_PENDING;
+        ? OSAL_STATUS_FAILED : OSAL_PENDING;
 
     switch (osal_wifi_init_step)
     {
@@ -1455,7 +1455,7 @@ osalStatus osal_are_sockets_initialized(
                     }
 
                     s = osal_wifi_init_failed_once
-                        ? OSAL_STATUS_FAILED : OSAL_STATUS_PENDING;
+                        ? OSAL_STATUS_FAILED : OSAL_PENDING;
                 }
 
                 break;
@@ -1521,7 +1521,7 @@ void osal_socket_get_network_status(
     if (!osal_wifi_connected)
     {
         net_status->code = (!osal_sockets_initialized || osal_wifi_init_failed_once)
-            ? OSAL_STATUS_PENDING : OSAL_STATUS_NO_WIFI;
+            ? OSAL_PENDING : OSAL_STATUS_NO_WIFI;
     }
 }
 

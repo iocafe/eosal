@@ -102,7 +102,7 @@ typedef struct osalSocket
      */
     volatile osalStatus open_status;
 
-    /** Current socket status code, OSAL_SUCCESS = running fine, OSAL_STATUS_PENDING = waiting
+    /** Current socket status code, OSAL_SUCCESS = running fine, OSAL_PENDING = waiting
         for something, other values are errors.
      */
     volatile osalStatus socket_status;
@@ -522,7 +522,7 @@ osalStatus osal_socket_flush(
         s = w->socket_status;
         if (s)
         {
-            return (s == OSAL_STATUS_PENDING) ? OSAL_SUCCESS : s;
+            return (s == OSAL_PENDING) ? OSAL_SUCCESS : s;
         }
     }
 
@@ -583,7 +583,7 @@ osalStatus osal_socket_write(
     if (w->socket_status)
     {
         status = w->socket_status;
-        if (status == OSAL_STATUS_PENDING)
+        if (status == OSAL_PENDING)
             status = OSAL_SUCCESS;
         goto getout;
     }
@@ -707,7 +707,7 @@ osalStatus osal_socket_read(
     if (w->socket_status)
     {
         status = w->socket_status;
-        if (status == OSAL_STATUS_PENDING)
+        if (status == OSAL_PENDING)
             status = OSAL_SUCCESS;
         goto getout;
     }
@@ -868,7 +868,7 @@ static void osal_lwip_serve_socket(
     if (w->open_socket_cmd)
     {
         w->open_status = osal_lwip_connect_socket(w);
-        w->socket_status = w->open_status ? w->open_status : OSAL_STATUS_PENDING;
+        w->socket_status = w->open_status ? w->open_status : OSAL_PENDING;
         w->open_socket_cmd = OS_FALSE;
         osal_event_set(w->trig_app_socket);
     }
@@ -906,7 +906,7 @@ static void osal_lwip_serve_socket(
   for connect, osal_lwip_connect_callback is for that.
 
   @param   w Socket structure pointer.
-  @return  OSAL_SUCCESS if connecti was successfully initiated. OSAL_STATUS_PENDING indicates
+  @return  OSAL_SUCCESS if connecti was successfully initiated. OSAL_PENDING indicates
            that we are waiting for network initialization (wifi, etc.) to complete.
 
 ****************************************************************************************************
@@ -919,7 +919,7 @@ static osalStatus osal_lwip_connect_socket(
     ip_addr_t ip4;
     err_t err;
 
-    if (!osal_wifi_initialized) return OSAL_STATUS_PENDING;
+    if (!osal_wifi_initialized) return OSAL_PENDING;
     osal_trace2("lwip_connect_socket");
 
     /* Convert IP address from string to binary
@@ -930,7 +930,7 @@ static osalStatus osal_lwip_connect_socket(
             IP_ADDR4(&ip4, ipbytes[0], ipbytes[1], ipbytes[2], ipbytes[3]);
             break;
 
-        // case OSAL_STATUS_IS_IPV6:
+        // case OSAL_IS_IPV6:
             /* not implemented */
 
         default:

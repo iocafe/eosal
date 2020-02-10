@@ -19,6 +19,7 @@
 #ifndef OSAL_EXTENDED_INCLUDED
 #define OSAL_EXTENDED_INCLUDED
 
+
 /* Include osal base.
  */
 #include "eosal.h"

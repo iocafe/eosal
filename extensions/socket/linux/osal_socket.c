@@ -153,6 +153,7 @@ osalStream osal_socket_open(
     struct sockaddr *sa;
     os_boolean is_ipv6;
     int af, on = 1, s, sa_sz;
+    os_int info_code;
 
     /* If not initialized.
      */
@@ -255,7 +256,9 @@ osalStream osal_socket_open(
 		    rval = OSAL_STATUS_FAILED;
 		    goto getout;
         }
-	}
+
+        info_code = OSAL_SOCKET_CONNECTED;
+    }
 
 	else 
 	{
@@ -275,11 +278,14 @@ osalStream osal_socket_open(
             osal_socket_set_nodelay(handle, OS_TRUE);
             osal_socket_set_cork(handle, OS_TRUE);
         }
+
+        info_code = (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+            ? OSAL_UDP_SOCKET_CONNECTED : OSAL_LISTENING_SOCKET_CONNECTED;
 	}
 
 	/* Success set status code and cast socket structure pointer to stream pointer and return it.
 	 */
-    osal_trace2("socket opened");
+    osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;
 	return (osalStream)mysocket;
 
@@ -331,8 +337,8 @@ void osal_socket_close(
 {
 	osalSocket *mysocket;
     os_int handle;
-    char buf[64];
-    os_int n;
+    char buf[64], nbuf[OSAL_NBUF_SZ];
+    os_int n, info_code;
 
 	/* If called with NULL argument, do nothing.
 	 */
@@ -387,6 +393,24 @@ void osal_socket_close(
     {
         osal_debug_error("closesocket failed");
     }
+
+    /* Report close info even if we report problem closing socket, we need
+       keep count of sockets open correct.
+     */
+    osal_int_to_str(nbuf, sizeof(nbuf), handle);
+    if (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+    {
+        info_code = OSAL_UDP_SOCKET_DISCONNECTED;
+    }
+    else if (mysocket->open_flags & OSAL_STREAM_LISTEN)
+    {
+        info_code = OSAL_LISTENING_SOCKET_DISCONNECTED;
+    }
+    else
+    {
+        info_code = OSAL_SOCKET_DISCONNECTED;
+    }
+    osal_info(eosal_mod, info_code, nbuf);
 
     /* Free memory allocated for socket structure.
      */
@@ -1079,7 +1103,7 @@ void osal_socket_shutdown(
   has been completed. For Linux there is nothint to do, operating system is in control of this.
 
   @return  OSAL_SUCCESS if we are connected to a wifi network (always returned in Linux).
-           OSAL_STATUS_PENDING If currently connecting and have not never failed to connect so far.
+           OSAL_PENDING If currently connecting and have not never failed to connect so far.
            OSAL_STATUS_FALED No network, at least for now.
 
 ****************************************************************************************************

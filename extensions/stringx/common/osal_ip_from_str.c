@@ -35,7 +35,7 @@
   @param   ip_sz IP buffer size in bytes: 4 to accept IP v4 addressess or 16 to accept
            both IP v6 and IPv4 addresses.
   @param   str Input, IP address as string.
-  @return  OSAL_SUCCESS if IP v4 address successfully parsed. Value OSAL_STATUS_IS_IPV6
+  @return  OSAL_SUCCESS if IP v4 address successfully parsed. Value OSAL_IS_IPV6
            indicate that IP v6 address was succesfully parsed. Other values indicate
            that str could not be interprented.
 
@@ -62,7 +62,7 @@ osalStatus osal_ip_from_str(
                 *(ip++) = (os_uchar)(buf[i] >> 8);
                 *(ip++) = (os_uchar)buf[i];
             }
-            return OSAL_STATUS_IS_IPV6;
+            return OSAL_IS_IPV6;
         }
     }
 

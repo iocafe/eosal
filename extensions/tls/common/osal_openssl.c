@@ -490,7 +490,7 @@ static osalStatus osal_openssl_flush(
                 switch (s)
                 {
                     case OSAL_SUCCESS: work_done = OS_TRUE; break;
-                    case OSAL_STATUS_NOTHING_TO_DO: break;
+                    case OSAL_NOTHING_TO_DO: break;
                     default: return s;
                 }
             }
@@ -500,7 +500,7 @@ static osalStatus osal_openssl_flush(
                 switch (s)
                 {
                     case OSAL_SUCCESS: work_done = OS_TRUE; break;
-                    case OSAL_STATUS_NOTHING_TO_DO: break;
+                    case OSAL_NOTHING_TO_DO: break;
                     default: return s;
                 }
             }
@@ -584,9 +584,9 @@ static osalStatus osal_openssl_write(
         /* Try to encrypt and send some to make space in buffer.
          */
         s = osal_openssl_do_encrypt(sslsocket);
-        if (s != OSAL_SUCCESS && s != OSAL_STATUS_NOTHING_TO_DO) return s;
+        if (s != OSAL_SUCCESS && s != OSAL_NOTHING_TO_DO) return s;
         s = osal_openssl_do_sock_write(sslsocket);
-        if (s != OSAL_SUCCESS && s != OSAL_STATUS_NOTHING_TO_DO) return s;
+        if (s != OSAL_SUCCESS && s != OSAL_NOTHING_TO_DO) return s;
 
         /* If we got nothing encrypted (buffer still full), then just return.
          */
@@ -1042,7 +1042,7 @@ file_name = "myhome-bundle.crt";
     block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
     if (block_nr == 0) block_nr = OS_PBNR_CLIENT_CERT_CHAIN;
     s = ioc_load_persistent_malloc(block_nr, &block, &block_sz);
-    if (s != OSAL_SUCCESS && s != OSAL_STATUS_MEMORY_ALLOCATED)
+    if (s != OSAL_SUCCESS && s != OSAL_MEMORY_ALLOCATED)
     {
         osal_debug_error_int("ioc_load_persistent_malloc failed ", block_nr);
         t->no_certificate_chain = OS_TRUE;
@@ -1050,7 +1050,7 @@ file_name = "myhome-bundle.crt";
 
 
 
-    if (s == OSAL_STATUS_MEMORY_ALLOCATED)
+    if (s == OSAL_MEMORY_ALLOCATED)
     {
         os_free(block, block_sz);
     }
@@ -1466,7 +1466,7 @@ static osalSSLStatus osal_openssl_do_ssl_handshake(
 
   @param   sslsocket Stream pointer representing the SSL socket.
   @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
-           Return value OSAL_STATUS_NOTHING_TO_DO indicates that there is nothing to
+           Return value OSAL_NOTHING_TO_DO indicates that there is nothing to
            encrypt. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -1480,9 +1480,9 @@ static osalStatus osal_openssl_do_encrypt(
     os_int n;
 
     if (!SSL_is_init_finished(sslsocket->ssl))
-        return OSAL_STATUS_NOTHING_TO_DO;
+        return OSAL_NOTHING_TO_DO;
 
-    s = OSAL_STATUS_NOTHING_TO_DO;
+    s = OSAL_NOTHING_TO_DO;
     while (sslsocket->encrypt_len > 0)
     {
         n = SSL_write(sslsocket->ssl, sslsocket->encrypt_buf, (int)sslsocket->encrypt_len);
@@ -1538,7 +1538,7 @@ static osalStatus osal_openssl_do_encrypt(
 
   @param   sslsocket Stream pointer representing the SSL socket.
   @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
-           Return value OSAL_STATUS_NOTHING_TO_DO indicates that there is nothing to
+           Return value OSAL_NOTHING_TO_DO indicates that there is nothing to
            encrypt. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -1564,7 +1564,7 @@ static osalStatus osal_openssl_do_sock_write(
         return OSAL_SUCCESS;
     }
 
-    return (s == OSAL_SUCCESS && n == 0) ? OSAL_STATUS_NOTHING_TO_DO : s;
+    return (s == OSAL_SUCCESS && n == 0) ? OSAL_NOTHING_TO_DO : s;
 }
 
 

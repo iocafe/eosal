@@ -305,7 +305,7 @@ osalStream osal_tls_open(
      */
     rval = osal_are_sockets_initialized();
     if (rval) {
-        rval = OSAL_STATUS_PENDING;
+        rval = OSAL_PENDING;
         goto getout;
     }
 

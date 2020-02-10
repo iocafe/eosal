@@ -96,11 +96,60 @@ osalErrorLevel;
  */
 const extern os_char eosal_mod[];
 
+/* Flags for osal_set_error_handler() function and in osalErrorHandler structure.
+ */
+#define OSAL_REPLACE_ERROR_HANDLER 0
+#define OSAL_ADD_ERROR_HANDLER 1
+#define OSAL_SYSTEM_ERROR_HANDLER 2
+#define OSAL_APP_ERROR_HANDLER 0
+
+/* Maximum number of error handlers.
+ */
+#ifndef OSAL_MAX_ERROR_HANDLERS
+#define OSAL_MAX_ERROR_HANDLERS 3
+#endif
+
+/** Error handler function type.
+ */
+typedef void osal_error_handler(
+    osalErrorLevel level,
+    const os_char *module,
+    os_int code,
+    const os_char *description,
+    void *context);
+
+/* Structure to store error handle function pointer and context
+ */
+typedef struct
+{
+    /** Error handler function.
+     */
+    osal_error_handler *func;
+
+    /** Error handler context.
+     */
+    osal_error_handler *context;
+
+    /** Error handler flags, significant flag OSAL_SYSTEM_ERROR_HANDLER separates
+        if this is system error handler (set by eosal/iocom) or application error handler.
+        When error handler is set, application error handler can be replaced by
+        application error handler and system error handler by system error handler.
+     */
+    os_short flags;
+}
+osalErrorHandler;
 
 /* Report an error
  */
 void osal_error(
     osalErrorLevel level,
+    const os_char *module,
+    os_int code,
+    const os_char *description);
+
+/* Report information message (error reporting API)
+ */
+void osal_info(
     const os_char *module,
     os_int code,
     const os_char *description);
@@ -111,20 +160,12 @@ void osal_clear_error(
     const os_char *module,
     os_int code);
 
-/* Error handler function type.
- */
-typedef void osal_error_handler(
-    osalErrorLevel level,
-    const os_char *module,
-    os_int code,
-    const os_char *description,
-    void *context);
-
 /* Set error handler (function to be called when error is reported).
  */
-void osal_set_error_handler(
+osalStatus osal_set_error_handler(
     osal_error_handler *func,
-    void *context);
+    void *context,
+    os_short flags);
 
 /* Default error handler function
  */

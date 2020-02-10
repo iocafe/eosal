@@ -39,7 +39,7 @@ const os_char eosal_mod[] = "eosal";
            OSAL_ERROR, OSAL_SYSTEM_ERROR, or OSAL_CLEAR_ERROR.
   @param   Module which reported the error, string. Typically static constant, like eosal_mod
            for the eosal library.
-  @param   code Error code or error number, like osalStatus enumeration for the eosal library.
+  @param   code Status code or error number, like osalStatus enumeration for the eosal library.
   @param   description Text description of an error or additional information . Optional,
            can be OS_NULL.
 
@@ -53,15 +53,58 @@ void osal_error(
     os_int code,
     const os_char *description)
 {
-    if (osal_global->error_handler_func)
+    osalErrorHandler *error_handler;
+    int i;
+    os_boolean app_error_handler_called = OS_FALSE;
+
+    /* Call error handlers and remember if we an application error handler.
+     */
+    for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
     {
-        osal_global->error_handler_func(level, module, code,
-            description, osal_global->error_handler_context);
+        error_handler = &osal_global->error_handler[i];
+        if (error_handler->func != OS_NULL)
+        {
+            error_handler->func(level, module, code,
+                description, error_handler->context);
+
+            if ((error_handler->flags & OSAL_SYSTEM_ERROR_HANDLER) == 0) {
+                app_error_handler_called = OS_TRUE;
+            }
+        }
     }
-    else
+
+    /* If no application error handler called, call default error handler.
+     */
+    if (!app_error_handler_called)
     {
         osal_default_error_handler(level, module, code, description, OS_NULL);
     }
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Report information message (error reporting API)
+  @anchor osal_info
+
+  The osal_info() function exists for readability. It is more understandable to call osal_info()
+  to pass information messages to error handling than to call osal_error() with OSAL_INFO flag.
+
+  @param   Module which reported the error, string. Typically static constant, like eosal_mod
+           for the eosal library.
+  @param   code Status code or error number, like osalStatus enumeration for the eosal library.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_info(
+    const os_char *module,
+    os_int code,
+    const os_char *description)
+{
+    osal_error(OSAL_INFO, module, code, description);
 }
 
 
@@ -79,7 +122,9 @@ void osal_error(
 
   @param   Module which reported the error, string. Typically static constant, like eosal_mod
            for the eosal library.
-  @param   code Error code or error number, like osalStatus enumeration for the eosal library.
+  @param   code Status code or error number, like osalStatus enumeration for the eosal library.
+  @param   description Text description of an error or additional information . Optional,
+           can be OS_NULL.
 
   @return  None.
 
@@ -103,20 +148,69 @@ void osal_clear_error(
   application context pointer. After this, the custom error handler function is called
   instead of default error handler.
 
-  @param   func Pointer to application provided error handler function.
+  Typically eosal and iocom set system error handler for example to maintain network status
+  based on osal_error() calls, etc. Outside these, application can set own error handler.
+  If application error handler is set, default error handler is not called.
+
+  SETTING ERROR HANDLERS IS NOT MULTITHREAD SAFE AND THUS ERROR HANDLER FUNCTIONS NEED BE
+  SET BEFORE THREADS ARE COMMUNICATION, ETC THREADS WHICH CAN REPORT ERRORS ARE CREATED.
+
+  @param   func Pointer to application provided error handler function. Set OS_NULL to
+           remove error handler.
   @param   context Application specific pointer, to be passed to error handler when it is
            called.
+  @param   flags Bits: OSAL_REPLACE_ERROR_HANDLER (0) or OSAL_ADD_ERROR_HANDLER (1),
+           OSAL_APP_ERROR_HANDLER (0) or OSAL_SYSTEM_ERROR_HANDLER (2).
 
-  @return  None.
+  @return  If successfull, the function returns OSAL_SUCCESS. If there are already
+           maximum number of error handlers (OSAL_MAX_ERROR_HANDLERS), the function
+           returns OSAL_STATUS_FAILED.
 
 ****************************************************************************************************
 */
-void osal_set_error_handler(
+osalStatus osal_set_error_handler(
     osal_error_handler *func,
-    void *context)
+    void *context,
+    os_short flags)
 {
-    osal_global->error_handler_func = func;
-    osal_global->error_handler_context = context;
+    int i;
+    osalErrorHandler *error_handler;
+
+    /* If we are replacing existing error handler, remove old ones. If we are
+       replacing application error handler, remove application error handlers.
+       If we are replacing system error handler, remove system error handlers.
+     */
+    if ((flags & OSAL_ADD_ERROR_HANDLER) == 0)
+    {
+        for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
+        {
+            error_handler = &osal_global->error_handler[i];
+            if (error_handler->func &&
+                (error_handler->flags & OSAL_SYSTEM_ERROR_HANDLER)
+                == (flags & OSAL_SYSTEM_ERROR_HANDLER))
+            {
+                error_handler->func = OS_NULL;
+            }
+        }
+    }
+
+    /* Add error handler.
+     */
+    for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
+    {
+        error_handler = &osal_global->error_handler[i];
+        if (error_handler->func == OS_NULL)
+        {
+            error_handler->func = func;
+            error_handler->context = context;
+            error_handler->flags = flags;
+            return OSAL_SUCCESS;
+        }
+    }
+
+    /* Too many error handlers.
+     */
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -130,11 +224,14 @@ void osal_set_error_handler(
   etc). This function is useful only for first stages of testing. Custom error handler function
   needs to be implemented to have report errors in such way that is useful to the end user.
 
+  The osal_default_error_handler can be considered as application error handler, since it
+  is not called if application error handler is set.
+
   @param   level Seriousness or error or clear error request. One of: OSAL_INFO, OSAL_WARNING,
            OSAL_ERROR, OSAL_SYSTEM_ERROR, or OSAL_CLEAR_ERROR.
   @param   Module which reported the error, string. Typically static constant, like eosal_mod
            for the eosal library.
-  @param   code Error code or error number, like osalStatus enumeration for the eosal library.
+  @param   code Status code or error number, like osalStatus enumeration for the eosal library.
   @param   description Text description of an error or additional information . Optional,
            can be OS_NULL.
   @param   context Application specific pointer, not used by default error handler.

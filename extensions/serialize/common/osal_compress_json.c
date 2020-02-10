@@ -240,7 +240,7 @@ static osalStatus osal_parse_json_recursive(
             /* Parse tag. If we need to ignore tag content.
              */
             tag_s = osal_parse_json_tag(state, &tag_dict_ix);
-            if (tag_s == OSAL_STATUS_NOTHING_TO_DO)
+            if (tag_s == OSAL_NOTHING_TO_DO)
             {
                 state->skip_count++;
             }
@@ -347,7 +347,7 @@ static osalStatus osal_parse_json_recursive(
 
         /* End ignoring tag content.
          */
-        if (tag_s == OSAL_STATUS_NOTHING_TO_DO)
+        if (tag_s == OSAL_NOTHING_TO_DO)
         {
             state->skip_count--;
         }
@@ -412,7 +412,7 @@ static osalStatus osal_parse_json_tag(
         if (os_strstr(state->skip_tags, data, OSAL_STRING_SEARCH_ITEM_NAME))
         {
             *dict_ix = 0;
-            return OSAL_STATUS_NOTHING_TO_DO;
+            return OSAL_NOTHING_TO_DO;
         }
 
 #if OSAL_SECRET_SUPPORT

@@ -39,27 +39,51 @@ typedef enum
 
     /** No work to be done (not indicating an error).
      */
-    OSAL_STATUS_NOTHING_TO_DO,
+    OSAL_NOTHING_TO_DO,
 
     /** General operation pending (not indicating an error).
      */
-    OSAL_STATUS_PENDING,
+    OSAL_PENDING,
 
     /** General operation completed (not indicating an error).
      */
-    OSAL_STATUS_COMPLETED,
+    OSAL_COMPLETED,
 
     /** General "memory has been allocated" status (not indicating an error).
      */
-    OSAL_STATUS_MEMORY_ALLOCATED,
+    OSAL_MEMORY_ALLOCATED,
 
     /** Indicating that we are dealing with IP v6 address (not indicating an error).
      */
-    OSAL_STATUS_IS_IPV6,
+    OSAL_IS_IPV6,
 
-    /** General failed.
+    /** Information (not indicating an error).
      */
-    OSAL_STATUS_FAILED,
+    OSAL_SOCKET_CONNECTED,
+
+    /** Information (not indicating an error).
+     */
+    OSAL_SOCKET_DISCONNECTED,
+
+    /** Information (not indicating an error).
+     */
+    OSAL_LISTENING_SOCKET_CONNECTED,
+
+    /** Information (not indicating an error).
+     */
+    OSAL_LISTENING_SOCKET_DISCONNECTED,
+
+    /** Information (not indicating an error).
+     */
+    OSAL_UDP_SOCKET_CONNECTED,
+
+    /** Information (not indicating an error).
+     */
+    OSAL_UDP_SOCKET_DISCONNECTED,
+
+    /** General failed, start enumerating errors from 100.
+     */
+    OSAL_STATUS_FAILED = 100,
 
     /** Object or software library has not been initialized.
      */
