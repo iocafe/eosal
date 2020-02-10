@@ -255,14 +255,17 @@ osalStream osal_socket_open(
     if (flags & OSAL_STREAM_UDP_MULTICAST)
     {
         mysocket->use = OSAL_SOCKET_UDP;
+        info_code = OSAL_UDP_SOCKET_CONNECTED;
     }
     else if (flags & OSAL_STREAM_LISTEN)
     {
         mysocket->use = OSAL_SOCKET_SERVER;
+        info_code = OSAL_LISTENING_SOCKET_CONNECTED;
     }
     else
     {
         mysocket->use = OSAL_SOCKET_CLIENT;
+        info_code = OSAL_SOCKET_CONNECTED;
     }
 
     /* Do the actual work with WizChip.
@@ -276,10 +279,10 @@ osalStream osal_socket_open(
         goto getout;
     }
 
-    /* Success. Set status code and return socket structure pointer
-       casted to stream pointer.
-	 */
-	if (status) *status = OSAL_SUCCESS;
+    /* Success, inform error handler, set status code and return stream pointer.
+     */
+    osal_info(eosal_mod, info_code, parameters);
+    if (status) *status = OSAL_SUCCESS;
     return (osalStream)mysocket;
 
 getout:
@@ -323,6 +326,21 @@ void osal_socket_close(
     {
         disconnect(mysocket->port_ix);
         close(mysocket->port_ix);
+
+        /* Report close info even if we report problem closing socket, we need
+           keep count of sockets open correct.
+         */
+        if (mysocket->use == OSAL_SOCKET_UDP) {
+            info_code = OSAL_UDP_SOCKET_DISCONNECTED;
+        }
+        else if (mysocket->use == OSAL_SOCKET_SERVER) {
+            info_code = OSAL_LISTENING_SOCKET_DISCONNECTED;
+        }
+        else {
+            info_code = OSAL_SOCKET_DISCONNECTED;
+        }
+        osal_info(eosal_mod, info_code, OS_NULL);
+
         mysocket->state = OSAL_SOCKET_NOT_CONFIGURED;
     }
 

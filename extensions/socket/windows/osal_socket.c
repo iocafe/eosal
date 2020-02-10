@@ -158,6 +158,7 @@ osalStream osal_socket_open(
     void *sa_data;
     os_boolean is_ipv6;
     os_int af, udp, on = 1, s, sa_sz;
+    os_int info_code;
 
     /* If not initialized.
      */
@@ -287,7 +288,10 @@ osalStream osal_socket_open(
 		    rval = OSAL_STATUS_FAILED;
 		    goto getout;
         }
-	}
+
+        info_code = (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+            ? OSAL_UDP_SOCKET_CONNECTED : OSAL_LISTENING_SOCKET_CONNECTED;
+    }
 
 	else 
 	{
@@ -307,11 +311,14 @@ osalStream osal_socket_open(
         {
             osal_socket_setup_ring_buffer(mysocket);
         }
-	}
 
-	/* Success set status code and cast socket structure pointer to stream pointer and return it.
-	 */
-	if (status) *status = OSAL_SUCCESS;
+        info_code = OSAL_SOCKET_CONNECTED;
+    }
+
+    /* Success, inform error handler, set status code and return stream pointer.
+     */
+    osal_info(eosal_mod, info_code, parameters);
+    if (status) *status = OSAL_SUCCESS;
 	return (osalStream)mysocket;
 
 getout:
@@ -365,8 +372,8 @@ void osal_socket_close(
 {
 	osalSocket *mysocket;
 	SOCKET handle;
-    char buf[64];
-	os_int n, rval;
+    char buf[64], nbuf[OSAL_NBUF_SZ];
+    os_int n, rval, info_code;
 
 	/* If called with NULL argument, do nothing.
 	 */
@@ -425,6 +432,24 @@ void osal_socket_close(
     {
         osal_debug_error("closesocket failed");
     }
+
+    /* Report close info even if we report problem closing socket, we need
+       keep count of sockets open correct.
+     */
+    osal_int_to_str(nbuf, sizeof(nbuf), handle);
+    if (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+    {
+        info_code = OSAL_UDP_SOCKET_DISCONNECTED;
+    }
+    else if (mysocket->open_flags & OSAL_STREAM_LISTEN)
+    {
+        info_code = OSAL_LISTENING_SOCKET_DISCONNECTED;
+    }
+    else
+    {
+        info_code = OSAL_SOCKET_DISCONNECTED;
+    }
+    osal_info(eosal_mod, info_code, nbuf);
 
     /* Free ring buffer, if any
      */

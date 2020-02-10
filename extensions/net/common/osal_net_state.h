@@ -49,7 +49,7 @@ typedef enum
 
     OSAL_NRO_NET_COUNTS
 }
-osalNetCounts;
+osalNetCountIx;
 
 /** Network state information structure.
  */

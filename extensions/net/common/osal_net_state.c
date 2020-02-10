@@ -22,6 +22,20 @@
  */
 static osalNetworkState static_net_state;
 
+typedef struct
+{
+    os_short inc_status;
+    os_short dec_status;
+    osalNetCountIx count_ix;
+}
+osalStatToNetCountIx;
+
+static const osalStatToNetCountIx stat_to_count_ix[] = {
+    {OSAL_SOCKET_CONNECTED, OSAL_SOCKET_DISCONNECTED, OSAL_NRO_CONNECTED_SOCKETS},
+    {OSAL_LISTENING_SOCKET_CONNECTED, OSAL_LISTENING_SOCKET_DISCONNECTED, OSAL_NRO_LISTENING_SOCKETS},
+    {OSAL_UDP_SOCKET_CONNECTED, OSAL_UDP_SOCKET_DISCONNECTED, OSAL_NRO_UDP_SOCKETS}};
+
+#define N_STAT_TO_COUNT (sizeof(stat_to_count_ix)/sizeof(osalStatToNetCountIx))
 
 /* Forward referred static functions.
  */
@@ -64,42 +78,48 @@ static void osal_net_state_handler(
 {
     osalNetStateNotificationHandler *handler;
     osalNetworkState *ns;
+    const osalStatToNetCountIx *sti;
     int i;
+    os_boolean changed;
 
     /* If not oesal/iocom generated, do nothing.
      */
     if (os_strcmp(module, eosal_mod) && os_strcmp(module, "iocom")) return;
 
-    ns = osal_global->net_state;
-    switch (code)
+    ns = (osalNetworkState*)context;
+    changed = OS_FALSE;
+
+    for (i = 0; i < N_STAT_TO_COUNT; i++)
     {
-        case OSAL_SOCKET_CONNECTED:
-            ns->count[OSAL_NRO_CONNECTED_SOCKETS]++;
-            break;
+        sti = &stat_to_count_ix[i];
 
-        case OSAL_SOCKET_DISCONNECTED:
-            ns->count[OSAL_NRO_CONNECTED_SOCKETS]--;
-            break;
-
-        case OSAL_LISTENING_SOCKET_CONNECTED:
-            ns->count[OSAL_NRO_LISTENING_SOCKETS]++;
-            break;
-
-        case OSAL_LISTENING_SOCKET_DISCONNECTED:
-            ns->count[OSAL_NRO_LISTENING_SOCKETS]--;
-            break;
-
-        case OSAL_UDP_SOCKET_CONNECTED:
-            ns->count[OSAL_NRO_UDP_SOCKETS]++;
-            break;
-
-        case OSAL_UDP_SOCKET_DISCONNECTED:
-            ns->count[OSAL_NRO_UDP_SOCKETS]--;
-            break;
-
-        default:
-            return;
+        if (code == sti->inc_status) {
+            if (level == OSAL_CLEAR_ERROR) {
+                if (ns->count[sti->count_ix])
+                {
+                    ns->count[sti->count_ix] = 0;
+                    changed = OS_TRUE;
+                }
+            }
+            else {
+                ns->count[sti->count_ix]++;
+                changed = OS_TRUE;
+            }
+        }
+        else if (code == sti->dec_status)
+        {
+            if (level == OSAL_CLEAR_ERROR) {
+                if (ns->count[sti->count_ix]) {
+                    ns->count[sti->count_ix] = 0;
+                }
+            }
+            else {
+                ns->count[sti->count_ix]--;
+                changed = OS_TRUE;
+            }
+        }
     }
+    if (!changed) return;
 
     /* Call notification handlers.
      */

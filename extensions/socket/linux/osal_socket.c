@@ -257,7 +257,8 @@ osalStream osal_socket_open(
 		    goto getout;
         }
 
-        info_code = OSAL_SOCKET_CONNECTED;
+        info_code = (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+            ? OSAL_UDP_SOCKET_CONNECTED : OSAL_LISTENING_SOCKET_CONNECTED;
     }
 
 	else 
@@ -279,11 +280,10 @@ osalStream osal_socket_open(
             osal_socket_set_cork(handle, OS_TRUE);
         }
 
-        info_code = (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
-            ? OSAL_UDP_SOCKET_CONNECTED : OSAL_LISTENING_SOCKET_CONNECTED;
-	}
+        info_code = OSAL_SOCKET_CONNECTED;
+    }
 
-	/* Success set status code and cast socket structure pointer to stream pointer and return it.
+    /* Success, inform error handler, set status code and return stream pointer.
 	 */
     osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;
