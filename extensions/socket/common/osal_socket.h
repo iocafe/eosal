@@ -149,12 +149,6 @@ void osal_socket_shutdown(void);
 osalStatus osal_are_sockets_initialized(
     void);
 
-/* Get network status, like is wifi connected?
- */
-void osal_socket_get_network_status(
-    osalNetworkState *net_status,
-    os_int nic_nr);
-
 /* Keep the sockets library alive.
  */
 #if OSAL_SOCKET_MAINTAIN_NEEDED

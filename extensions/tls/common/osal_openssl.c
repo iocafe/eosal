@@ -37,10 +37,6 @@ typedef struct osalTLS
     /** Global SSL context.
      */
     SSL_CTX *ctx;
-
-    /** "no certificate chain" flag.
-     */
-    os_boolean no_certificate_chain;
 }
 osalTLS;
 
@@ -1027,7 +1023,10 @@ file_name = "myhome-bundle.crt";
         if ( SSL_CTX_load_verify_locations(t->ctx, path, NULL) != 1 )
         {
             osal_debug_error("SSL_CTX_load_verify_locations failed");
-            t->no_certificate_chain = OS_TRUE;
+
+           /* Mark to network info that we need certificate chain.
+            */
+           osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
         }
 
         SSL_CTX_set_verify(t->ctx, SSL_VERIFY_PEER, osal_openssl_verify_callback);
@@ -1045,10 +1044,11 @@ file_name = "myhome-bundle.crt";
     if (s != OSAL_SUCCESS && s != OSAL_MEMORY_ALLOCATED)
     {
         osal_debug_error_int("ioc_load_persistent_malloc failed ", block_nr);
-        t->no_certificate_chain = OS_TRUE;
+
+       /* Mark to network info that we need certificate chain.
+        */
+       osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
     }
-
-
 
     if (s == OSAL_MEMORY_ALLOCATED)
     {
@@ -1284,39 +1284,6 @@ static void osal_openssl_client_cleanup(
         free(sslsocket->encrypt_buf);
     }
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Get network and security status.
-  @anchor osal_tls_get_network_status
-
-  The osal_tls_get_network_status function retrieves network and security status information,
-  like is wifi connected? Do we have client certificate chain?
-
-  @param   net_status Network status structure to fill.
-  @param   nic_nr Network interface number, ignored here since only one adapter is supported.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_tls_get_network_status(
-    osalNetworkState *net_status,
-    os_int nic_nr)
-{
-    osalTLS *t;
-    t = osal_global->tls;
-
-    /* Get underlying socket library status (WiFi)
-     */
-    osal_socket_get_network_status(net_status, nic_nr);
-
-    /* Return "no certificate chain" flag.
-     */
-    net_status->no_cert_chain = t->no_certificate_chain;
-}
-
 
 
 /**

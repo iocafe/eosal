@@ -339,6 +339,10 @@ osalStream osal_tls_open(
       // w->client.setCertificate(bobs_key); // for client verification
       // w->client.setPrivateKey(bobs_certificate);	// for client verification
 
+        /* Mark to network info that we need certificate chain.
+        */
+        //  osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
+
     osal_trace2_int("Connecting to TLS socket port ", port_nr);
     osal_trace2(host);
 

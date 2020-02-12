@@ -1115,31 +1115,6 @@ osalStatus osal_are_sockets_initialized(
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Get network status.
-  @anchor osal_socket_get_network_status
-
-  The osal_socket_get_network_status function retrieves network status information,
-  like is wifi connected?
-
-  For Linux, we always say "All good" by returning empty network status structure.
-
-  @param   net_status Network status structure to fill. Just cleared.
-  @param   nic_nr Network interface number.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_get_network_status(
-    osalNetworkState *net_status,
-    os_int nic_nr)
-{
-    os_memclear(net_status, sizeof(osalNetworkState));
-}
-
-
 #if OSAL_FUNCTION_POINTER_SUPPORT
 
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with

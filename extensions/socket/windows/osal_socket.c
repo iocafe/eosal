@@ -1324,37 +1324,6 @@ osalStatus osal_are_sockets_initialized(
 /**
 ****************************************************************************************************
 
-  @brief Get network status.
-  @anchor osal_socket_get_network_status
-
-  The osal_socket_get_network_status function retrieves network status information,
-  like is wifi connected?
-
-  For Windows, we practically always say "All good" by returning empty network status structure.
-  Only checked thing is that the socket library has been initialized.
-
-  @param   net_status Network status structure to fill.
-  @param   nic_nr Network interface number.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_get_network_status(
-    osalNetworkState *net_status,
-    os_int nic_nr)
-{
-    os_memclear(net_status, sizeof(osalNetworkState));
-
-    if (osal_global->sockets_shutdown_func == OS_NULL)
-    {
-        net_status->code = OSAL_STATUS_NOT_INITIALIZED;
-    }
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Enable or disable nagle's algorithm.
   @anchor osal_socket_set_nodelay
 

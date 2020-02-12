@@ -1500,35 +1500,6 @@ osalStatus osal_are_sockets_initialized(
 /**
 ****************************************************************************************************
 
-  @brief Get network status.
-  @anchor osal_socket_get_network_status
-
-  The osal_socket_get_network_status function retrieves network status information,
-  like is wifi connected?
-
-  @param   net_status Network status structure to fill.
-  @param   nic_nr Network interface number, ignored here since only one adapter is supported.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_get_network_status(
-    osalNetworkState *net_status,
-    os_int nic_nr)
-{
-    os_memclear(net_status, sizeof(osalNetworkState));
-
-    if (!osal_wifi_connected)
-    {
-        net_status->code = (!osal_sockets_initialized || osal_wifi_init_failed_once)
-            ? OSAL_PENDING : OSAL_STATUS_NO_WIFI;
-    }
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Called when WiFi network is connected.
   @anchor osal_socket_on_wifi_connect
 

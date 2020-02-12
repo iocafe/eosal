@@ -77,10 +77,6 @@ typedef struct osalTLS
      */
     mbedtls_x509_crt srvcert;
     mbedtls_pk_context pkey;
-
-    /** Flag indicating the we do not have certificate chain.
-     */
-    os_boolean no_certificate_chain;
 }
 osalTLS;
 
@@ -972,7 +968,12 @@ static void osal_mbedtls_init(
     mbedtls_x509_crt_init(&t->cacert);
     s = osal_mbedtls_setup_cert_or_key(&t->cacert, OS_NULL, OS_PBNR_CLIENT_CERT_CHAIN,
         certs_dir, prm->client_cert_chain_file);
-    t->no_certificate_chain = (os_boolean)(s != OSAL_SUCCESS);
+
+    /* Mark to network info that we need certificate chain.
+     */
+    if (s != OSAL_SUCCESS)  {
+        osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
+    }
 
     /* ************* server *************
      */
@@ -1145,38 +1146,6 @@ static void osal_mbedtls_cleanup(void)
 
     mbedtls_ctr_drbg_free(&t->ctr_drbg);
     mbedtls_entropy_free(&t->entropy);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get network and security status.
-  @anchor osal_tls_get_network_status
-
-  The osal_tls_get_network_status function retrieves network and security status information,
-  like is wifi connected? Do we have client certificate chain?
-
-  @param   net_status Network status structure to fill.
-  @param   nic_nr Network interface number, ignored here since only one adapter is supported.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_tls_get_network_status(
-    osalNetworkState *net_status,
-    os_int nic_nr)
-{
-    // osalTLS *t;
-    // t = osal_global->tls;
-
-    /* Get underlying socket library status (WiFi)
-     */
-    osal_socket_get_network_status(net_status, nic_nr);
-
-    /* Return "no certificate chain" flag.
-     */
-    // net_status->no_cert_chain = t->no_certificate_chain;
 }
 
 

@@ -46,7 +46,8 @@ static void osal_net_state_handler(
     const os_char *description,
     void *context);
 
-
+static void osal_call_network_state_notification_handlers(
+    void);
 
 /* Initialize network state (does nothing if already initialized)
  */
@@ -76,7 +77,6 @@ static void osal_net_state_handler(
     const os_char *description,
     void *context)
 {
-    osalNetStateNotificationHandler *handler;
     osalNetworkState *ns;
     const osalStatToNetCountIx *sti;
     int i;
@@ -121,9 +121,22 @@ static void osal_net_state_handler(
     }
     if (!changed) return;
 
+    osal_call_network_state_notification_handlers();
+}
+
+static void osal_call_network_state_notification_handlers(
+    void)
+{
+    osalNetStateNotificationHandler *handler;
+    osalNetworkState *ns;
+    int i;
+
+    ns = osal_global->net_state;
+    if (ns == OS_NULL) return;
+
     /* Call notification handlers.
      */
-    for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
+    for (i = 0; i < OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS; i++)
     {
         handler = &ns->notification_handler[i];
         if (handler->func != OS_NULL)
@@ -186,4 +199,81 @@ osalStatus osal_add_network_state_notification_handler(
     /* Too many error handlers.
      */
     return OSAL_STATUS_FAILED;
+}
+
+/* Set network state item. For example called by TLS socket wrapper to inform that we do not
+   have client certificate chain.
+   @param   item OSAL_NS_ADAPTER_STATE, OSAL_NS_WIFI_CONNECTED, OSAL_NS_NO_CERT_CHAIN
+ */
+void osal_set_network_state_item(
+    osalNetStateItem item,
+    os_int index,
+    os_int value)
+{
+    osalNetworkState *ns;
+
+    ns = osal_global->net_state;
+    if (ns == OS_NULL) return;
+
+    switch (item)
+    {
+        case OSAL_NS_ADAPTER_STATE:
+            if (index < 0 || index >= OSAL_MAX_NRO_NICS) return;
+            if (ns->nic_code[index] == (os_boolean)value) return;
+            ns->nic_code[index] = (os_boolean)value;
+            break;
+
+        case OSAL_NS_WIFI_CONNECTED:
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) return;
+            if (ns->wifi_connected[index] == (os_boolean)value) return;
+            ns->wifi_connected[index] = (os_boolean)value;
+            break;
+
+        case OSAL_NS_NO_CERT_CHAIN:
+            if (ns->no_cert_chain == (os_boolean)value) return;
+            ns->no_cert_chain = (os_boolean)value;
+            break;
+
+        default:
+            return;
+    }
+
+    osal_call_network_state_notification_handlers();
+}
+
+
+/* Get network state item.
+ */
+os_int osal_get_network_state_item(
+    osalNetStateItem item,
+    os_int index)
+{
+    osalNetworkState *ns;
+    os_int rval;
+
+    ns = osal_global->net_state;
+    if (ns == OS_NULL) return 0;
+
+    rval = 0;
+    switch (item)
+    {
+        case OSAL_NS_ADAPTER_STATE:
+            if (index < 0 || index >= OSAL_MAX_NRO_NICS) break;
+            rval = ns->nic_code[index];
+            break;
+
+        case OSAL_NS_WIFI_CONNECTED:
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            rval = ns->wifi_connected[index];
+            break;
+
+        case OSAL_NS_NO_CERT_CHAIN:
+            rval = ns->no_cert_chain;
+            break;
+
+        default:
+            break;
+    }
+
+    return rval;
 }
