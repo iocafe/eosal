@@ -183,4 +183,8 @@ typedef enum
 }
 osalStatus;
 
+/* Macro to determine if returned status is error.
+ */
+#define OSAL_IS_ERROR(s) ((s) >= OSAL_STATUS_FAILED)
+
 /*@}*/
