@@ -59,6 +59,7 @@
 #include "mbedtls/error.h"
 #include "mbedtls/certs.h"
 
+#include <signal.h>
 
 /** Mbed TLS specific global data related to TLS.
  */
@@ -986,6 +987,10 @@ static void osal_mbedtls_init(
 
     osal_mbedtls_setup_cert_or_key(OS_NULL, &t->pkey, OS_PBNR_SERVER_KEY,
         certs_dir, prm->server_key_file);
+
+    /* Do not terminate program if socket breaks.
+     */
+    signal(SIGPIPE, SIG_IGN);
 }
 
 
