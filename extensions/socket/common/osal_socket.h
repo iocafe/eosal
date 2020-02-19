@@ -21,9 +21,7 @@
 /** Stream interface structure for sockets.
  */
 #if OSAL_SOCKET_SUPPORT
-#if OSAL_FUNCTION_POINTER_SUPPORT
 extern const osalStreamInterface osal_socket_iface;
-#endif
 #endif
 
 /* Default socket port number for IOCOM.
@@ -130,6 +128,26 @@ osalStatus osal_socket_select(
     os_int timeout_ms,
     os_int flags);
 #endif
+
+/* Write packet (UDP) to stream.
+ */
+osalStatus osal_socket_send_packet(
+    osalStream stream,
+    const os_char *parameters,
+    const os_char *buf,
+    os_memsz n,
+    os_int flags);
+
+/* Read packet (UDP) from stream.
+ */
+osalStatus osal_socket_receive_packet(
+    osalStream stream,
+    os_char *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_char *remote_addr,
+    os_memsz remote_addr_sz,
+    os_int flags);
 
 /* Initialize OSAL sockets library.
  */

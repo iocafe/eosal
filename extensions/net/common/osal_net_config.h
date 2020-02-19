@@ -22,7 +22,7 @@
 
 /* Default buffer size for IP address or host name only.
  */
-#define OSAL_IPADDR_SZ 40
+#define OSAL_IPADDR_SZ 46
 
 /* Default buffer size for MAC address string.
  */

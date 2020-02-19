@@ -592,14 +592,14 @@ osalStatus osal_stream_select(
  */
 osalStatus osal_stream_send_packet(
     osalStream stream,
-    const os_char *addr,
+    const os_char *parameters,
     const os_char *buf,
     os_memsz n,
     os_int flags)
 {
     if (stream) if (stream->iface->stream_send_packet)
     {
-        return stream->iface->stream_send_packet(stream, addr, buf, n, flags);
+        return stream->iface->stream_send_packet(stream, parameters, buf, n, flags);
     }
     return OSAL_STATUS_NOT_SUPPORTED;
 }
