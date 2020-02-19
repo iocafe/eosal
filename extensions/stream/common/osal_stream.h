@@ -333,6 +333,26 @@ typedef struct osalStreamInterface
 		osalSelectData *selectdata,
         os_int timeout_ms,
         os_int flags);
+
+    /* Write packet (UDP) to stream.
+     */
+    osalStatus (*stream_send_packet)(
+        osalStream stream,
+        const os_char *addr,
+        const os_char *buf,
+        os_memsz n,
+        os_int flags);
+
+    /* Read packet (UDP) from stream.
+     */
+    osalStatus (*stream_receive_packet)(
+        osalStream stream,
+        os_char *buf,
+        os_memsz n,
+        os_memsz *n_read,
+        os_char *remote_addr,
+        os_memsz remote_addr_sz,
+        os_int flags);
 }
 osalStreamInterface;
 
@@ -475,6 +495,26 @@ osalStatus osal_stream_select(
 	osalEvent evnt,
 	osalSelectData *selectdata,
     os_int timeout_ms,
+    os_int flags);
+
+/* Write packet (UDP) to stream.
+ */
+osalStatus osal_stream_send_packet(
+    osalStream stream,
+    const os_char *addr,
+    const os_char *buf,
+    os_memsz n,
+    os_int flags);
+
+/* Read packet (UDP) from stream.
+ */
+osalStatus osal_stream_receive_packet(
+    osalStream stream,
+    os_char *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_char *remote_addr,
+    os_memsz remote_addr_sz,
     os_int flags);
 
 #endif

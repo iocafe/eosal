@@ -136,6 +136,18 @@ typedef enum
      */
     OSAL_STATUS_NO_WIFI,
 
+    /** UDP socket open failed (typically used for UDP multicasts).
+     */
+    OSAL_STATUS_OPENING_UDP_SOCKET_FAILED,
+
+    /** Sending UDP packet (usually multicast) failed.
+     */
+    OSAL_STATUS_SENDING_UDP_PACKET_FAILED,
+
+    /** Receiving UDP packet (usually multicast) failed.
+     */
+    OSAL_STATUS_RECEIVING_UDP_PACKET_FAILED,
+
 	/** No new incoming connection. The stream function osal_stream_accept() return this 
 	    code to indicate that no new connection was accepted. 
 	 */

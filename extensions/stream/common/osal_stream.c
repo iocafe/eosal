@@ -587,4 +587,40 @@ osalStatus osal_stream_select(
 	return OSAL_STATUS_FAILED;
 }
 
+
+/* Write packet (UDP) to stream.
+ */
+osalStatus osal_stream_send_packet(
+    osalStream stream,
+    const os_char *addr,
+    const os_char *buf,
+    os_memsz n,
+    os_int flags)
+{
+    if (stream) if (stream->iface->stream_send_packet)
+    {
+        return stream->iface->stream_send_packet(stream, addr, buf, n, flags);
+    }
+    return OSAL_STATUS_NOT_SUPPORTED;
+}
+
+/* Read packet (UDP) from stream.
+ */
+osalStatus osal_stream_receive_packet(
+    osalStream stream,
+    os_char *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_char *remote_addr,
+    os_memsz remote_addr_sz,
+    os_int flags)
+{
+    if (stream) if (stream->iface->stream_receive_packet)
+    {
+        return stream->iface->stream_receive_packet(stream, buf, n, n_read,
+            remote_addr, remote_addr_sz, flags);
+    }
+    return OSAL_STATUS_NOT_SUPPORTED;
+}
+
 #endif
