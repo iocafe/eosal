@@ -148,6 +148,10 @@ typedef enum
      */
     OSAL_STATUS_RECEIVING_UDP_PACKET_FAILED,
 
+    /** Joining UDP multicast group failed.
+     */
+    OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED,
+
 	/** No new incoming connection. The stream function osal_stream_accept() return this 
 	    code to indicate that no new connection was accepted. 
 	 */

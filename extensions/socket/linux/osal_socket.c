@@ -123,7 +123,8 @@ static void osal_socket_set_cork(
   @param  flags Flags for creating the socket. Bit fields, combination of:
           - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
           - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. Can be combined
+            with OSAL_STREAM_LISTEN to listen for multicasts.
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open serial with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket. Use TCP_CORK on
@@ -154,6 +155,7 @@ osalStream osal_socket_open(
     os_boolean is_ipv6;
     int af, on = 1, s, sa_sz;
     os_int info_code;
+    struct ip_mreq mreq;
 
     /* If not initialized.
      */
@@ -164,10 +166,12 @@ osalStream osal_socket_open(
     }
 
 	/* Get host name or numeric IP address and TCP port number from parameters.
+       Ignore errors if we are only sending multicasts.
 	 */
     s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
         &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-    if (s)
+    if (s && (flags & (OSAL_STREAM_UDP_MULTICAST|OSAL_STREAM_LISTEN))
+        != OSAL_STREAM_UDP_MULTICAST)
     {
         if (status) *status = s;
         return OS_NULL;
@@ -240,7 +244,30 @@ osalStream osal_socket_open(
 	 */
 	mysocket->hdr.iface = &osal_socket_iface;
 
-	if (flags & (OSAL_STREAM_LISTEN | OSAL_STREAM_UDP_MULTICAST))
+    if (flags & OSAL_STREAM_UDP_MULTICAST)
+    {
+        if (flags & OSAL_STREAM_LISTEN)
+        {
+            if (bind(handle, sa, sa_sz))
+            {
+                rval = OSAL_STATUS_FAILED;
+                goto getout;
+            }
+
+            /* Use setsockopt to join a multicast group
+             */
+            os_memclear(&mreq, sizeof(mreq));
+            mreq.imr_multiaddr.s_addr = inet_addr(option);
+            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr;
+            if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+            {
+                rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                goto getout;
+            }
+        }
+    }
+
+    else if (flags & (OSAL_STREAM_LISTEN | OSAL_STREAM_UDP_MULTICAST))
 	{
 		if (bind(handle, sa, sa_sz)) 
 		{
