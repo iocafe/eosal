@@ -559,11 +559,11 @@ osalStream osal_socket_accept(
         {
             if (mysocket->is_ipv6)
             {
-                inet_ntop(AF_INET6, &sin_remote6, addrbuf, sizeof(sin_remote6));
+                inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
             }
             else
             {
-                inet_ntop(AF_INET, &sin_remote, addrbuf, sizeof(sin_remote));
+                inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
             }
             os_strncpy(remote_ip_addr, addrbuf, remote_ip_addr_sz);
         }
@@ -1093,6 +1093,7 @@ osalStatus osal_socket_receive_packet(
 {
     osalSocket *mysocket;
     struct sockaddr_in sin_remote;
+    // struct sockaddr_storage sin_remote;
     struct sockaddr_in6 sin_remote6;
     int nbytes;
     socklen_t addr_size;
@@ -1133,11 +1134,11 @@ osalStatus osal_socket_receive_packet(
     {
         if (mysocket->is_ipv6)
         {
-            inet_ntop(AF_INET6, &sin_remote6, addrbuf, sizeof(sin_remote6));
+            inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
         }
         else
         {
-            inet_ntop(AF_INET, &sin_remote, addrbuf, sizeof(sin_remote));
+            inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
         }
         os_strncpy(remote_addr, addrbuf, remote_addr_sz);
     }

@@ -81,6 +81,12 @@ typedef enum
      */
     OSAL_UDP_SOCKET_DISCONNECTED,
 
+    /** IO device has been assigned to IO network. This is feature of light house, so that
+        IO devices do not need to be pre configured to network, if for example running in
+        internal network of small automated system.
+     */
+    OSAL_IO_NETWORK_NAME_SET,
+
     /** General failed, start enumerating errors from 100.
      */
     OSAL_STATUS_FAILED = 100,
