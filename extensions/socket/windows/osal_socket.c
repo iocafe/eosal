@@ -185,10 +185,9 @@ osalStream osal_socket_open(
     {
         af = AF_INET6;
         os_memclear(&saddr6, sizeof(saddr6));
-        os_memcpy(&saddr6.sin6_addr, &in6addr_any, sizeof(in6addr_any));
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
-        memcpy(&saddr6.sin6_addr, &addr, 16); 
+        os_memcpy(&saddr6.sin6_addr, &addr, 16); 
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
         sa_data = &saddr6.sin6_addr.s6_addr;
@@ -198,10 +197,9 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
     {
         af = AF_INET;
         os_memclear(&saddr, sizeof(saddr));
-        saddr.sin_addr.s_addr = htonl(INADDR_ANY); 
         saddr.sin_family = af;
         saddr.sin_port = htons(port_nr);
-        memcpy(&saddr.sin_addr.s_addr, addr, 4);
+        os_memcpy(&saddr.sin_addr.s_addr, addr, 4);
         sa = (struct sockaddr *)&saddr;
         sa_sz = sizeof(saddr);
         sa_data = &saddr.sin_addr.s_addr;
@@ -278,17 +276,18 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
     {
         if (flags & OSAL_STREAM_LISTEN)
         {
+            /* Use setsockopt to join a multicast group. Note that the socket should be bound to 
+               the wildcard address (INADDR_ANY) before joining the group
+             */
+            os_memclear(&mreq, sizeof(mreq));
+            mreq.imr_multiaddr.s_addr = inet_addr(option);
+            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
+            saddr.sin_addr.s_addr = INADDR_ANY;
             if (bind(handle, sa, sa_sz))
             {
                 rval = OSAL_STATUS_FAILED;
                 goto getout;
             }
-
-            /* Use setsockopt to join a multicast group
-             */
-            os_memclear(&mreq, sizeof(mreq));
-            mreq.imr_multiaddr.s_addr = inet_addr(option);
-            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
             if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
             {
                 rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
