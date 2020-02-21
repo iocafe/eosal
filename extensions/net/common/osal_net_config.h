@@ -49,27 +49,99 @@
  */
 typedef struct osalWifiNetwork
 {
+    /** Wifi network name (SSID) to connect to, for example "bean24".
+     */
     const os_char *wifi_net_name;
+
+    /** Wifi network password is same as pre shared key (PSK).
+     */
     const os_char *wifi_net_password;
 }
 osalWifiNetwork;
 
-/** Network interface configuration structure.
+
+/** Network interface configuration structure. Most of network configuration
+ *  parameters are used only for microcontrollers, while in Windows, Linux, etc.
+    the operating system takes care about network interface configuration.
+
+    Flags to enable/disable sending and receiving UDP multicasts is meaningfull
+    in Linux/Windows environment, but not in microcontrollers with single network
+    adapter). If thiese are set, "ip_address" parameter is used to pass
+    network interface for multicasts.
  */
 typedef struct osalNetworkInterface
 {
-    const os_char *host_name;
+    /*  const os_char *host_name;  to be implemented */
+
+    /** Network address, like "192.168.1.220". Ignored if no_dhcp is OS_FALSE (0).
+        Set by "ip":"192.168.1.217" in JSON configuration.
+     */
     const os_char *ip_address;
+
+    /** Subnet mask selects which addressess are in same network segment and which
+        need to be sent tough gateway, for example "255.255.255.0".
+        Set by "subnet":"255.255.255.0" in JSON configuration.
+     */
     const os_char *subnet_mask;
+
+    /** Gateway address. Address to use to get from local network segment
+        to world outside. At home network, this can be your DSL modem's address
+        in your local network. Set by "gateway":"192.168.1.254" in JSON configuration.
+     */
     const os_char *gateway_address;
+
+    /** Domain name server address. If host names, like "MYCOMPUTER" are used
+        instead of numeric IP address, this is address of server computer
+        which resolves that "MYCOCOMPUTER" actually means "192.168.1.220".
+        For example "8.8.8.8" is Google's open DNS server. Set by "dns":"8.8.4.4"
+        in JSON configuration.
+     */
     const os_char *dns_address;
+
+    /** Second domain name server, to be used in case first one is down.
+        Set by "dns":"8.8.8.8" in JSON configuration.
+     */
     const os_char *dns_address_2;
 
-    /* Locally administered MAC address ranges safe for testing: x2:xx:xx:xx:xx:xx,
-       x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
+    /** Harware address for network adapter. Some embedded systems or network
+        adapters (like Wiz5500, I think) or do not have pre configured MAC address,
+        so it can be set here. For example "12:A3:CE:87:12:B2"
+        Locally administered MAC address ranges safe for testing: x2:xx:xx:xx:xx:xx,
+        x6:xx:xx:xx:xx:xx, xA:xx:xx:xx:xx:xx and xE:xx:xx:xx:xx:xx
+        If you sell commercially, you should buy these for your product, see
+        https://standards.ieee.org. If you are just testing just invent fansom
+        MACs from ranges safe for testing: Fill all 'x' characters with
+        hexadecimal digit '0'-'9', 'A'-'F'. Even MAC must be unique within
+        local network, it is extremely unlikely to have conflict is all 'x'
+        values are truely random. Set by "mac":"36:12:64:A4:B4:C4" in JSON
+        configuration.
     */
     const os_char *mac;
+
+    /** Disable dynamic host configuration protocol, DHCP for short. If this is
+        OS_FALSE this NIC tries to get IP network address from DHCP server in local
+        network and static network configuration parameters (host name, up, subnet,
+        gateway  and DNS) are ignored. If selected (OS_TRUE), static network
+        configuration is used as given. This parameter is used only for microcontrollers.
+        Use "dhcp":0 in JSON configuration to disable.
+     */
     os_boolean no_dhcp;
+
+    /** OS_TRUE to enable sending UDP multicasts trough this network interface.
+        If sending UDP multicasts are not configured for any NIC, then multicasts
+        are sent trough all the NICs. This option can be enabled only for one
+        network interface, if multiple NICs are selected, only the first NIC
+        is used for multicasts. Use "send_udp":1 in JSON configuration to enable.
+     */
+    os_boolean send_udp_multicasts;
+
+    /** OS_TRUE to receiving UDP multicasts trough this NIC. If receiving
+        UDP multicast is not configured for any NIC, then we listen for multicasts
+        from any network interface. This option can be enabled only for one
+        network interface, if multiple NICs are selected, only the first NIC
+        is used for multicasts. Use "receive_udp":1 in JSON configuration to enable.
+     */
+    os_boolean receive_udp_multicasts;
 }
 osalNetworkInterface;
 
