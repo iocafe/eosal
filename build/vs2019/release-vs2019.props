@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>eosal.lib;iocom.lib;;nodeconf.lib;ioserver.lib;lighthouse.lib;devicedir.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>eosal.lib;iocom.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
