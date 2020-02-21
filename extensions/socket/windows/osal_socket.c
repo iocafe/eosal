@@ -159,6 +159,7 @@ osalStream osal_socket_open(
     os_boolean is_ipv6;
     os_int af, udp, on = 1, s, sa_sz;
     os_int info_code;
+    struct ip_mreq mreq;
 
     /* If not initialized.
      */
@@ -187,10 +188,11 @@ osalStream osal_socket_open(
         os_memcpy(&saddr6.sin6_addr, &in6addr_any, sizeof(in6addr_any));
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
-        memcpy(&saddr6.sin6_addr, &addr, sizeof(in6addr_any));
+        memcpy(&saddr6.sin6_addr, &addr, 16); 
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
         sa_data = &saddr6.sin6_addr.s6_addr;
+saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
     }
     else
     {
@@ -272,7 +274,31 @@ osalStream osal_socket_open(
     }
 #endif
 
-	if (flags & (OSAL_STREAM_LISTEN | OSAL_STREAM_UDP_MULTICAST))
+    if (flags & OSAL_STREAM_UDP_MULTICAST)
+    {
+        if (flags & OSAL_STREAM_LISTEN)
+        {
+            if (bind(handle, sa, sa_sz))
+            {
+                rval = OSAL_STATUS_FAILED;
+                goto getout;
+            }
+
+            /* Use setsockopt to join a multicast group
+             */
+            os_memclear(&mreq, sizeof(mreq));
+            mreq.imr_multiaddr.s_addr = inet_addr(option);
+            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
+            if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+            {
+                rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                goto getout;
+            }
+        }
+        info_code = OSAL_UDP_SOCKET_CONNECTED;
+    }
+
+	else if (flags & OSAL_STREAM_LISTEN)
 	{
 		if (bind(handle, sa, sa_sz)) 
 		{
@@ -1203,6 +1229,189 @@ osalStatus osal_socket_select(
 /**
 ****************************************************************************************************
 
+  @brief Write packet (UDP) to stream.
+  @anchor osal_socket_send_packet
+
+  The osal_socket_send_packet() function writes UDP packet to network.
+
+  @param   stream Stream pointer representing the UDP socket.
+  @param   parameters IP address and optionallt port where to send the UDP message.
+  @param   buf Pointer to the beginning of data to send.
+  @param   n Number of bytes to send.
+  @param   flags Set OSAL_STREAM_DEFAULT.
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates that packet was written.
+           Value OSAL_PENDING that we network is too bysy for the moment. Other return values
+           indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus osal_socket_send_packet(
+    osalStream stream,
+    const os_char *parameters,
+    const os_char *buf,
+    os_memsz n,
+    os_int flags)
+{
+    osalSocket *mysocket;
+    struct sockaddr_in sin_remote;
+    struct sockaddr_in6 sin_remote6;
+    os_char addr[16];
+    os_int port_nr;
+    int nbytes, werr;
+    osalStatus s;
+    os_boolean is_ipv6;
+
+    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
+
+    /* Cast stream pointer to socket structure pointer.
+     */
+    mysocket = (osalSocket*)stream;
+    osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
+
+    s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
+        &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
+    if (s) return s;
+
+    if (mysocket->is_ipv6)
+    {
+        /* Set up destination address
+         */
+        os_memclear(&sin_remote6, sizeof(sin_remote6));
+        sin_remote6.sin6_family = AF_INET6;
+        sin_remote6.sin6_port = htons(port_nr);
+        memcpy(&sin_remote6.sin6_addr, &addr, sizeof(in6addr_any));
+
+        /* Send packet.
+         */
+        nbytes = sendto(mysocket->handle, buf, (int)n, 0,
+            (struct sockaddr*)&sin_remote6, sizeof(sin_remote6));
+    }
+    else
+    {
+        /* Set up destination address
+         */
+        os_memclear(&sin_remote, sizeof(sin_remote));
+        sin_remote.sin_family = AF_INET;
+        sin_remote.sin_port = htons(port_nr);
+        memcpy(&sin_remote.sin_addr.s_addr, addr, 4);
+
+        /* Send packet.
+         */
+        nbytes = sendto(mysocket->handle, buf, (int)n, 0,
+            (struct sockaddr*)&sin_remote, sizeof(sin_remote));
+    }
+
+    if (nbytes < 0)
+    {
+        werr = WSAGetLastError();
+
+        /* WSAEWOULDBLOCK = operation would block.
+           WSAENOTCONN = socket not (yet?) connected.
+         */
+        return (werr == WSAEWOULDBLOCK)
+            ? OSAL_PENDING : OSAL_STATUS_FAILED;
+    }
+
+    return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Read packet (UDP) from stream.
+  @anchor osal_socket_receive_packet
+
+  The osal_socket_receive_packet() function read UDP packet from network. Function never blocks.
+
+  @param   stream Stream pointer representing the UDP socket.
+  @param   buf Pointer to buffer where to read data.
+  @param   n Buffer size in bytes.
+  @param   n_read Number of bytes actually read.
+  @param   remote_address Pointer to string buffer into which to store the IP address
+           from which the incoming connection was accepted. Can be OS_NULL if not needed.
+  @param   remote_addr_sz Size of remote IP address buffer in bytes.
+  @param   flags Set OSAL_STREAM_DEFAULT.
+  @return  Function status code. Value OSAL_SUCCESS (0) indicates that packet was read.
+           Value OSAL_PENDING that we we have no received UDP message to read for the moment.
+           Other return values indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus osal_socket_receive_packet(
+    osalStream stream,
+    os_char *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_char *remote_addr,
+    os_memsz remote_addr_sz,
+    os_int flags)
+{
+    osalSocket *mysocket;
+    struct sockaddr_in sin_remote;
+    // struct sockaddr_storage sin_remote;
+    struct sockaddr_in6 sin_remote6;
+    int nbytes, werr;
+    socklen_t addr_size;
+    char addrbuf[INET6_ADDRSTRLEN];
+
+    if (n_read) *n_read = 0;
+    if (remote_addr) *remote_addr = '\0';
+
+    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
+
+    /* Cast stream pointer to socket structure pointer.
+     */
+    mysocket = (osalSocket*)stream;
+    osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
+
+    /* Try to get UDP packet from incoming socket.
+     */
+    if (mysocket->is_ipv6)
+    {
+        addr_size = sizeof(sin_remote6);
+        nbytes = recvfrom(mysocket->handle, buf, (int)n, 0,
+            (struct sockaddr*)&sin_remote6, &addr_size);
+    }
+    else
+    {
+        addr_size = sizeof(sin_remote);
+        nbytes = recvfrom(mysocket->handle, buf, (int)n, 0,
+            (struct sockaddr*)&sin_remote, &addr_size);
+    }
+
+    if (nbytes < 0)
+    {
+        werr = WSAGetLastError();
+
+        /* WSAEWOULDBLOCK = operation would block.
+            WSAENOTCONN = socket not (yet?) connected.
+            */
+        return (werr == WSAEWOULDBLOCK)
+            ? OSAL_PENDING : OSAL_STATUS_FAILED;
+    }
+
+    if (remote_addr)
+    {
+        if (mysocket->is_ipv6)
+        {
+            inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
+        }
+        else
+        {
+            inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
+        }
+        os_strncpy(remote_addr, addrbuf, remote_addr_sz);
+    }
+
+    if (n_read) *n_read = nbytes;
+    return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
   @brief Initialize sockets.
   @anchor osal_socket_initialize
 
@@ -1354,8 +1563,6 @@ static void osal_socket_setup_ring_buffer(
 }
 
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 const osalStreamInterface osal_socket_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_socket_open,
@@ -1370,11 +1577,11 @@ const osalStreamInterface osal_socket_iface
 	osal_socket_get_parameter,
 	osal_socket_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
-    osal_socket_select};
+    osal_socket_select,
 #else
-    osal_stream_default_select};
+    osal_stream_default_select,
 #endif
-
-#endif
+    osal_socket_send_packet,
+    osal_socket_receive_packet};
 
 #endif

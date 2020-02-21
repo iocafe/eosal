@@ -258,16 +258,18 @@ osalStream osal_socket_open(
              */
             os_memclear(&mreq, sizeof(mreq));
             mreq.imr_multiaddr.s_addr = inet_addr(option);
-            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr;
+            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
             if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
             {
                 rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
                 goto getout;
             }
         }
+
+        info_code = OSAL_UDP_SOCKET_CONNECTED;
     }
 
-    else if (flags & (OSAL_STREAM_LISTEN | OSAL_STREAM_UDP_MULTICAST))
+    else if (flags & OSAL_STREAM_LISTEN)
 	{
 		if (bind(handle, sa, sa_sz)) 
 		{
@@ -1093,7 +1095,6 @@ osalStatus osal_socket_receive_packet(
 {
     osalSocket *mysocket;
     struct sockaddr_in sin_remote;
-    // struct sockaddr_storage sin_remote;
     struct sockaddr_in6 sin_remote6;
     int nbytes;
     socklen_t addr_size;
