@@ -31,6 +31,33 @@
 #include <stdio.h> // testing
 #include <stdlib.h> // testing
 
+typedef struct osalSocketNicInfo
+{
+    /** Network address, like "192.168.1.220". 
+     */
+    os_char ip_address[OSAL_IPADDR_SZ];
+
+    /** OS_TRUE to enable sending UDP multicasts trough this network interface.
+     */
+    os_boolean send_udp_multicasts;
+
+    /** OS_TRUE to receiving UDP multicasts trough this NIC. 
+     */
+    os_boolean receive_udp_multicasts;
+}
+osalSocketNicInfo;
+
+#define OSAL_MAX_WINDOWS_NICS 10
+
+/* Global data for sockets.
+ */
+typedef struct osalSocketGlobal
+{
+    osalSocketNicInfo nic[OSAL_MAX_WINDOWS_NICS];
+    os_int n_nics;
+}
+osalSocketGlobal;
+
 /** Windows specific socket data structure. OSAL functions cast their own stream structure
     pointers to osalStream pointers.
  */
@@ -78,11 +105,6 @@ typedef struct osalSocket
 	os_short tail;
 } 
 osalSocket;
-
-
-/* Socket library initialized flag.
- */
-os_boolean osal_sockets_initialized = OS_FALSE;
 
 
 /* Prototypes for forward referred static functions.
@@ -157,6 +179,7 @@ osalStream osal_socket_open(
 	os_int flags)
 {
 	osalSocket *mysocket = OS_NULL;
+    osalSocketGlobal *sg;
     os_memsz sz1 = 0;
 	os_int port_nr;
     os_char addr[16];
@@ -166,14 +189,15 @@ osalStream osal_socket_open(
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
     void *sa_data;
-    os_boolean is_ipv6;
-    os_int af, udp, on = 1, s, sa_sz;
-    os_int info_code;
+    os_boolean is_ipv6, has_addr;
+    os_int af, on = 1, s, sa_sz;
+    os_int info_code, addr_sz, i;
     struct ip_mreq mreq;
 
     /* If not initialized.
      */
-    if (!osal_sockets_initialized)
+    sg = osal_global->socket_global;
+    if (sg == OS_NULL)
     {
         if (status) *status = OSAL_STATUS_FAILED;
         return OS_NULL;
@@ -188,20 +212,18 @@ osalStream osal_socket_open(
         if (status) *status = s;
         return OS_NULL;
     }
-
-    udp = (flags & OSAL_STREAM_UDP_MULTICAST) ? OS_TRUE : OS_FALSE;
-
+    
     if (is_ipv6)
     {
         af = AF_INET6;
         os_memclear(&saddr6, sizeof(saddr6));
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
-        os_memcpy(&saddr6.sin6_addr, &addr, 16); 
+        addr_sz = 16;
+        os_memcpy(&saddr6.sin6_addr, &addr, addr_sz); 
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
         sa_data = &saddr6.sin6_addr.s6_addr;
-saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
     }
     else
     {
@@ -209,7 +231,8 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
         os_memclear(&saddr, sizeof(saddr));
         saddr.sin_family = af;
         saddr.sin_port = htons(port_nr);
-        os_memcpy(&saddr.sin_addr.s_addr, addr, 4);
+        addr_sz = 4;
+        os_memcpy(&saddr.sin_addr.s_addr, addr, addr_sz);
         sa = (struct sockaddr *)&saddr;
         sa_sz = sizeof(saddr);
         sa_data = &saddr.sin_addr.s_addr;
@@ -217,7 +240,12 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
 
     /* Create socket.
      */
-    handle = socket(af, udp ? SOCK_DGRAM : SOCK_STREAM,  udp ? IPPROTO_UDP : IPPROTO_TCP);
+    if (flags & OSAL_STREAM_UDP_MULTICAST) {
+        handle = socket(af, SOCK_DGRAM,  IPPROTO_UDP);
+    }
+    else {
+        handle = socket(af, SOCK_STREAM,  IPPROTO_TCP);
+    }
     if (handle == INVALID_SOCKET) 
 	{
 		rval = OSAL_STATUS_FAILED;
@@ -284,8 +312,52 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
 
     if (flags & OSAL_STREAM_UDP_MULTICAST)
     {
+        /* If we have do not have an IP address given as function parameter?
+         */
+        for (i = 0; i < addr_sz; i++) {
+            if (addr[i]) break;
+        }
+        has_addr = (os_boolean)(i == addr_sz);
+
+        /* Address not a function parameter, see if we have it for the NIC
+         */
+        if (!has_addr && (flags & OSAL_STREAM_USE_GLOBAL_SETTINGS))
+        {
+            for (i = 0; i < sg->n_nics; i++)
+            {
+            }
+        }
+
         if (flags & OSAL_STREAM_LISTEN)
         {
+            /* Bind the socket, here we never bind to specific interface or IP.
+             */
+            saddr.sin_addr.s_addr = INADDR_ANY;
+            if (bind(handle, sa, sa_sz))
+            {
+                rval = OSAL_STATUS_FAILED;
+                goto getout;
+            }
+
+            /* If we got a specific addrss
+             */
+            if (has_addr)
+                /* Use setsockopt to join a multicast group. Note that the socket should be bound to 
+                   the wildcard address (INADDR_ANY) before joining the group
+                 */
+                os_memclear(&mreq, sizeof(mreq));
+                if (inet_pton(AF_INET, option, &mreq.imr_multiaddr.s_addr) != 1) {
+                    osal_debug_error("osal_socket_open: inet_pton() failed");
+                }
+
+                mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
+    mreq.imr_interface.s_addr = inet_addr("192.168.1.229");
+                if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+                {
+                    rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                    goto getout;
+                }
+
 osalStream interface_list = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
 osal_socket_list_network_interfaces(interface_list, AF_INET);
 printf ("LIST: %s\n", osal_stream_buffer_content(interface_list, OS_NULL));
@@ -301,12 +373,6 @@ osal_stream_close(interface_list, OSAL_STREAM_DEFAULT);
 
             mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
 mreq.imr_interface.s_addr = inet_addr("192.168.1.229");
-            saddr.sin_addr.s_addr = INADDR_ANY;
-            if (bind(handle, sa, sa_sz))
-            {
-                rval = OSAL_STATUS_FAILED;
-                goto getout;
-            }
             if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
             {
                 rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
@@ -1631,22 +1697,23 @@ void osal_socket_initialize(
      */
     WSADATA osal_wsadata;
 
-    /* Set socket library initialized flag.
-     */
-    osal_sockets_initialized = OS_TRUE;
-
 	/* If socket library is already initialized, do nothing.
 	 */
-	if (osal_global->sockets_shutdown_func) return;
+    if (osal_global->socket_global) return;
 
 	/* Lock the system mutex to synchronize.
 	 */
 	os_lock();
 
+    /* Allocate global structure
+     */
+    osal_global->socket_global = (struct osalSocketGlobal*)os_malloc(sizeof(osalSocketGlobal), OS_NULL);
+    os_memclear(osal_global->socket_global, sizeof(osalSocketGlobal));
+
 	/* If socket library is already initialized, do nothing. Double checked here
 	   for thread synchronization.
 	 */
-	if (!osal_global->sockets_shutdown_func) 
+	if (osal_global->sockets_shutdown_func == OS_NULL) 
 	{
 		/* Initialize winsock.
 		 */
@@ -1685,21 +1752,30 @@ void osal_socket_initialize(
 void osal_socket_shutdown(
 	void)
 {
-	/* If socket library is not initialized, do nothing.
+	/* If socket we have shut down function.
 	 */
-	if (!osal_global->sockets_shutdown_func) return;
+	if (osal_global->sockets_shutdown_func) 
+    {
+	    /* Initialize winsock.
+	     */
+	    if (WSACleanup())
+	    {
+		    osal_debug_error("WSACleanup() failed");
+		    return;
+	    }
 
-	/* Initialize winsock.
-	 */
-	if (WSACleanup())
-	{
-		osal_debug_error("WSACleanup() failed");
-		return;
-	}
+	    /* Mark that socket library is no longer initialized.
+	     */
+        osal_global->sockets_shutdown_func = OS_NULL;
+    }
 
-	/* Mark that socket library is no longer initialized.
-	 */
-    osal_global->sockets_shutdown_func = OS_NULL;
+    /* If we ave global data, release memory.
+     */
+    if (osal_global->socket_global)
+    {
+        os_free(osal_global->socket_global, sizeof(osalSocketGlobal));
+        osal_global->socket_global = OS_NULL;
+    }
 }
 
 /**

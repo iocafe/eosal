@@ -144,6 +144,11 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_FINAL_HANDSHAKE 0x20000
 
+/** Enable use of global settings. This is used for global UDP multicast addressess by lighthouse
+    discovery protocol.
+ */
+#define OSAL_STREAM_USE_GLOBAL_SETTINGS 0x40000
+
 
 /**
 ****************************************************************************************************

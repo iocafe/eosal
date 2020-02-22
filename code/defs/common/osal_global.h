@@ -18,6 +18,7 @@
 
 struct osalMutexStruct;
 struct osalNetworkState;
+struct osalSocketGlobal;
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
     /* Extension module shutdown function type.
@@ -146,14 +147,19 @@ typedef struct
 	 */
 	os_int64 sys_timer_param;
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
+#if OSAL_SOCKET_SUPPORT
+    /** Pointer to global socket structure
+     */
+    struct osalSocketGlobal *socket_global;
+
     /** Shut down function to close sockets library. Set if sockets library
         is initialized.
      */
     osal_shutdown_func *sockets_shutdown_func;
 #endif
 
-    /** Error handler function and context pointers.
+
+   /** Error handler function and context pointers.
      */
     osalErrorHandler error_handler[OSAL_MAX_ERROR_HANDLERS];
 
