@@ -325,7 +325,7 @@ osalStatus osal_stream_buffer_realloc(
   n to content size in bytes.
 
   @param   stream Pointer to the stream buffer object.
-  @param   n Pointer to integer where to store content size in bytes.
+  @param   n Pointer to integer where to store content size in bytes. Can be OS_NULL if not needed.
 
   @return  Pointer to stream buffer content.
 
@@ -338,7 +338,7 @@ os_char *osal_stream_buffer_content(
     osalStreamBuffer *sbuf;
     sbuf = (osalStreamBuffer*)stream;
 
-    *n = sbuf->n;
+    if (n) *n = sbuf->n;
     return sbuf->ptr;
 }
 

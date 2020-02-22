@@ -102,7 +102,9 @@ static void osal_socket_setup_ring_buffer(
 	osalSocket *mysocket);
 
 static osalStatus osal_socket_list_network_interfaces(
-    os_int xxxx);
+    osalStream interface_list,
+    os_uint family);
+
 
 /**
 ****************************************************************************************************
@@ -284,7 +286,10 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
     {
         if (flags & OSAL_STREAM_LISTEN)
         {
-osal_socket_list_network_interfaces(1);
+osalStream interface_list = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
+osal_socket_list_network_interfaces(interface_list, AF_INET);
+printf ("LIST: %s\n", osal_stream_buffer_content(interface_list, OS_NULL));
+osal_stream_close(interface_list, OSAL_STREAM_DEFAULT);
 
             /* Use setsockopt to join a multicast group. Note that the socket should be bound to 
                the wildcard address (INADDR_ANY) before joining the group
@@ -1434,94 +1439,76 @@ osalStatus osal_socket_receive_packet(
   The member you want is FirstUnicastAddress, this has a member Address which is of type 
   SOCKET_ADDRESS, which has a member named lpSockaddr which is a pointer to a SOCKADDR structure. 
   Once you get to this point you should notice the familiar winsock structure and be able to 
-  get the address on your own. Remember, the address family given in the original call determins 
-  the address types you get out, so if you passed in AF_UNSPEC then you will need to filter out 
-  the addresses manually.
+  get the address on your own. 
+
+  @param   interface_list Stream into which write the interface list. In practice stream
+           buffer to simply to hold variable length string. 
+           For example for IPv4 "192.168.1.229,192.168.80.1,192.168.10.1,169.254.102.98"
+  @param   family Address family AF_INET or AF_INET6.
 
   @return  Function status code. 
 
 ****************************************************************************************************
 */
 static osalStatus osal_socket_list_network_interfaces(
-    os_int xxxx)
+    osalStream interface_list,
+    os_uint family)
 {
-    char buf[OSAL_IPADDR_SZ];
-  
-// Link with Iphlpapi.lib
+/* Link with Iphlpapi.lib */
 #pragma comment(lib, "IPHLPAPI.lib")
 
-#define WORKING_BUFFER_SIZE 15000
-#define MAX_TRIES 3
+    char buf[OSAL_IPADDR_SZ];
+    os_memsz n_written;
+    os_memsz outbuf_sz;
+    ULONG win_outbuf_sz;
+    os_boolean n_interfaces;
+    osalStatus s = OSAL_STATUS_FAILED;
+    const os_int max_tries = 3;
+    os_int i;
 
-#define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
-#define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
+    ULONG flags;
+    LPVOID lpMsgBuf = NULL;
+    DWORD rval;
+    PIP_ADAPTER_ADDRESSES pAddresses;
+    PIP_ADAPTER_ADDRESSES pCurrAddresses;
+    PIP_ADAPTER_UNICAST_ADDRESS pUnicast;
 
-    /* Declare and initialize variables */
+    /* Allocate a 15 KB buffer to start with.
+     */
+    outbuf_sz = 15000;
 
-    DWORD dwSize = 0;
-    DWORD dwRetVal = 0;
-
-    unsigned int i = 0;
-
-    // Set the flags to pass to GetAdaptersAddresses
-    ULONG flags 
-        = /* GAA_FLAG_INCLUDE_PREFIX |  */
-          //GAA_FLAG_SKIP_FRIENDLY_NAME |
+    /* Set the flags to pass to GetAdaptersAddresses
+     */
+    flags = /* GAA_FLAG_INCLUDE_PREFIX |  */
+          GAA_FLAG_SKIP_FRIENDLY_NAME |
           GAA_FLAG_SKIP_ANYCAST |
           GAA_FLAG_SKIP_MULTICAST |
           GAA_FLAG_SKIP_DNS_SERVER;
 
-    // default to unspecified address family (both)
-    ULONG family = AF_UNSPEC;
-
-    LPVOID lpMsgBuf = NULL;
-
-    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
-    ULONG outBufLen = 0;
-    ULONG Iterations = 0;
-
-    PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
-    PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-    PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
-    PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
-    IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
-    IP_ADAPTER_PREFIX *pPrefix = NULL;
-
-//family = AF_INET;
- // family = AF_INET6;
-family = AF_UNSPEC; // Both IPv4 and IPv6
-
-    // Allocate a 15 KB buffer to start with.
-    outBufLen = WORKING_BUFFER_SIZE;
-
+    i = 0;
     do {
+        pAddresses = (IP_ADAPTER_ADDRESSES *) os_malloc(outbuf_sz, &outbuf_sz);
+        if (pAddresses == NULL) return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
 
-        pAddresses = (IP_ADAPTER_ADDRESSES *) MALLOC(outBufLen);
-        if (pAddresses == NULL) {
-            printf
-                ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
-            exit(1);
-        }
-
-        dwRetVal =
-            GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
-
-        if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
-            FREE(pAddresses);
+        win_outbuf_sz = (ULONG)outbuf_sz;
+        rval = GetAdaptersAddresses(family, flags, NULL, pAddresses, &win_outbuf_sz);
+        if (rval == ERROR_BUFFER_OVERFLOW) {
+            os_free(pAddresses, outbuf_sz);
             pAddresses = NULL;
-        } else {
+            outbuf_sz = (os_memsz)win_outbuf_sz;
+        } 
+        else {
             break;
         }
+    } 
+    while ((rval == ERROR_BUFFER_OVERFLOW) && (++i < max_tries));
 
-        Iterations++;
-
-    } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
-
-    if (dwRetVal == NO_ERROR) {
-        // If successful, output some information from the data we received
+    if (rval == NO_ERROR) {
+        n_interfaces = 0;
         pCurrAddresses = pAddresses;
         while (pCurrAddresses) {
-            /* pekka : SKIP IF NO MULTICAST, WE ARE SPECIFICALLY LOOKING FOR MULTICAST CAPABLE ADAPTERS */
+            /* pekka : Skip if no multicast (we are looking for it). Filter also for other reasons.
+             */
             if (pCurrAddresses->NoMulticast) goto goon;
             if (family == AF_INET) if (!pCurrAddresses->Ipv4Enabled) goto goon;
             if (family == AF_INET6) if (!pCurrAddresses->Ipv6Enabled) goto goon;
@@ -1537,135 +1524,82 @@ IfOperStatusUnknown The operational status of the interface is unknown.
 IfOperStatusDormant - Sleeping in power savve???
 */
 
-            printf("\tLength of the IP_ADAPTER_ADDRESS struct: %ld\n",
-                   pCurrAddresses->Length);
-            printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
-            printf("\tAdapter name: %s\n", pCurrAddresses->AdapterName);
+            /* printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
+            printf("\tAdapter name: %s\n", pCurrAddresses->AdapterName); */
 
             pUnicast = pCurrAddresses->FirstUnicastAddress;
-            if (pUnicast != NULL) {
-                for (i = 0; pUnicast != NULL; i++)
+            if (pUnicast != NULL) 
+            {
+                /* Uh huh, it seems to be here. We only need first unicast address, otherwise 
+                   we could loop with pUnicast = pUnicast->Next;
+                 */
+                SOCKADDR *sa = pUnicast->Address.lpSockaddr;
+                if (sa)
                 {
-                    /* Uh huh, it seems to be here
-                     */
-                    SOCKADDR *sa = pUnicast->Address.lpSockaddr;
-                    if (sa)
+                    if (sa->sa_family == AF_INET)
                     {
-                        if (sa->sa_family == AF_INET)
-                        {
-                            struct sockaddr_in *sa_in = (struct sockaddr_in *)sa;
-                            printf("\tIPV4:%s\n",inet_ntop(AF_INET,&(sa_in->sin_addr),buf,sizeof(buf)));
-                            // printf("\tIPV4:%s\n",inet_ntop(AF_INET, &sa->sa_data,buf,sizeof(buf)));
-                        }
-                        else if (sa->sa_family == AF_INET6)
-                        {
-                            struct sockaddr_in6 *sa_in6 = (struct sockaddr_in6 *)sa;
-                            printf("\tIPV6:%s\n",inet_ntop(AF_INET6,&(sa_in6->sin6_addr),buf,sizeof(buf)));
-                            // printf("\tIPV6:%s\n",inet_ntop(AF_INET6, sa->sa_data,buf,sizeof(buf)));
-                        }
-                        else
-                        {
-                            printf("\tUNSPEC");
-                        }
+                        struct sockaddr_in *sa_in = (struct sockaddr_in *)sa;
+                        printf("\tIPV4:%s\n",inet_ntop(AF_INET,&(sa_in->sin_addr),buf,sizeof(buf)));
+                        if (n_interfaces++) osal_stream_print_str(interface_list, ",", 0);
+                        osal_stream_print_str(interface_list, buf, 0);
+                        s = OSAL_SUCCESS;
                     }
-                    pUnicast = pUnicast->Next;
-                }
-                printf("\tNumber of Unicast Addresses: %d\n", i);
-            } else
-                printf("\tNo Unicast Addresses\n");
-
-            pAnycast = pCurrAddresses->FirstAnycastAddress;
-            if (pAnycast) {
-                for (i = 0; pAnycast != NULL; i++)
-                    pAnycast = pAnycast->Next;
-                printf("\tNumber of Anycast Addresses: %d\n", i);
-            } else
-                printf("\tNo Anycast Addresses\n");
-
-            pMulticast = pCurrAddresses->FirstMulticastAddress;
-            if (pMulticast) {
-                for (i = 0; pMulticast != NULL; i++)
-                    pMulticast = pMulticast->Next;
-                printf("\tNumber of Multicast Addresses: %d\n", i);
-            } else
-                printf("\tNo Multicast Addresses\n");
-
-            pDnServer = pCurrAddresses->FirstDnsServerAddress;
-            if (pDnServer) {
-                for (i = 0; pDnServer != NULL; i++)
-                    pDnServer = pDnServer->Next;
-                printf("\tNumber of DNS Server Addresses: %d\n", i);
-            } else
-                printf("\tNo DNS Server Addresses\n");
-
-            printf("\tDNS Suffix: %wS\n", pCurrAddresses->DnsSuffix);
-            printf("\tDescription: %wS\n", pCurrAddresses->Description);
-            printf("\tFriendly name: %wS\n", pCurrAddresses->FriendlyName);
-
-            if (pCurrAddresses->PhysicalAddressLength != 0) {
-                printf("\tPhysical address: ");
-                for (i = 0; i < (int) pCurrAddresses->PhysicalAddressLength;
-                     i++) {
-                    if (i == (pCurrAddresses->PhysicalAddressLength - 1))
-                        printf("%.2X\n",
-                               (int) pCurrAddresses->PhysicalAddress[i]);
+                    else if (sa->sa_family == AF_INET6)
+                    {
+                        struct sockaddr_in6 *sa_in6 = (struct sockaddr_in6 *)sa;
+                        printf("\tIPV6:%s\n",inet_ntop(AF_INET6,&(sa_in6->sin6_addr),buf,sizeof(buf)));
+                        if (n_interfaces++) osal_stream_print_str(interface_list, ",", 0);
+                        osal_stream_print_str(interface_list, buf, 0);
+                        s = OSAL_SUCCESS;
+                    }
                     else
-                        printf("%.2X-",
-                               (int) pCurrAddresses->PhysicalAddress[i]);
+                    {
+                        printf("\tUNSPEC");
+                    }
                 }
-            }
-            printf("\tFlags: %ld\n", pCurrAddresses->Flags);
-            printf("\tMtu: %lu\n", pCurrAddresses->Mtu);
+            } 
+
+            /* printf("\tDescription: %wS\n", pCurrAddresses->Description);
+            printf("\tFriendly name: %wS\n", pCurrAddresses->FriendlyName); 
+
             printf("\tIfType: %ld\n", pCurrAddresses->IfType);
             printf("\tOperStatus: %ld\n", pCurrAddresses->OperStatus);
             printf("\tIpv6IfIndex (IPv6 interface): %u\n",
                    pCurrAddresses->Ipv6IfIndex);
-            printf("\tZoneIndices (hex): ");
-            for (i = 0; i < 16; i++)
-                printf("%lx ", pCurrAddresses->ZoneIndices[i]);
-            printf("\n");
-
             printf("\tTransmit link speed: %I64u\n", pCurrAddresses->TransmitLinkSpeed);
-            printf("\tReceive link speed: %I64u\n", pCurrAddresses->ReceiveLinkSpeed);
-
-            pPrefix = pCurrAddresses->FirstPrefix;
-            if (pPrefix) {
-                for (i = 0; pPrefix != NULL; i++)
-                    pPrefix = pPrefix->Next;
-                printf("\tNumber of IP Adapter Prefix entries: %d\n", i);
-            } else
-                printf("\tNumber of IP Adapter Prefix entries: 0\n");
-
+            printf("\tReceive link speed: %I64u\n", pCurrAddresses->ReceiveLinkSpeed); */
+                  
             printf("\n");
 goon:
             pCurrAddresses = pCurrAddresses->Next;
         }
-    } else {
-        printf("Call to GetAdaptersAddresses failed with error: %d\n",
-               dwRetVal);
-        if (dwRetVal == ERROR_NO_DATA)
-            printf("\tNo addresses were found for the requested parameters\n");
-        else {
+    } 
 
+    /* Something went wrong with Windows, generate debug info.
+     */
+#if OSAL_DEBUG
+    else {
+        if (rval == ERROR_NO_DATA) {
+            osal_debug_error("GetAdaptersAddresses returned no data?");
+        }
+        else {
             if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
                     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-                    NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
-                    // Default language
-                    (LPTSTR) & lpMsgBuf, 0, NULL)) {
-                printf("\tError: %s", (char*)lpMsgBuf);
+                    NULL, rval, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
+                    (LPTSTR) &lpMsgBuf, 0, NULL)) 
+            {
+                osal_debug_error_str("GetAdaptersAddresses failed: ", (os_char*)lpMsgBuf);
                 LocalFree(lpMsgBuf);
-                if (pAddresses)
-                    FREE(pAddresses);
-                exit(1);
             }
         }
     }
+#endif
 
-    if (pAddresses) {
-        FREE(pAddresses);
-    }
-
-    return 0;
+    /* Almost done, free buffer, terminate interface list with NULL character and return status.
+     */
+    os_free(pAddresses, outbuf_sz);
+    osal_stream_write(interface_list, "", 1, &n_written, OSAL_STREAM_DEFAULT);
+    return s;
 }
 
 /**
