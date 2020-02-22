@@ -180,7 +180,8 @@ osalStream osal_socket_open(
 {
 	osalSocket *mysocket = OS_NULL;
     osalSocketGlobal *sg;
-    os_memsz sz1 = 0;
+    osalStream interface_list;
+    os_memsz sz1 = 0, n;
 	os_int port_nr;
     os_char addr[16];
 	osalStatus rval; 
@@ -189,10 +190,11 @@ osalStream osal_socket_open(
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
     void *sa_data;
-    os_boolean is_ipv6, has_addr;
+    os_boolean is_ipv6, has_iface_addr;
     os_int af, on = 1, s, sa_sz;
     os_int info_code, addr_sz, i;
     struct ip_mreq mreq;
+    os_char ipbuf[OSAL_IPADDR_SZ], *p, *e;
 
     /* If not initialized.
      */
@@ -317,65 +319,94 @@ osalStream osal_socket_open(
         for (i = 0; i < addr_sz; i++) {
             if (addr[i]) break;
         }
-        has_addr = (os_boolean)(i == addr_sz);
-
-        /* Address not a function parameter, see if we have it for the NIC
-         */
-        if (!has_addr && (flags & OSAL_STREAM_USE_GLOBAL_SETTINGS))
-        {
-            for (i = 0; i < sg->n_nics; i++)
-            {
-            }
-        }
+        has_iface_addr = (os_boolean)(i != addr_sz);
 
         if (flags & OSAL_STREAM_LISTEN)
         {
             /* Bind the socket, here we never bind to specific interface or IP.
              */
             saddr.sin_addr.s_addr = INADDR_ANY;
+            os_memclear(&saddr6.sin6_addr, addr_sz); 
             if (bind(handle, sa, sa_sz))
             {
                 rval = OSAL_STATUS_FAILED;
                 goto getout;
             }
 
-            /* If we got a specific addrss
-             */
-            if (has_addr)
-                /* Use setsockopt to join a multicast group. Note that the socket should be bound to 
-                   the wildcard address (INADDR_ANY) before joining the group
-                 */
-                os_memclear(&mreq, sizeof(mreq));
-                if (inet_pton(AF_INET, option, &mreq.imr_multiaddr.s_addr) != 1) {
-                    osal_debug_error("osal_socket_open: inet_pton() failed");
-                }
-
-                mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
-    mreq.imr_interface.s_addr = inet_addr("192.168.1.229");
-                if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
-                {
-                    rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
-                    goto getout;
-                }
-
-osalStream interface_list = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
-osal_socket_list_network_interfaces(interface_list, AF_INET);
-printf ("LIST: %s\n", osal_stream_buffer_content(interface_list, OS_NULL));
-osal_stream_close(interface_list, OSAL_STREAM_DEFAULT);
-
             /* Use setsockopt to join a multicast group. Note that the socket should be bound to 
                the wildcard address (INADDR_ANY) before joining the group
              */
             os_memclear(&mreq, sizeof(mreq));
             if (inet_pton(AF_INET, option, &mreq.imr_multiaddr.s_addr) != 1) {
-                osal_debug_error("osal_socket_open: inet_pton() failed");
+                osal_debug_error_str("osal_socket_open: inet_pton() failed:", (os_char*)option);
             }
 
-            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
-mreq.imr_interface.s_addr = inet_addr("192.168.1.229");
-            if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+            if (has_iface_addr)
             {
-                rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                os_memcpy(&mreq.imr_interface.s_addr, addr, 4); // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
+                if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+                {
+                    rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                    goto getout;
+                }
+            }
+
+            /* Address not a function parameter, see if we have it for the NIC
+             */
+            if (!has_iface_addr && (flags & OSAL_STREAM_USE_GLOBAL_SETTINGS))
+            {
+                for (i = 0; i < sg->n_nics; i++)
+                {
+                    if (!sg->nic[i].receive_udp_multicasts) continue;
+
+                    if (inet_pton(AF_INET, sg->nic[i].ip_address, &mreq.imr_interface.s_addr) != 1) {
+                        osal_debug_error_str("osal_socket_open: inet_pton() failed:", sg->nic[i].ip_address);
+                    }
+                    if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+                    {
+                        rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                        goto getout;
+                    }
+                    has_iface_addr = OS_TRUE;
+                }
+            }
+
+            /* If we still got no interface addess, ask Windows for list of all useful interfaces.
+             */
+            if (!has_iface_addr)
+            {
+                interface_list = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
+                osal_socket_list_network_interfaces(interface_list, AF_INET);
+                p = osal_stream_buffer_content(interface_list, OS_NULL);
+                while (p)
+                {
+                    e = os_strchr(p, ',');
+                    if (e == OS_NULL) e = os_strchr(p, '\0');
+                    if (e > p) 
+                    {
+                        n = e - p + 1;
+                        if (n > sizeof(ipbuf)) n = sizeof(ipbuf);
+                        os_strncpy(ipbuf, p, n);
+                        if (inet_pton(AF_INET, ipbuf, &mreq.imr_interface.s_addr) != 1) {
+                            osal_debug_error_str("osal_socket_open: inet_pton() failed:", sg->nic[i].ip_address);
+                        }
+                        if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
+                        {
+                            rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                            goto getout;
+                        }
+                        has_iface_addr = OS_TRUE;
+                    }
+                    if (*e == '\0') break;
+                    p = e + 1;
+                }
+
+                osal_stream_close(interface_list, OSAL_STREAM_DEFAULT);
+            }
+
+            if (!has_iface_addr)
+            {
+                osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_FAILED, "No interface addr");
                 goto getout;
             }
         }
@@ -1471,8 +1502,12 @@ osalStatus osal_socket_receive_packet(
         /* WSAEWOULDBLOCK = operation would block.
             WSAENOTCONN = socket not (yet?) connected.
             */
-        return (werr == WSAEWOULDBLOCK)
-            ? OSAL_PENDING : OSAL_STATUS_FAILED;
+        if (werr == WSAEWOULDBLOCK) {
+            return OSAL_PENDING;
+        }
+        else {
+            return OSAL_STATUS_FAILED;
+        }
     }
 
     if (remote_addr)
@@ -1545,7 +1580,7 @@ static osalStatus osal_socket_list_network_interfaces(
 
     /* Set the flags to pass to GetAdaptersAddresses
      */
-    flags = /* GAA_FLAG_INCLUDE_PREFIX |  */
+    flags =
           GAA_FLAG_SKIP_FRIENDLY_NAME |
           GAA_FLAG_SKIP_ANYCAST |
           GAA_FLAG_SKIP_MULTICAST |
@@ -1582,16 +1617,6 @@ static osalStatus osal_socket_list_network_interfaces(
 
             if (pCurrAddresses->OperStatus != IfOperStatusUp /* && pCurrAddresses->OperStatus != IfOperStatusDormant*/) goto goon;
 
-/* 
-pCurrAddresses->OperStatus
-
-IfOperStatusUp The interface is up and able to pass packets.
-IfOperStatusDown The interface is down and not in a condition to pass packets. The IfOperStatusDown state has two meanings, depending on the value of AdminStatus member. If AdminStatus is not set to NET_IF_ADMIN_STATUS_DOWN and ifOperStatus is set to IfOperStatusDown then a fault condition is presumed to exist on the interface. If AdminStatus is set to IfOperStatusDown, then ifOperStatus will normally also be set to IfOperStatusDown or IfOperStatusNotPresent and there is not necessarily a fault condition on the interface.
-IfOperStatusTesting  The interface is in testing mode.
-IfOperStatusUnknown The operational status of the interface is unknown.
-IfOperStatusDormant - Sleeping in power savve???
-*/
-
             /* printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
             printf("\tAdapter name: %s\n", pCurrAddresses->AdapterName); */
 
@@ -1627,15 +1652,10 @@ IfOperStatusDormant - Sleeping in power savve???
                 }
             } 
 
-            /* printf("\tDescription: %wS\n", pCurrAddresses->Description);
-            printf("\tFriendly name: %wS\n", pCurrAddresses->FriendlyName); 
-
-            printf("\tIfType: %ld\n", pCurrAddresses->IfType);
-            printf("\tOperStatus: %ld\n", pCurrAddresses->OperStatus);
+            /* 
             printf("\tIpv6IfIndex (IPv6 interface): %u\n",
                    pCurrAddresses->Ipv6IfIndex);
-            printf("\tTransmit link speed: %I64u\n", pCurrAddresses->TransmitLinkSpeed);
-            printf("\tReceive link speed: %I64u\n", pCurrAddresses->ReceiveLinkSpeed); */
+*/
                   
             printf("\n");
 goon:
@@ -1693,6 +1713,9 @@ void osal_socket_initialize(
     osalWifiNetwork *wifi,
     os_int n_wifi)
 {
+    osalSocketGlobal *sg;
+    os_int i;
+
     /** Windows socket library version information.
      */
     WSADATA osal_wsadata;
@@ -1707,8 +1730,22 @@ void osal_socket_initialize(
 
     /* Allocate global structure
      */
-    osal_global->socket_global = (struct osalSocketGlobal*)os_malloc(sizeof(osalSocketGlobal), OS_NULL);
-    os_memclear(osal_global->socket_global, sizeof(osalSocketGlobal));
+    sg = (osalSocketGlobal*)os_malloc(sizeof(osalSocketGlobal), OS_NULL);
+    os_memclear(sg, sizeof(osalSocketGlobal));
+    osal_global->socket_global = sg;
+
+    /** Copy NIC info for UDP multicasts. 
+     */
+    if (nic) for (i = 0; i < n_nics; i++)
+    {
+        if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
+        if (nic[i].ip_address[0] == '\0' || !strcmp(nic[i].ip_address, "*")) continue;
+
+        os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
+        sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
+        sg->nic[sg->n_nics].send_udp_multicasts = nic[i].send_udp_multicasts;
+        if (++(sg->n_nics) >= OSAL_MAX_WINDOWS_NICS) break;
+    }
 
 	/* If socket library is already initialized, do nothing. Double checked here
 	   for thread synchronization.
@@ -1826,6 +1863,19 @@ static void osal_socket_set_nodelay(
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Set up a ring buffer.
+  @anchor osal_socket_setup_ring_buffer
+
+  The osal_socket_setup_ring_buffer() function...
+
+  @param  socket Pointer to our socket structure for Windows.
+  @return None.
+
+****************************************************************************************************
+*/
 static void osal_socket_setup_ring_buffer(
 	osalSocket *mysocket)
 {

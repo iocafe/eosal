@@ -105,4 +105,117 @@ getout:
     return s;
 }
 
+#if 0
+We should use getaddrinfo to add support for IPv6, in case IPv4 not found
+
+int OpenConnection(const char *hostname, const char *port)
+{
+    struct hostent *host;
+    if ((host = gethostbyname(hostname)) == nullptr)
+    {
+        //More descriptive error message?
+        perror(hostname);
+        exit(EXIT_FAILURE);
+    }
+
+    struct addrinfo hints = {0}, *addrs;
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+
+    const int status = getaddrinfo(hostname, port, &hints, &addrs);
+    if (status != 0)
+    {
+        fprintf(stderr, "%s: %s\n", hostname, gai_strerror(status));
+        exit(EXIT_FAILURE);
+    }
+
+    int sfd, err;
+    for (struct addrinfo *addr = addrs; addr != nullptr; addr = addr->ai_next)
+    {
+        sfd = socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol);
+        if (sfd == ERROR_STATUS)
+        {
+            err = errno;
+            continue;
+        }
+
+        if (connect(sfd, addr->ai_addr, addr->ai_addrlen) == 0)
+        {
+            break;
+        }
+
+        err = errno;
+        sfd = ERROR_STATUS;
+        close(sfd);
+    }
+
+    freeaddrinfo(addrs);
+
+    if (sfd == ERROR_STATUS)
+    {
+        fprintf(stderr, "%s: %s\n", hostname, strerror(err));
+        exit(EXIT_FAILURE);
+    }
+
+    return sfd;
+}
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+ 
+int main(int argc, char *argv[])
+{
+    struct addrinfo hints, *res, *p;
+    int status;
+    char ipstr[INET6_ADDRSTRLEN];
+ 
+    if (argc != 2) {
+fprintf(stderr, "Usage: %s hostname\n", argv[0]);
+return 1;
+}
+ 
+memset(&hints, 0, sizeof hints);
+hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+hints.ai_socktype = SOCK_STREAM;
+ 
+if ((status = getaddrinfo(argv[1], NULL, &hints, &res)) != 0) {
+fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+return 2;
+}
+ 
+for(p = res;p != NULL; p = p->ai_next) {
+ 
+void *addr;
+ 
+if (p->ai_family == AF_INET) {
+return 1;
+ 
+} else {
+ 
+struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+addr = &(ipv6->sin6_addr);
+ 
+/* convert the IP to a string and print it: */
+inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
+ 
+printf("Hostname: %s\n", argv[1]);
+printf("IP Address: %s\n", ipstr);
+ 
+}
+}
+ 
+freeaddrinfo(res); // free the linked list
+ 
+return 0;
+}
+#endif
+
+
+
 #endif
