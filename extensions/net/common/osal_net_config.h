@@ -128,18 +128,19 @@ typedef struct osalNetworkInterface
     os_boolean no_dhcp;
 
     /** OS_TRUE to enable sending UDP multicasts trough this network interface.
-        If sending UDP multicasts are not configured for any NIC, then multicasts
-        are sent trough all the NICs. This option can be enabled only for one
-        network interface, if multiple NICs are selected, only the first NIC
-        is used for multicasts. Use "send_udp":1 in JSON configuration to enable.
+        What happends when UDP multicast is sent and multicasts are not enabled
+        for any NIC, or are are selected for multiple NICs, is up to operating
+        system specific implementation. If interface is defined when opening
+        the socked, this parameter is ignored. Use "send_udp":1 in JSON configuration
+        to enable.
      */
     os_boolean send_udp_multicasts;
 
-    /** OS_TRUE to receiving UDP multicasts trough this NIC. If receiving
-        UDP multicast is not configured for any NIC, then we listen for multicasts
-        from any network interface. This option can be enabled only for one
-        network interface, if multiple NICs are selected, only the first NIC
-        is used for multicasts. Use "receive_udp":1 in JSON configuration to enable.
+    /** OS_TRUE to receiving UDP multicasts trough this NIC. What happends if
+        receiving UDP multicasts is not enabled for any NIC, or is enabled
+        for multiple NICs, is up to operating system specific implementation.
+        If interface is defined when opening the socked, this parameter is
+        ignored. Use "receive_udp":1 in JSON configuration to enable.
      */
     os_boolean receive_udp_multicasts;
 }
