@@ -108,7 +108,7 @@ osalStatus osal_socket_get_ip_and_port(
 
 /**
 ****************************************************************************************************
-
+ 
   @brief If port number is not specified in "parameters" string, then embed defaut port number.
   @anchor osal_socket_embed_default_port
 
