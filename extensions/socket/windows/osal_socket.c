@@ -101,6 +101,9 @@ static void osal_socket_set_nodelay(
 static void osal_socket_setup_ring_buffer(
 	osalSocket *mysocket);
 
+static osalStatus osal_socket_list_network_interfaces(
+    os_int xxxx);
+
 /**
 ****************************************************************************************************
 
@@ -281,6 +284,8 @@ saddr.sin_addr.s_addr = 0; // DUMMY TO PREVENT COMPILER WARNING
     {
         if (flags & OSAL_STREAM_LISTEN)
         {
+osal_socket_list_network_interfaces(1);
+
             /* Use setsockopt to join a multicast group. Note that the socket should be bound to 
                the wildcard address (INADDR_ANY) before joining the group
              */
@@ -1423,26 +1428,25 @@ osalStatus osal_socket_receive_packet(
   @brief List network interfaces which can be used for UDP multicasts.
   @anchor osal_socket_list_network_interfaces
 
-  The osal_socket_list_network_interfaces() function read UDP packet from network. Function never blocks.
+  The osal_socket_list_network_interfaces() function ... 
 
-  @param   stream Stream pointer representing the UDP socket.
-  @param   buf Pointer to buffer where to read data.
-  @param   n Buffer size in bytes.
-  @param   n_read Number of bytes actually read.
-  @param   remote_address Pointer to string buffer into which to store the IP address
-           from which the incoming connection was accepted. Can be OS_NULL if not needed.
-  @param   remote_addr_sz Size of remote IP address buffer in bytes.
-  @param   flags Set OSAL_STREAM_DEFAULT.
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates that packet was read.
-           Value OSAL_PENDING that we we have no received UDP message to read for the moment.
-           Other return values indicate an error.
+  It is stuck in there very deep.
+  The member you want is FirstUnicastAddress, this has a member Address which is of type 
+  SOCKET_ADDRESS, which has a member named lpSockaddr which is a pointer to a SOCKADDR structure. 
+  Once you get to this point you should notice the familiar winsock structure and be able to 
+  get the address on your own. Remember, the address family given in the original call determins 
+  the address types you get out, so if you passed in AF_UNSPEC then you will need to filter out 
+  the addresses manually.
+
+  @return  Function status code. 
 
 ****************************************************************************************************
 */
-osalStatus osal_socket_list_network_interfaces(
+static osalStatus osal_socket_list_network_interfaces(
     os_int xxxx)
 {
-
+    char buf[OSAL_IPADDR_SZ];
+  
 // Link with Iphlpapi.lib
 #pragma comment(lib, "IPHLPAPI.lib")
 
@@ -1460,7 +1464,12 @@ osalStatus osal_socket_list_network_interfaces(
     unsigned int i = 0;
 
     // Set the flags to pass to GetAdaptersAddresses
-    ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
+    ULONG flags 
+        = /* GAA_FLAG_INCLUDE_PREFIX |  */
+          //GAA_FLAG_SKIP_FRIENDLY_NAME |
+          GAA_FLAG_SKIP_ANYCAST |
+          GAA_FLAG_SKIP_MULTICAST |
+          GAA_FLAG_SKIP_DNS_SERVER;
 
     // default to unspecified address family (both)
     ULONG family = AF_UNSPEC;
@@ -1478,8 +1487,8 @@ osalStatus osal_socket_list_network_interfaces(
     IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;
     IP_ADAPTER_PREFIX *pPrefix = NULL;
 
-family = AF_INET;
-family = AF_INET6;
+//family = AF_INET;
+ // family = AF_INET6;
 family = AF_UNSPEC; // Both IPv4 and IPv6
 
     // Allocate a 15 KB buffer to start with.
@@ -1512,6 +1521,22 @@ family = AF_UNSPEC; // Both IPv4 and IPv6
         // If successful, output some information from the data we received
         pCurrAddresses = pAddresses;
         while (pCurrAddresses) {
+            /* pekka : SKIP IF NO MULTICAST, WE ARE SPECIFICALLY LOOKING FOR MULTICAST CAPABLE ADAPTERS */
+            if (pCurrAddresses->NoMulticast) goto goon;
+            if (family == AF_INET) if (!pCurrAddresses->Ipv4Enabled) goto goon;
+            if (family == AF_INET6) if (!pCurrAddresses->Ipv6Enabled) goto goon;
+            if (pCurrAddresses->IfType != IF_TYPE_IEEE80211 && pCurrAddresses->IfType != IF_TYPE_ETHERNET_CSMACD) goto goon;
+
+/* 
+pCurrAddresses->OperStatus
+
+IfOperStatusUp The interface is up and able to pass packets.
+IfOperStatusDown The interface is down and not in a condition to pass packets. The IfOperStatusDown state has two meanings, depending on the value of AdminStatus member. If AdminStatus is not set to NET_IF_ADMIN_STATUS_DOWN and ifOperStatus is set to IfOperStatusDown then a fault condition is presumed to exist on the interface. If AdminStatus is set to IfOperStatusDown, then ifOperStatus will normally also be set to IfOperStatusDown or IfOperStatusNotPresent and there is not necessarily a fault condition on the interface.
+IfOperStatusTesting  The interface is in testing mode.
+IfOperStatusUnknown The operational status of the interface is unknown.
+IfOperStatusDormant - Sleeping in power savve???
+*/
+
             printf("\tLength of the IP_ADAPTER_ADDRESS struct: %ld\n",
                    pCurrAddresses->Length);
             printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
@@ -1520,7 +1545,31 @@ family = AF_UNSPEC; // Both IPv4 and IPv6
             pUnicast = pCurrAddresses->FirstUnicastAddress;
             if (pUnicast != NULL) {
                 for (i = 0; pUnicast != NULL; i++)
+                {
+                    /* Uh huh, it seems to be here
+                     */
+                    SOCKADDR *sa = pUnicast->Address.lpSockaddr;
+                    if (sa)
+                    {
+                        if (sa->sa_family == AF_INET)
+                        {
+                            struct sockaddr_in *sa_in = (struct sockaddr_in *)sa;
+                            printf("\tIPV4:%s\n",inet_ntop(AF_INET,&(sa_in->sin_addr),buf,sizeof(buf)));
+                            // printf("\tIPV4:%s\n",inet_ntop(AF_INET, &sa->sa_data,buf,sizeof(buf)));
+                        }
+                        else if (sa->sa_family == AF_INET6)
+                        {
+                            struct sockaddr_in6 *sa_in6 = (struct sockaddr_in6 *)sa;
+                            printf("\tIPV6:%s\n",inet_ntop(AF_INET6,&(sa_in6->sin6_addr),buf,sizeof(buf)));
+                            // printf("\tIPV6:%s\n",inet_ntop(AF_INET6, sa->sa_data,buf,sizeof(buf)));
+                        }
+                        else
+                        {
+                            printf("\tUNSPEC");
+                        }
+                    }
                     pUnicast = pUnicast->Next;
+                }
                 printf("\tNumber of Unicast Addresses: %d\n", i);
             } else
                 printf("\tNo Unicast Addresses\n");
@@ -1588,7 +1637,7 @@ family = AF_UNSPEC; // Both IPv4 and IPv6
                 printf("\tNumber of IP Adapter Prefix entries: 0\n");
 
             printf("\n");
-
+goon:
             pCurrAddresses = pCurrAddresses->Next;
         }
     } else {
@@ -1603,7 +1652,7 @@ family = AF_UNSPEC; // Both IPv4 and IPv6
                     NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
                     // Default language
                     (LPTSTR) & lpMsgBuf, 0, NULL)) {
-                printf("\tError: %s", lpMsgBuf);
+                printf("\tError: %s", (char*)lpMsgBuf);
                 LocalFree(lpMsgBuf);
                 if (pAddresses)
                     FREE(pAddresses);
