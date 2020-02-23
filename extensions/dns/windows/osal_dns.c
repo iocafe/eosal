@@ -23,7 +23,6 @@
 static osalStatus osal_gethostbyname_sys(
     const os_char *name,
     os_char *addr,
-    os_memsz addr_sz,
     os_boolean *is_ipv6);
 
 /**
@@ -74,7 +73,7 @@ osalStatus osal_gethostbyname(
 
     /* Nowdays we enforce allocating enough memory also for IPv6.
      */
-    if (addr_sz < 16)
+    if (addr_sz < OSAL_IPV6_BIN_ADDR_SZ)
     {
         goto getout;
     }
@@ -96,7 +95,7 @@ osalStatus osal_gethostbyname(
         }
     }
 
-    s = osal_gethostbyname_sys(name, addr, addr_sz, is_ipv6);
+    s = osal_gethostbyname_sys(name, addr, is_ipv6);
 
 getout:
     return s;
@@ -113,22 +112,14 @@ getout:
   Here name is either a hostname, or an IPv4 address in standard dot notation, or an
   IPv6 address in colon (and possibly dot) notation.
 
-  If name is empty string: If listening, listen all IP addressess. If connecting, use local host.
-
   If name is looked up from DNS and has both IPv4 and IPv6 addressess, IPv4 address is selected.
 
   @param   name Computer name or IP address string.
   @param   addr Pointer where to store the binary IP address. IP address is stored in
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
            depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
-  @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow
-           storing IPv6 address.
   @param   is_ipv6 Pointer to boolean to set to OS_TRUE if this is IPv6 address or OE_FALSE
            if this is IPv4 address.
-  @param   default_use_flags What socket is used for. This is used to make defaule IP address
-           if it is omitted from parameters" string. Set either OSAL_STREAM_CONNECT (0) or
-           OSAL_STREAM_LISTEN (0x0100) depending which end of the socket we are preparing.
-           Bit fields, can be stream flags directly.
 
   @return  If IP address is successfully retrieved, the function returns OSAL_SUCCESS. Other
            return values indicate that hostname didn't match any known host, or an error occurred.
@@ -138,7 +129,6 @@ getout:
 static osalStatus osal_gethostbyname_sys(
     const os_char *name,
     os_char *addr,
-    os_memsz addr_sz,
     os_boolean *is_ipv6)
 {
     struct addrinfo hints, *res, *p;
@@ -149,7 +139,7 @@ static osalStatus osal_gethostbyname_sys(
     osalStatus s = OSAL_STATUS_FAILED;
  
     os_memclear(&hints, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+    hints.ai_family = AF_UNSPEC; 
     hints.ai_socktype = SOCK_STREAM;
  
     if ((status = getaddrinfo(name, NULL, &hints, &res)) != 0) {
@@ -165,11 +155,8 @@ static osalStatus osal_gethostbyname_sys(
         if (p->ai_family == AF_INET) 
         {
             ipv4 = (struct sockaddr_in *)p->ai_addr;
-            if (addr_sz >= OSAL_IPV4_BIN_ADDR_SZ)
-            {
-                os_memcpy(addr, &(ipv4->sin_addr), OSAL_IPV4_BIN_ADDR_SZ);
-                s = OSAL_SUCCESS;
-            }
+            os_memcpy(addr, &(ipv4->sin_addr), OSAL_IPV4_BIN_ADDR_SZ);
+            s = OSAL_SUCCESS;
             goto getout;
         }
     }
@@ -180,14 +167,10 @@ static osalStatus osal_gethostbyname_sys(
     {
         if (p->ai_family == AF_INET6) 
         {
-            if (addr_sz >= OSAL_IPV6_BIN_ADDR_SZ)
-            {
-                ipv6 = (struct sockaddr_in6 *)p->ai_addr;
-
-                os_memcpy(addr, &(ipv6->sin6_addr), OSAL_IPV6_BIN_ADDR_SZ);
-                *is_ipv6 = OS_TRUE;
-                s = OSAL_SUCCESS;
-            }
+            ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            os_memcpy(addr, &(ipv6->sin6_addr), OSAL_IPV6_BIN_ADDR_SZ);
+            *is_ipv6 = OS_TRUE;
+            s = OSAL_SUCCESS;
             goto getout;
         }
     }
