@@ -16,30 +16,36 @@
 ****************************************************************************************************
 */
 
-/* Default buffer size for host (computer) name and port, etc.
+/** Default buffer size for host (computer) name and port, etc.
  */
 #define OSAL_HOST_BUF_SZ 64
 
-/* Default buffer size for IP address or host name only.
+/** Default buffer size for IP address or host name only.
  */
 #define OSAL_IPADDR_SZ 46
 
-/* Default buffer size for MAC address string.
+/** Default buffer size for MAC address string.
  */
 #define OSAL_MAC_SZ 18
 
-/* Size for WiFi network name and password.
+/** Size for WiFi network name and password.
  */
 #define OSAL_WIFI_PRM_SZ 16
 
-/* Number of network interfaces that can be configured by eosal. This doesn't limit
-   number of network interfaces when operating system like Linux or Windows manages these.
+/** Maximum binary IP address size. 4 bytes for IPv4 and 16 bytes for IPv6.
+ */
+#define OSAL_IP_BIN_ADDR_SZ 16
+#define OSAL_IPV4_BIN_ADDR_SZ 4
+#define OSAL_IPV6_BIN_ADDR_SZ 16
+
+/** Number of network interfaces that can be configured by eosal. This doesn't limit
+    number of network interfaces when operating system like Linux or Windows manages these.
  */
 #ifndef OSAL_MAX_NRO_NICS
 #define OSAL_MAX_NRO_NICS 2
 #endif
 
-/* Maximum number Number of network interfaces that should be supported troughout the code.
+/** Maximum number Number of network interfaces that should be supported troughout the code.
  */
 #ifndef OSAL_MAX_NRO_WIFI_NETWORKS
 #define OSAL_MAX_NRO_WIFI_NETWORKS 2
@@ -150,7 +156,12 @@ osalNetworkInterface;
  */
 typedef struct osalWifiNetworkBuf
 {
+    /** WiFi network name, same as SSID.
+     */
     os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
+
+    /** WiFi network password, pre shared key.
+     */
     os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
 }
 osalWifiNetworkBuf;

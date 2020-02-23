@@ -148,7 +148,8 @@ static osalStatus osal_socket_list_network_interfaces(
           nor for empty IP specifying only port to listen. Use brackets around IP address
           to mark IPv6 address, for example "[localhost]:12345", or "[]:12345" for empty IP.
 
-  @param  option Not used for sockets, set OS_NULL.
+  @param  option UDP multicasts, the multicast group address as string.  
+          Otherwise not used for sockets, set OS_NULL.
 
   @param  status Pointer to integer into which to store the function status code. Value
 		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
@@ -182,18 +183,19 @@ osalStream osal_socket_open(
     osalSocketGlobal *sg;
     osalStream interface_list;
     os_memsz sz1 = 0, n;
-	os_int port_nr;
-    os_char addr[16];
+	os_int port_nr, opt_port_nr;
+    os_char addr[OSAL_IP_BIN_ADDR_SZ], opt[OSAL_IP_BIN_ADDR_SZ];
 	osalStatus rval; 
 	SOCKET handle = INVALID_SOCKET;
 	struct sockaddr_in saddr;
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
     void *sa_data;
-    os_boolean is_ipv6, has_iface_addr;
+    os_boolean is_ipv6, opt_is_ipv6, has_iface_addr;
     os_int af, on = 1, s, sa_sz;
     os_int info_code, addr_sz, i;
     struct ip_mreq mreq;
+    struct ipv6_mreq mreq6;
     os_char ipbuf[OSAL_IPADDR_SZ], *p, *e;
 
     /* If not initialized.
@@ -221,7 +223,7 @@ osalStream osal_socket_open(
         os_memclear(&saddr6, sizeof(saddr6));
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
-        addr_sz = 16;
+        addr_sz = OSAL_IPV6_BIN_ADDR_SZ;
         os_memcpy(&saddr6.sin6_addr, &addr, addr_sz); 
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
@@ -233,7 +235,7 @@ osalStream osal_socket_open(
         os_memclear(&saddr, sizeof(saddr));
         saddr.sin_family = af;
         saddr.sin_port = htons(port_nr);
-        addr_sz = 4;
+        addr_sz = OSAL_IPV4_BIN_ADDR_SZ;
         os_memcpy(&saddr.sin_addr.s_addr, addr, addr_sz);
         sa = (struct sockaddr *)&saddr;
         sa_sz = sizeof(saddr);
@@ -314,6 +316,16 @@ osalStream osal_socket_open(
 
     if (flags & OSAL_STREAM_UDP_MULTICAST)
     {
+	    /* Get host name or numeric IP address and TCP port number from parameters.
+	     */
+        s = osal_socket_get_ip_and_port(option, opt, sizeof(opt),
+            &opt_port_nr, &opt_is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
+        if (s)
+        {
+            if (status) *status = s;
+            return OS_NULL;
+        }
+
         /* If we have do not have an IP address given as function parameter?
          */
         for (i = 0; i < addr_sz; i++) {
