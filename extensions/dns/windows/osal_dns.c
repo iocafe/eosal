@@ -20,6 +20,8 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 
+/* Forward referred static function
+ */
 static osalStatus osal_gethostbyname_sys(
     const os_char *name,
     os_char *addr,
