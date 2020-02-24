@@ -79,6 +79,14 @@ typedef struct osalSocket
      */
     os_char multicast_group[OSAL_IP_BIN_ADDR_SZ];
 
+    /* Interface list to be used for sending multicasts. Interface numbers for IPv6
+     */
+    // os_char *send_multicast_iface_list;
+    
+    /* Port number for sending multicasts.
+     */
+    os_int send_multicast_port;
+
 	/** Stream open flags. Flags which were given to osal_socket_open() or osal_socket_accept()
         function. 
 	 */
@@ -607,7 +615,9 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
         }           
     }
 #endif
-        
+       
+    /* Listen for multicasts.
+     */
     if (flags & OSAL_STREAM_LISTEN)
     {
         /* Bind the socket, here we never bind to specific interface or IP.
@@ -771,6 +781,19 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_FAILED, "No interface addr");
             goto getout;
         }
+    }
+
+    /* Send for multicasts.
+     */
+    else
+    {
+        /* if (has_iface_addr)
+        {
+            os_memcpy(mysocket->send_multicast_iface, has_iface_addr, iface_addr_bin, ?16)
+            mysocket->send_multicast_iface_set = OS_TRUE;
+        }
+        */
+        mysocket->send_multicast_port = port_nr;
     }
 
 	/* We are good, cleanup, save socket handle and return.
@@ -1599,7 +1622,6 @@ osalStatus osal_socket_select(
   The osal_socket_send_packet() function writes UDP packet to network.
 
   @param   stream Stream pointer representing the UDP socket.
-  @param   parameters IP address and optionallt port where to send the UDP message.
   @param   buf Pointer to the beginning of data to send.
   @param   n Number of bytes to send.
   @param   flags Set OSAL_STREAM_DEFAULT.
@@ -1611,7 +1633,6 @@ osalStatus osal_socket_select(
 */
 osalStatus osal_socket_send_packet(
     osalStream stream,
-    const os_char *parameters,
     const os_char *buf,
     os_memsz n,
     os_int flags)
@@ -1619,11 +1640,7 @@ osalStatus osal_socket_send_packet(
     osalSocket *mysocket;
     struct sockaddr_in sin_remote;
     struct sockaddr_in6 sin_remote6;
-    os_char addr[16];
-    os_int port_nr;
     int nbytes, werr;
-    osalStatus s;
-    os_boolean is_ipv6;
 
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
 
@@ -1632,18 +1649,14 @@ osalStatus osal_socket_send_packet(
     mysocket = (osalSocket*)stream;
     osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
 
-    s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
-        &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-    if (s) return s;
-
     if (mysocket->is_ipv6)
     {
         /* Set up destination address
          */
         os_memclear(&sin_remote6, sizeof(sin_remote6));
         sin_remote6.sin6_family = AF_INET6;
-        sin_remote6.sin6_port = htons(port_nr);
-        memcpy(&sin_remote6.sin6_addr, &addr, OSAL_IPV6_BIN_ADDR_SZ);
+        sin_remote6.sin6_port = htons(mysocket->send_multicast_port);
+        memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
         /* Send packet.
          */
@@ -1656,8 +1669,8 @@ osalStatus osal_socket_send_packet(
          */
         os_memclear(&sin_remote, sizeof(sin_remote));
         sin_remote.sin_family = AF_INET;
-        sin_remote.sin_port = htons(port_nr);
-        memcpy(&sin_remote.sin_addr.s_addr, addr, 4);
+        sin_remote.sin_port = htons(mysocket->send_multicast_port);
+        memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
         /* Send packet.
          */

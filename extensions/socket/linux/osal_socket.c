@@ -986,7 +986,6 @@ osalStatus osal_socket_select(
   The osal_socket_send_packet() function writes UDP packet to network.
 
   @param   stream Stream pointer representing the UDP socket.
-  @param   parameters IP address and optionallt port where to send the UDP message.
   @param   buf Pointer to the beginning of data to send.
   @param   n Number of bytes to send.
   @param   flags Set OSAL_STREAM_DEFAULT.
@@ -998,7 +997,6 @@ osalStatus osal_socket_select(
 */
 osalStatus osal_socket_send_packet(
     osalStream stream,
-    const os_char *parameters,
     const os_char *buf,
     os_memsz n,
     os_int flags)

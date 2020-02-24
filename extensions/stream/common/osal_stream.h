@@ -343,7 +343,6 @@ typedef struct osalStreamInterface
      */
     osalStatus (*stream_send_packet)(
         osalStream stream,
-        const os_char *parameters,
         const os_char *buf,
         os_memsz n,
         os_int flags);
@@ -506,7 +505,6 @@ osalStatus osal_stream_select(
  */
 osalStatus osal_stream_send_packet(
     osalStream stream,
-    const os_char *parameters,
     const os_char *buf,
     os_memsz n,
     os_int flags);

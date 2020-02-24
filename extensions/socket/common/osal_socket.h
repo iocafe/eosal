@@ -133,7 +133,6 @@ osalStatus osal_socket_select(
  */
 osalStatus osal_socket_send_packet(
     osalStream stream,
-    const os_char *parameters,
     const os_char *buf,
     os_memsz n,
     os_int flags);
