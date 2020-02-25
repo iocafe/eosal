@@ -148,15 +148,15 @@ typedef enum
 
     /** Sending UDP packet (usually multicast) failed.
      */
-    OSAL_STATUS_SENDING_UDP_PACKET_FAILED,
+    OSAL_STATUS_SEND_MULTICAST_FAILED,
 
     /** Receiving UDP packet (usually multicast) failed.
      */
-    OSAL_STATUS_RECEIVING_UDP_PACKET_FAILED,
+    // OSAL_STATUS_RECEIVE_MULTICAST_FAILED,
 
     /** Joining UDP multicast group failed.
      */
-    OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED,
+    OSAL_STATUS_MULTICAST_GROUP_FAILED,
 
     /** Selecting network interface to use for multicast failed.
      */

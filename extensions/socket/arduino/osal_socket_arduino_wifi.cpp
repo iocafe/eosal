@@ -279,7 +279,7 @@ static void osal_socket_start_wifi_init(void);
   @param  flags Flags for creating the socket. Bit fields, combination of:
           - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
           - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket. 
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open socket with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket.
@@ -343,7 +343,7 @@ osalStream osal_socket_open(
 
     /* *** If UDP socket ***
      */
-    if (flags & OSAL_STREAM_UDP_MULTICAST)
+    if (flags & OSAL_STREAM_MULTICAST)
     {
     }
 

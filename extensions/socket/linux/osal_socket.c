@@ -123,7 +123,7 @@ static void osal_socket_set_cork(
   @param  flags Flags for creating the socket. Bit fields, combination of:
           - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
           - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. Can be combined
+          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket. Can be combined
             with OSAL_STREAM_LISTEN to listen for multicasts.
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open serial with select functionality.
@@ -170,8 +170,8 @@ osalStream osal_socket_open(
 	 */
     s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
         &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-    if (s && (flags & (OSAL_STREAM_UDP_MULTICAST|OSAL_STREAM_LISTEN))
-        != OSAL_STREAM_UDP_MULTICAST)
+    if (s && (flags & (OSAL_STREAM_MULTICAST|OSAL_STREAM_LISTEN))
+        != OSAL_STREAM_MULTICAST)
     {
         if (status) *status = s;
         return OS_NULL;
@@ -200,7 +200,7 @@ osalStream osal_socket_open(
 
     /* Create socket.
      */
-    handle = socket(af, (flags & OSAL_STREAM_UDP_MULTICAST)
+    handle = socket(af, (flags & OSAL_STREAM_MULTICAST)
         ? SOCK_DGRAM : SOCK_STREAM, IPPROTO_IP);
     if (handle == -1)
 	{
@@ -244,7 +244,7 @@ osalStream osal_socket_open(
 	 */
 	mysocket->hdr.iface = &osal_socket_iface;
 
-    if (flags & OSAL_STREAM_UDP_MULTICAST)
+    if (flags & OSAL_STREAM_MULTICAST)
     {
         if (flags & OSAL_STREAM_LISTEN)
         {
@@ -261,7 +261,7 @@ osalStream osal_socket_open(
             mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
             if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
             {
-                rval = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                rval = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                 goto getout;
             }
         }
@@ -286,7 +286,7 @@ osalStream osal_socket_open(
 		    goto getout;
         }
 
-        info_code = (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+        info_code = (mysocket->open_flags & OSAL_STREAM_MULTICAST)
             ? OSAL_UDP_SOCKET_CONNECTED : OSAL_LISTENING_SOCKET_CONNECTED;
     }
 
@@ -427,7 +427,7 @@ void osal_socket_close(
        keep count of sockets open correct.
      */
     osal_int_to_str(nbuf, sizeof(nbuf), handle);
-    if (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+    if (mysocket->open_flags & OSAL_STREAM_MULTICAST)
     {
         info_code = OSAL_UDP_SOCKET_DISCONNECTED;
     }

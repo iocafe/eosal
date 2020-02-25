@@ -105,7 +105,7 @@ typedef struct osalStreamHeader *osalStream;
 
 /** Open a UDP multicast socket. 
  */
-#define OSAL_STREAM_UDP_MULTICAST 0x0400
+#define OSAL_STREAM_MULTICAST 0x0400
 
 /** Open socket without select functionality.
  */

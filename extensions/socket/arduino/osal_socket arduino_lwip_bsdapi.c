@@ -124,7 +124,7 @@ static void osal_socket_set_cork(
   @param  flags Flags for creating the socket. Bit fields, combination of:
           - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
           - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket. 
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open serial with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket. Use TCP_CORK on
@@ -196,7 +196,7 @@ osalStream osal_socket_open(
 
     /* Create socket.
      */
-    handle = socket(af, (flags & OSAL_STREAM_UDP_MULTICAST)
+    handle = socket(af, (flags & OSAL_STREAM_MULTICAST)
         ? SOCK_DGRAM : SOCK_STREAM, IPPROTO_IP);
     if (handle == -1)
 	{
@@ -240,7 +240,7 @@ osalStream osal_socket_open(
 	 */
 	mysocket->hdr.iface = &osal_socket_iface;
 
-	if (flags & (OSAL_STREAM_LISTEN | OSAL_STREAM_UDP_MULTICAST))
+	if (flags & (OSAL_STREAM_LISTEN | OSAL_STREAM_MULTICAST))
 	{
 		if (bind(handle, sa, sa_sz)) 
 		{

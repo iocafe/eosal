@@ -203,7 +203,7 @@ static os_int osal_get_interface_index_by_ipv6_address(
   @param  flags Flags for creating the socket. Bit fields, combination of:
           - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
           - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_UDP_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket. 
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open socket with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket. Use TCP_CORK on
@@ -266,7 +266,7 @@ osalStream osal_socket_open(
 
     /* Open UDP multicast socket
      */
-    if (flags & OSAL_STREAM_UDP_MULTICAST)
+    if (flags & OSAL_STREAM_MULTICAST)
     {
         s = osal_setup_socket_for_udp_multicasts(mysocket, option, iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
@@ -682,7 +682,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     mreq6.ipv6mr_interface = interface_ix;
                     if (setsockopt(handle, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*)&mreq6, sizeof(mreq6)) < 0)
                     {
-                        s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                         goto getout;
                     }
                 }
@@ -697,7 +697,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                 os_memcpy(&mreq.imr_interface.s_addr, iface_addr_bin, OSAL_IPV4_BIN_ADDR_SZ);
                 if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) mr, mr_sz) < 0)
                 {
-                    s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                    s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                     goto getout;
                 }
             }
@@ -725,7 +725,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     mreq6.ipv6mr_interface = (ULONG)osal_str_to_int(ipbuf, OS_NULL);
                     if (setsockopt(handle, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*)&mreq6, sizeof(mreq6)) < 0)
                     {
-                        s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                         goto getout;
                     }
                 }
@@ -736,7 +736,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     os_memcpy(&mreq.imr_interface.s_addr, nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                     if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)mr, mr_sz) < 0)
                     {
-                        s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                         goto getout;
                     }
                 }
@@ -771,7 +771,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                         mreq6.ipv6mr_interface = (ULONG)osal_str_to_int(ipbuf, OS_NULL);
                         if (setsockopt(handle, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*)&mreq6, sizeof(mreq6)) < 0)
                         {
-                            s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                             goto getout;
                         }
                     }
@@ -782,7 +782,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                         }
                         if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mreq, sizeof(mreq)) < 0)
                         {
-                            s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
+                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
                             goto getout;
                         }
                     }
@@ -1067,7 +1067,7 @@ void osal_socket_close(
        keep count of sockets open correct.
      */
     osal_int_to_str(nbuf, sizeof(nbuf), handle);
-    if (mysocket->open_flags & OSAL_STREAM_UDP_MULTICAST)
+    if (mysocket->open_flags & OSAL_STREAM_MULTICAST)
     {
         info_code = OSAL_UDP_SOCKET_DISCONNECTED;
     }
@@ -1863,8 +1863,8 @@ osalStatus osal_socket_send_packet(
             {
                 werr = WSAGetLastError();
                 if (werr != WSAEWOULDBLOCK) {
-                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SENDING_UDP_PACKET_FAILED, OS_NULL);
-                    s = OSAL_STATUS_SENDING_UDP_PACKET_FAILED;
+                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
+                    s = OSAL_STATUS_SEND_MULTICAST_FAILED;
                 }
                 else
                 {
@@ -1911,8 +1911,8 @@ osalStatus osal_socket_send_packet(
             {
                 werr = WSAGetLastError();
                 if (werr != WSAEWOULDBLOCK) {
-                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SENDING_UDP_PACKET_FAILED, OS_NULL);
-                    s = OSAL_STATUS_SENDING_UDP_PACKET_FAILED;
+                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
+                    s = OSAL_STATUS_SEND_MULTICAST_FAILED;
                 }
                 else
                 {
