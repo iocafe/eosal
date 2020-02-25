@@ -1815,13 +1815,16 @@ osalStatus osal_socket_send_packet(
     int nbytes, werr;
     struct ip_mreq mreq;
     struct ipv6_mreq mreq6;
+    os_int n_ifaces, i;
+    osalStatus s = OSAL_SUCCESS;
 
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
 
     /* Cast stream pointer to socket structure pointer.
      */
     mysocket = (osalSocket*)stream;
-    osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
+    osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface && mysocket->send_mcast_ifaces);
+    n_ifaces = mysocket->send_mcast_ifaces_n;
 
     if (mysocket->is_ipv6)
     {
@@ -1832,43 +1835,43 @@ osalStatus osal_socket_send_packet(
         sin_remote6.sin6_port = htons(mysocket->send_multicast_port);
         memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
-        /* Send packet.
+        /* Loop trough interfaces to which to send thee multicast
          */
-        nbytes = sendto(mysocket->handle, buf, (int)n, 0,
-            (struct sockaddr*)&sin_remote6, sizeof(sin_remote6));
-
-        /* Inititalize multicast request. 
-         */
-/* 
-        if (opt_is_ipv6)
+        for (i = 0; i < n_ifaces; i++)
         {
-            mr = (char*)&mreq6;
-            mr_sz = sizeof(mreq6);
+            /* Select network interface to use. 
+             */
             os_memclear(&mreq6, sizeof(mreq6));
+            mreq6.ipv6mr_interface = ((os_int*)mysocket->send_mcast_ifaces)[i];
             os_memcpy(&mreq6.ipv6mr_multiaddr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
-        }
-        else 
-        {
-            mr = (char*)&mreq;
-            mr_sz = sizeof(mreq);
-            os_memclear(&mreq, sizeof(mreq));
-            os_memcpy(&mreq.imr_multiaddr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
-        }
 
-        if (has_iface_addr)
-        {
-            if (opt_is_ipv6)
+            if (setsockopt(mysocket->handle, IPPROTO_IPV6, IPV6_MULTICAST_IF, (char*)&mreq6, sizeof(mreq6)) < 0)
             {
-                interface_ix = osal_get_interface_index_by_ipv6_address(iface_list_str, iface_addr_bin);
-                if (interface_ix >= 0)
+                osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SELECT_MULTICAST_IFACE_FAILED, OS_NULL);
+                s = OSAL_STATUS_SELECT_MULTICAST_IFACE_FAILED;
+                continue;
+            }
+
+            /* Send packet.
+             */
+            nbytes = sendto(mysocket->handle, buf, (int)n, 0,
+                (struct sockaddr*)&sin_remote6, sizeof(sin_remote6));
+
+            /* Handle "sendto" errors.
+             */
+            if (nbytes < 0) 
+            {
+                werr = WSAGetLastError();
+                if (werr != WSAEWOULDBLOCK) {
+                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SENDING_UDP_PACKET_FAILED, OS_NULL);
+                    s = OSAL_STATUS_SENDING_UDP_PACKET_FAILED;
+                }
+                else
                 {
-                    mreq6.ipv6mr_interface = interface_ix;
-                    if (setsockopt(handle, IPPROTO_IPV6, IPV6_MULTICAST_IP, (char*)&mreq6, sizeof(mreq6)) < 0)
-                    {
-                        s = OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED;
-                        goto getout;
-                    }
-*/
+                    s = OSAL_PENDING;
+                }
+            }
+        }
     }
     else
     {
@@ -1879,20 +1882,47 @@ osalStatus osal_socket_send_packet(
         sin_remote.sin_port = htons(mysocket->send_multicast_port);
         memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
-        /* Send packet.
+        /* Loop trough interfaces to which to send thee multicast
          */
-        nbytes = sendto(mysocket->handle, buf, (int)n, 0,
-            (struct sockaddr*)&sin_remote, sizeof(sin_remote));
+        for (i = 0; i < n_ifaces; i++)
+        {
+            /* Select network interface to use. 
+             */
+            os_memclear(&mreq, sizeof(mreq));
+            os_memcpy(&mreq.imr_multiaddr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
+            os_memcpy(&mreq.imr_interface.s_addr, mysocket->send_mcast_ifaces 
+                + i * OSAL_IPV4_BIN_ADDR_SZ, OSAL_IPV4_BIN_ADDR_SZ);
+
+            if (setsockopt(mysocket->handle, IPPROTO_IP, IP_MULTICAST_IF, (char*)&mreq, sizeof(mreq)) < 0)
+            {
+                osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SELECT_MULTICAST_IFACE_FAILED, OS_NULL);
+                s = OSAL_STATUS_SELECT_MULTICAST_IFACE_FAILED;
+                continue;
+            }
+
+            /* Send packet.
+             */
+            nbytes = sendto(mysocket->handle, buf, (int)n, 0,
+                (struct sockaddr*)&sin_remote, sizeof(sin_remote));
+
+            /* Handle "sendto" errors.
+             */
+            if (nbytes < 0) 
+            {
+                werr = WSAGetLastError();
+                if (werr != WSAEWOULDBLOCK) {
+                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SENDING_UDP_PACKET_FAILED, OS_NULL);
+                    s = OSAL_STATUS_SENDING_UDP_PACKET_FAILED;
+                }
+                else
+                {
+                    s = OSAL_PENDING;
+                }
+            }
+        }
     }
 
-    if (nbytes < 0)
-    {
-        werr = WSAGetLastError();
-        return (werr == WSAEWOULDBLOCK)
-            ? OSAL_PENDING : OSAL_STATUS_FAILED;
-    }
-
-    return OSAL_SUCCESS;
+    return s;
 }
 
 

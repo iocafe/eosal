@@ -158,6 +158,10 @@ typedef enum
      */
     OSAL_STATUS_UDP_MULTICAST_GROUP_FAILED,
 
+    /** Selecting network interface to use for multicast failed.
+     */
+    OSAL_STATUS_SELECT_MULTICAST_IFACE_FAILED,
+
     /** UDP multicast received by "lighthouse" was not understood.
      */
     OSAL_UNKNOWN_LIGHTHOUSE_UDP_MULTICAST,

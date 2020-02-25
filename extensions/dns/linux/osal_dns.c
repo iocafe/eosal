@@ -81,7 +81,7 @@ osalStatus osal_gethostbyname(
      */
     if (*name == '\0')
     {
-        if (default_use_flags & OSAL_STREAM_LISTEN)
+        if (default_use_flags & (OSAL_STREAM_LISTEN|OSAL_STREAM_UDP_MULTICAST))
         {
             uaddr = htonl(INADDR_ANY);
             os_memcpy(addr, &uaddr, sizeof(uaddr));
