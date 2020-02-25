@@ -152,7 +152,7 @@ typedef enum
 
     /** Receiving UDP packet (usually multicast) failed.
      */
-    // OSAL_STATUS_RECEIVE_MULTICAST_FAILED,
+    OSAL_STATUS_RECEIVE_MULTICAST_FAILED,
 
     /** Joining UDP multicast group failed.
      */
@@ -164,7 +164,7 @@ typedef enum
 
     /** UDP multicast received by "lighthouse" was not understood.
      */
-    OSAL_UNKNOWN_LIGHTHOUSE_UDP_MULTICAST,
+    OSAL_UNKNOWN_LIGHTHOUSE_MULTICAST,
 
 	/** No new incoming connection. The stream function osal_stream_accept() return this 
 	    code to indicate that no new connection was accepted. 
