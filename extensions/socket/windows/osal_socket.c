@@ -519,7 +519,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     struct ipv6_mreq mreq6;
     os_char ipbuf[OSAL_IPADDR_SZ], *p, *e;
     os_char nic_addr[OSAL_IP_BIN_ADDR_SZ];
-    os_int i, n;
+    os_int i, n, ni;
     os_boolean has_iface_addr;
     os_int tmp_port_nr;
     os_boolean opt_is_ipv6, nic_is_ipv6;
@@ -841,7 +841,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
         if (!has_iface_addr && (flags & OSAL_STREAM_USE_GLOBAL_SETTINGS))
         {
             if (osal_socket_alloc_send_mcast_ifaces(mysocket, sg->n_nics)) goto getout;
-            n = 0;
+            ni = 0;
             for (i = 0; i < sg->n_nics; i++)
             {
                 if (!sg->nic[i].send_udp_multicasts) continue;
@@ -856,18 +856,18 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
 
                     interface_ix = osal_get_interface_index_by_ipv6_address(iface_list_str, nic_addr);
                     if (interface_ix <  0) continue;
-                    ((os_int*)mysocket->send_mcast_ifaces)[n] = interface_ix;
+                    ((os_int*)mysocket->send_mcast_ifaces)[ni] = interface_ix;
                 }
                 else
                 {
                     if (nic_is_ipv6) continue;
-                    os_memcpy(mysocket->send_mcast_ifaces + n * OSAL_IPV4_BIN_ADDR_SZ, 
+                    os_memcpy(mysocket->send_mcast_ifaces + ni * OSAL_IPV4_BIN_ADDR_SZ, 
                         nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                 }
-                n++;
+                ni++;
                 has_iface_addr = OS_TRUE;
             }
-            mysocket->send_mcast_ifaces_n = n;
+            mysocket->send_mcast_ifaces_n = ni;
         }
 
         /* If we still got no interface addess, ask Windows for list of all useful interfaces.
@@ -884,7 +884,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             }
             if (osal_socket_alloc_send_mcast_ifaces(mysocket, n_ifaces)) goto getout;
 
-            n = 0;
+            ni = 0;
             p = iface_list_str;
             while (p)
             {
@@ -898,17 +898,17 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     if (opt_is_ipv6)
                     {
                         interface_ix = (os_int)osal_str_to_int(ipbuf, OS_NULL);
-                        ((os_int*)mysocket->send_mcast_ifaces)[n] = interface_ix;
+                        ((os_int*)mysocket->send_mcast_ifaces)[ni] = interface_ix;
                     }
                     else
                     {
                         if (inet_pton(AF_INET, ipbuf, nic_addr) != 1) {
                             osal_debug_error_str("osal_socket_open: inet_pton() failed:", ipbuf);
                         }
-                        os_memcpy(mysocket->send_mcast_ifaces + n * OSAL_IPV4_BIN_ADDR_SZ,
+                        os_memcpy(mysocket->send_mcast_ifaces + ni * OSAL_IPV4_BIN_ADDR_SZ,
                             nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                     }
-                    n++;
+                    ni++;
                     has_iface_addr = OS_TRUE;
                 }
                 if (*e == '\0') break;
@@ -1132,6 +1132,7 @@ osalStream osal_socket_accept(
 	struct sockaddr_in sin_remote;
 	struct sockaddr_in6 sin_remote6;
 	osalStatus rval;
+    char addrbuf[INET6_ADDRSTRLEN];
 
 	if (stream)
 	{
@@ -1146,11 +1147,13 @@ osalStream osal_socket_accept(
         if (mysocket->is_ipv6)
         {
             addr_size = sizeof(sin_remote6);
+            os_memclear(&sin_remote6, sizeof(sin_remote6));
             new_handle = accept(handle, (struct sockaddr*)&sin_remote6, &addr_size);
         }
         else
         {
             addr_size = sizeof(sin_remote);
+            os_memclear(&sin_remote, sizeof(sin_remote));
             new_handle = accept(handle, (struct sockaddr*)&sin_remote, &addr_size);
         }
 
@@ -1233,7 +1236,21 @@ osalStream osal_socket_accept(
             }           
         }
 
-        if (remote_ip_addr) *remote_ip_addr = '\0';
+        if (remote_ip_addr) 
+        {
+            if (mysocket->is_ipv6)
+            {
+                inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
+                os_strncpy(remote_ip_addr, "[", remote_ip_addr_sz);
+                os_strncat(remote_ip_addr, addrbuf, remote_ip_addr_sz);
+                os_strncat(remote_ip_addr, "]", remote_ip_addr_sz);
+            }
+            else
+            {
+                inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
+                os_strncpy(remote_ip_addr, addrbuf, remote_ip_addr_sz);
+            }
+        }
 
 		/* Success set status code and cast socket structure pointer to stream pointer 
 		   and return it.
@@ -1843,7 +1860,7 @@ osalStatus osal_socket_send_packet(
              */
             os_memclear(&mreq6, sizeof(mreq6));
             mreq6.ipv6mr_interface = ((os_int*)mysocket->send_mcast_ifaces)[i];
-            os_memcpy(&mreq6.ipv6mr_multiaddr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
+            // os_memcpy(&mreq6.ipv6mr_multiaddr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
             if (setsockopt(mysocket->handle, IPPROTO_IPV6, IPV6_MULTICAST_IF, (char*)&mreq6, sizeof(mreq6)) < 0)
             {
@@ -1880,7 +1897,7 @@ osalStatus osal_socket_send_packet(
         os_memclear(&sin_remote, sizeof(sin_remote));
         sin_remote.sin_family = AF_INET;
         sin_remote.sin_port = htons(mysocket->send_multicast_port);
-        memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
+        // memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
          */
@@ -1978,12 +1995,14 @@ osalStatus osal_socket_receive_packet(
      */
     if (mysocket->is_ipv6)
     {
+        os_memclear(&sin_remote6, sizeof(sin_remote6));
         addr_size = sizeof(sin_remote6);
         nbytes = recvfrom(mysocket->handle, buf, (int)n, 0,
             (struct sockaddr*)&sin_remote6, &addr_size);
     }
     else
     {
+        os_memclear(&sin_remote, sizeof(sin_remote));
         addr_size = sizeof(sin_remote);
         nbytes = recvfrom(mysocket->handle, buf, (int)n, 0,
             (struct sockaddr*)&sin_remote, &addr_size);
@@ -2005,12 +2024,15 @@ osalStatus osal_socket_receive_packet(
         if (mysocket->is_ipv6)
         {
             inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
+            os_strncpy(remote_addr, "[", remote_addr_sz);
+            os_strncat(remote_addr, addrbuf, remote_addr_sz);
+            os_strncat(remote_addr, "]", remote_addr_sz);
         }
         else
         {
             inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
+            os_strncpy(remote_addr, addrbuf, remote_addr_sz);
         }
-        os_strncpy(remote_addr, addrbuf, remote_addr_sz);
     }
 
     if (n_read) *n_read = nbytes;

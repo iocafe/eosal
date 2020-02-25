@@ -20,9 +20,10 @@
  */
 #define OSAL_HOST_BUF_SZ 64
 
-/** Default buffer size for IP address or host name only.
+/** Default buffer size for IP address. 46 is typical default, we use 48 since we use angle 
+    brackets to mark IPv6 addressess.
  */
-#define OSAL_IPADDR_SZ 46
+#define OSAL_IPADDR_SZ 48
 
 /** Default buffer size for MAC address string.
  */

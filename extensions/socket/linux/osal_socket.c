@@ -499,11 +499,13 @@ osalStream osal_socket_accept(
         if (mysocket->is_ipv6)
         {
             addr_size = sizeof(sin_remote6);
+            os_memclear(&sin_remote6, sizeof(sin_remote6));
             new_handle = accept(handle, (struct sockaddr*)&sin_remote6, &addr_size);
         }
         else
         {
             addr_size = sizeof(sin_remote);
+            os_memclear(&sin_remote, sizeof(sin_remote));
             new_handle = accept(handle, (struct sockaddr*)&sin_remote, &addr_size);
         }
 
@@ -562,12 +564,15 @@ osalStream osal_socket_accept(
             if (mysocket->is_ipv6)
             {
                 inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
+                os_strncpy(remote_addr, "[", remote_addr_sz);
+                os_strncat(remote_addr, addrbuf, remote_addr_sz);
+                os_strncat(remote_addr, "]", remote_addr_sz);
             }
             else
             {
                 inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
+                os_strncpy(remote_ip_addr, addrbuf, remote_ip_addr_sz);
             }
-            os_strncpy(remote_ip_addr, addrbuf, remote_ip_addr_sz);
         }
 
 		/* Save interface pointer.
@@ -1134,12 +1139,15 @@ osalStatus osal_socket_receive_packet(
         if (mysocket->is_ipv6)
         {
             inet_ntop(AF_INET6, &sin_remote6.sin6_addr, addrbuf, sizeof(addrbuf));
+            os_strncpy(remote_addr, "[", remote_addr_sz);
+            os_strncat(remote_addr, addrbuf, remote_addr_sz);
+            os_strncat(remote_addr, "]", remote_addr_sz);
         }
         else
         {
             inet_ntop(AF_INET, &sin_remote.sin_addr, addrbuf, sizeof(addrbuf));
+            os_strncpy(remote_addr, addrbuf, remote_addr_sz);
         }
-        os_strncpy(remote_addr, addrbuf, remote_addr_sz);
     }
 
     if (n_read) *n_read = nbytes;
