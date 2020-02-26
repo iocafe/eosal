@@ -1860,7 +1860,6 @@ osalStatus osal_socket_send_packet(
              */
             os_memclear(&mreq6, sizeof(mreq6));
             mreq6.ipv6mr_interface = ((os_int*)mysocket->send_mcast_ifaces)[i];
-            // os_memcpy(&mreq6.ipv6mr_multiaddr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
             if (setsockopt(mysocket->handle, IPPROTO_IPV6, IPV6_MULTICAST_IF, (char*)&mreq6, sizeof(mreq6)) < 0)
             {
@@ -1897,7 +1896,7 @@ osalStatus osal_socket_send_packet(
         os_memclear(&sin_remote, sizeof(sin_remote));
         sin_remote.sin_family = AF_INET;
         sin_remote.sin_port = htons(mysocket->send_multicast_port);
-        // memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
+        memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
          */
@@ -1906,7 +1905,6 @@ osalStatus osal_socket_send_packet(
             /* Select network interface to use. 
              */
             os_memclear(&mreq, sizeof(mreq));
-            os_memcpy(&mreq.imr_multiaddr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
             os_memcpy(&mreq.imr_interface.s_addr, mysocket->send_mcast_ifaces 
                 + i * OSAL_IPV4_BIN_ADDR_SZ, OSAL_IPV4_BIN_ADDR_SZ);
 
