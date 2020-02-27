@@ -29,7 +29,7 @@
 
   The osal_gethostbyname gets binary IP address of a by computer name or IP address string.
   Here name is either a hostname, or an IPv4 address in standard dot notation, or an
-  IPv6 address in colon (and possibly dot) notation.
+  IPv6 address using colon separator.
 
   If name is empty string: If listening, listen all IP addressess. If connecting, use local host.
 
@@ -39,12 +39,15 @@
            depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
   @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow
            storing IPv6 address.
-  @param   is_ipv6 Pointer to boolean to set to OS_TRUE if this is IPv6 address or OE_FALSE
-           if this is IPv4 address.
+  @param   is_ipv6 Pointer to boolean. At input this is hint wether the caller prefers IPv4
+           or IPv6 address. Host names may have both IPv4 and IPv6 address assigned. 
+           The function sets this to OS_TRUE if IPv6 address is selected, or to OS_FALSE for 
+           IPv4 address. 
   @param   default_use_flags What socket is used for. This is used to make defaule IP address
            if it is omitted from parameters" string. Set either OSAL_STREAM_CONNECT (0) or
-           OSAL_STREAM_LISTEN (0x0100) depending which end of the socket we are preparing.
-           Bit fields, can be stream flags directly.
+           OSAL_STREAM_LISTEN depending which end of the socket we are preparing.
+           OSAL_STREAM_MULTICAST if we are using the address for multicasts.
+           Bit fields, can be stream flags as they are, extra flags are ignored.
 
   @return  If IP address is successfully retrieved, the function returns OSAL_SUCCESS. Other
            return values indicate that hostname didn't match any known host, or an error occurred.
@@ -66,8 +69,9 @@ osalStatus osal_gethostbyname(
     osalStatus s;
 
     os_memclear(addr, addr_sz);
-    *is_ipv6 = OS_FALSE;
     s = OSAL_STATUS_FAILED;
+
+// FOR NOW ADDRESS FAMILY HINT IS IGNORED, CHECK THIS
 
     /* Nowdays we enforce allocating enough memory also for IPv6.
      */
@@ -89,9 +93,11 @@ osalStatus osal_gethostbyname(
         }
         else
         {
-            name = "127.0.0.1";
+            name = *is_ipv6 ? "::1" : "127.0.0.1";
         }
     }
+
+// *is_ipv6 DEFAULT ???????????????????????
 
     buf = smallbuf;
     buf_sz = sizeof(smallbuf);

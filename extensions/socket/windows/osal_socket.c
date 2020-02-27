@@ -268,7 +268,8 @@ osalStream osal_socket_open(
      */
     if (flags & OSAL_STREAM_MULTICAST)
     {
-        s = osal_setup_socket_for_udp_multicasts(mysocket, option, iface_addr_bin, is_ipv6, port_nr, flags);
+        s = osal_setup_socket_for_udp_multicasts(mysocket, option, 
+            iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
         info_code = OSAL_UDP_SOCKET_CONNECTED;
     }

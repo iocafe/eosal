@@ -24,16 +24,15 @@
   @brief Get host and port from network address string.
   @anchor osal_socket_get_ip_and_port
 
-  The osal_socket_get_ip_and_port() function examines the network address string within
-  long parameter string. If the host name or numeric IP address is specified, the function
-  returns pointer to it. If port number is specified in parameter string, the function
-  stores it to port.
+  The osal_socket_get_ip_and_port() function converts the network address string used by 
+  eosal library to binary IP address and port number.
 
-  @param   parameters Socket parameters, a parameter string starting with "host:port", set
-           host name or numeric IP address and port number. Host may be in the brackets,
-           like "[host]:port". This is mostly used for IP V6 addresses, which themselves
-           may contain colons ':'.
-           Marking like ":122" can be used just to specify port number to listen to.
+  @param   parameters Socket parameters, a parameter string like  "host:port". IPv6 host 
+           name should be within square brackets, like "[host]:port". "Host" string can
+           be either host name or IP address. Asterix '*' as host name, or empty host name
+           mean default address (default_use_flags). Asterix '*' or empty port number
+           means default port. Marking like ":122" can be used just to specify port number 
+           to listen to.
   @param   addr Pointer where to store the binary IP address. IP address is stored in
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
            depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
@@ -41,17 +40,15 @@
            storing IPv6 address.
   @param   is_ipv6 Pointer to boolean to set to OS_TRUE if this is IPv6 address or OE_FALSE
            if this is IPv4 address.
-  @param   port_nr Pointer to integer into which to store the port number. If the
-           parameters do not specify port number, the port will not be modified.
-  @param   is_ipv6 Flag to set if IP v6 address has been detected. Notice that this works only
-           for numeric IP v6addresses: if host name refers to IPv6 (no numeric address),
-           IPv6 is not detected here but needs to be checked after resolving name with DNS.
+  @param   port_nr Pointer to integer into which to store the port number. 
+  @param   is_ipv6 Flag to set if IP v6 address has been selected. 
   @param   default_use_flags What socket is used for. This is used to make defaule IP address
            if it is omitted from parameters" string. Set either OSAL_STREAM_CONNECT (0) or
-           OSAL_STREAM_LISTEN (0x0100) depending which end of the socket we are preparing.
-           Bit fields, can be stream flags directly.
-  @param   default_port_nr Port number to embed in parameters string, if port
-           number is not already specified.
+           OSAL_STREAM_LISTEN depending which end of the socket we are preparing.
+           OSAL_STREAM_MULTICAST if we are using the address for multicasts.
+           Bit fields, can be stream flags as they are, extra flags are ignored.
+  @param   default_port_nr Default port number to return if port number is not specified
+           in parameters string.
 
   @return  None.
 
@@ -71,26 +68,25 @@ osalStatus osal_socket_get_ip_and_port(
 
     os_strncpy(buf, parameters, sizeof(buf));
 
-	/* Search for port number position. If this is ipv4 address or unknown address type, 
-       the port number is separared by ':'. In future, if this is ipv6 address, port number
-       may be separated by '#'. The '#' may change, after we get more familiar with ipv6
-       addresses writing convention.
+	/* Terminate address with '\0' character, search for port number position within the string.  
 	 */
 	port_pos = os_strchr(buf, ']');
     if (port_pos)
     {
         *(port_pos++) = '\0';
-        if (*(port_pos++) != ':') port_pos = OS_NULL;
+        if (*(port_pos++) != ':') port_pos = "";
     }
     else
     {
 		port_pos = os_strchr(buf, ':');
         if (port_pos) *(port_pos++) = '\0';
+        else port_pos = "";
     }
 
-	/* Parse port number from string.
+	/* Parse port number from string. Asterix '*' and empty port number in port number is selects 
+       default port.
 	 */
-	if (port_pos)
+	if (*port_pos != '\0' && os_strchr(port_pos, '*') == OS_NULL)
 	{
         *port_nr = (os_int)osal_str_to_int(port_pos, OS_NULL);
 	}
@@ -99,7 +95,19 @@ osalStatus osal_socket_get_ip_and_port(
         *port_nr = default_port_nr;
     }
 
-    /* Convert to binary IP. If starts with bracket, skip it.
+    /* Make hint for osal_gethostbyname. IPv6 address is proposed if address is within square
+       brackets, otherwise default to IPv4 address. 
+     */
+    *is_ipv6 = buf[0] == '[';
+
+    /* Asterix '*' as host name is same as empty host name. We will still proceed to call
+       osal_gethostbyname to get specific operating system specific addr settings.
+     */
+    if (os_strchr(buf, '*')) {
+        buf[0] = '\0';
+    }
+
+    /* Convert to binary IP. If starts with bracket, skip it. This is operating system specific.
 	 */
     return osal_gethostbyname(buf[0] == '[' ? buf + 1 : buf, addr, addr_sz,
         is_ipv6, default_use_flags);
