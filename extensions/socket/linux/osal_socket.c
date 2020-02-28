@@ -30,6 +30,10 @@
 #include <fcntl.h>
 #include <signal.h>
 
+#include <net/if.h>
+#include <ifaddrs.h>
+
+
 /* Use pselect(), POSIX.1-2001 version. According to earlier standards, include <sys/time.h>
    and <sys/types.h>. These would be needed with select instead of sys/select.h if pselect
    is not available.
@@ -2176,6 +2180,34 @@ static os_int osal_socket_list_network_interfaces(
     os_uint family,
     os_boolean get_interface_index)
 {
+
+struct ifaddrs *addrs,*tmp;
+getifaddrs(&addrs);
+tmp = addrs;
+while (tmp)
+{
+    if (tmp->ifa_addr && tmp->ifa_addr->sa_family == family)
+    {
+        int iface_ix = if_nametoindex(tmp->ifa_name)    ;
+        printf("%s\n", tmp->ifa_name);
+    }
+    tmp = tmp->ifa_next;
+}
+freeifaddrs(addrs);
+
+     /* struct if_nameindex *if_nidxs, *intf;
+
+    if_nidxs = if_nameindex();
+    if ( if_nidxs != NULL )
+    {
+        for (intf = if_nidxs; intf->if_index != 0 || intf->if_name != NULL; intf++)
+        {
+            printf("%s\n", intf->if_name);
+        }
+
+        if_freenameindex(if_nidxs);
+    } */
+
 #if 0
 
     char buf[OSAL_IPADDR_SZ];
