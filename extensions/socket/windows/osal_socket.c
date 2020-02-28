@@ -2139,7 +2139,8 @@ static os_int osal_socket_list_network_interfaces(
             if (family == AF_INET) if (!pCurrAddresses->Ipv4Enabled) goto goon;
             if (family == AF_INET6) if (!pCurrAddresses->Ipv6Enabled) goto goon;
             if (pCurrAddresses->IfType != IF_TYPE_IEEE80211 && 
-                pCurrAddresses->IfType != IF_TYPE_ETHERNET_CSMACD) goto goon;
+                pCurrAddresses->IfType != IF_TYPE_ETHERNET_CSMACD &&
+                pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK) goto goon;
             if (pCurrAddresses->OperStatus != IfOperStatusUp) goto goon;
 
             pUnicast = pCurrAddresses->FirstUnicastAddress;
