@@ -2208,7 +2208,6 @@ static os_int osal_socket_list_network_interfaces(
                     osal_stream_print_str(interface_list, "=", 0);
                 }
 
-
                 sa_in = (struct sockaddr_in *)a->ifa_addr;
                 inet_ntop(AF_INET,&(sa_in->sin_addr.s_addr),buf,sizeof(buf));
                 osal_stream_print_str(interface_list, buf, 0);
