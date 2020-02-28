@@ -2180,171 +2180,60 @@ static os_int osal_socket_list_network_interfaces(
     os_uint family,
     os_boolean get_interface_index)
 {
-
-struct ifaddrs *addrs,*tmp;
-getifaddrs(&addrs);
-tmp = addrs;
-while (tmp)
-{
-    if (tmp->ifa_addr && tmp->ifa_addr->sa_family == family)
-    {
-        int iface_ix = if_nametoindex(tmp->ifa_name)    ;
-        printf("%s\n", tmp->ifa_name);
-    }
-    tmp = tmp->ifa_next;
-}
-freeifaddrs(addrs);
-
-     /* struct if_nameindex *if_nidxs, *intf;
-
-    if_nidxs = if_nameindex();
-    if ( if_nidxs != NULL )
-    {
-        for (intf = if_nidxs; intf->if_index != 0 || intf->if_name != NULL; intf++)
-        {
-            printf("%s\n", intf->if_name);
-        }
-
-        if_freenameindex(if_nidxs);
-    } */
-
-#if 0
-
-    char buf[OSAL_IPADDR_SZ];
-    os_memsz n_written;
-    os_memsz outbuf_sz;
-    ULONG win_outbuf_sz;
-    os_boolean n_interfaces;
-    const os_int max_tries = 3;
-    os_int i;
-
-    ULONG flags;
-    LPVOID lpMsgBuf = NULL;
-    DWORD rval;
-    PIP_ADAPTER_ADDRESSES pAddresses;
-    PIP_ADAPTER_ADDRESSES pCurrAddresses;
-    PIP_ADAPTER_UNICAST_ADDRESS pUnicast;
+    struct ifaddrs *addrs, *a;
     struct sockaddr_in *sa_in;
     struct sockaddr_in6 *sa_in6;
+    int iface_ix;
+    os_int n_interfaces;
+    char buf[OSAL_IPADDR_SZ];
 
-    /* Allocate a 15 KB buffer to start with.
-     */
-    outbuf_sz = 15000;
-
-    /* Set the flags to pass to GetAdaptersAddresses
-     */
-    flags =
-          GAA_FLAG_SKIP_FRIENDLY_NAME |
-          GAA_FLAG_SKIP_ANYCAST |
-          GAA_FLAG_SKIP_MULTICAST |
-          GAA_FLAG_SKIP_DNS_SERVER;
-
-    i = 0;
-    do {
-        pAddresses = (IP_ADAPTER_ADDRESSES *) os_malloc(outbuf_sz, &outbuf_sz);
-        if (pAddresses == NULL) return 0;
-
-        win_outbuf_sz = (ULONG)outbuf_sz;
-        rval = GetAdaptersAddresses(family, flags, NULL, pAddresses, &win_outbuf_sz);
-        if (rval == ERROR_BUFFER_OVERFLOW) {
-            os_free(pAddresses, outbuf_sz);
-            pAddresses = NULL;
-            outbuf_sz = (os_memsz)win_outbuf_sz;
-        }
-        else {
-            break;
-        }
-    }
-    while ((rval == ERROR_BUFFER_OVERFLOW) && (++i < max_tries));
-
-    if (rval == NO_ERROR)
+    getifaddrs(&addrs);
+    a = addrs;
+    n_interfaces = 0;
+    while (a)
     {
-        n_interfaces = 0;
-        pCurrAddresses = pAddresses;
-        while (pCurrAddresses) {
-            /* Skip if no multicast (we are looking for it). Filter also for other reasons.
-               What should be done if pCurrAddresses->OperStatus is IfOperStatusDormant?
-             */
-            if (pCurrAddresses->NoMulticast) goto goon;
-            if (family == AF_INET) if (!pCurrAddresses->Ipv4Enabled) goto goon;
-            if (family == AF_INET6) if (!pCurrAddresses->Ipv6Enabled) goto goon;
-            if (pCurrAddresses->IfType != IF_TYPE_IEEE80211 &&
-                pCurrAddresses->IfType != IF_TYPE_ETHERNET_CSMACD) goto goon;
-            if (pCurrAddresses->OperStatus != IfOperStatusUp) goto goon;
+        if (a->ifa_addr && a->ifa_addr->sa_family == family)
+        {
+            printf("%s\n", a->ifa_name);
 
-            pUnicast = pCurrAddresses->FirstUnicastAddress;
-            if (pUnicast != NULL)
+            if (a->ifa_addr->sa_family == AF_INET)
             {
-                /* Uh huh, it seems to be here. We only need first unicast address, otherwise
-                   we could loop with pUnicast = pUnicast->Next;
-                 */
-                SOCKADDR *sa = pUnicast->Address.lpSockaddr;
-                if (sa)
-                {
-                    if (sa->sa_family == AF_INET)
-                    {
-                        if (n_interfaces++) {
-                            osal_stream_print_str(interface_list, ",", 0);
-                        }
-                        if (get_interface_index) {
-                            osal_int_to_str(buf, sizeof(buf), pCurrAddresses->IfIndex);
-                            osal_stream_print_str(interface_list, buf, 0);
-                            osal_stream_print_str(interface_list, "=", 0);
-                        }
-                        sa_in = (struct sockaddr_in *)sa;
-                        inet_ntop(AF_INET,&(sa_in->sin_addr),buf,sizeof(buf));
-                        osal_stream_print_str(interface_list, buf, 0);
-                    }
-                    else if (sa->sa_family == AF_INET6)
-                    {
-                        if (n_interfaces++) {
-                            osal_stream_print_str(interface_list, ",", 0);
-                        }
-                        if (get_interface_index) {
-                            osal_int_to_str(buf, sizeof(buf), pCurrAddresses->Ipv6IfIndex);
-                            osal_stream_print_str(interface_list, buf, 0);
-                            osal_stream_print_str(interface_list, "=", 0);
-                        }
-                        sa_in6 = (struct sockaddr_in6 *)sa;
-                        inet_ntop(AF_INET6,&(sa_in6->sin6_addr),buf,sizeof(buf));
-                        osal_stream_print_str(interface_list, buf, 0);
-                    }
+                if (n_interfaces++) {
+                    osal_stream_print_str(interface_list, ",", 0);
                 }
+                if (get_interface_index) {
+                    iface_ix = if_nametoindex(a->ifa_name);
+                    osal_int_to_str(buf, sizeof(buf), iface_ix);
+                    osal_stream_print_str(interface_list, buf, 0);
+                    osal_stream_print_str(interface_list, "=", 0);
+                }
+
+
+                sa_in = (struct sockaddr_in *)a->ifa_addr;
+                inet_ntop(AF_INET,&(sa_in->sin_addr.s_addr),buf,sizeof(buf));
+                osal_stream_print_str(interface_list, buf, 0);
             }
-
-goon:
-            pCurrAddresses = pCurrAddresses->Next;
-        }
-    }
-
-    /* Something went wrong with Windows, generate debug info.
-     */
-#if OSAL_DEBUG
-    else
-    {
-        if (rval == ERROR_NO_DATA) {
-            osal_debug_error("GetAdaptersAddresses returned no data?");
-        }
-        else {
-            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                    NULL, rval, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                    (LPTSTR) &lpMsgBuf, 0, NULL))
+            else if (a->ifa_addr->sa_family == AF_INET6)
             {
-                osal_debug_error_str("GetAdaptersAddresses failed: ", (os_char*)lpMsgBuf);
-                LocalFree(lpMsgBuf);
+                if (n_interfaces++) {
+                    osal_stream_print_str(interface_list, ",", 0);
+                }
+                if (get_interface_index) {
+                    iface_ix = if_nametoindex(a->ifa_name);
+                    osal_int_to_str(buf, sizeof(buf), iface_ix);
+                    osal_stream_print_str(interface_list, buf, 0);
+                    osal_stream_print_str(interface_list, "=", 0);
+                }
+                sa_in6 = (struct sockaddr_in6 *)a->ifa_addr;
+                inet_ntop(AF_INET6,&(sa_in6->sin6_addr),buf,sizeof(buf));
+                osal_stream_print_str(interface_list, buf, 0);
             }
         }
+        a = a->ifa_next;
     }
-#endif
 
-    /* Almost done, free buffer, terminate interface list with NULL character and return status.
-     */
-    os_free(pAddresses, outbuf_sz);
-    osal_stream_write(interface_list, "", 1, &n_written, OSAL_STREAM_DEFAULT);
+    freeifaddrs(addrs);
     return n_interfaces;
-#endif
-return 0;
 }
 
 
