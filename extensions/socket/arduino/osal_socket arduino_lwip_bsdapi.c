@@ -1046,10 +1046,6 @@ void osal_socket_initialize(
     osalWifiNetwork *wifi,
     os_int n_wifi)
 {
-    /* Do not terminate program if socket breaks.
-     */
-    signal(SIGPIPE, SIG_IGN);
-
     /* Set socket library initialized flag.
      */
     osal_sockets_initialized = OS_TRUE;

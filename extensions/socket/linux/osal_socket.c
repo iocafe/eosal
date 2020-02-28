@@ -2345,10 +2345,6 @@ void osal_socket_initialize(
     osalSocketGlobal *sg;
     os_int i;
 
-    /* Do not terminate program if socket breaks.
-     */
-    signal(SIGPIPE, SIG_IGN);
-
     /* If socket library is already initialized, do nothing.
      */
     if (osal_global->socket_global) return;

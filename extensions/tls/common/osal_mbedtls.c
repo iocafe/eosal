@@ -277,6 +277,7 @@ static osalStream osal_mbedtls_open(
             goto getout;
         }
 
+
 /* ==> WAS HERE */
 
         /* Initialize TLS related structures.
@@ -705,9 +706,9 @@ static osalStatus osal_mbedtls_write(
     {
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
+            so->peer_connected = OS_FALSE;
             if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
             {
-                so->peer_connected = OS_FALSE;
                 osal_trace2("mbedtls_ssl_write peer closed");
                 return OSAL_STATUS_STREAM_CLOSED;
             }
@@ -766,9 +767,9 @@ static osalStatus osal_mbedtls_read(
         // if (ret != MBEDTLS_ERR_SSL_TIMEOUT)
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
+            so->peer_connected = OS_FALSE;
             if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
             {
-                so->peer_connected = OS_FALSE;
                 osal_trace2("mbedtls_ssl_read peer closed");
                 return OSAL_STATUS_STREAM_CLOSED;
             }
@@ -989,8 +990,13 @@ static void osal_mbedtls_init(
         certs_dir, prm->server_key_file);
 
     /* Do not terminate program if socket breaks.
+
+struct sigaction new_actn, old_actn;
+new_actn.sa_handler = SIG_IGN;
+sigemptyset (&new_actn.sa_mask);
+new_actn.sa_flags = 0;
+sigaction (SIGPIPE, &new_actn, &old_actn);
      */
-    signal(SIGPIPE, SIG_IGN);
 }
 
 

@@ -24,6 +24,9 @@
   Signal handlers.
 ****************************************************************************************************
 */
+typedef void osal_signal_handler_func(
+    int signum);
+
 static void osal_linux_sighup(
     int signum)
 {
@@ -57,6 +60,20 @@ static void osal_linux_terminate_by_signal(
 }
 
 
+static void osal_set_signal(
+    os_int sig,
+    osal_signal_handler_func *func)
+{
+    struct sigaction new_actn, old_actn;
+
+    os_memclear(&new_actn, sizeof(new_actn));
+    new_actn.sa_handler = func;
+    sigemptyset (&new_actn.sa_mask);
+    new_actn.sa_flags = 0;
+    sigaction (sig, &new_actn, &old_actn);
+}
+
+
 /**
 ****************************************************************************************************
 
@@ -80,25 +97,25 @@ void osal_init_os_specific(
     {
         /* Ignore broken sockets, closing controlling terminal, closed child process
          */
-        signal (SIGPIPE, SIG_IGN);
+        osal_set_signal(SIGPIPE, SIG_IGN);
 
         /* Ignore, but call oedebug_error() leave note if controlling terminal process is closed,
          */
-        signal (SIGHUP, osal_linux_sighup);
-        signal (SIGFPE, osal_linux_sigfpe);
-        signal (SIGALRM, osal_linux_sigalrm);
+        osal_set_signal(SIGHUP, osal_linux_sighup);
+        osal_set_signal(SIGFPE, osal_linux_sigfpe);
+        osal_set_signal(SIGALRM, osal_linux_sigalrm);
 
         /* Handle closed child process.
          */
-        signal (SIGCHLD, osal_linux_sigchld);
+        osal_set_signal(SIGCHLD, osal_linux_sigchld);
 
         /* Terminate process on following signals.
          */
-        signal (SIGTERM, osal_linux_terminate_by_signal);
-        signal (SIGQUIT, osal_linux_terminate_by_signal);
-        signal (SIGINT, osal_linux_terminate_by_signal);
-        signal (SIGTSTP, osal_linux_terminate_by_signal);
-        signal (SIGABRT, osal_linux_terminate_by_signal);
+        osal_set_signal(SIGTERM, osal_linux_terminate_by_signal);
+        osal_set_signal(SIGQUIT, osal_linux_terminate_by_signal);
+        osal_set_signal(SIGINT, osal_linux_terminate_by_signal);
+        osal_set_signal(SIGTSTP, osal_linux_terminate_by_signal);
+        osal_set_signal(SIGABRT, osal_linux_terminate_by_signal);
     }
 }
 
