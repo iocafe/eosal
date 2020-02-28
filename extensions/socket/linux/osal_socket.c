@@ -837,8 +837,13 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     mreq6.ipv6mr_interface = interface_ix;
                     if (setsockopt(handle, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*)&mreq6, sizeof(mreq6)) < 0)
                     {
-                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                        goto getout;
+                        /* To my understanding EADDRINUSE is bening and is returned if the same interface is
+                           bound based on second IP address.
+                         */
+                        if (errno != EADDRINUSE) {
+                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
+                            goto getout;
+                        }
                     }
                 }
                 else
@@ -852,8 +857,10 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                 os_memcpy(&mreq.imr_interface.s_addr, iface_addr_bin, OSAL_IPV4_BIN_ADDR_SZ);
                 if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) mr, mr_sz) < 0)
                 {
-                    s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                    goto getout;
+                    if (errno != EADDRINUSE) {
+                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
+                        goto getout;
+                    }
                 }
             }
         }
@@ -880,8 +887,10 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     mreq6.ipv6mr_interface = osal_str_to_int(ipbuf, OS_NULL);
                     if (setsockopt(handle, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*)&mreq6, sizeof(mreq6)) < 0)
                     {
-                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                        goto getout;
+                        if (errno != EADDRINUSE) {
+                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
+                            goto getout;
+                        }
                     }
                 }
                 else
@@ -891,8 +900,10 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                     os_memcpy(&mreq.imr_interface.s_addr, nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                     if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)mr, mr_sz) < 0)
                     {
-                        s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                        goto getout;
+                        if (errno != EADDRINUSE) {
+                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
+                            goto getout;
+                        }
                     }
                 }
                 has_iface_addr = OS_TRUE;
@@ -926,8 +937,13 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                         mreq6.ipv6mr_interface = osal_str_to_int(ipbuf, OS_NULL);
                         if (setsockopt(handle, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*)&mreq6, sizeof(mreq6)) < 0)
                         {
-                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                            goto getout;
+                            /* To my understanding EADDRINUSE is bening and is returned if the same interface is
+                               bound based on second IP address.
+                             */
+                            if (errno != EADDRINUSE) {
+                                s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
+                                goto getout;
+                            }
                         }
                     }
                     else
@@ -937,8 +953,10 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                         }
                         if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mreq, sizeof(mreq)) < 0)
                         {
-                            s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                            goto getout;
+                            if (errno != EADDRINUSE) {
+                                s = OSAL_STATUS_MULTICAST_GROUP_FAILED;
+                                goto getout;
+                            }
                         }
                     }
                     has_iface_addr = OS_TRUE;
@@ -2190,12 +2208,14 @@ static os_int osal_socket_list_network_interfaces(
     getifaddrs(&addrs);
     a = addrs;
     n_interfaces = 0;
+
     while (a)
     {
-        if (a->ifa_addr && a->ifa_addr->sa_family == family)
+        if (a->ifa_addr &&
+            a->ifa_addr->sa_family == family &&
+            (a->ifa_flags & IFF_MULTICAST) &&
+            (a->ifa_flags & IFF_UP))
         {
-            printf("%s\n", a->ifa_name);
-
             if (a->ifa_addr->sa_family == AF_INET)
             {
                 if (n_interfaces++) {
