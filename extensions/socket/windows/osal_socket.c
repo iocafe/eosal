@@ -79,15 +79,14 @@ typedef struct osalSocket
      */
     os_char multicast_group[OSAL_IP_BIN_ADDR_SZ];
 
-    /* Network interface list to for sending multicasts. Interface numbers for IPv6
-       For IPv4 list of interface addressess. 
+    /** Network interface list to for sending multicasts. Interface numbers for IPv6
+        For IPv4 list of interface addressess.
      */
     os_char *send_mcast_ifaces;
-
     os_int send_mcast_ifaces_n;
     os_int send_mcast_ifaces_sz;
     
-    /* Port number for sending multicasts.
+    /** Port number for sending multicasts.
      */
     os_int send_multicast_port;
 
@@ -228,7 +227,6 @@ osalStream osal_socket_open(
 	os_int port_nr;
     os_boolean is_ipv6;
 	osalStatus s; 
-    os_int on = 1;
     os_int info_code;
 
     /* Get global socket data, return OS_NULL if not initialized.
@@ -335,8 +333,11 @@ getout:
 
   The osal_setup_tcp_socket() function.... 
 
-  @param  option UDP multicasts, the multicast group address as string.  
-          Otherwise not used for sockets, set OS_NULL.
+  @param  mysocket Pointer to my socket structure.
+  @param  iface_addr_bin IP address of network interface to use, binary format, 4 bytes for IPv4
+          and 16 bytes for IPv6.
+  @param  iface_addr_is_ipv6 OS_TRUE for IPv6, or OS_FALSE for IPv4.
+  @param  port_nr TCP port number to listen or connect to.
   @param  flags Flags given to osal_socket_open().
 
   @return OSAL_SUCCESS (0) if all fine.
@@ -356,7 +357,7 @@ static osalStatus osal_setup_tcp_socket(
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
     os_int af, sa_sz;
-    int on = 1;
+    int on;
 
     if (iface_addr_is_ipv6)
     {
@@ -393,7 +394,7 @@ static osalStatus osal_setup_tcp_socket(
     if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0)
     {
         on = 1;
-        if (setsockopt(handle, SOL_SOCKET,  SO_REUSEADDR,
+        if (setsockopt(handle, SOL_SOCKET, SO_REUSEADDR,
             (char *)&on, sizeof(on)) < 0)
         {
 		    s = OSAL_STATUS_FAILED;
@@ -497,8 +498,12 @@ getout:
 
   The osal_setup_socket_for_udp_multicasts() function.... 
 
-  @param  option UDP multicasts, the multicast group address as string.  
-          Otherwise not used for sockets, set OS_NULL.
+  @param  mysocket Pointer to my socket structure.
+  @param  multicast_group_addr_str The multicast group IP address as string.
+  @param  iface_addr_bin IP address of network interface to use, binary format, 4 bytes for IPv4
+          and 16 bytes for IPv6.
+  @param  iface_addr_is_ipv6 OS_TRUE for IPv6, or OS_FALSE for IPv4.
+  @param  port_nr UDP port number to listen or send multicasts to.
   @param  flags Flags given to osal_socket_open().
 
   @return OSAL_SUCCESS (0) if all fine.
@@ -2214,7 +2219,7 @@ goon:
 /**
 ****************************************************************************************************
 
-  @brief List network interfaces which can be used for UDP multicasts.
+  @brief Find network interface index by IP address.
   @anchor osal_get_interface_index_by_ipv6_address
 
   The osal_get_interface_index_by_ipv6_address() function searches for network interface

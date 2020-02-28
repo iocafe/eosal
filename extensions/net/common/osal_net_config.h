@@ -175,3 +175,40 @@ typedef struct osalWifiPersistent
     osalWifiNetworkBuf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
 }
 osalWifiPersistent;
+
+/** Information anout one light house end point.
+ */
+typedef struct iocLighthouseEndPointInfo
+{
+    /** Transport, IOC_DEFAULT_TRANSPORT (0) if not initialize, otherwise either
+        IOC_TCP_SOCKET (1) or IOC_TLS_SOCKET (2).
+     */
+    os_int transport;
+
+    /** TCP port number listened by server.
+     */
+    os_int port_nr;
+
+    /** OS_TRUE for IPv6 or OS_FALSE for IPv4.
+     */
+    os_boolean is_ipv6;
+}
+iocLighthouseEndPointInfo;
+
+/** Maximum number of end points to store into info
+ */
+#define IOC_LIGHTHOUSE_INFO_MAX_END_POINTS 4
+
+/** Information for light house (multicast device discovery) from node configuration.
+ */
+typedef struct iocLighthouseInfo
+{
+    /** End point array
+     */
+    iocLighthouseEndPointInfo epoint[IOC_LIGHTHOUSE_INFO_MAX_END_POINTS];
+
+    /** Number of end points in array.
+     */
+    os_int n_epoints;
+}
+iocLighthouseInfo;
