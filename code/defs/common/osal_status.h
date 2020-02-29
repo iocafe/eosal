@@ -100,6 +100,10 @@ typedef enum
      */
     OSAL_STATUS_TIMEOUT,
 
+    /** Certificate presented by TLS server has been rejected by client.
+     */
+    OSAL_STATUS_SERVER_CERT_REJECTED,
+
     /** Operation not authorized by security.
      */
     OSAL_STATUS_NOT_AUTOHORIZED,

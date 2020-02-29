@@ -221,6 +221,14 @@ static osalStream osal_openssl_open(
         return OS_NULL;
     }
 
+    /* If WiFi network is not connected, we can do nothing.
+     */
+    if (osal_are_sockets_initialized())
+    {
+        if (status) *status = OSAL_PENDING;
+        return OS_NULL;
+    }
+
     /* Connect or listen socket. Make sure to use TLS default port if unspecified.
      */
     osal_socket_embed_default_port(parameters,
@@ -228,7 +236,7 @@ static osalStream osal_openssl_open(
     tcpsocket = osal_socket_open(host, option, status, flags);
     if (tcpsocket == OS_NULL) return OS_NULL;
 
-    /* Allocate and clear socket structure.
+    /* Allocate and initialize socket structure.
 	 */
     sslsocket = (osalSSLSocket*)os_malloc(sizeof(osalSSLSocket), OS_NULL);
     if (sslsocket == OS_NULL)
@@ -237,15 +245,11 @@ static osalStream osal_openssl_open(
 		goto getout;
 	}
     os_memclear(sslsocket, sizeof(osalSSLSocket));
-
-    /* Save socket stucture pointer, open flags and interface pointer.
-	 */
     sslsocket->tcpsocket = tcpsocket;
     sslsocket->open_flags = flags;
     sslsocket->hdr.iface = &osal_tls_iface;
 
     /* If we are connecting socket.
-     *
      */
     if ((flags & (OSAL_STREAM_LISTEN|OSAL_STREAM_CONNECT)) == OSAL_STREAM_CONNECT)
 	{
@@ -1600,7 +1604,7 @@ const osalStreamInterface osal_tls_iface
     osal_openssl_read,
 	osal_stream_default_write_value,
 	osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
+    osal_stream_default_get_parameter, /* This does not access parameters of contained TCP socket? */
     osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
     osal_openssl_select};
