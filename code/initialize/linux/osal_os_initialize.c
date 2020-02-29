@@ -60,17 +60,34 @@ static void osal_linux_terminate_by_signal(
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Set signal handler callback function.
+  @anchor osal_set_signal
+
+  The osal_set_signal() function sets signal handler function or if func is SIG_IGN, marks
+  signal to be ignored. The function is used to replace depreceated unix signal() function,
+  and does the same thing.
+
+  @param   sig Signal for which handler is set, for example SIGPIPE to handle socket and pipe
+           signals.
+  @param   func Pointer to signal handler function or SIG_IGN to ignore the signal.
+  @return  None.
+
+****************************************************************************************************
+*/
 static void osal_set_signal(
     os_int sig,
     osal_signal_handler_func *func)
 {
-    struct sigaction new_actn, old_actn;
+    struct sigaction new_actn;
 
     os_memclear(&new_actn, sizeof(new_actn));
     new_actn.sa_handler = func;
     sigemptyset (&new_actn.sa_mask);
     new_actn.sa_flags = 0;
-    sigaction (sig, &new_actn, &old_actn);
+    sigaction (sig, &new_actn, NULL);
 }
 
 

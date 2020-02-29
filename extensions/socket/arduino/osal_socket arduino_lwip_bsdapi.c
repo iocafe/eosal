@@ -457,23 +457,19 @@ osalStream osal_socket_accept(
 			return OS_NULL;
 		}
 
-        /* Set socket reuse flag.
+        /* Set socket reuse, blocking mode, and nagle.
          */
-        if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0)
-        {
+        if (flags == OSAL_STREAM_DEFAULT) {
+            flags = mysocket->open_flags;
+        }
+        if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0) {
             if (setsockopt(new_handle, SOL_SOCKET,  SO_REUSEADDR,
                 (char *)&on, sizeof(on)) < 0)
             {
 		        goto getout;
             }
         }
-
-	    /* Set non blocking mode.
-	     */
         osal_socket_blocking_mode(new_handle, OS_FALSE);
-
-        /* If we work without Nagel.
-         */
         if (flags & OSAL_STREAM_TCP_NODELAY)
         {
             osal_socket_set_nodelay(new_handle, OS_TRUE);

@@ -54,7 +54,6 @@
     MBEDTLS_NET_C and/or MBEDTLS_CTR_DRBG_C and/or not defined.
 #endif
 
-// #include "mbedtls/net_sockets.h"
 #include "mbedtls/debug.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/entropy.h"
@@ -106,9 +105,16 @@ typedef struct osalTlsSocket
      */
     os_boolean peer_connected;
 
+    /** Flag indicating that we have completed handshake successfully.
+     */
+    os_boolean handshake_done;
+
+    /** Flag indicating that handshake has failed.
+     */
+    os_boolean handshake_failed;
+
     /* Both client and server
      */
-    // mbedtls_net_context fd;
     mbedtls_ssl_context ssl;
     mbedtls_ssl_config conf;
 }
@@ -128,13 +134,6 @@ static osalStatus osal_mbedtls_write(
     os_memsz n,
     os_memsz *n_written,
     os_int flags);
-
-static void my_debug(
-    void *ctx,
-    int level,
-    const char *file,
-    int line,
-    const char *str);
 
 static void osal_mbedtls_init(
     osalSecurityConfig *prm);
@@ -157,6 +156,16 @@ static int osal_net_send(
     void *ctx,
     const unsigned char *buf,
     size_t len);
+
+static osalStatus osal_mbedtls_handshake(
+    osalTlsSocket *so);
+
+static void osal_mbedtls_debug(
+    void *ctx,
+    int level,
+    const char *file,
+    int line,
+    const char *str);
 
 
 /**
@@ -212,7 +221,6 @@ static osalStream osal_mbedtls_open(
     osalTlsSocket *so = OS_NULL;
     os_char hostbuf[OSAL_HOST_BUF_SZ];
     os_int ret;
-    uint32_t xflags;
 
     osalTLS *t;
     t = osal_global->tls;
@@ -252,7 +260,6 @@ static osalStream osal_mbedtls_open(
     so->hdr.iface = &osal_tls_iface;
     so->open_flags = flags;
     so->tcpsocket = tcpsocket;
-    // mbedtls_net_init(&so->fd);
     mbedtls_ssl_init(&so->ssl);
     mbedtls_ssl_config_init(&so->conf);
 
@@ -270,12 +277,10 @@ static osalStream osal_mbedtls_open(
             goto getout;
         }
 
-        /* OPTIONAL is not optimal for security,
-         * but makes interop easier in this simplified example */
-        mbedtls_ssl_conf_authmode(&so->conf, MBEDTLS_SSL_VERIFY_REQUIRED /* MBEDTLS_SSL_VERIFY_OPTIONAL */);
+        mbedtls_ssl_conf_authmode(&so->conf, MBEDTLS_SSL_VERIFY_REQUIRED);
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
-        mbedtls_ssl_conf_dbg(&so->conf, my_debug, stdout);
+        mbedtls_ssl_conf_dbg(&so->conf, osal_mbedtls_debug, stdout);
 
         ret = mbedtls_ssl_setup(&so->ssl, &so->conf);
         if (ret)
@@ -287,19 +292,13 @@ static osalStream osal_mbedtls_open(
         /* We cannot set host name for security validation, because
          * we often connect by IP address
         ret = mbedtls_ssl_set_hostname(&so->ssl, host);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_ssl_set_hostname returned ", ret);
-            goto getout;
-        } */
-
-        //mbedtls_ssl_conf_read_timeout(&so->conf, 3000);
-        //mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout);
+        mbedtls_ssl_conf_read_timeout(&so->conf, 3000);
+        mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout); */
 
         /* We use osal socket implementation for reads and writes.
          */
         mbedtls_ssl_set_bio(&so->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
-
+#if 0
         /* 4. Handshake
          */
         while (( ret = mbedtls_ssl_handshake(&so->ssl) ))
@@ -309,17 +308,12 @@ static osalStream osal_mbedtls_open(
                 osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
                 goto getout;
             }
+            os_timeslice();
             so->peer_connected = OS_TRUE;
         }
         so->peer_connected = OS_TRUE;
 
-/* ==> MOVED */
-/*        ret = mbedtls_net_set_nonblock(&so->fd);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_net_set_nonblock failed ", ret);
-            goto getout;
-        }
+/* ==> MOVED ret = mbedtls_net_set_nonblock(&so->fd);
 */
 
         /* 5. Verify the server certificate
@@ -333,6 +327,7 @@ static osalStream osal_mbedtls_open(
             osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_SERVER_CERT_REJECTED, info_text);
             goto getout;
         }
+#endif
     }
 
     /* Success: Set status code and cast socket structure pointer to stream
@@ -384,7 +379,6 @@ static void osal_mbedtls_close(
         mbedtls_ssl_close_notify(&so->ssl);
     }
 
-    //mbedtls_net_free(&so->fd);
     mbedtls_ssl_free(&so->ssl);
     mbedtls_ssl_config_free(&so->conf);
 
@@ -445,6 +439,10 @@ static osalStream osal_mbedtls_accept(
     so = (osalTlsSocket*)stream;
     osal_debug_assert(so->hdr.iface == &osal_tls_iface);
 
+    if (flags == OSAL_STREAM_DEFAULT) {
+        flags = so->open_flags;
+    }
+
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
     tcpsocket = osal_socket_accept(so->tcpsocket, remote_ip_addr,
@@ -470,10 +468,11 @@ static osalStream osal_mbedtls_accept(
     os_memclear(newso, sizeof(osalTlsSocket));
 
     /* Save socket stucture pointer, open flags and interface pointer.
+     * Set alwys OSAL_STREAM_LISTEN flag. We use it to decide how to do handshake.
      */
     t = osal_global->tls;
     newso->tcpsocket = tcpsocket;
-    newso->open_flags = flags;
+    newso->open_flags = flags|OSAL_STREAM_LISTEN;
     newso->hdr.iface = &osal_tls_iface;
     newso->peer_connected = OS_TRUE;
     mbedtls_ssl_init(&newso->ssl);
@@ -488,7 +487,7 @@ static osalStream osal_mbedtls_accept(
     }
 
     mbedtls_ssl_conf_rng(&newso->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
-    mbedtls_ssl_conf_dbg(&newso->conf, my_debug, stdout);
+    mbedtls_ssl_conf_dbg(&newso->conf, osal_mbedtls_debug, stdout);
 
     mbedtls_ssl_conf_ca_chain(&newso->conf, t->srvcert.next, NULL);
     ret = mbedtls_ssl_conf_own_cert(&newso->conf, &t->srvcert, &t->pkey);
@@ -505,13 +504,11 @@ static osalStream osal_mbedtls_accept(
         goto getout;
     }
 
-    //mbedtls_ssl_conf_read_timeout(&newso->conf, 3000);
-    //mbedtls_ssl_set_bio(&newso->ssl, &newso->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout);
-
     /* We use osal socket implementation for reads and writes.
      */
     mbedtls_ssl_set_bio(&newso->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
 
+#if 0
     /* 5. Handshake
      */
     while((ret = mbedtls_ssl_handshake(&newso->ssl)) != 0)
@@ -522,7 +519,9 @@ static osalStream osal_mbedtls_accept(
             osal_debug_error_int("mbedtls_ssl_handshake failed ", ret);
             goto getout;
         }
+        os_timeslice();
     }
+#endif
 
     /* Success set status code and cast socket structure pointer to stream pointer
        and return it.
@@ -565,41 +564,11 @@ static osalStatus osal_mbedtls_flush(
 {
     osalTlsSocket *so;
     osalStatus s;
-    // os_boolean work_done;
 
     if (stream)
     {
         so = (osalTlsSocket*)stream;
         osal_debug_assert(so->hdr.iface == &osal_tls_iface);
-
-        /* While we have buffered data, encrypt it and move to SSL.
-         */
-        /* do
-        {
-            work_done = OS_FALSE;
-            if (so->encrypt_len > 0)
-            {
-                s = osal_mbedtls_do_encrypt(so);
-                switch (s)
-                {
-                    case OSAL_SUCCESS: work_done = OS_TRUE; break;
-                    case OSAL_NOTHING_TO_DO: break;
-                    default: return s;
-                }
-            }
-            if (so->write_len > 0)
-            {
-                s = osal_mbedtls_do_sock_write(so);
-                switch (s)
-                {
-                    case OSAL_SUCCESS: work_done = OS_TRUE; break;
-                    case OSAL_NOTHING_TO_DO: break;
-                    default: return s;
-                }
-            }
-        }
-        while (work_done);
-        */
 
         /* Flush the underlying socket buffers.
          */
@@ -641,12 +610,21 @@ static osalStatus osal_mbedtls_write(
 {
     osalTlsSocket *so;
     int ret;
+    osalStatus s;
 
     /* If called with NULL argument, do nothing.
      */
     *n_written = 0;
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
     so = (osalTlsSocket*)stream;
+
+    /* Finish handshake first.
+     */
+    if (!so->handshake_done) {
+        s = osal_mbedtls_handshake(so);
+        if (s == OSAL_PENDING) return OSAL_SUCCESS;
+        if (s) return s;
+    }
 
     ret = mbedtls_ssl_write(&so->ssl, (os_uchar*)buf, n);
     if (ret < 0)
@@ -702,10 +680,19 @@ static osalStatus osal_mbedtls_read(
 {
     osalTlsSocket *so;
     int ret;
+    osalStatus s;
 
     *n_read = 0;
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
     so = (osalTlsSocket*)stream;
+
+    /* Finish handshake first.
+     */
+    if (!so->handshake_done) {
+        s = osal_mbedtls_handshake(so);
+        if (s == OSAL_PENDING) return OSAL_SUCCESS;
+        if (s) return s;
+    }
 
     ret = mbedtls_ssl_read(&so->ssl, (os_uchar*)buf, n);
     if (ret < 0)
@@ -795,15 +782,6 @@ static osalStatus osal_mbedtls_select(
 #endif
 
 
-static void my_debug( void *ctx, int level,
-                      const char *file, int line,
-                      const char *str )
-{
-    ((void) level);
-
-    mbedtls_fprintf( (FILE *) ctx, "%s:%04d: %s", file, line, str );
-    fflush(  (FILE *) ctx  );
-}
 
 /**
 ****************************************************************************************************
@@ -1000,29 +978,6 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     }
 #endif
 
-/* char b[10000];
-os_memsz nread;
-os_strncpy(path, certs_dir, sizeof(path));
-
-switch (default_block_nr)
-{
-    case OS_PBNR_CLIENT_CERT_CHAIN:
-        file_name = "myhome-bundle.crt";
-        break;
-
-    case OS_PBNR_SERVER_CERT:
-    case OS_PBNR_ROOT_CERT:
-    case OS_PBNR_SERVER_KEY:
-    default:
-        return OSAL_STATUS_FAILED;
-}
-os_strncat(path, file_name, sizeof(path));
-os_read_file(path, b, sizeof(b), &nread, OS_FILE_NULL_CHAR);
-block = b;
-block_sz = nread;
-s = OSAL_SUCCESS;
-goto joodeli; */
-
     block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
     if (block_nr == 0) block_nr = default_block_nr;
 
@@ -1033,7 +988,6 @@ goto joodeli; */
         return OSAL_STATUS_FAILED;
     }
 
-// joodeli:
     rval = OSAL_SUCCESS;
     if (cert)
     {
@@ -1061,9 +1015,6 @@ goto joodeli; */
 
     return rval;
 }
-
-
-
 
 
 /**
@@ -1107,15 +1058,15 @@ static void osal_mbedtls_cleanup(void)
   @brief Receive at most 'len' characters.
   @anchor osal_net_recv
 
-  The osal_net_recv() function...
-  - If no error occurs, the actual amount read is returned.
+  The osal_net_recv() function implement BIO (basic IO) receive function for Mbed TLS. This reads
+  data to underlying socket trough eosal stream interface.
 
   @param   ctx The eosal strem for TCP socket.
   @oaram   buf The buffer to where to store the data.
   @param   len Size of the buffer.
 
   @return  The number of bytes received, or a non-zero error code. With a non-blocking
-           socket, MBEDTLS_ERR_SSL_WANT_READ indicates read() would block.
+           socket, MBEDTLS_ERR_SSL_WANT_READ indicates read() would block (zero bytes read).
 
 ****************************************************************************************************
 */
@@ -1129,13 +1080,13 @@ static int osal_net_recv(
 
     if (ctx == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
-    s = osal_stream_read((osalStream*)ctx, buf, len, &n_read, OSAL_STREAM_DEFAULT);
-    if (s) return MBEDTLS_ERR_NET_RECV_FAILED;
-
-    / /MBEDTLS_ERR_SSL_WANT_READ
+    s = osal_stream_read((osalStream)ctx, (os_char*)buf, len, &n_read, OSAL_STREAM_DEFAULT);
+    if (s) return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
+    if (n_read == 0) return MBEDTLS_ERR_SSL_WANT_READ;
 
     return (int)n_read;
 }
+
 
 /**
 ****************************************************************************************************
@@ -1143,15 +1094,15 @@ static int osal_net_recv(
   @brief Send at most 'len' characters.
   @anchor osal_net_send
 
-  The osal_net_send() function...
-  - If no error occurs, the actual amount sent is returned.
+  The osal_net_send() function implement BIO (basic IO) send function for Mbed TLS. This sends
+  data to underlying socket trough eosal stream interface.
 
   @param   ctx The eosal strem for TCP socket.
   @oaram   buf Pointer to data to send.
   @param   len Size of the buffer.
 
   @return  The number of bytes sent, or a non-zero error code; with a non-blocking socket,
-           MBEDTLS_ERR_SSL_WANT_WRITE indicates write() would block.
+           MBEDTLS_ERR_SSL_WANT_WRITE indicates write() would block (zero bytes written).
 
 ****************************************************************************************************
 */
@@ -1163,14 +1114,113 @@ static int osal_net_send(
     os_memsz n_written;
     osalStatus s;
 
-    if (ctx == OS_NULL) return MBEDTLS_ERR_NET_INVALID_CONTEXT;
+    if (ctx == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
-    s = osal_stream_write((osalStream*)ctx, buf, len, &n_written, OSAL_STREAM_DEFAULT);
-    if (s) return MBEDTLS_ERR_NET_SEND_FAILED;
-
-// MBEDTLS_ERR_SSL_WANT_WRITE
+    s = osal_stream_write((osalStream)ctx, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
+    if (s) return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
+    if (n_written == 0) return MBEDTLS_ERR_SSL_WANT_WRITE;
 
     return (int)n_written;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Do TLS handshake.
+  @anchor osal_mbedtls_handshake
+
+  We do not finish TLS handshake when a socket is opened, it would block. Instead we finish
+  it in consequent read and write operations.
+
+  @param   so TLS socket structure.
+  @return  OSAL_SUCCESS if handshake has been completed, OSAL_PENDING if still working on
+           handshake. Other return values indicate broken socket.
+
+****************************************************************************************************
+*/
+static osalStatus osal_mbedtls_handshake(
+    osalTlsSocket *so)
+{
+    int ret;
+    uint32_t xflags;
+
+    if (so->handshake_failed) return OSAL_STATUS_CONNECTION_REFUSED;
+    if (so->handshake_done) return OSAL_SUCCESS;
+
+    /* Handshake
+     */
+    ret = mbedtls_ssl_handshake(&so->ssl);
+    if (ret)
+    {
+        if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
+        {
+            osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_CONNECTION_REFUSED, OS_NULL);
+            osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
+            so->handshake_failed = OS_TRUE;
+            return OSAL_STATUS_CONNECTION_REFUSED;
+        }
+        // so->peer_connected = OS_TRUE;
+        return OSAL_PENDING;
+    }
+    so->peer_connected = OS_TRUE;
+
+    /* If client, verify the server certificate.
+     */
+    if ((so->open_flags & OSAL_STREAM_LISTEN) == 0)
+    {
+        xflags = mbedtls_ssl_get_verify_result(&so->ssl);
+        if (xflags)
+        {
+            char info_text[128];
+
+            mbedtls_x509_crt_verify_info(info_text, sizeof(info_text), "  ! ", xflags);
+            osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SERVER_CERT_REJECTED, info_text);
+            so->handshake_failed = OS_TRUE;
+            return OSAL_STATUS_SERVER_CERT_REJECTED;
+        }
+    }
+
+    so->handshake_done = OS_TRUE;
+    return OSAL_SUCCESS;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Debug Mbed TLS use.
+  @anchor osal_mbedtls_debug
+
+  The osal_mbedtls_debug() function is called by Mbed TLS library to display debug outout.
+
+  @param   ctx Ignored
+  @param   level Ignored
+  @param   file File name
+  @param   line Line number
+  @param   str Debug information text.
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_mbedtls_debug(
+    void *ctx,
+    int level,
+    const char *file,
+    int line,
+    const char *str)
+{
+#if OSAL_TRACE >= 1
+    os_char text[128], nbuf[OSAL_NBUF_SZ];
+
+    os_strncpy(text, file, sizeof(text));
+    os_strncat(text, ":", sizeof(text));
+    osal_int_to_str(nbuf, sizeof(nbuf), line);
+    os_strncat(text, nbuf, sizeof(text));
+    os_strncat(text, ": ", sizeof(text));
+    os_strncat(text, str, sizeof(text));
+    osal_trace(text);
+#endif
 }
 
 

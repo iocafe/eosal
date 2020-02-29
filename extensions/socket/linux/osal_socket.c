@@ -318,208 +318,6 @@ getout:
     return OS_NULL;
 }
 
-#if 0
-{
-
-	osalSocket *mysocket = OS_NULL;
-	os_int port_nr;
-    os_char addr[16];
-	osalStatus rval;
-    os_int handle = -1;
-	struct sockaddr_in saddr;
-    struct sockaddr_in6 saddr6;
-    struct sockaddr *sa;
-    os_boolean is_ipv6;
-    int af, on = 1, s, sa_sz;
-    os_int info_code;
-    struct ip_mreq mreq;
-
-    /* If not initialized.
-     */
-    if (!osal_sockets_initialized)
-    {
-        if (status) *status = OSAL_STATUS_FAILED;
-        return OS_NULL;
-    }
-
-	/* Get host name or numeric IP address and TCP port number from parameters.
-       Ignore errors if we are only sending multicasts.
-	 */
-    s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
-        &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-    if (s && (flags & (OSAL_STREAM_MULTICAST|OSAL_STREAM_LISTEN))
-        != OSAL_STREAM_MULTICAST)
-    {
-        if (status) *status = s;
-        return OS_NULL;
-    }
-
-    if (is_ipv6)
-    {
-        af = AF_INET6;
-        os_memclear(&saddr6, sizeof(saddr6));
-        sa = (struct sockaddr *)&saddr6;
-        sa_sz = sizeof(saddr6);
-        saddr6.sin6_family = AF_INET6;
-        memcpy(&saddr6.sin6_addr, &addr, sizeof(in6addr_any));
-        saddr6.sin6_port = htons(port_nr);
-    }
-    else
-    {
-        af = AF_INET;
-        os_memclear(&saddr, sizeof(saddr));
-        sa = (struct sockaddr *)&saddr;
-        sa_sz = sizeof(saddr);
-        saddr.sin_family = AF_INET;
-        memcpy(&saddr.sin_addr.s_addr, addr, 4);
-        saddr.sin_port = htons(port_nr);
-    }
-
-    /* Create socket.
-     */
-    handle = socket(af, (flags & OSAL_STREAM_MULTICAST)
-        ? SOCK_DGRAM : SOCK_STREAM, IPPROTO_IP);
-    if (handle == -1)
-	{
-		rval = OSAL_STATUS_FAILED;
-		goto getout;
-	}
-
-    /* Set socket reuse flag.
-     */
-    if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0)
-    {
-        if (setsockopt(handle, SOL_SOCKET, SO_REUSEADDR,
-            (char *)&on, sizeof(on)) < 0)
-        {
-		    rval = OSAL_STATUS_FAILED;
-		    goto getout;
-        }
-    }
-
-	/* Set non blocking mode.
-	 */
-    osal_socket_blocking_mode(handle, OS_FALSE);
-
-	/* Allocate and clear socket structure.
-	 */
-	mysocket = (osalSocket*)os_malloc(sizeof(osalSocket), OS_NULL);
-	if (mysocket == OS_NULL) 
-	{
-		rval = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-		goto getout;
-	}
-	os_memclear(mysocket, sizeof(osalSocket));
-
-	/* Save socket handle and open flags.
-	 */
-	mysocket->handle = handle;
-	mysocket->open_flags = flags;
-    mysocket->is_ipv6 = is_ipv6;
-
-	/* Save interface pointer.
-	 */
-	mysocket->hdr.iface = &osal_socket_iface;
-
-    if (flags & OSAL_STREAM_MULTICAST)
-    {
-        if (flags & OSAL_STREAM_LISTEN)
-        {
-            if (bind(handle, sa, sa_sz))
-            {
-                rval = OSAL_STATUS_FAILED;
-                goto getout;
-            }
-
-            /* Use setsockopt to join a multicast group
-             */
-            os_memclear(&mreq, sizeof(mreq));
-            mreq.imr_multiaddr.s_addr = inet_addr(option);
-            mreq.imr_interface.s_addr = saddr.sin_addr.s_addr; // THIS IS IPv4 ONLY - IPv6 SUPPORT MISSING
-            if (setsockopt(handle, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) < 0)
-            {
-                rval = OSAL_STATUS_MULTICAST_GROUP_FAILED;
-                goto getout;
-            }
-        }
-
-        info_code = OSAL_UDP_SOCKET_CONNECTED;
-    }
-
-    else if (flags & OSAL_STREAM_LISTEN)
-	{
-		if (bind(handle, sa, sa_sz)) 
-		{
-			rval = OSAL_STATUS_FAILED;
-			goto getout;
-		}
-
-        /* Set the listen back log
-         */
-	    if (flags & OSAL_STREAM_LISTEN)
-            if (listen(handle, 32) , 0)
-        {
-		    rval = OSAL_STATUS_FAILED;
-		    goto getout;
-        }
-
-        info_code = (mysocket->open_flags & OSAL_STREAM_MULTICAST)
-            ? OSAL_UDP_SOCKET_CONNECTED : OSAL_LISTENING_SOCKET_CONNECTED;
-    }
-
-	else 
-	{
-		if (connect(handle, sa, sa_sz))
-		{
-            if (errno != EWOULDBLOCK && errno != EINPROGRESS)
-            {
-			    rval = OSAL_STATUS_FAILED;
-			    goto getout;
-            }
-		}
-
-        /* If we work without Nagel.
-         */
-        if (flags & OSAL_STREAM_TCP_NODELAY)
-        {
-            osal_socket_set_nodelay(handle, OS_TRUE);
-            osal_socket_set_cork(handle, OS_TRUE);
-        }
-
-        info_code = OSAL_SOCKET_CONNECTED;
-    }
-
-    /* Success, inform error handler, set status code and return stream pointer.
-	 */
-    osal_info(eosal_mod, info_code, parameters);
-    if (status) *status = OSAL_SUCCESS;
-	return (osalStream)mysocket;
-
-getout:
-    /* If we got far enough to allocate the socket structure.
-       Close the event handle (if any) and free memory allocated
-       for the socket structure.
-     */
-    if (mysocket)
-    {
-        os_free(mysocket, sizeof(osalSocket));
-    }
-
-    /* Close socket
-     */    
-    if (handle != -1)
-	{
-        close(handle);
-	}
-
-	/* Set status code and return NULL pointer.
-	 */
-    osal_trace2("socket open failed");
-    if (status) *status = rval;
-	return OS_NULL;
-}
-#endif
-
 
 /**
 ****************************************************************************************************
@@ -1327,25 +1125,20 @@ osalStream osal_socket_accept(
 			return OS_NULL;
 		}
 
-        /* Set socket reuse flag.
+        /* Set socket reuse, blocking mode, and nagle.
          */
-        if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0)
-        {
+        if (flags == OSAL_STREAM_DEFAULT) {
+            flags = mysocket->open_flags;
+        }
+        if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0) {
             if (setsockopt(new_handle, SOL_SOCKET,  SO_REUSEADDR,
                 (char *)&on, sizeof(on)) < 0)
             {
 		        goto getout;
             }
         }
-
-	    /* Set non blocking mode.
-	     */
         osal_socket_blocking_mode(new_handle, OS_FALSE);
-
-        /* If we work without Nagel.
-         */
-        if (flags & OSAL_STREAM_TCP_NODELAY)
-        {
+        if (flags & OSAL_STREAM_TCP_NODELAY) {
             osal_socket_set_nodelay(new_handle, OS_TRUE);
             osal_socket_set_cork(new_handle, OS_TRUE);
         }
@@ -1929,67 +1722,6 @@ osalStatus osal_socket_send_packet(
 
     return s;
 }
-#if 0
-{
-    osalSocket *mysocket;
-    struct sockaddr_in sin_remote;
-    struct sockaddr_in6 sin_remote6;
-    os_char addr[16];
-    os_int port_nr;
-    int nbytes;
-    osalStatus s;
-    os_boolean is_ipv6;
-
-    if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-
-    /* Cast stream pointer to socket structure pointer.
-     */
-    mysocket = (osalSocket*)stream;
-    osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
-
-    s = osal_socket_get_ip_and_port(parameters, addr, sizeof(addr),
-        &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
-    if (s) return s;
-
-    if (mysocket->is_ipv6)
-    {
-        /* Set up destination address
-         */
-        os_memclear(&sin_remote6, sizeof(sin_remote6));
-        sin_remote6.sin6_family = AF_INET6;
-        sin_remote6.sin6_port = htons(port_nr);
-        memcpy(&sin_remote6.sin6_addr, &addr, sizeof(in6addr_any));
-
-        /* Send packet.
-         */
-        nbytes = sendto(mysocket->handle, buf, n, MSG_DONTWAIT,
-            (struct sockaddr*)&sin_remote6, sizeof(sin_remote6));
-    }
-    else
-    {
-        /* Set up destination address
-         */
-        os_memclear(&sin_remote, sizeof(sin_remote));
-        sin_remote.sin_family = AF_INET;
-        sin_remote.sin_port = htons(port_nr);
-        memcpy(&sin_remote.sin_addr.s_addr, addr, 4);
-
-        /* Send packet.
-         */
-        nbytes = sendto(mysocket->handle, buf, n, MSG_DONTWAIT,
-            (struct sockaddr*)&sin_remote, sizeof(sin_remote));
-    }
-
-    if (nbytes < 0)
-    {
-        return (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-            ? OSAL_PENDING : OSAL_STATUS_FAILED;
-    }
-
-    return OSAL_SUCCESS;
-}
-#endif
-
 
 
 /**

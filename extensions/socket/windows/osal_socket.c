@@ -1171,10 +1171,12 @@ osalStream osal_socket_accept(
 			return OS_NULL;
 		}
 
-        /* Set socket reuse flag.
+        /* Set socket reuse, blocking mode
          */
-        if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0)
-        {
+        if (flags == OSAL_STREAM_DEFAULT) {
+            flags = mysocket->open_flags;
+        }
+        if ((flags & OSAL_STREAM_NO_REUSEADDR) == 0) {
             if (setsockopt(new_handle, SOL_SOCKET,  SO_REUSEADDR,
                 (char *)&on, sizeof(on)) < 0)
             {
@@ -1182,11 +1184,7 @@ osalStream osal_socket_accept(
 		        goto getout;
             }
         }
-
-	    /* Set non blocking mode.
-	     */
-        if (ioctlsocket(new_handle, FIONBIO, &on) == SOCKET_ERROR)
-        {
+        if (ioctlsocket(new_handle, FIONBIO, &on) == SOCKET_ERROR) {
             rval = OSAL_STATUS_FAILED;
             goto getout;
         }

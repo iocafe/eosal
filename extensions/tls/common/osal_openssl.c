@@ -385,6 +385,10 @@ static osalStream osal_openssl_accept(
     sslsocket = (osalSSLSocket*)stream;
     osal_debug_assert(sslsocket->hdr.iface == &osal_tls_iface);
 
+    if (flags == OSAL_STREAM_DEFAULT) {
+        flags = sslsocket->open_flags;
+    }
+
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
     newtcpsocket = osal_socket_accept(sslsocket->tcpsocket, remote_ip_addr,
