@@ -17,21 +17,21 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT & OSAL_LWIP_RAW_API_BIT
+#if OSAL_SOCKET_SUPPORT & OSAL_LWIP_SOCKET_API_BIT
 
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <netinet/ip.h> /* superset of previous */
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
+//  #include <netinet/ip.h> /* superset of previous */
+// #include <netinet/tcp.h>
+// #include <arpa/inet.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
 
 #include <net/if.h>
-#include <ifaddrs.h>
+// #include <ifaddrs.h>
 
 
 /* Use pselect(), POSIX.1-2001 version. According to earlier standards, include <sys/time.h>
