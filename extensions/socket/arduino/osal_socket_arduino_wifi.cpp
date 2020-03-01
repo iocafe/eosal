@@ -43,7 +43,7 @@
 /* #define OSAL_TRACE 3 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ARDUINO_WIFI
+#if OSAL_SOCKET_SUPPORT & OSAL_ARDUINO_WIFI_BIT
 
 
 /** Use WifiMulti to automatically select one from known access points. Define 1 or 0.
@@ -1357,15 +1357,17 @@ osalStatus osal_are_sockets_initialized(
     switch (osal_wifi_init_step)
     {
         case OSAL_WIFI_INIT_STEP1:
-            /* The following four lines and 100 ms delay are silly stuff to reset
+            /* The following four lines are silly stuff to reset
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
                become unnecessary at some point.
              */
+#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_WIFI_ESP32
             WiFi.mode(WIFI_OFF);
             WiFi.mode(WIFI_STA);
             WiFi.disconnect();
             WiFi.getMode();
             WiFi.status();
+#endif
 
             osal_wifi_connected = osal_wifi_was_connected = OS_FALSE;
             osal_wifi_init_failed_now = OS_FALSE;
@@ -1394,6 +1396,7 @@ osalStatus osal_are_sockets_initialized(
 
                         osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
 
+#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_WIFI_ESP32
                         /* Warning: ESP does not follow same argument order as arduino,
                            one below is for ESP32.
                          */
@@ -1403,6 +1406,13 @@ osalStatus osal_are_sockets_initialized(
                         {
                             osal_debug_error("Static IP configuration failed");
                         }
+#else
+                        if (!WiFi.config(ip_address, osal_wifi_nic.dns_address,
+                            osal_wifi_nic.gateway_address, osal_wifi_nic.subnet_mask)
+                        {
+                            osal_debug_error("Static IP configuration failed");
+                        }
+#endif
                     }
 
                     WiFi.begin(osal_wifi_nic.wifi_net_name, osal_wifi_nic.wifi_net_password);

@@ -1,13 +1,13 @@
 /**
 
-  @file    socket/linux/osal_socket.c
-  @brief   OSAL stream API implementation for linux sockets.
+  @file    socket/linux/osal_lwip_socket.c
+  @brief   OSAL stream API implementation for microcontroller LWIP.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    1.3.2020
 
   Ethernet connectivity. Implementation of OSAL stream API and general network functionality
-  using linux BSD sockets API. This implementation supports select functionality.
+  using LWIP BSD sockets API. This implementation supports select functionality.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -17,7 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_SOCKET_SUPPORT & OSAL_LWIP_RAW_API_BIT
 
 #include <sys/socket.h>
 #include <netdb.h>
@@ -56,13 +56,13 @@ typedef struct osalSocketNicInfo
 }
 osalSocketNicInfo;
 
-#define OSAL_MAX_LINUX_NICS 10
+#define OSAL_MAX_WINDOWS_NICS 10
 
 /* Global data for sockets.
  */
 typedef struct osalSocketGlobal
 {
-    osalSocketNicInfo nic[OSAL_MAX_LINUX_NICS];
+    osalSocketNicInfo nic[OSAL_MAX_WINDOWS_NICS];
     os_int n_nics;
 }
 osalSocketGlobal;
@@ -2101,7 +2101,7 @@ void osal_socket_initialize(
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
         sg->nic[sg->n_nics].send_udp_multicasts = nic[i].send_udp_multicasts;
-        if (++(sg->n_nics) >= OSAL_MAX_LINUX_NICS) break;
+        if (++(sg->n_nics) >= OSAL_MAX_WINDOWS_NICS) break;
     }
 
     /* End synchronization.
