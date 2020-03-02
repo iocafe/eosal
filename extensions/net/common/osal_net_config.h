@@ -43,7 +43,11 @@
     number of network interfaces when operating system like Linux or Windows manages these.
  */
 #ifndef OSAL_MAX_NRO_NICS
+#if OSAL_MICROCONTROLLER
 #define OSAL_MAX_NRO_NICS 2
+#else
+#define OSAL_MAX_NRO_NICS 6
+#endif
 #endif
 
 /** Maximum number Number of network interfaces that should be supported troughout the code.

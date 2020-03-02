@@ -40,6 +40,10 @@
  */
 #include <sys/select.h>
 
+#include "extensions/socket/common/osal_shared_net_info.h"
+
+
+#if 0
 typedef struct osalSocketNicInfo
 {
     /** Network address, like "192.168.1.220".
@@ -56,16 +60,15 @@ typedef struct osalSocketNicInfo
 }
 osalSocketNicInfo;
 
-#define OSAL_MAX_LINUX_NICS 10
-
 /* Global data for sockets.
  */
 typedef struct osalSocketGlobal
 {
-    osalSocketNicInfo nic[OSAL_MAX_LINUX_NICS];
+    osalSocketNicInfo nic[OSAL_MAX_NRO_NICS];
     os_int n_nics;
 }
 osalSocketGlobal;
+#endif
 
 
 /** Linux specific socket data structure. OSAL functions cast their own stream structure
@@ -2051,6 +2054,7 @@ static os_int osal_get_interface_index_by_ipv6_address(
 }
 
 
+#if 0
 /**
 ****************************************************************************************************
 
@@ -2101,7 +2105,7 @@ void osal_socket_initialize(
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
         sg->nic[sg->n_nics].send_udp_multicasts = nic[i].send_udp_multicasts;
-        if (++(sg->n_nics) >= OSAL_MAX_LINUX_NICS) break;
+        if (++(sg->n_nics) >= OSAL_MAX_NRO_NICS) break;
     }
 
     /* End synchronization.
@@ -2134,7 +2138,6 @@ void osal_socket_shutdown(
     }
 }
 
-
 /**
 ****************************************************************************************************
 
@@ -2155,6 +2158,7 @@ osalStatus osal_are_sockets_initialized(
 {
     return osal_global->socket_global ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
+#endif
 
 
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with

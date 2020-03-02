@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/arduino/osal_arduino_wifi.cpp
+  @file    socket/arduino/osal_arduino_wifi_init.cpp
   @brief   OSAL Ardyino WiFi network initialization.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -55,6 +55,12 @@ WiFiMulti wifiMulti;
 #include <esp_wifi.h>
 #include <esp_wifi_types.h>
 
+#include "extensions/socket/common/osal_shared_net_info.h"
+
+/* Global network adapter and wifi info
+ */
+static osalSocketGlobal sg;
+
 /* Two known wifi networks to select from in NIC configuration.
  */
 static os_boolean osal_wifi_multi_on = OS_FALSE;
@@ -107,9 +113,6 @@ static os_timer osal_wifi_boot_timer;
 
 void osal_socket_on_wifi_connect(void);
 void osal_socket_on_wifi_disconnect(void);
-
-static void osal_socket_start_wifi_init(void);
-
 
 
 /**
@@ -179,10 +182,30 @@ void osal_socket_initialize(
     osalWifiNetwork *wifi,
     os_int n_wifi)
 {
+    os_int i;
+
     if (nic == OS_NULL && n_nics < 1)
     {
         osal_debug_error("osal_socket_initialize(): No NIC configuration");
     }
+
+    /* If socket library is already initialized, do nothing.
+     */
+    if (osal_global->socket_global) return;
+
+    /** Copy NIC info for UDP multicasts.
+     */
+    if (nic) for (i = 0; i < n_nics; i++)
+    {
+        if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
+        if (nic[i].ip_address[0] == '\0' || !os_strcmp(nic[i].ip_address, "*")) continue;
+
+        os_strncpy(sg.nic[sg.n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
+        sg.nic[sg.n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
+        sg.nic[sg.n_nics].send_udp_multicasts = nic[i].send_udp_multicasts;
+        if (++(sg.n_nics) >= OSAL_MAX_NRO_NICS) break;
+    }
+    osal_global->socket_global = &sg;
 
 #if OSAL_WIFI_MULTI
     /* Use WiFiMulti if we have second access point.
@@ -208,31 +231,6 @@ void osal_socket_initialize(
     os_strncpy(osal_wifi_nic.wifi_net_name, wifi[0].wifi_net_name, OSAL_WIFI_PRM_SZ);
     os_strncpy(osal_wifi_nic.wifi_net_password, wifi[0].wifi_net_password,OSAL_WIFI_PRM_SZ);
 
-    /* Start wifi initialization.
-     */
-    osal_socket_start_wifi_init();
-
-    /* Set socket library initialized flag.
-     */
-    osal_sockets_initialized = OS_TRUE;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Start Wifi initialisation from beginning.
-  @anchor osal_socket_start_wifi_init
-
-  The osal_socket_start_wifi_init() function starts wifi initialization. The
-  initialization is continued by repeatedly called osal_are_sockets_initialized() function.
-
-  @return  None.
-
-****************************************************************************************************
-*/
-static void osal_socket_start_wifi_init(void)
-{
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
@@ -244,9 +242,14 @@ static void osal_socket_start_wifi_init(void)
     osal_wifi_init_step = OSAL_WIFI_INIT_STEP1;
     osal_wifi_init_failed_once = OS_FALSE;
 
+    /* Set socket library initialized flag.
+     */
+    osal_sockets_initialized = OS_TRUE;
+
     /* Call wifi init once to move once to start it.
      */
     osal_are_sockets_initialized();
+
 }
 
 
@@ -431,8 +434,6 @@ osalStatus osal_are_sockets_initialized(
 }
 
 
-
-
 /**
 ****************************************************************************************************
 
@@ -448,11 +449,7 @@ osalStatus osal_are_sockets_initialized(
 void osal_socket_shutdown(
 	void)
 {
-    if (osal_sockets_initialized)
-    {
-        WiFi.disconnect();
-        osal_sockets_initialized = OS_FALSE;
-    }
+    osal_global->socket_global = OS_NULL;
 }
 
 

@@ -209,6 +209,7 @@
 
 /* Bits to select network and wifi initialization code
  */
+#define OSAL_COMMON_ETHERNET_INIT_BIT 1024
 #define OSAL_ARDUINO_ETHERNET_INIT_BIT 2048
 #define OSAL_ARDUINO_WIFI_INIT_BIT 4096
 
