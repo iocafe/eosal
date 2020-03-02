@@ -105,10 +105,10 @@ static os_timer osal_wifi_step_timer;
 static os_timer osal_wifi_boot_timer;
 
 
-// void osal_socket_on_wifi_connect(void);
-// void osal_socket_on_wifi_disconnect(void);
+void osal_socket_on_wifi_connect(void);
+void osal_socket_on_wifi_disconnect(void);
 
-// static void osal_socket_start_wifi_init(void);
+static void osal_socket_start_wifi_init(void);
 
 
 
@@ -199,10 +199,6 @@ void osal_socket_initialize(
     }
 #endif
 
-    os_memclear(osal_socket, sizeof(osal_socket));
-    os_memclear(osal_client_state, sizeof(osal_client_state));
-    os_memclear(osal_server_state, sizeof(osal_server_state));
-
     os_strncpy(osal_wifi_nic.ip_address, nic[0].ip_address, OSAL_HOST_BUF_SZ);
     osal_arduino_ip_from_str(osal_wifi_nic.dns_address, nic[0].dns_address);
     osal_arduino_ip_from_str(osal_wifi_nic.dns_address_2, nic[0].dns_address_2);
@@ -277,6 +273,8 @@ osalStatus osal_are_sockets_initialized(
 
     if (!osal_sockets_initialized) return OSAL_STATUS_FAILED;
 
+// SYNCHRONIZE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
     s = osal_wifi_init_failed_once
         ? OSAL_STATUS_FAILED : OSAL_PENDING;
 
@@ -287,7 +285,7 @@ osalStatus osal_are_sockets_initialized(
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
                become unnecessary at some point.
              */
-#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_WIFI_ESP32
+#ifdef ESP_PLATFORM
             WiFi.mode(WIFI_OFF);
             WiFi.mode(WIFI_STA);
             WiFi.disconnect();
@@ -322,7 +320,7 @@ osalStatus osal_are_sockets_initialized(
 
                         osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
 
-#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_WIFI_ESP32
+#ifdef ESP_PLATFORM
                         /* Warning: ESP does not follow same argument order as arduino,
                            one below is for ESP32.
                          */
@@ -334,7 +332,7 @@ osalStatus osal_are_sockets_initialized(
                         }
 #else
                         if (!WiFi.config(ip_address, osal_wifi_nic.dns_address,
-                            osal_wifi_nic.gateway_address, osal_wifi_nic.subnet_mask)
+                            osal_wifi_nic.gateway_address, osal_wifi_nic.subnet_mask))
                         {
                             osal_debug_error("Static IP configuration failed");
                         }
@@ -407,7 +405,7 @@ osalStatus osal_are_sockets_initialized(
             {
                 s = OSAL_SUCCESS;
                 osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
-                osal_socket_on_wifi_connect();
+                // osal_socket_on_wifi_connect();
 
 #if OSAL_TRACE
                 IPAddress ip = WiFi.localIP();
@@ -422,7 +420,7 @@ osalStatus osal_are_sockets_initialized(
             {
                 osal_wifi_init_step = OSAL_WIFI_INIT_STEP1;
                 osal_trace("Wifi network disconnected");
-                osal_socket_on_wifi_disconnect();
+                // osal_socket_on_wifi_disconnect();
                 s = OSAL_STATUS_FAILED;
             }
 
@@ -433,102 +431,6 @@ osalStatus osal_are_sockets_initialized(
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Called when WiFi network is connected.
-  @anchor osal_socket_on_wifi_connect
-
-  The osal_socket_on_wifi_connect() function...
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_on_wifi_connect(
-    void)
-{
-    osalSocket *mysocket;
-    os_int i, ix;
-
-    for (i = 0; i<OSAL_MAX_SOCKETS; i++)
-    {
-        mysocket = osal_socket + i;
-        ix = mysocket->index;
-        switch (mysocket->use)
-        {
-            case OSAL_SOCKET_UNUSED:
-                break;
-
-            case OSAL_SOCKET_CLIENT:
-                if (osal_client_state[ix] != OSAL_PREPARED_STATE) break;
-                if (osal_socket_really_connect(mysocket))
-                {
-                    osal_client_state[ix] = OSAL_FAILED_STATE;
-                }
-                break;
-
-            case OSAL_SOCKET_SERVER:
-                if (osal_server_state[ix] != OSAL_PREPARED_STATE &&
-                    osal_server_state[ix] != OSAL_FAILED_STATE)
-                {
-                    break;
-                }
-                if (osal_socket_really_listen(mysocket))
-                {
-                    osal_server_state[ix] = OSAL_FAILED_STATE;
-                }
-                break;
-
-            case OSAL_SOCKET_UDP:
-                break;
-        }
-    }
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Called when connected WiFi network is disconnected.
-  @anchor osal_socket_on_wifi_disconnect
-
-  The osal_socket_on_wifi_disconnect() function...
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_on_wifi_disconnect(
-    void)
-{
-    osalSocket *mysocket;
-    os_int i, ix;
-
-    for (i = 0; i<OSAL_MAX_SOCKETS; i++)
-    {
-        mysocket = osal_socket + i;
-        ix = mysocket->index;
-        switch (mysocket->use)
-        {
-            case OSAL_SOCKET_UNUSED:
-                break;
-
-            case OSAL_SOCKET_CLIENT:
-                if (osal_client_state[ix] != OSAL_RUNNING_STATE) break;
-                osal_client_state[ix] = OSAL_FAILED_STATE;
-                break;
-
-            case OSAL_SOCKET_SERVER:
-                if (osal_server_state[ix] != OSAL_RUNNING_STATE) break;
-                osal_server[ix].stop();
-                osal_server_state[ix] = OSAL_FAILED_STATE;
-                mysocket->sockindex = 0;
-                break;
-
-            case OSAL_SOCKET_UDP:
-                break;
-        }
-    }
-}
 
 
 /**
