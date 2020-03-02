@@ -22,16 +22,11 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
-//  #include <netinet/ip.h> /* superset of previous */
-// #include <netinet/tcp.h>
-// #include <arpa/inet.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
-
 #include <net/if.h>
-// #include <ifaddrs.h>
 
 
 /* Use pselect(), POSIX.1-2001 version. According to earlier standards, include <sys/time.h>
@@ -1007,7 +1002,7 @@ void osal_socket_close(
      */
     do
     {
-        n = recv(handle, buf, sizeof(buf), MSG_NOSIGNAL);
+        n = recv(handle, buf, sizeof(buf), 0);
         if (n == -1)
         {
 #if OSAL_DEBUG
@@ -1317,7 +1312,7 @@ osalStatus osal_socket_write(
 		 */
 		handle = mysocket->handle;
         
-        rval = send(handle, buf, (int)n, MSG_NOSIGNAL);
+        rval = send(handle, buf, (int)n, 0);
 
         if (rval < 0)
 		{
@@ -1397,7 +1392,7 @@ osalStatus osal_socket_read(
             goto getout;
         }
 
-        rval = recv(handle, buf, (int)n, MSG_NOSIGNAL);
+        rval = recv(handle, buf, (int)n, 0);
 
         /* If other end has gracefylly closed.
          */
@@ -1633,7 +1628,7 @@ osalStatus osal_socket_send_packet(
         os_memclear(&sin_remote6, sizeof(sin_remote6));
         sin_remote6.sin6_family = AF_INET6;
         sin_remote6.sin6_port = htons(mysocket->send_multicast_port);
-        memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
+        os_memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
          */
@@ -1679,7 +1674,7 @@ osalStatus osal_socket_send_packet(
         os_memclear(&sin_remote, sizeof(sin_remote));
         sin_remote.sin_family = AF_INET;
         sin_remote.sin_port = htons(mysocket->send_multicast_port);
-        memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
+        os_memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
          */
@@ -1867,8 +1862,9 @@ static void osal_socket_set_nodelay(
     os_int handle,
     int state)
 {
-    /* IPPROTO_TCP didn't work. Needed SOL_TCP. Why, IPPROTO_TCP should be the portable one? */
-    setsockopt(handle, SOL_TCP, TCP_NODELAY, &state, sizeof(state));
+    /* SOL_TCP didn't work. Why, replaced with IPPROTO_TCP but undure will this would,
+       should be the portable one? */
+    setsockopt(handle, IPPROTO_TCP, TCP_NODELAY, &state, sizeof(state));
 }
 
 
@@ -1893,7 +1889,7 @@ static void osal_socket_set_cork(
     int state)
 {
     /* IPPROTO_TCP didn't work. Needed SOL_TCP. Why, IPPROTO_TCP should be the portable one? */
-    setsockopt(handle, SOL_TCP, TCP_CORK, &state, sizeof(state));
+    // NO CORK IN LWIP. setsockopt(handle, IPPROTO_TCP, TCP_CORK, &state, sizeof(state));
 }
 
 
@@ -1930,6 +1926,8 @@ static os_int osal_socket_list_network_interfaces(
     os_uint family,
     os_boolean get_interface_index)
 {
+    return 0;
+#if 0
     struct ifaddrs *addrs, *a;
     struct sockaddr_in *sa_in;
     struct sockaddr_in6 *sa_in6;
@@ -1985,6 +1983,7 @@ static os_int osal_socket_list_network_interfaces(
 
     freeifaddrs(addrs);
     return n_interfaces;
+#endif
 }
 
 
@@ -2096,7 +2095,7 @@ void osal_socket_initialize(
     if (nic) for (i = 0; i < n_nics; i++)
     {
         if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
-        if (nic[i].ip_address[0] == '\0' || !strcmp(nic[i].ip_address, "*")) continue;
+        if (nic[i].ip_address[0] == '\0' || !os_strcmp(nic[i].ip_address, "*")) continue;
 
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;

@@ -1633,7 +1633,7 @@ osalStatus osal_socket_send_packet(
         os_memclear(&sin_remote6, sizeof(sin_remote6));
         sin_remote6.sin6_family = AF_INET6;
         sin_remote6.sin6_port = htons(mysocket->send_multicast_port);
-        memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
+        os_memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
          */
@@ -1679,7 +1679,7 @@ osalStatus osal_socket_send_packet(
         os_memclear(&sin_remote, sizeof(sin_remote));
         sin_remote.sin_family = AF_INET;
         sin_remote.sin_port = htons(mysocket->send_multicast_port);
-        memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
+        os_memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
          */
@@ -2096,7 +2096,7 @@ void osal_socket_initialize(
     if (nic) for (i = 0; i < n_nics; i++)
     {
         if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
-        if (nic[i].ip_address[0] == '\0' || !strcmp(nic[i].ip_address, "*")) continue;
+        if (nic[i].ip_address[0] == '\0' || !os_strcmp(nic[i].ip_address, "*")) continue;
 
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
