@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/linux/osal_lwip_socket.c
+  @file    socket/linux/osal_lwip_bsd_socket.c
   @brief   OSAL stream API implementation for microcontroller LWIP.
   @author  Pekka Lehtikoski
   @version 1.0

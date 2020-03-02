@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/arduino/osal_socket_lwip_netconn.cpp
+  @file    socket/common/osal_lwip_netconn_socket.cpp
   @brief   OSAL stream API layer to use lwIP netconn API.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -20,7 +20,7 @@
 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT == OSAL_LWIP_SOCKET_API
+#if OSAL_SOCKET_SUPPORT & OSAL_LWIP_NETCONN_API_BIT
 
 /* Force tracing on for this source file.
  */

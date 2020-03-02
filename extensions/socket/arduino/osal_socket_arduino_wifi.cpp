@@ -21,15 +21,12 @@
   - Static WiFi IP address doesn't work for ESP32. This seems to be a bug in espressif Arduino
     support (replacing success check with 15 sec delay will patch it). Wait for espressif
     updates, ESP32 is still quite new.
+  - esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
 
   MISSING - TO BE DONE
   - DNS to resolve host names
   - UDP multicasts for "ligthouse"
   - Nagle needs to follow NODELAY flags, now always disabled
-  - Blocking mode, do we take it completely our or implement it?
-
-            esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
-
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
