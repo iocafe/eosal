@@ -899,7 +899,7 @@ static void osal_mbedtls_init(
     /* Mark to network info that we need certificate chain.
      */
     if (s != OSAL_SUCCESS)  {
-        osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
+        osal_set_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
     }
 
     /* ************* server *************

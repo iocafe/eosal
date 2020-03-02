@@ -341,7 +341,7 @@ osalStream osal_tls_open(
 
         /* Mark to network info that we need certificate chain.
         */
-        //  osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
+        //  osal_set_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
 
     osal_trace2_int("Connecting to TLS socket port ", port_nr);
     osal_trace2(host);

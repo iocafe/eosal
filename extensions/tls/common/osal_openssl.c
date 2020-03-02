@@ -1034,7 +1034,7 @@ file_name = "myhome-bundle.crt";
 
            /* Mark to network info that we need certificate chain.
             */
-           osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
+           osal_set_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
         }
 
         SSL_CTX_set_verify(t->ctx, SSL_VERIFY_PEER, osal_openssl_verify_callback);
@@ -1055,7 +1055,7 @@ file_name = "myhome-bundle.crt";
 
        /* Mark to network info that we need certificate chain.
         */
-       osal_set_network_state_item(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
+       osal_set_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0, OS_TRUE);
     }
 
     if (s == OSAL_MEMORY_ALLOCATED)

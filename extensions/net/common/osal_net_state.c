@@ -203,9 +203,9 @@ osalStatus osal_add_network_state_notification_handler(
 
 /* Set network state item. For example called by TLS socket wrapper to inform that we do not
    have client certificate chain.
-   @param   item OSAL_NS_ADAPTER_STATE, OSAL_NS_WIFI_CONNECTED, OSAL_NS_NO_CERT_CHAIN
+   @param   item OSAL_NS_NIC_STATE, OSAL_NS_WIFI_CONNECTED, OSAL_NS_NO_CERT_CHAIN
  */
-void osal_set_network_state_item(
+void osal_set_network_state_int(
     osalNetStateItem item,
     os_int index,
     os_int value)
@@ -217,7 +217,8 @@ void osal_set_network_state_item(
 
     switch (item)
     {
-        case OSAL_NS_ADAPTER_STATE:
+#if OSAL_SOCKET_SUPPORT
+        case OSAL_NS_NIC_STATE:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) return;
             if (ns->nic_code[index] == (os_boolean)value) return;
             ns->nic_code[index] = (os_boolean)value;
@@ -233,7 +234,7 @@ void osal_set_network_state_item(
             if (ns->no_cert_chain == (os_boolean)value) return;
             ns->no_cert_chain = (os_boolean)value;
             break;
-
+#endif
         default:
             return;
     }
@@ -244,7 +245,7 @@ void osal_set_network_state_item(
 
 /* Get network state item.
  */
-os_int osal_get_network_state_item(
+os_int osal_get_network_state_int(
     osalNetStateItem item,
     os_int index)
 {
@@ -257,7 +258,8 @@ os_int osal_get_network_state_item(
     rval = 0;
     switch (item)
     {
-        case OSAL_NS_ADAPTER_STATE:
+#if OSAL_SOCKET_SUPPORT
+        case OSAL_NS_NIC_STATE:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) break;
             rval = ns->nic_code[index];
             break;
@@ -270,10 +272,67 @@ os_int osal_get_network_state_item(
         case OSAL_NS_NO_CERT_CHAIN:
             rval = ns->no_cert_chain;
             break;
-
+#endif
         default:
             break;
     }
 
     return rval;
+}
+
+/* Set network state item which can contain string, like OSAL_NS_NIC_IP_ADDR.
+ */
+void osal_set_network_state_str(
+    osalNetStateItem item,
+    os_int index,
+    const os_char *str)
+{
+    osalNetworkState *ns;
+
+    ns = osal_global->net_state;
+    if (ns == OS_NULL) return;
+
+    switch (item)
+    {
+#if OSAL_SOCKET_SUPPORT
+        case OSAL_NS_NIC_IP_ADDR:
+            if (index < 0 || index >= OSAL_MAX_NRO_NICS) return;
+            if (!os_strcmp(str, ns->nic_ip[index])) return;
+            os_strncpy(ns->nic_ip[index], str, OSAL_IPADDR_SZ);
+            break;
+#endif
+        default:
+            return;
+    }
+
+    osal_call_network_state_notification_handlers();
+}
+
+/* Get network state string item.
+ */
+void osal_get_network_state_str(
+    osalNetStateItem item,
+    os_int index,
+    os_char *str,
+    os_memsz str_sz)
+{
+    osalNetworkState *ns;
+    os_int rval;
+
+    if (str && str_sz) *str = '\0';
+    ns = osal_global->net_state;
+    if (ns == OS_NULL || str == OS_NULL) return;
+
+    rval = 0;
+    switch (item)
+    {
+#if OSAL_SOCKET_SUPPORT
+        case OSAL_NS_NIC_IP_ADDR:
+            if (index < 0 || index >= OSAL_MAX_NRO_NICS) break;
+            os_strncpy(str, ns->nic_ip[index], str_sz);
+            break;
+#endif
+        default:
+            break;
+    }
 }

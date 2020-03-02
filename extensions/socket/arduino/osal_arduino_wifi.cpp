@@ -36,8 +36,7 @@
 /* #define OSAL_TRACE 3 */
 
 #include "eosalx.h"
-#if 0
-// #if OSAL_SOCKET_SUPPORT & OSAL_ARDUINO_WIFI_INIT_BIT
+#if OSAL_SOCKET_SUPPORT & OSAL_ARDUINO_WIFI_INIT_BIT
 
 
 /** Use WifiMulti to automatically select one from known access points. Define 1 or 0.
