@@ -285,7 +285,6 @@ osalStatus osal_are_sockets_initialized(
             WiFi.status();
 #endif
 
-
             ans.wifi_connected = ans.wifi_was_connected = OS_FALSE;
             ans.wifi_init_failed_now = OS_FALSE;
             os_get_timer(&ans.wifi_step_timer);
@@ -385,7 +384,7 @@ osalStatus osal_are_sockets_initialized(
                         ans.wifi_init_failed_once = OS_TRUE;
                         osal_trace("Unable to connect Wifi");
                         osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, OS_NULL);
-                        osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_TRUE);
+                        osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_FALSE);
                     }
 
                     s = ans.wifi_init_failed_once
@@ -413,7 +412,7 @@ osalStatus osal_are_sockets_initialized(
                 const os_char *p = addrstr.c_str();
                 os_strncpy(sg.nic[OSAL_WIFI_NIC_IX].ip_address, p, OSAL_IPADDR_SZ);
                 osal_error(OSAL_CLEAR_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, p);
-                osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_FALSE);
+                osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_TRUE);
 #if OSAL_TRACE
                 osal_trace(addrstr.c_str());
 #endif
