@@ -58,6 +58,8 @@ typedef enum
     OSAL_NS_NIC_STATE,
     OSAL_NS_NIC_IP_ADDR,
     OSAL_NS_WIFI_CONNECTED,
+    OSAL_NS_WIFI_NETWORK_NAME,
+    OSAL_NS_WIFI_PASSWORD,
     OSAL_NS_NO_CERT_CHAIN
 }
 osalNetStateItem;
@@ -78,6 +80,14 @@ typedef struct osalNetworkState
     /** Network adapter IP address:
      */
     os_char nic_ip[OSAL_MAX_NRO_NICS][OSAL_IPADDR_SZ];
+
+    /** Wifi network name (SSID).
+     */
+    os_char wifi_network_name[OSAL_MAX_NRO_WIFI_NETWORKS][OSAL_WIFI_PRM_SZ];
+
+    /** Wifi network password (PSK).
+     */
+    os_char wifi_network_password[OSAL_MAX_NRO_WIFI_NETWORKS][OSAL_WIFI_PRM_SZ];
 
     /** Wifi networork connecte flags.
      */

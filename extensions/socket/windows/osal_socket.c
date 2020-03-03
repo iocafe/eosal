@@ -231,11 +231,12 @@ osalStream osal_socket_open(
 	osalStatus s; 
     os_int info_code;
 
-    /* Get global socket data, return OS_NULL if not initialized.
+    /* Return OS_NULL if network not (yet) initialized initialized.
      */
-    if (osal_global->socket_global == OS_NULL)
+    s = osal_are_sockets_initialized();
+    if (s)
     {
-        if (status) *status = OSAL_STATUS_FAILED;
+        if (status) *status = s;
         return OS_NULL;
     }
 

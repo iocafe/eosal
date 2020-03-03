@@ -313,14 +313,15 @@ osalStream osal_socket_open(
     os_int flags)
 {
     osalSocket *w = OS_NULL;
-    osalStatus rval = OSAL_STATUS_FAILED;
+    osalStatus rval = OSAL_STATUS_FAILED, s;
     os_memsz sz;
 
-    /* If not initialized.
+    /* Return OS_NULL if network not (yet) initialized initialized.
      */
-    if (!osal_sockets_initialized)
+    s = osal_are_sockets_initialized();
+    if (s)
     {
-        if (status) *status = OSAL_STATUS_FAILED;
+        if (status) *status = s;
         return OS_NULL;
     }
 

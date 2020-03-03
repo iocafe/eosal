@@ -300,6 +300,18 @@ void osal_set_network_state_str(
             if (!os_strcmp(str, ns->nic_ip[index])) return;
             os_strncpy(ns->nic_ip[index], str, OSAL_IPADDR_SZ);
             break;
+
+        case OSAL_NS_WIFI_NETWORK_NAME:
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            if (!os_strcmp(str, ns->wifi_network_name[index])) return;
+            os_strncpy(ns->wifi_network_name[index], str, OSAL_WIFI_PRM_SZ);
+            break;
+
+        case OSAL_NS_WIFI_PASSWORD:
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            if (!os_strcmp(str, ns->wifi_network_password[index])) return;
+            os_strncpy(ns->wifi_network_password[index], str, OSAL_WIFI_PRM_SZ);
+            break;
 #endif
         default:
             return;
@@ -317,19 +329,27 @@ void osal_get_network_state_str(
     os_memsz str_sz)
 {
     osalNetworkState *ns;
-    os_int rval;
 
     if (str && str_sz) *str = '\0';
     ns = osal_global->net_state;
     if (ns == OS_NULL || str == OS_NULL) return;
 
-    rval = 0;
     switch (item)
     {
 #if OSAL_SOCKET_SUPPORT
         case OSAL_NS_NIC_IP_ADDR:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) break;
             os_strncpy(str, ns->nic_ip[index], str_sz);
+            break;
+
+        case OSAL_NS_WIFI_NETWORK_NAME:
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            os_strncpy(str, ns->wifi_network_name[index], str_sz);
+            break;
+
+        case OSAL_NS_WIFI_PASSWORD:
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            os_strncpy(str, ns->wifi_network_password[index], str_sz);
             break;
 #endif
         default:
