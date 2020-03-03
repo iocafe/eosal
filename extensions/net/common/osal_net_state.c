@@ -224,10 +224,14 @@ void osal_set_network_state_int(
             ns->nic_code[index] = (os_boolean)value;
             break;
 
-        case OSAL_NS_WIFI_CONNECTED:
-            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) return;
-            if (ns->wifi_connected[index] == (os_boolean)value) return;
-            ns->wifi_connected[index] = (os_boolean)value;
+        case OSAL_NS_WIFI_USED: /* only one, not indexed */
+            if (ns->wifi_used == (os_boolean)value) return;
+            ns->wifi_used = (os_boolean)value;
+            break;
+
+        case OSAL_NS_WIFI_CONNECTED: /* only one, not indexed */
+            if (ns->wifi_connected == (os_boolean)value) return;
+            ns->wifi_connected = (os_boolean)value;
             break;
 
         case OSAL_NS_NO_CERT_CHAIN:
@@ -264,9 +268,12 @@ os_int osal_get_network_state_int(
             rval = ns->nic_code[index];
             break;
 
-        case OSAL_NS_WIFI_CONNECTED:
-            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
-            rval = ns->wifi_connected[index];
+        case OSAL_NS_WIFI_USED:  /* only one, not indexed */
+            rval = ns->wifi_used;
+            break;
+
+        case OSAL_NS_WIFI_CONNECTED:  /* only one, not indexed */
+            rval = ns->wifi_connected;
             break;
 
         case OSAL_NS_NO_CERT_CHAIN:

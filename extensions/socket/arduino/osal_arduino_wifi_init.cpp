@@ -213,7 +213,6 @@ void osal_socket_initialize(
         osal_set_network_state_str(OSAL_NS_WIFI_PASSWORD, i, wifi[i].wifi_net_password);
     }
 
-
     os_strncpy(ans.ip_address, nic[0].ip_address, OSAL_HOST_BUF_SZ);
     osal_arduino_ip_from_str(ans.dns_address, nic[0].dns_address);
     osal_arduino_ip_from_str(ans.dns_address_2, nic[0].dns_address_2);
@@ -272,6 +271,8 @@ osalStatus osal_are_sockets_initialized(
     switch (ans.wifi_init_step)
     {
         case OSAL_WIFI_INIT_STEP1:
+            osal_set_network_state_int(OSAL_NS_WIFI_USED, 0, OS_TRUE);
+
             /* The following four lines are silly stuff to reset
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
                become unnecessary at some point.
@@ -284,13 +285,15 @@ osalStatus osal_are_sockets_initialized(
             WiFi.status();
 #endif
 
+
             ans.wifi_connected = ans.wifi_was_connected = OS_FALSE;
             ans.wifi_init_failed_now = OS_FALSE;
             os_get_timer(&ans.wifi_step_timer);
             ans.wifi_boot_timer = ans.wifi_step_timer;
-            ans.wifi_init_step = OSAL_WIFI_INIT_STEP2;
 
             esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
+
+            ans.wifi_init_step = OSAL_WIFI_INIT_STEP2;
             break;
 
         case OSAL_WIFI_INIT_STEP2:
@@ -381,6 +384,8 @@ osalStatus osal_are_sockets_initialized(
                         ans.wifi_init_failed_now = OS_TRUE;
                         ans.wifi_init_failed_once = OS_TRUE;
                         osal_trace("Unable to connect Wifi");
+                        osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, OS_NULL);
+                        osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_TRUE);
                     }
 
                     s = ans.wifi_init_failed_once
@@ -399,19 +404,19 @@ osalStatus osal_are_sockets_initialized(
             if (ans.wifi_connected)
             {
                 s = OSAL_SUCCESS;
-
-// SETUP TO RECEIVE multicasts from this IP address
-
                 osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
-                // osal_socket_on_wifi_connect();
 
-
-#if OSAL_TRACE
+                /* SETUP TO RECEIVE multicasts from this IP address.
+                 */
                 IPAddress ip = WiFi.localIP();
-                String strip = DisplayAddress(ip);
-                osal_trace(strip.c_str());
+                String addrstr = DisplayAddress(ip);
+                const os_char *p = addrstr.c_str();
+                os_strncpy(sg.nic[OSAL_WIFI_NIC_IX].ip_address, p, OSAL_IPADDR_SZ);
+                osal_error(OSAL_CLEAR_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, p);
+                osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_FALSE);
+#if OSAL_TRACE
+                osal_trace(addrstr.c_str());
 #endif
-
             }
 
             /* Otherwise this is disconnect.
@@ -420,7 +425,6 @@ osalStatus osal_are_sockets_initialized(
             {
                 ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;
                 osal_trace("Wifi network disconnected");
-                // osal_socket_on_wifi_disconnect();
                 s = OSAL_STATUS_FAILED;
             }
 

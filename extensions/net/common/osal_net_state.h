@@ -57,6 +57,7 @@ typedef enum
 {
     OSAL_NS_NIC_STATE,
     OSAL_NS_NIC_IP_ADDR,
+    OSAL_NS_WIFI_USED,
     OSAL_NS_WIFI_CONNECTED,
     OSAL_NS_WIFI_NETWORK_NAME,
     OSAL_NS_WIFI_PASSWORD,
@@ -89,9 +90,13 @@ typedef struct osalNetworkState
      */
     os_char wifi_network_password[OSAL_MAX_NRO_WIFI_NETWORKS][OSAL_WIFI_PRM_SZ];
 
-    /** Wifi networork connecte flags.
+    /** Wifi network used flag.
      */
-    os_boolean wifi_connected[OSAL_MAX_NRO_WIFI_NETWORKS];
+    os_boolean wifi_used;
+
+    /** Wifi network connected flag.
+     */
+    os_boolean wifi_connected;
 
     /** No sertificate chain (transfer automatically?)
      */
