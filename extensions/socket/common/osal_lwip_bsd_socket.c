@@ -329,6 +329,7 @@ static osalStatus osal_setup_tcp_socket(
     {
         af = AF_INET6;
         os_memclear(&saddr6, sizeof(saddr6));
+        saddr6.sin6_len = sizeof(saddr6);
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
         os_memcpy(&saddr6.sin6_addr, iface_addr_bin, OSAL_IPV6_BIN_ADDR_SZ);
@@ -339,6 +340,7 @@ static osalStatus osal_setup_tcp_socket(
     {
         af = AF_INET;
         os_memclear(&saddr, sizeof(saddr));
+        saddr.sin_len = sizeof(saddr);
         saddr.sin_family = af;
         saddr.sin_port = htons(port_nr);
         os_memcpy(&saddr.sin_addr.s_addr, iface_addr_bin, OSAL_IPV4_BIN_ADDR_SZ);
@@ -520,6 +522,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     if (opt_is_ipv6)
     {
         af = AF_INET6;
+        sin.ip6.sin6_len = sizeof(struct sockaddr_in6);
         sin.ip6.sin6_family = AF_INET6;
         sin.ip6.sin6_port = htons(port_nr);
         sin.ip6.sin6_addr = in6addr_any;
@@ -527,6 +530,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     else
     {
         af = AF_INET;
+        sin.ip4.sin_len = sizeof(struct sockaddr_in);
         sin.ip4.sin_family = AF_INET;
         sin.ip4.sin_port = htons(port_nr);
         sin.ip4.sin_addr.s_addr = INADDR_ANY;
@@ -1080,12 +1084,14 @@ osalStream osal_socket_accept(
         {
             addr_size = sizeof(sin_remote6);
             os_memclear(&sin_remote6, sizeof(sin_remote6));
+            sin_remote6.sin6_len = sizeof(sin_remote6);
             new_handle = accept(handle, (struct sockaddr*)&sin_remote6, &addr_size);
         }
         else
         {
             addr_size = sizeof(sin_remote);
             os_memclear(&sin_remote, sizeof(sin_remote));
+            sin_remote.sin_len = sizeof(sin_remote);
             new_handle = accept(handle, (struct sockaddr*)&sin_remote, &addr_size);
         }
 
@@ -1603,6 +1609,7 @@ osalStatus osal_socket_send_packet(
         /* Set up destination address
          */
         os_memclear(&sin_remote6, sizeof(sin_remote6));
+        sin_remote6.sin6_len = sizeof(sin_remote6);
         sin_remote6.sin6_family = AF_INET6;
         sin_remote6.sin6_port = htons(mysocket->send_multicast_port);
         os_memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
@@ -1649,6 +1656,7 @@ osalStatus osal_socket_send_packet(
         /* Set up destination address
          */
         os_memclear(&sin_remote, sizeof(sin_remote));
+        sin_remote.sin_len = sizeof(sin_remote);
         sin_remote.sin_family = AF_INET;
         sin_remote.sin_port = htons(mysocket->send_multicast_port);
         os_memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
