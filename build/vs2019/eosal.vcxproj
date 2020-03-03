@@ -136,6 +136,7 @@
     <ClCompile Include="..\..\extensions\serial\windows\osal_serial.c" />
     <ClCompile Include="..\..\extensions\socket\common\osal_socket_util.c" />
     <ClCompile Include="..\..\extensions\socket\windows\osal_socket.c" />
+    <ClCompile Include="..\..\extensions\socket\windows\osal_windows_ethernet_init.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream_buffer.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream_defaults.c" />

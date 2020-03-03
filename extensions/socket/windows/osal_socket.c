@@ -29,7 +29,7 @@
 
 #include "extensions/socket/common/osal_shared_net_info.h"
 
-#f 0
+#if 0
 typedef struct osalSocketNicInfo
 {
     /** Network address, like "192.168.1.220". 
