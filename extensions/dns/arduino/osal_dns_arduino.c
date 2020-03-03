@@ -1,7 +1,7 @@
 /**
 
-  @file    dns/linux/osal_dns.c
-  @brief   Resolve host name or IP address string for linux sockets.
+  @file    dns/arduino/osal_dns.c
+  @brief   Resolve host name or IP address string for arduino sockets.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    28.1.2020
@@ -14,18 +14,15 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT
-
-#include <sys/socket.h>
-#include <netdb.h>
-#include <errno.h>
-
+#if OSAL_SOCKET_SUPPORT & (OSAL_ARDUINO_ETHERNET_BIT|OSAL_ARDUINO_WIFI_BIT)
 
 /**
 ****************************************************************************************************
 
   @brief Get computer's binary address by name or IP address string.
   @anchor osal_gethostbyname
+
+  NOT SUPPORTED FOR ARDUINO FOR NOW, JUST CONVERTS NUMERIC IP
 
   The osal_gethostbyname gets binary IP address of a by computer name or IP address string.
   Here name is either a hostname, or an IPv4 address in standard dot notation, or an
@@ -61,90 +58,9 @@ osalStatus osal_gethostbyname(
     os_boolean *is_ipv6,
     os_int default_use_flags)
 {
-    struct hostent hostbuf, *hp;
-    os_char *buf = OS_NULL, smallbuf[256];
-    os_memsz buf_sz;
-    int res, herr;
-    os_uint uaddr;
-    osalStatus s;
-
     os_memclear(addr, addr_sz);
-    s = OSAL_STATUS_FAILED;
-
-// FOR NOW ADDRESS FAMILY HINT IS IGNORED, CHECK THIS
-
-    /* Nowdays we enforce allocating enough memory also for IPv6.
-     */
-    if (addr_sz < 16)
-    {
-        goto getout;
-    }
-
-    /* If address is empty: If listening, listen all IP addressess. If connecting,
-       use local host.
-     */
-    if (*name == '\0')
-    {
-        if (default_use_flags & (OSAL_STREAM_LISTEN|OSAL_STREAM_MULTICAST))
-        {
-            uaddr = htonl(INADDR_ANY);
-            os_memcpy(addr, &uaddr, sizeof(uaddr));
-            return OSAL_SUCCESS;
-        }
-        else
-        {
-            name = *is_ipv6 ? "::1" : "127.0.0.1";
-        }
-    }
-
-// *is_ipv6 DEFAULT ???????????????????????
-
-    buf = smallbuf;
-    buf_sz = sizeof(smallbuf);
-
-    while ((res = gethostbyname_r(name, &hostbuf, buf, buf_sz, &hp, &herr)) == ERANGE)
-    {
-        /* Enlarge the buffer.
-         */
-        if (buf != smallbuf)
-        {
-            os_free(buf, buf_sz);
-        }
-        buf = os_malloc(2 * buf_sz, &buf_sz);
-        if (buf == OS_NULL)
-        {
-            return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-        }
-    }
-
-    if (hp == NULL || hp->h_length > addr_sz)
-    {
-        /* Here we could handle res: HOST_NOT_FOUND, NO_ADDRESS,
-           NO_RECOVERY and TRY_AGAIN separately.
-         */
-#if OSAL_DEBUG
-        if (herr != HOST_NOT_FOUND)
-        {
-            osal_debug_error_int("gethostbyname_r failed, code=", res);
-        }
-#endif
-        goto getout;
-    }
-
-    /* Copy the host address. Recall that the host might be connected to multiple networks
-       and have different addresses on each one.) The vector is terminated by a null pointer.
-       At least for now, we use always the first address.
-     */
-    os_memcpy(addr, hp->h_addr_list[0], hp->h_length);
-    *is_ipv6 = (os_boolean)(hp->h_addrtype == AF_INET6);
-    s = OSAL_SUCCESS;
-
-getout:
-    if (buf != smallbuf)
-    {
-        os_free(buf, buf_sz);
-    }
-    return s;
+    *is_ipv6 = OS_FALSE;
+    return osal_ip_from_str((os_uchar*)addr, addr_sz, name);
 }
 
 #endif
