@@ -1247,7 +1247,6 @@ osalStatus osal_socket_flush(
             {
                 wrnow = mysocket->buf_sz - tail;
 
-                osal_socket_set_nodelay(mysocket->handle, OS_TRUE);
                 status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
                 if (status) goto getout;
                 if (nwr == wrnow) tail = 0;
@@ -1258,7 +1257,6 @@ osalStatus osal_socket_flush(
             {
                 wrnow = head - tail;
 
-                osal_socket_set_nodelay(mysocket->handle, OS_TRUE);
                 status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
                 if (status) goto getout;
                 tail += (os_short)nwr;
@@ -1424,7 +1422,6 @@ osalStatus osal_socket_write(
                 {
                     wrnow = buf_sz - tail;
 
-                    osal_socket_set_nodelay(mysocket->handle, OS_TRUE);
                     status = osal_socket_write2(mysocket, rbuf+tail, wrnow, &nwr, flags);
                     if (status) goto getout;
                     if (nwr == wrnow) tail = 0;
@@ -1435,7 +1432,6 @@ osalStatus osal_socket_write(
                 {
                     wrnow = head - tail;
 
-                    osal_socket_set_nodelay(mysocket->handle, OS_TRUE);
                     status = osal_socket_write2(mysocket, rbuf+tail, wrnow, &nwr, flags);
                     if (status) goto getout;
                     tail += (os_short)nwr;

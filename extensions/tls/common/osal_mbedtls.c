@@ -1175,15 +1175,15 @@ static osalStatus osal_mbedtls_handshake(
      */
     if ((so->open_flags & OSAL_STREAM_LISTEN) == 0)
     {
-        if (!osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0))
+        xflags = mbedtls_ssl_get_verify_result(&so->ssl);
+        if (xflags)
         {
-            xflags = mbedtls_ssl_get_verify_result(&so->ssl);
-            if (xflags)
-            {
-                char info_text[128];
+            char info_text[128];
 
-                mbedtls_x509_crt_verify_info(info_text, sizeof(info_text), "  ! ", xflags);
-                osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SERVER_CERT_REJECTED, info_text);
+            mbedtls_x509_crt_verify_info(info_text, sizeof(info_text), "  ! ", xflags);
+            osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SERVER_CERT_REJECTED, info_text);
+            if (!osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0))
+            {
                 so->handshake_failed = OS_TRUE;
                 return OSAL_STATUS_SERVER_CERT_REJECTED;
             }
