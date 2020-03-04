@@ -77,17 +77,13 @@ typedef struct osalSocket
      */
     os_boolean is_ipv6;
 
-    /** OS_TRUE if last write to socket has been blocked.
-     */
-    os_boolean write_blocked;
-
     /** OS_TRUE if connection has been reported by select.
      */
     os_boolean connected;
 
     /** Ring buffer, OS_NULL if not used.
      */
-    os_uchar *buf;
+    os_char *buf;
 
     /** Buffer size in bytes.
      */
@@ -1314,9 +1310,6 @@ static osalStatus osal_socket_write2(
     os_int flags)
 {
     os_int rval, handle;
-    osalStatus status;
-
-    mysocket->write_blocked = OS_FALSE;
 
     /* get operating system's socket handle.
      */
@@ -1329,10 +1322,9 @@ static osalStatus osal_socket_write2(
         if (errno != EWOULDBLOCK && errno != EINPROGRESS)
         {
             osal_trace2("socket write failed");
-            mysocket->write_blocked = OS_TRUE;
-            status = errno == ECONNREFUSED
+            *n_written = 0;
+            return (errno == ECONNREFUSED)
                 ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
-            goto getout;
         }
         rval = 0;
     }
@@ -1373,7 +1365,7 @@ osalStatus osal_socket_write(
     os_int count, wrnow;
     osalSocket *mysocket;
     osalStatus status;
-    os_uchar *rbuf;
+    os_char *rbuf;
     os_short head, tail, buf_sz, nexthead;
     os_memsz nwr;
     os_boolean all_not_flushed;
@@ -1624,7 +1616,7 @@ osalStatus osal_socket_select(
             handle = mysocket->handle;
 
             FD_SET(handle, &rdset);
-            if (mysocket->write_blocked || !mysocket->connected)
+            if (mysocket->head != mysocket->tail || !mysocket->connected)
             {
                 FD_SET(handle, &wrset);
             }
@@ -1684,17 +1676,8 @@ osalStatus osal_socket_select(
                 break;
             }
 
-            if (mysocket->write_blocked || !mysocket->connected) if (FD_ISSET (handle, &wrset))
+            if (mysocket->head != mysocket->tail || !mysocket->connected) if (FD_ISSET (handle, &wrset))
             {
-                /* if (!mysocket->connected)
-                {
-                    mysocket->connected = OS_TRUE;
-                    mysocket->write_blocked = OS_TRUE;
-                }
-                else
-                {
-                    mysocket->write_blocked = OS_FALSE;
-                } */
                 break;
             }
         }

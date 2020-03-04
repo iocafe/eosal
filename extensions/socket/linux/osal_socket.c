@@ -1327,12 +1327,12 @@ osalStatus osal_socket_write(
             if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 			{
                 osal_trace2("socket write failed");
-                mysocket->write_blocked = OS_TRUE;
                 status = errno == ECONNREFUSED
                     ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
                 goto getout;
 			}
-			rval = 0;
+            mysocket->write_blocked = OS_TRUE;
+            rval = 0;
 		}
 
         else
