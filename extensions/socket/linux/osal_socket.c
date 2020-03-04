@@ -711,7 +711,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             }
         }
 
-        /* If we still got no interface addess, ask Windows for list of all useful interfaces.
+        /* If we still got no interface addess, ask OS for list of all useful interfaces.
          */
         if (!has_iface_addr)
         {
@@ -765,12 +765,6 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                 if (*e == '\0') break;
                 p = e + 1;
             }
-        }
-
-        if (!has_iface_addr)
-        {
-            osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_FAILED, "No interface addr");
-            goto getout;
         }
     }
 
@@ -844,7 +838,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             mysocket->send_mcast_ifaces_n = ni;
         }
 
-        /* If we still got no interface addess, ask Windows for list of all useful interfaces.
+        /* If we still got no interface addess, ask OS for list of all useful interfaces.
          */
         if (!has_iface_addr)
         {
@@ -893,6 +887,12 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
         /* Save multicast port number
          */
         mysocket->send_multicast_port = port_nr;
+    }
+
+    if (!has_iface_addr)
+    {
+        osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_FAILED, "No interface addr");
+        goto getout;
     }
 
     /* We are good, cleanup, save socket handle and return.
