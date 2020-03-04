@@ -1337,11 +1337,6 @@ static osalStatus osal_socket_write2(
         rval = 0;
     }
 
-    else
-    {
-        mysocket->unflushed_data = OS_TRUE;
-    }
-
     *n_written = rval;
     return OSAL_SUCCESS;
 }
