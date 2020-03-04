@@ -104,7 +104,7 @@ osalStatus osal_create_json_indexer(
      */
     os_memcpy(&checksum, jindex->data_end, sizeof(os_short));
     if (checksum != os_checksum(compressed, sz_without_checksum, OS_NULL))
-        return OSAL_CHECKSUM_ERROR;
+        return OSAL_STATUS_CHECKSUM_ERROR;
 
     return OSAL_SUCCESS;
 }

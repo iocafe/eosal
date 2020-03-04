@@ -638,7 +638,7 @@ void osal_socket_close(
   @param   stream Stream pointer representing the listening socket.
   @param   status Pointer to integer into which to store the function status code. Value
 		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
-		   The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming 
+           The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
 		   connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
 		   This parameter can be OS_NULL, if no status code is needed. 
@@ -665,7 +665,7 @@ osalStream osal_socket_accept(
     if (wifi_rval)
     {
         rval = (wifi_rval == OSAL_PENDING
-            ? OSAL_STATUS_NO_NEW_CONNECTION : wifi_rval);
+            ? OSAL_NO_NEW_CONNECTION : wifi_rval);
         goto getout;
     }
 
@@ -713,7 +713,7 @@ osalStream osal_socket_accept(
            if (sockindex == osal_socket[j].sockindex)
            {
                 /* osal_trace2("Socket port with data rejected because it is already in use"); */
-                rval = OSAL_STATUS_NO_NEW_CONNECTION;
+                rval = OSAL_NO_NEW_CONNECTION;
                 goto getout;
            }
         }
@@ -739,7 +739,7 @@ osalStream osal_socket_accept(
         if (status) *status = OSAL_SUCCESS;
         return (osalStream)mysocket;
     }
-    rval = OSAL_STATUS_NO_NEW_CONNECTION;
+    rval = OSAL_NO_NEW_CONNECTION;
 
 getout:
 	/* Set status code and return NULL pointer.

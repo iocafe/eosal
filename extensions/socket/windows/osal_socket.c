@@ -1085,7 +1085,7 @@ void osal_socket_close(
 
   @param   status Pointer to integer into which to store the function status code. Value
 		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
-		   The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming 
+           The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
 		   connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
 		   This parameter can be OS_NULL, if no status code is needed. 
@@ -1139,7 +1139,7 @@ osalStream osal_socket_accept(
 		 */
         if (new_handle == INVALID_SOCKET) 
 		{
-			if (status) *status = OSAL_STATUS_NO_NEW_CONNECTION;
+            if (status) *status = OSAL_NO_NEW_CONNECTION;
 			return OS_NULL;
 		}
 

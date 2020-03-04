@@ -214,7 +214,7 @@ osalStatus osal_mkdir(
   @param  path Path to directory.
   @param  flags Reserved for future, set zero for now.
   @return If successfull, the function returns OSAL_SUCCESS(0). Other return values indicate
-          an error, specifically OSAL_DIR_NOT_EMPTY means that directory is not empty.
+          an error, specifically OSAL_STATUS_DIR_NOT_EMPTY means that directory is not empty.
 
 ****************************************************************************************************
 */
@@ -237,7 +237,7 @@ osalStatus osal_rmdir(
         switch (GetLastError())
         {
             case ERROR_DIR_NOT_EMPTY:
-                rval = OSAL_DIR_NOT_EMPTY;
+                rval = OSAL_STATUS_DIR_NOT_EMPTY;
                 break;
 
             default:

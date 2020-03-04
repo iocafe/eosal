@@ -100,7 +100,7 @@ void osal_stream_close(
   @param   remote_ip_addr_sz Size of remote IP address buffer in bytes.
   @param   status Pointer to integer into which to store the function status code. Value
            OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
-           The value OSAL_STATUS_NO_NEW_CONNECTION indicates that no new incoming
+           The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
            connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
            This parameter can be OS_NULL, if no status code is needed.

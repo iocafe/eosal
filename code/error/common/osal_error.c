@@ -252,13 +252,30 @@ void osal_default_error_handler(
 
     /* Select text describing how serious this error is. Ignore clear error requests.
      */
-    switch (level) {
-        case OSAL_INFO: level_text = "info"; break;
-        case OSAL_WARNING: level_text = "warning"; break;
-        case OSAL_ERROR: level_text = "error"; break;
-        case OSAL_SYSTEM_ERROR: level_text = "system"; break;
-        default: level_text = "?"; break;
-        case OSAL_CLEAR_ERROR: return;
+    switch (level)
+    {
+        case OSAL_INFO:
+            level_text = "info";
+            break;
+
+        case OSAL_WARNING:
+            level_text = "warning";
+            break;
+
+        case OSAL_ERROR:
+            level_text = "error";
+            break;
+
+        case OSAL_SYSTEM_ERROR:
+            level_text = "system";
+            break;
+
+        default:
+            level_text = "?";
+            break;
+
+        case OSAL_CLEAR_ERROR:
+            return;
     }
 
     /* Format error message.

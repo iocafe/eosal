@@ -154,7 +154,7 @@ osalStream osal_file_open(
                break;
 
             case ENOENT:
-                rval = OSAL_FILE_DOES_NOT_EXIST;
+                rval = OSAL_STATUS_FILE_DOES_NOT_EXIST;
                 break;
         }
         goto getout;

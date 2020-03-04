@@ -31,7 +31,7 @@
   @param   n_read Pointer to integer where to store number of bytes read.
   @param   flags OS_FILE_NULL_CHAR to terminate buffer with NULL character.
            OS_FILE_DEFAULT for default operation.
-  @return  OSAL_SUCCESS if all good. Value OSAL_OUT_OF_BUFFER indicates that the file is larger
+  @return  OSAL_SUCCESS if all good. Value OSAL_STATUS_OUT_OF_BUFFER indicates that the file is larger
            than the buffer (file content still read). Other values indicate an error.
 
 ****************************************************************************************************
@@ -69,7 +69,7 @@ osalStatus os_read_file(
     if (*n_read == n)
     {
         osal_file_read(f, tmp, sizeof(tmp), &onemore, OSAL_STREAM_DEFAULT);
-        if (onemore > 0) s = OSAL_OUT_OF_BUFFER;
+        if (onemore > 0) s = OSAL_STATUS_OUT_OF_BUFFER;
     }
 
     /* Terminate with NULL character.
@@ -100,7 +100,7 @@ getout:
   @param   n_read Pointer to integer where to store number of bytes read.
   @param   flags OS_FILE_NULL_CHAR to terminate buffer with NULL character.
            OS_FILE_DEFAULT for default operation.
-  @return  OSAL_SUCCESS if all good. Value OSAL_OUT_OF_BUFFER indicates that the file is larger
+  @return  OSAL_SUCCESS if all good. Value OSAL_STATUS_OUT_OF_BUFFER indicates that the file is larger
            than the buffer (file content still read). Other values indicate an error.
 
 ****************************************************************************************************
