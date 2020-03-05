@@ -51,8 +51,10 @@
     <ClInclude Include="..\..\extensions\filesys\common\osal_fileutil.h" />
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
     <ClInclude Include="..\..\extensions\math\common\osal_round.h" />
+    <ClInclude Include="..\..\extensions\net\common\osal_dns.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_net_config.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_net_state.h" />
+    <ClInclude Include="..\..\extensions\net\common\osal_shared_net_info.h" />
     <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
     <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
     <ClInclude Include="..\..\extensions\secret\common\osal_secret.h" />
@@ -111,7 +113,6 @@
     <ClCompile Include="..\..\code\utf32\common\osal_char_utf32_to_utf8.c" />
     <ClCompile Include="..\..\code\utf32\common\osal_char_utf8_to_utf32.c" />
     <ClCompile Include="..\..\extensions\checksum\common\osal_checksum.c" />
-    <ClCompile Include="..\..\extensions\dns\windows\osal_dns.c" />
     <ClCompile Include="..\..\extensions\filesys\common\osal_fileutil.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_dir.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_file.c" />
@@ -122,6 +123,8 @@
     <ClCompile Include="..\..\extensions\main\common\osal_simloop.c" />
     <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
     <ClCompile Include="..\..\extensions\net\common\osal_net_state.c" />
+    <ClCompile Include="..\..\extensions\net\windows\osal_dns.c" />
+    <ClCompile Include="..\..\extensions\net\windows\osal_windows_ethernet_init.c" />
     <ClCompile Include="..\..\extensions\persistent\common\osal_load_persistent.c" />
     <ClCompile Include="..\..\extensions\persistent\common\osal_save_persistent.c" />
     <ClCompile Include="..\..\extensions\persistent\windows\osal_select_persistent.c" />
@@ -136,7 +139,6 @@
     <ClCompile Include="..\..\extensions\serial\windows\osal_serial.c" />
     <ClCompile Include="..\..\extensions\socket\common\osal_socket_util.c" />
     <ClCompile Include="..\..\extensions\socket\windows\osal_socket.c" />
-    <ClCompile Include="..\..\extensions\socket\windows\osal_windows_ethernet_init.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream_buffer.c" />
     <ClCompile Include="..\..\extensions\stream\common\osal_stream_defaults.c" />
