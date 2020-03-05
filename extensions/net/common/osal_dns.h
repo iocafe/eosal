@@ -1,10 +1,10 @@
 /**
 
-  @file    dns/common/osal_dns.h
+  @file    net/common/osal_dns.h
   @brief   Resolve host name or IP address string.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    28.1.2020
+  @date    3.3.2020
 
   Socket speficic function prototypes and definitions to implement OSAL stream API for sockets.
   OSAL stream API is abstraction which makes streams (including sockets) look similar to upper

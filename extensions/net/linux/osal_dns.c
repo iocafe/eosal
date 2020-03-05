@@ -1,10 +1,10 @@
 /**
 
-  @file    dns/linux/osal_dns.c
+  @file    net/linux/osal_dns.c
   @brief   Resolve host name or IP address string for linux sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    28.1.2020
+  @date    3.3.2020
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

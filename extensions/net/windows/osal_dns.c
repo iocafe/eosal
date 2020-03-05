@@ -1,6 +1,6 @@
 /**
 
-  @file    dns/windows/osal_dns.c
+  @file    net/windows/osal_dns.c
   @brief   Resolve host name or IP address string for Windows sockets.
   @author  Pekka Lehtikoski
   @version 1.1

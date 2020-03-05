@@ -61,7 +61,7 @@ OSAL_C_HEADER_BEGINS
 /* We need to include headers, even if we do not need sockets, tls or serial.
    We need empty placeholder macros when these are not supportted.
  */
-#include "extensions/dns/common/osal_dns.h"
+#include "extensions/net/common/osal_dns.h"
 #include "extensions/net/common/osal_net_config.h"
 #include "extensions/net/common/osal_net_state.h"
 #include "extensions/socket/common/osal_socket.h"

@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/common/osal_shared_net_info.h
+  @file    net/common/osal_shared_net_info.h
   @brief   Shared network information.
   @author  Pekka Lehtikoski
   @version 1.0

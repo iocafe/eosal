@@ -40,7 +40,7 @@
  */
 #include <sys/select.h>
 
-#include "extensions/socket/common/osal_shared_net_info.h"
+#include "extensions/net/common/osal_shared_net_info.h"
 
 
 #if 0

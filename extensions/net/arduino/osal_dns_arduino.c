@@ -1,6 +1,6 @@
 /**
 
-  @file    dns/arduino/osal_dns.c
+  @file    net/arduino/osal_dns.c
   @brief   Resolve host name or IP address string for arduino sockets.
   @author  Pekka Lehtikoski
   @version 1.0

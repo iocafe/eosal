@@ -1,12 +1,10 @@
 /**
 
-  @file    socket/windows/osal_windows_ethernet_init.c
-  @brief   OSAL stream API implementation for windows sockets.
+  @file    net/linux/osal_linux_ethernet_init.c
+  @brief   Network initialization for Linux.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    24.2.2020
-
-  Ethernet connectivity. Initialization for Windows sockets API.
+  @date    2.3.2020
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -18,17 +16,7 @@
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#include <winsock2.h>
-// #include <Ws2tcpip.h>
-// #include <iphlpapi.h>
-
-#include "extensions/socket/common/osal_shared_net_info.h"
-
-
+#include "extensions/net/common/osal_shared_net_info.h"
 
 /**
 ****************************************************************************************************
@@ -38,7 +26,7 @@
 
   The osal_socket_initialize() initializes the underlying sockets library.
 
-  @param   nic Pointer to array of network interface structures. Ignored in Windows.
+  @param   nic Pointer to array of network interface structures. Ignored in Linux.
   @param   n_nics Number of network interfaces in nic array.
   @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
            and password (pre shared key) pairs. Can be OS_NULL if there is no WiFi.
@@ -56,17 +44,13 @@ void osal_socket_initialize(
     osalSocketGlobal *sg;
     os_int i;
 
-    /** Windows socket library version information.
+    /* If socket library is already initialized, do nothing.
      */
-    WSADATA osal_wsadata;
-
-	/* If socket library is already initialized, do nothing.
-	 */
     if (osal_global->socket_global) return;
 
-	/* Lock the system mutex to synchronize.
-	 */
-	os_lock();
+    /* Lock the system mutex to synchronize.
+     */
+    os_lock();
 
     /* Allocate global structure
      */
@@ -74,12 +58,12 @@ void osal_socket_initialize(
     os_memclear(sg, sizeof(osalSocketGlobal));
     osal_global->socket_global = sg;
 
-    /** Copy NIC info for UDP multicasts. 
+    /** Copy NIC info for UDP multicasts.
      */
     if (nic) for (i = 0; i < n_nics; i++)
     {
         if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
-        if (nic[i].ip_address[0] == '\0' || !strcmp(nic[i].ip_address, "*")) continue;
+        if (nic[i].ip_address[0] == '\0' || !os_strcmp(nic[i].ip_address, "*")) continue;
 
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
@@ -87,30 +71,9 @@ void osal_socket_initialize(
         if (++(sg->n_nics) >= OSAL_MAX_NRO_NICS) break;
     }
 
-	/* If socket library is already initialized, do nothing. Double checked here
-	   for thread synchronization.
-	 */
-	if (osal_global->sockets_shutdown_func == OS_NULL) 
-	{
-		/* Initialize winsock.
-		 */
-		if (WSAStartup(MAKEWORD(2,2), &osal_wsadata))
-		{
-			osal_debug_error("WSAStartup() failed");
-			return;
-		}
-
-		/* Mark that socket library has been initialized by setting shutdown function pointer.
-           Now the pointer is shared on windows by main program and DLL. If this needs to
-           be separated, move sockets_shutdown_func pointer from global structure to
-           plain global variable.
-		 */
-		osal_global->sockets_shutdown_func = osal_socket_shutdown;
-	}
-
-	/* End synchronization.
-	 */
-	os_unlock();
+    /* End synchronization.
+     */
+    os_unlock();
 }
 
 
@@ -129,23 +92,6 @@ void osal_socket_initialize(
 void osal_socket_shutdown(
 	void)
 {
-	/* If socket we have shut down function.
-	 */
-	if (osal_global->sockets_shutdown_func) 
-    {
-	    /* Initialize winsock.
-	     */
-	    if (WSACleanup())
-	    {
-		    osal_debug_error("WSACleanup() failed");
-		    return;
-	    }
-
-	    /* Mark that socket library is no longer initialized.
-	     */
-        osal_global->sockets_shutdown_func = OS_NULL;
-    }
-
     /* If we ave global data, release memory.
      */
     if (osal_global->socket_global)
@@ -163,10 +109,9 @@ void osal_socket_shutdown(
   @anchor osal_are_sockets_initialized
 
   The osal_are_sockets_initialized function is called to check if socket library initialization
-  has been completed. For Windows there is not much to do, we just return if sockect library
-  has been initialized.
+  has been completed. For Linux there is nothint to do, operating system is in control of this.
 
-  @return  OSAL_SUCCESS if we are connected to a wifi network.
+  @return  OSAL_SUCCESS if we are connected to a wifi network (always returned in Linux).
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
            OSAL_STATUS_FALED No network, at least for now.
 
@@ -175,7 +120,7 @@ void osal_socket_shutdown(
 osalStatus osal_are_sockets_initialized(
     void)
 {
-    return osal_global->sockets_shutdown_func ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
+    return osal_global->socket_global ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
 
 #endif

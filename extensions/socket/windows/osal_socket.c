@@ -27,7 +27,7 @@
 #include <Ws2tcpip.h>
 #include <iphlpapi.h>
 
-#include "extensions/socket/common/osal_shared_net_info.h"
+#include "extensions/net/common/osal_shared_net_info.h"
 
 /** Windows specific socket data structure. OSAL functions cast their own stream structure
     pointers to osalStream pointers.

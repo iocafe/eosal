@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/arduino/osal_arduino_wifi_init.cpp
+  @file    net/arduino/osal_arduino_wifi_init.cpp
   @brief   OSAL Ardyino WiFi network initialization.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -52,7 +52,7 @@ WiFiMulti wifiMulti;
 
 /* Global network adapter and wifi info
  */
-#include "extensions/socket/common/osal_shared_net_info.h"
+#include "extensions/net/common/osal_shared_net_info.h"
 static osalSocketGlobal sg;
 
 /** Which NIC index we use for WiFi, for now we always assume that the first NIC is WiFi.

@@ -34,7 +34,7 @@
  */
 #include <sys/select.h>
 
-#include "extensions/socket/common/osal_shared_net_info.h"
+#include "extensions/net/common/osal_shared_net_info.h"
 
 
 /** Linux specific socket data structure. OSAL functions cast their own stream structure
