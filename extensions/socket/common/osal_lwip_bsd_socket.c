@@ -1021,13 +1021,7 @@ osalStream osal_socket_accept(
 	struct sockaddr_in sin_remote;
 	struct sockaddr_in6 sin_remote6;
 
-<<<<<<< Updated upstream
-	if (stream)
-=======
-flags &= ~OSAL_STREAM_TCP_NODELAY;
-
     if (stream)
->>>>>>> Stashed changes
 	{
         /* Cast stream pointer to socket structure pointer, get operating system's socket handle.
          */
