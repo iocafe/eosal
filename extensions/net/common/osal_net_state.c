@@ -203,7 +203,7 @@ osalStatus osal_add_network_state_notification_handler(
 
 /* Set network state item. For example called by TLS socket wrapper to inform that we do not
    have client certificate chain.
-   @param   item OSAL_NS_NIC_STATE, OSAL_NS_WIFI_CONNECTED, OSAL_NS_NO_CERT_CHAIN
+   @param   item OSAL_NS_NIC_STATE, OSAL_NS_NETWORK_CONNECTED, OSAL_NS_NO_CERT_CHAIN
  */
 void osal_set_network_state_int(
     osalNetStateItem item,
@@ -224,19 +224,24 @@ void osal_set_network_state_int(
             ns->nic_code[index] = (os_boolean)value;
             break;
 
-        case OSAL_NS_WIFI_USED: /* only one, not indexed */
-            if (ns->wifi_used == (os_boolean)value) return;
-            ns->wifi_used = (os_boolean)value;
+        case OSAL_NS_NETWORK_USED: /* only one, not indexed */
+            if (ns->network_used == (os_boolean)value) return;
+            ns->network_used = (os_boolean)value;
             break;
 
-        case OSAL_NS_WIFI_CONNECTED: /* only one, not indexed */
-            if (ns->wifi_connected == (os_boolean)value) return;
-            ns->wifi_connected = (os_boolean)value;
+        case OSAL_NS_NETWORK_CONNECTED: /* only one, not indexed */
+            if (ns->network_connected == (os_boolean)value) return;
+            ns->network_connected = (os_boolean)value;
             break;
 
         case OSAL_NS_NO_CERT_CHAIN:
             if (ns->no_cert_chain == (os_boolean)value) return;
             ns->no_cert_chain = (os_boolean)value;
+            break;
+
+        case OSAL_NS_LIGHTHOUSE_STATE:
+            if (ns->lighthouse_state == (osaLightHouseClientState)value) return;
+            ns->lighthouse_state = (osaLightHouseClientState)value;
             break;
 #endif
         default:
@@ -268,16 +273,20 @@ os_int osal_get_network_state_int(
             rval = ns->nic_code[index];
             break;
 
-        case OSAL_NS_WIFI_USED:  /* only one, not indexed */
-            rval = ns->wifi_used;
+        case OSAL_NS_NETWORK_USED:  /* only one, not indexed */
+            rval = ns->network_used;
             break;
 
-        case OSAL_NS_WIFI_CONNECTED:  /* only one, not indexed */
-            rval = ns->wifi_connected;
+        case OSAL_NS_NETWORK_CONNECTED:  /* only one, not indexed */
+            rval = ns->network_connected;
             break;
 
         case OSAL_NS_NO_CERT_CHAIN:
             rval = ns->no_cert_chain;
+            break;
+
+        case OSAL_NS_LIGHTHOUSE_STATE:
+            rval = ns->lighthouse_state;
             break;
 #endif
         default:

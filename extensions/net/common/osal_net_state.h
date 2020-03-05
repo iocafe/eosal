@@ -57,13 +57,26 @@ typedef enum
 {
     OSAL_NS_NIC_STATE,
     OSAL_NS_NIC_IP_ADDR,
-    OSAL_NS_WIFI_USED,
-    OSAL_NS_WIFI_CONNECTED,
+    OSAL_NS_NETWORK_USED,
+    OSAL_NS_NETWORK_CONNECTED,
     OSAL_NS_WIFI_NETWORK_NAME,
     OSAL_NS_WIFI_PASSWORD,
+    OSAL_NS_LIGHTHOUSE_STATE,
     OSAL_NS_NO_CERT_CHAIN
 }
 osalNetStateItem;
+
+
+/** Enumeration of network state items (other than counts).
+ */
+typedef enum
+{
+    OSAL_LIGHTHOUSE_NOT_USED = 0,
+    OSAL_LIGHTHOUSE_OK = 1,
+    OSAL_LIGHTHOUSE_NOT_VISIBLE = 2,
+    OSAL_NO_LIGHTHOUSE_FOR_THIS_IO_NETWORK = 3
+}
+osaLightHouseClientState;
 
 /** Network state information structure.
  */
@@ -90,17 +103,21 @@ typedef struct osalNetworkState
      */
     os_char wifi_network_password[OSAL_MAX_NRO_WIFI_NETWORKS][OSAL_WIFI_PRM_SZ];
 
-    /** Wifi network used flag.
+    /** Ethwenet or Wifi network used flag.
      */
-    os_boolean wifi_used;
+    os_boolean network_used;
 
-    /** Wifi network connected flag.
+    /** Ethwenet or Wifi network connected flag.
      */
-    os_boolean wifi_connected;
+    os_boolean network_connected;
 
     /** No sertificate chain (transfer automatically?)
      */
     os_boolean no_cert_chain;
+
+    /** Light house client state.
+     */
+    osaLightHouseClientState lighthouse_state;
 #endif
 
     /** Counts, like number of connected sockets, number of listening sockets, etc.

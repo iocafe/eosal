@@ -85,7 +85,7 @@ typedef struct
 
     /* WiFi connected flag.
      */
-    os_boolean wifi_connected;
+    os_boolean network_connected;
 
     osalArduinoWifiInitStep wifi_init_step;
 
@@ -271,7 +271,7 @@ osalStatus osal_are_sockets_initialized(
     switch (ans.wifi_init_step)
     {
         case OSAL_WIFI_INIT_STEP1:
-            osal_set_network_state_int(OSAL_NS_WIFI_USED, 0, OS_TRUE);
+            osal_set_network_state_int(OSAL_NS_NETWORK_USED, 0, OS_TRUE);
 
             /* The following four lines are silly stuff to reset
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
@@ -285,7 +285,7 @@ osalStatus osal_are_sockets_initialized(
             WiFi.status();
 #endif
 
-            ans.wifi_connected = ans.wifi_was_connected = OS_FALSE;
+            ans.network_connected = ans.wifi_was_connected = OS_FALSE;
             ans.wifi_init_failed_now = OS_FALSE;
             os_get_timer(&ans.wifi_step_timer);
             ans.wifi_boot_timer = ans.wifi_step_timer;
@@ -349,23 +349,23 @@ osalStatus osal_are_sockets_initialized(
 #if OSAL_SUPPORT_WIFI_MULTI
             if (!ans.wifi_multi_on)
             {
-                ans.wifi_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
+                ans.network_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
             }
             else
             {
-                ans.wifi_connected = (os_boolean) (wifiMulti.run() == WL_CONNECTED);
+                ans.network_connected = (os_boolean) (wifiMulti.run() == WL_CONNECTED);
             }
 #else
-            ans.wifi_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
+            ans.network_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
 #endif
 
             /* If no change in connection status:
                - If we are connected or connection has never failed (boot), or
                  not connected, return appropriate status code. If not con
              */
-            if (ans.wifi_connected == ans.wifi_was_connected)
+            if (ans.network_connected == ans.wifi_was_connected)
             {
-                if (ans.wifi_connected)
+                if (ans.network_connected)
                 {
                     s = OSAL_SUCCESS;
                     break;
@@ -384,7 +384,7 @@ osalStatus osal_are_sockets_initialized(
                         ans.wifi_init_failed_once = OS_TRUE;
                         osal_trace("Unable to connect Wifi");
                         osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, OS_NULL);
-                        osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_FALSE);
+                        osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
                     }
 
                     s = ans.wifi_init_failed_once
@@ -396,11 +396,11 @@ osalStatus osal_are_sockets_initialized(
 
             /* Save to detect connection state changes.
              */
-            ans.wifi_was_connected = ans.wifi_connected;
+            ans.wifi_was_connected = ans.network_connected;
 
             /* If this is connect
              */
-            if (ans.wifi_connected)
+            if (ans.network_connected)
             {
                 s = OSAL_SUCCESS;
                 osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
@@ -412,7 +412,7 @@ osalStatus osal_are_sockets_initialized(
                 const os_char *p = addrstr.c_str();
                 os_strncpy(sg.nic[OSAL_WIFI_NIC_IX].ip_address, p, OSAL_IPADDR_SZ);
                 osal_error(OSAL_CLEAR_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, p);
-                osal_set_network_state_int(OSAL_NS_WIFI_CONNECTED, 0, OS_TRUE);
+                osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_TRUE);
 #if OSAL_TRACE
                 osal_trace(addrstr.c_str());
 #endif
