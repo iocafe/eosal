@@ -207,8 +207,6 @@ osalStream osal_socket_open(
     osalStatus s;
     os_int info_code;
 
-flags &= ~OSAL_STREAM_TCP_NODELAY;
-
     /* Return OS_NULL if network not (yet) initialized initialized.
      */
     s = osal_are_sockets_initialized();
@@ -1022,8 +1020,6 @@ osalStream osal_socket_accept(
     socklen_t addr_size;
 	struct sockaddr_in sin_remote;
 	struct sockaddr_in6 sin_remote6;
-
-flags &= ~OSAL_STREAM_TCP_NODELAY;
 
 	if (stream)
 	{
