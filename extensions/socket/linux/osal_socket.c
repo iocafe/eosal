@@ -71,9 +71,9 @@ typedef struct osalSocket
     os_int mcast_ifaces[OSAL_MAX_MCAST_IFACES];
     os_int nro_mcast_ifaces;
 
-    /** Port number for sending multicasts.
+    /** Port number for multicasts or listening connections.
      */
-    os_int send_multicast_port;
+    os_int passive_port;
 
 	/** Stream open flags. Flags which were given to osal_socket_open() or osal_socket_accept()
         function. 
@@ -383,12 +383,16 @@ static osalStatus osal_setup_tcp_socket(
 
         /* Set the listen back log
          */
-        if (flags & OSAL_STREAM_LISTEN)
-            if (listen(handle, 32) , 0)
+        if (listen(handle, 32) < 0)
         {
             s = OSAL_STATUS_FAILED;
             goto getout;
         }
+
+        /* Set any nonzero multicast port to indicate to close() function
+         * that we do not need to call gracefull connection shutdown stuff.
+         */
+        mysocket->passive_port = port_nr;
     }
 
     else
@@ -474,6 +478,10 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     os_int mr_sz, interface_ix;
     osalStream interface_list = OS_NULL;
     os_char *iface_list_str = OS_NULL;
+
+    /* Save multicast port number
+     */
+    mysocket->passive_port = port_nr;
 
     /* Get global socket data.
      */
@@ -847,10 +855,6 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             mysocket->nro_mcast_ifaces = ni;
             if (ni) has_iface_addr = OS_TRUE;
         }
-
-        /* Save multicast port number
-         */
-        mysocket->send_multicast_port = port_nr;
     }
 
     if (!has_iface_addr)
@@ -919,36 +923,41 @@ void osal_socket_close(
     mysocket->hdr.iface = OS_NULL;
 #endif
 
-    /* Disable sending data. This informs other the end of socket that it is going down now.
+    /* If this is not multicast or listening socket.
      */
-    if (shutdown(handle, 2))
+    if (mysocket->passive_port == 0)
     {
-        if (errno != ENOTCONN)
+        /* Disable sending data. This informs other the end of socket that it is going down now.
+         */
+        if (shutdown(handle, 2))
         {
-            osal_debug_error("shutdown() failed");
+            if (errno != ENOTCONN)
+            {
+                osal_debug_error("shutdown() failed");
+            }
         }
-    }
 
-    /* Read data to be received until receive buffer is empty.
-     */
-    do
-    {
-        n = recv(handle, buf, sizeof(buf), MSG_NOSIGNAL);
-        if (n == -1)
+        /* Read data to be received until receive buffer is empty.
+         */
+        do
         {
+            n = recv(handle, buf, sizeof(buf), MSG_NOSIGNAL);
+            if (n == -1)
+            {
 #if OSAL_DEBUG
 
-            if (errno != EWOULDBLOCK &&
-                errno != EINPROGRESS &&
-                errno != ENOTCONN)
-            {
-                osal_debug_error("reading end failed");
-            }
+                if (errno != EWOULDBLOCK &&
+                    errno != EINPROGRESS &&
+                    errno != ENOTCONN)
+                {
+                    osal_debug_error("reading end failed");
+                }
 #endif
-            break;
+                break;
+            }
         }
+        while(n);
     }
-    while(n);
 
     /* Close the socket.
      */
@@ -1558,7 +1567,7 @@ osalStatus osal_socket_send_packet(
          */
         os_memclear(&sin_remote6, sizeof(sin_remote6));
         sin_remote6.sin6_family = AF_INET6;
-        sin_remote6.sin6_port = htons(mysocket->send_multicast_port);
+        sin_remote6.sin6_port = htons(mysocket->passive_port);
         os_memcpy(&sin_remote6.sin6_addr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
@@ -1604,7 +1613,7 @@ osalStatus osal_socket_send_packet(
          */
         os_memclear(&sin_remote, sizeof(sin_remote));
         sin_remote.sin_family = AF_INET;
-        sin_remote.sin_port = htons(mysocket->send_multicast_port);
+        sin_remote.sin_port = htons(mysocket->passive_port);
         os_memcpy(&sin_remote.sin_addr.s_addr, mysocket->multicast_group, OSAL_IPV4_BIN_ADDR_SZ);
 
         /* Loop trough interfaces to which to send thee multicast
@@ -1760,10 +1769,15 @@ static void osal_socket_blocking_mode(
 {
    int fl;
 
+   struct linger l;
+
    fl = fcntl(handle, F_GETFL, 0);
    if (fl < 0) goto getout;
    fl = blockingmode ? (fl & ~O_NONBLOCK) : (fl | O_NONBLOCK);
    if (fcntl(handle, F_SETFL, fl)) goto getout;
+
+   os_memclear(&l, sizeof(l));
+   setsockopt(handle, IPPROTO_TCP, SO_LINGER, &l, sizeof(l));
    return;
 
 getout:
