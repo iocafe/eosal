@@ -59,6 +59,7 @@ void osal_initialize_net_state(void)
 
     /* Set global network state pointer.
      */
+    os_memclear(&static_net_state, sizeof(static_net_state));
     osal_global->net_state = &static_net_state;
 
     /* Set error handler callback function to get informaion from error handling.

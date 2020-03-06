@@ -378,7 +378,7 @@ osalStatus osal_are_sockets_initialized(
 
                 else
                 {
-                    if (os_elapsed(&ans.wifi_step_timer, 8000))
+                    if (os_elapsed(&ans.wifi_step_timer, 10000))
                     {
                         ans.wifi_init_failed_now = OS_TRUE;
                         ans.wifi_init_failed_once = OS_TRUE;
