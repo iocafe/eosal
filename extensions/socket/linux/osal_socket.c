@@ -45,11 +45,7 @@
 /* The buffer stores 32 bit IPv4 addresses or 32 bit indexes (os_int) for IPv6.
    Select size accordingly
  */
-#if OSAL_MICROCONTROLLER
-#define OSAL_MAX_MCAST_IFACES 4
-#else
 #define OSAL_MAX_MCAST_IFACES 12
-#endif
 
 /** Linux specific socket data structure. OSAL functions cast their own stream structure
     pointers to osalStream pointers.
