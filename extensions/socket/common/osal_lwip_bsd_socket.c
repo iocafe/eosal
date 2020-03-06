@@ -1657,9 +1657,9 @@ osalStatus osal_socket_send_packet(
 
             /* Handle "sendto" errors.
              */
-            if (nbytes < 0)
+            if (nbytes <= 0)
             {
-                if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
                 {
                     s = OSAL_PENDING;
                 }
@@ -1708,7 +1708,7 @@ osalStatus osal_socket_send_packet(
              */
             if (nbytes < 0)
             {
-                if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
                 {
                     s = OSAL_PENDING;
                 }
@@ -1789,9 +1789,9 @@ osalStatus osal_socket_receive_packet(
             (struct sockaddr*)&sin_remote, &addr_size);
     }
 
-    if (nbytes < 0)
+    if (nbytes <= 0) /* 0 = gracefully glosed ? */
     {
-        return (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+        return (errno == EAGAIN || errno == EWOULDBLOCK)
             ? OSAL_PENDING : OSAL_STATUS_FAILED;
     }
 
