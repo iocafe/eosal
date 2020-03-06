@@ -1584,9 +1584,9 @@ osalStatus osal_socket_send_packet(
 
             /* Handle "sendto" errors.
              */
-            if (nbytes < 0)
+            if (nbytes <= 0)
             {
-                if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
                 {
                     s = OSAL_PENDING;
                 }
