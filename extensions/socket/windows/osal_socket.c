@@ -383,7 +383,7 @@ static osalStatus osal_setup_tcp_socket(
     on = 1;
   	ioctlsocket(handle, FIONBIO, &on);
     bon = 1;
-    setsocketopt(handle, SOL_SOCKET, SO_DONTLINGER, &bon, sizeof(bon));
+    setsockopt(handle, SOL_SOCKET, SO_DONTLINGER, (char *)&bon, sizeof(bon));
 
 	/* Save flags and interface pointer.
 	 */
@@ -603,7 +603,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     on = 1;
   	ioctlsocket(handle, FIONBIO, &on);
     bon = 1;
-    setsocketopt(handle, SOL_SOCKET, SO_DONTLINGER, &bon, sizeof(bon));
+    setsockopt(handle, SOL_SOCKET, SO_DONTLINGER, (char *)&bon, sizeof(bon));
 
 #if OSAL_SOCKET_SELECT_SUPPORT
     /* If we are preparing to use this with select function.
