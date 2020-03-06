@@ -775,7 +775,6 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
          */
         if (!has_iface_addr)
         {
-            if (osal_socket_alloc_send_mcast_ifaces(mysocket, sg->n_nics)) goto getout;
             ni = 0;
             for (i = 0; i < sg->n_nics && ni < OSAL_MAX_MCAST_IFACES; i++)
             {
