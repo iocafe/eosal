@@ -308,9 +308,7 @@ osalStatus osal_are_sockets_initialized(
                     {
                         /* Some default network parameters.
                          */
-                        IPAddress
-                            ip_address(192, 168, 1, 195);
-
+                        IPAddress ip_address(192, 168, 1, 195);
                         osal_arduino_ip_from_str(ip_address, ans.ip_address);
 
 #ifdef ESP_PLATFORM
@@ -425,6 +423,9 @@ osalStatus osal_are_sockets_initialized(
                 ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;
                 osal_trace("Wifi network disconnected");
                 s = OSAL_STATUS_FAILED;
+
+                osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, OS_NULL);
+                osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
             }
 
             break;
