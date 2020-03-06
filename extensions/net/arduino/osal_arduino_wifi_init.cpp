@@ -271,6 +271,7 @@ osalStatus osal_are_sockets_initialized(
     switch (ans.wifi_init_step)
     {
         case OSAL_WIFI_INIT_STEP1:
+            osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
             osal_set_network_state_int(OSAL_NS_NETWORK_USED, 0, OS_TRUE);
 
             /* The following four lines are silly stuff to reset
@@ -382,7 +383,6 @@ osalStatus osal_are_sockets_initialized(
                         ans.wifi_init_failed_once = OS_TRUE;
                         osal_trace("Unable to connect Wifi");
                         osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, OS_NULL);
-                        osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
                     }
 
                     s = ans.wifi_init_failed_once
@@ -423,9 +423,6 @@ osalStatus osal_are_sockets_initialized(
                 ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;
                 osal_trace("Wifi network disconnected");
                 s = OSAL_STATUS_FAILED;
-
-                osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, OS_NULL);
-                osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
             }
 
             break;
