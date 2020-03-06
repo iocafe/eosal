@@ -145,6 +145,11 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     const os_char *certs_dir,
     const os_char *file_name);
 
+static osalStatus osal_report_load_error(
+    osalStatus s,
+    osPersistentBlockNr block_nr,
+    const os_char *file_name);
+
 static void osal_mbedtls_cleanup(void);
 
 static int osal_net_recv(
@@ -972,15 +977,15 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
         {
             ret = mbedtls_x509_crt_parse_file(cert, path);
             if (!ret) return OSAL_SUCCESS;
-            osal_debug_error_str("mbedtls_x509_crt_parse_file failed ", path);
         }
         else
         {
             ret = mbedtls_pk_parse_keyfile(pkey, path, 0);
             if (!ret) return OSAL_SUCCESS;
-            osal_debug_error_str("mbedtls_pk_parse_keyfile failed ", path);
+
         }
-        return OSAL_STATUS_FAILED;
+        return osal_report_load_error(
+            OSAL_STATUS_PARSING_CERT_OR_KEY_FAILED, 0, file_name);
     }
 #endif
 
@@ -990,29 +995,21 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     s = ioc_load_persistent_malloc(block_nr, &block, &block_sz);
     if (s != OSAL_SUCCESS && s != OSAL_MEMORY_ALLOCATED)
     {
-        osal_debug_error_int("ioc_load_persistent_malloc failed ", block_nr);
-        return OSAL_STATUS_FAILED;
+        return osal_report_load_error(OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE, block_nr, file_name);
     }
 
     rval = OSAL_SUCCESS;
     if (cert)
     {
         ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)block, block_sz);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_x509_crt_parse failed ", ret);
-            rval = OSAL_STATUS_FAILED;
-        }
     }
     else
     {
         ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, block_sz, NULL, 0);
-        if (ret)
-        {
-            osal_debug_error_int("mbedtls_pk_parse_key failed ", ret);
-            rval = OSAL_STATUS_FAILED;
-        }
     }
+
+    rval = osal_report_load_error(
+        OSAL_STATUS_PARSING_CERT_OR_KEY_FAILED, block_nr, file_name);
 
     if (s == OSAL_MEMORY_ALLOCATED)
     {
@@ -1022,6 +1019,57 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     return rval;
 }
 
+/**
+****************************************************************************************************
+
+  @brief Report error while loading or parsing certificate/key (internal).
+  @anchor osal_report_load_error
+  @return  Status given as argument.
+
+****************************************************************************************************
+*/
+static osalStatus osal_report_load_error(
+    osalStatus s,
+    osPersistentBlockNr block_nr,
+    const os_char *file_name)
+{
+    os_char text[128], nbuf[OSAL_NBUF_SZ];
+
+    os_strncpy(text, s == OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE
+        ? "loading certificate or key "
+        : "parsing certificate or key ", sizeof(text));
+
+    if (block_nr)
+    {
+        os_strncat(text, "from presistent block ", sizeof(text));
+        osal_int_to_str(nbuf, sizeof(nbuf), block_nr);
+        os_strncat(text, nbuf, sizeof(text));
+    }
+    else
+    {
+        os_strncat(text, "from file ", sizeof(text));
+        os_strncat(text, file_name, sizeof(text));
+    }
+    os_strncat(text, " failed.", sizeof(text));
+
+    /* If file_name is NULL pointer, this is not even in configuration:
+       Ignore load errors quietly.
+     */
+    if (s != OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE || file_name != OS_NULL)
+    {
+        osal_error(OSAL_WARNING, eosal_mod, s, text);
+        osal_set_network_state_int(OSAL_NS_SECURITY_CONF_ERROR, 0, s);
+    }
+#if OSAL_TRACE >= 2
+    /* If we are tracing, still generate trace mark */
+    else
+    {
+        osal_trace2_str("quietly ignored: ", text);
+    }
+#endif
+
+    return s;
+}
 
 /**
 ****************************************************************************************************

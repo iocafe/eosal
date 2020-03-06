@@ -113,6 +113,14 @@ typedef enum
      */
     OSAL_STATUS_SERVER_CERT_REJECTED = 106,
 
+    /** TLS certificate or key could not be loaded.
+     */
+    OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE = 108,
+
+    /** TLS certificate or key could not be parsed, corrupted?
+     */
+    OSAL_STATUS_PARSING_CERT_OR_KEY_FAILED = 109,
+
     /** Operation not authorized by security.
      */
     OSAL_STATUS_NOT_AUTOHORIZED = 110,

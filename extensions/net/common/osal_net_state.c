@@ -244,6 +244,12 @@ void osal_set_network_state_int(
             if (ns->lighthouse_state == (osaLightHouseClientState)value) return;
             ns->lighthouse_state = (osaLightHouseClientState)value;
             break;
+
+        case OSAL_NS_SECURITY_CONF_ERROR:
+            if (ns->security_conf_error == value) return;
+            ns->security_conf_error = value;
+            break;
+
 #endif
         default:
             return;
@@ -288,6 +294,10 @@ os_int osal_get_network_state_int(
 
         case OSAL_NS_LIGHTHOUSE_STATE:
             rval = ns->lighthouse_state;
+            break;
+
+        case OSAL_NS_SECURITY_CONF_ERROR:
+            rval = ns->security_conf_error;
             break;
 #endif
         default:

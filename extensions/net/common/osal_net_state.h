@@ -62,6 +62,7 @@ typedef enum
     OSAL_NS_WIFI_NETWORK_NAME,
     OSAL_NS_WIFI_PASSWORD,
     OSAL_NS_LIGHTHOUSE_STATE,
+    OSAL_NS_SECURITY_CONF_ERROR,
     OSAL_NS_NO_CERT_CHAIN
 }
 osalNetStateItem;
@@ -114,6 +115,10 @@ typedef struct osalNetworkState
     /** No sertificate chain (transfer automatically?)
      */
     os_boolean no_cert_chain;
+
+    /** Security configuration is errornous (All TLS certificates/keys could not be loaded) or parsed.
+     */
+    os_int security_conf_error;
 
     /** Light house client state.
      */
