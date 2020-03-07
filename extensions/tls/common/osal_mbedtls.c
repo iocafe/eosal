@@ -312,36 +312,8 @@ static osalStream osal_mbedtls_open(
         /* We use osal socket implementation for reads and writes.
          */
         mbedtls_ssl_set_bio(&so->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
-#if 0
-        /* 4. Handshake
-         */
-        while (( ret = mbedtls_ssl_handshake(&so->ssl) ))
-        {
-            if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
-            {
-                osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
-                goto getout;
-            }
-            os_timeslice();
-            so->peer_connected = OS_TRUE;
-        }
-        so->peer_connected = OS_TRUE;
 
-/* ==> MOVED ret = mbedtls_net_set_nonblock(&so->fd);
-*/
-
-        /* 5. Verify the server certificate
-         */
-        xflags = mbedtls_ssl_get_verify_result(&so->ssl);
-        if (xflags)
-        {
-            char info_text[128];
-
-            mbedtls_x509_crt_verify_info(info_text, sizeof(info_text), "  ! ", xflags);
-            osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_SERVER_CERT_REJECTED, info_text);
-            goto getout;
-        }
-#endif
+        if (OSAL_IS_ERROR(osal_mbedtls_handshake(so))) goto getout;
     }
 
     /* Success: Set status code and cast socket structure pointer to stream
@@ -488,7 +460,7 @@ static osalStream osal_mbedtls_accept(
     newso->tcpsocket = tcpsocket;
     newso->open_flags = flags|OSAL_STREAM_LISTEN;
     newso->hdr.iface = &osal_tls_iface;
-    newso->peer_connected = OS_TRUE;
+    // newso->peer_connected = OS_TRUE;
     mbedtls_ssl_init(&newso->ssl);
     mbedtls_ssl_config_init(&newso->conf);
 
@@ -522,20 +494,8 @@ static osalStream osal_mbedtls_accept(
      */
     mbedtls_ssl_set_bio(&newso->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
 
-#if 0
-    /* 5. Handshake
-     */
-    while((ret = mbedtls_ssl_handshake(&newso->ssl)) != 0)
-    {
-        if(ret != MBEDTLS_ERR_SSL_WANT_READ &&
-           ret != MBEDTLS_ERR_SSL_WANT_WRITE)
-        {
-            osal_debug_error_int("mbedtls_ssl_handshake failed ", ret);
-            goto getout;
-        }
-        os_timeslice();
-    }
-#endif
+    s = osal_mbedtls_handshake(newso);
+    if (OSAL_IS_ERROR(s)) goto getout;
 
     /* Success set status code and cast socket structure pointer to stream pointer
        and return it.
@@ -1144,7 +1104,11 @@ static int osal_net_recv(
     switch (s)
     {
         case OSAL_SUCCESS:
-            if (n_read == 0) return MBEDTLS_ERR_SSL_WANT_READ;
+            if (n_read == 0)
+            {
+                osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
+                return MBEDTLS_ERR_SSL_WANT_READ;
+            }
             return (int)n_read;
 
         case OSAL_STATUS_CONNECTION_RESET:
@@ -1188,7 +1152,11 @@ static int osal_net_send(
     switch (s)
     {
         case OSAL_SUCCESS:
-            if (n_written == 0) return MBEDTLS_ERR_SSL_WANT_WRITE;
+            if (n_written == 0)
+            {
+                osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
+                return MBEDTLS_ERR_SSL_WANT_WRITE;
+            }
             return (int)n_written;
 
         case OSAL_STATUS_CONNECTION_RESET:
@@ -1240,14 +1208,11 @@ static osalStatus osal_mbedtls_handshake(
             return OSAL_STATUS_CONNECTION_REFUSED;
         }
 
-        if (ret == MBEDTLS_ERR_SSL_WANT_WRITE)
-        {
-            osal_stream_flush(so->tcpsocket, 0);
-        }
+        osal_stream_flush(so->tcpsocket, 0);
         os_timeslice();
 
-        if (++count >= 2) return OSAL_PENDING;
-return OSAL_PENDING;
+        if (++count > 2) return OSAL_PENDING;
+// return OSAL_PENDING;
     }
     so->peer_connected = OS_TRUE;
 
