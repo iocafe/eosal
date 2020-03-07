@@ -187,9 +187,13 @@ typedef enum
      */
     OSAL_STATUS_UNKNOWN_LIGHTHOUSE_MULTICAST = 182,
 
-    /** Socket connection has been refused by server. Propably service not running.
+    /** Socket connection has been refused by server.
      */
     OSAL_STATUS_CONNECTION_REFUSED = 184,
+
+    /** Socket connection has been been reseted.
+     */
+    OSAL_STATUS_CONNECTION_RESET = 185,
 
     /** Process does not have access right to object.
      */

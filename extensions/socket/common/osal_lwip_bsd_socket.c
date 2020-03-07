@@ -1209,27 +1209,43 @@ static osalStatus osal_socket_write2(
     os_int flags)
 {
     os_int rval, handle;
+    osalStatus status = OSAL_SUCCESS;
 
     /* get operating system's socket handle.
      */
     handle = mysocket->handle;
-
     rval = send(handle, buf, (int)n, 0);
 
     if (rval < 0)
     {
-        if (errno != EWOULDBLOCK && errno != EINPROGRESS)
+        /* This matches with net_sockets.c
+         */
+        switch (errno)
         {
-            osal_trace2("socket write failed");
-            *n_written = 0;
-            return (errno == ECONNREFUSED)
-                ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
+            case EWOULDBLOCK:
+            case EINPROGRESS:
+            case EINTR:
+                break;
+
+            case ECONNREFUSED:
+                status = OSAL_STATUS_CONNECTION_REFUSED;
+                break;
+
+            case ECONNRESET:
+            case EPIPE:
+                status = OSAL_STATUS_CONNECTION_RESET;
+                break;
+
+            default:
+                status = OSAL_STATUS_FAILED;
+                break;
         }
+
         rval = 0;
     }
 
     *n_written = rval;
-    return OSAL_SUCCESS;
+    return status;
 }
 
 
@@ -1426,19 +1442,34 @@ osalStatus osal_socket_read(
 
         if (rval == -1)
 		{
-            if (errno != EWOULDBLOCK && errno != EINPROGRESS)
-			{
-                osal_trace2("socket read failed");
-                status = errno == ECONNREFUSED
-                    ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
-				goto getout;
-			}
+            /* This matches with net_sockets.c
+             */
+            switch (errno)
+            {
+                case EWOULDBLOCK:
+                case EINPROGRESS:
+                case EINTR:
+                    break;
+
+                case ECONNREFUSED:
+                    status = OSAL_STATUS_CONNECTION_REFUSED;
+                    goto getout;
+
+                case ECONNRESET:
+                case EPIPE:
+                    status = OSAL_STATUS_CONNECTION_RESET;
+                    goto getout;
+
+                default:
+                    status = OSAL_STATUS_FAILED;
+                    goto getout;
+            }
             rval = 0;
         }
 
 		*n_read = rval;
 		return OSAL_SUCCESS;
-	}
+    }
     status = OSAL_STATUS_FAILED;
 
 getout:
@@ -1668,14 +1699,26 @@ osalStatus osal_socket_send_packet(
              */
             if (nbytes <= 0)
             {
-                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                switch (errno)
                 {
-                    s = OSAL_PENDING;
-                }
-                else
-                {
-                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
-                    s = OSAL_STATUS_SEND_MULTICAST_FAILED;
+                    case EWOULDBLOCK:
+                    case EINPROGRESS:
+                    case EINTR:
+                        if (!s) s = OSAL_PENDING;
+                        break;
+
+                    case ECONNREFUSED:
+                        s = OSAL_STATUS_CONNECTION_REFUSED;
+                        break;
+
+                    case ECONNRESET:
+                    case EPIPE:
+                        s = OSAL_STATUS_CONNECTION_RESET;
+                        break;
+
+                    default:
+                        s = OSAL_STATUS_SEND_MULTICAST_FAILED;
+                        break;
                 }
             }
         }
@@ -1717,19 +1760,36 @@ osalStatus osal_socket_send_packet(
              */
             if (nbytes < 0)
             {
-                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                switch (errno)
                 {
-                    s = OSAL_PENDING;
-                }
-                else
-                {
-                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
-                    s = OSAL_STATUS_SEND_MULTICAST_FAILED;
+                    case EWOULDBLOCK:
+                    case EINPROGRESS:
+                    case EINTR:
+                        if (!s) s = OSAL_PENDING;
+                        break;
+
+                    case ECONNREFUSED:
+                        s = OSAL_STATUS_CONNECTION_REFUSED;
+                        break;
+
+                    case ECONNRESET:
+                    case EPIPE:
+                        s = OSAL_STATUS_CONNECTION_RESET;
+                        break;
+
+                    default:
+                        s = OSAL_STATUS_SEND_MULTICAST_FAILED;
+                        break;
                 }
             }
         }
     }
 #endif
+
+    if (s)
+    {
+        osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
+    }
 
     return s;
 }
@@ -1772,6 +1832,7 @@ osalStatus osal_socket_receive_packet(
     int nbytes;
     socklen_t addr_size;
     char addrbuf[INET6_ADDRSTRLEN];
+    osalStatus status;
 
     if (n_read) *n_read = 0;
     if (remote_addr) *remote_addr = '\0';
@@ -1800,8 +1861,28 @@ osalStatus osal_socket_receive_packet(
 
     if (nbytes <= 0) /* 0 = gracefully glosed ? */
     {
-        return (errno == EAGAIN || errno == EWOULDBLOCK)
-            ? OSAL_PENDING : OSAL_STATUS_FAILED;
+        switch (errno)
+        {
+            case EWOULDBLOCK:
+            case EINPROGRESS:
+            case EINTR:
+                status = OSAL_PENDING;
+                break;
+
+            case ECONNREFUSED:
+                status = OSAL_STATUS_CONNECTION_REFUSED;
+                break;
+
+            case ECONNRESET:
+            case EPIPE:
+                status = OSAL_STATUS_CONNECTION_RESET;
+                break;
+
+            default:
+                status = OSAL_STATUS_RECEIVE_MULTICAST_FAILED;
+                break;
+        }
+        return status;
     }
 
     if (remote_addr)

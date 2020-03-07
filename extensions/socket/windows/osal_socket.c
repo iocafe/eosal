@@ -1382,33 +1382,43 @@ static osalStatus osal_socket_write2(
 {
 	os_int rval, werr;
 	SOCKET handle;
-    osalStatus status;
+    osalStatus status = OSAL_SUCCESS;
 
-    /* get operating system's socket handle.
-		*/
+    /* Ret operating system's socket handle and write to the socket.
+    */
 	handle = mysocket->handle;
-
 	rval = send(handle, buf, (int)n, 0);
 
 	if (rval == SOCKET_ERROR)
 	{
         werr = WSAGetLastError();
 
-        /* WSAEWOULDBLOCK = operation would block.
-            WSAENOTCONN = socket not (yet?) connected.
-            */
-        if (werr != WSAEWOULDBLOCK /* && werr != WSAENOTCONN */)
-		{
-            status = (werr == WSAECONNREFUSED)
-                ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
-	        *n_written = 0;
-            return status;
-		}
+        /* This matches with net_sockets.c
+         */
+        switch (werr)
+        {
+            case WSAEWOULDBLOCK:
+            // case WSAENOTCONN: /* WSAENOTCONN = socket not (yet?) connected. */
+                break;
+
+            case WSAECONNREFUSED:
+                status = OSAL_STATUS_CONNECTION_REFUSED;
+                break;
+
+            case WSAECONNRESET:
+                status = OSAL_STATUS_CONNECTION_RESET;
+                break;
+
+            default:
+                status = OSAL_STATUS_FAILED;
+                break;
+        }
+
 		rval = 0;
 	}
 
 	*n_written = rval;
-	return OSAL_SUCCESS;
+    return status;
 }
 
 
@@ -1609,15 +1619,27 @@ osalStatus osal_socket_read(
 		{
             werr = WSAGetLastError();
 
-            /* WSAEWOULDBLOCK = operation would block.
-               WSAENOTCONN = socket not (yet?) connected. Important at least with TCP_NODELAY.
+            /* This matches with net_sockets.c
              */
-            if (werr != WSAEWOULDBLOCK && werr != WSAENOTCONN)
-			{
-                status = (werr == WSAECONNREFUSED)
-                    ? OSAL_STATUS_CONNECTION_REFUSED : OSAL_STATUS_FAILED;
-				goto getout;
-			}
+            switch (werr)
+            {
+                case WSAEWOULDBLOCK:
+                case WSAENOTCONN: /* WSAENOTCONN = socket not (yet?) connected. */
+                    break;
+
+                case WSAECONNREFUSED:
+                    status = OSAL_STATUS_CONNECTION_REFUSED;
+                    goto getout;
+
+                case WSAECONNRESET:
+                    status = OSAL_STATUS_CONNECTION_RESET;
+                    goto getout;
+
+                default:
+                    status = OSAL_STATUS_FAILED;
+                    goto getout;
+            }
+
 			rval = 0;
 		}
 
@@ -1869,13 +1891,24 @@ osalStatus osal_socket_send_packet(
             if (nbytes < 0) 
             {
                 werr = WSAGetLastError();
-                if (werr != WSAEWOULDBLOCK) {
-                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
-                    s = OSAL_STATUS_SEND_MULTICAST_FAILED;
-                }
-                else
+                switch (werr)
                 {
-                    s = OSAL_PENDING;
+                    case WSAEWOULDBLOCK:
+                    case WSAENOTCONN: /* WSAENOTCONN = socket not (yet?) connected. */
+                        if (!s) s = OSAL_PENDING;
+                        break;
+
+                    case WSAECONNREFUSED:
+                        s = OSAL_STATUS_CONNECTION_REFUSED;
+                        break;
+
+                    case WSAECONNRESET:
+                        s = OSAL_STATUS_CONNECTION_RESET;
+                        break;
+
+                    default:
+                        s = OSAL_STATUS_SEND_MULTICAST_FAILED;
+                        break;
                 }
             }
         }
@@ -1916,16 +1949,32 @@ osalStatus osal_socket_send_packet(
             if (nbytes < 0) 
             {
                 werr = WSAGetLastError();
-                if (werr != WSAEWOULDBLOCK) {
-                    osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
-                    s = OSAL_STATUS_SEND_MULTICAST_FAILED;
-                }
-                else
+                switch (werr)
                 {
-                    s = OSAL_PENDING;
+                    case WSAEWOULDBLOCK:
+                    case WSAENOTCONN: /* WSAENOTCONN = socket not (yet?) connected. */
+                        if (!s) s = OSAL_PENDING;
+                        break;
+
+                    case WSAECONNREFUSED:
+                        s = OSAL_STATUS_CONNECTION_REFUSED;
+                        break;
+
+                    case WSAECONNRESET:
+                        s = OSAL_STATUS_CONNECTION_RESET;
+                        break;
+
+                    default:
+                        s = OSAL_STATUS_SEND_MULTICAST_FAILED;
+                        break;
                 }
             }
         }
+    }
+
+    if (s)
+    {
+        osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
     }
 
     return s;
@@ -2000,12 +2049,26 @@ osalStatus osal_socket_receive_packet(
     if (nbytes < 0)
     {
         werr = WSAGetLastError();
-        if (werr == WSAEWOULDBLOCK) {
-            return OSAL_PENDING;
+        switch (werr)
+        {
+            case WSAEWOULDBLOCK:
+            case WSAENOTCONN: /* WSAENOTCONN = socket not (yet?) connected. */
+                status = OSAL_PENDING;
+                break;
+
+            case WSAECONNREFUSED:
+                status = OSAL_STATUS_CONNECTION_REFUSED;
+                break;
+
+            case WSAECONNRESET:
+                status = OSAL_STATUS_CONNECTION_RESET;
+                break;
+
+            default:
+                status = OSAL_STATUS_RECEIVE_MULTICAST_FAILED;
+                break;
         }
-        else {
-            return OSAL_STATUS_FAILED;
-        }
+        return status;
     }
 
     if (remote_addr)
