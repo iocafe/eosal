@@ -971,15 +971,18 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
         ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, block_sz, NULL, 0);
     }
 
-    rval = osal_report_load_error(
-        OSAL_STATUS_PARSING_CERT_OR_KEY_FAILED, block_nr, file_name);
-
     if (s == OSAL_MEMORY_ALLOCATED)
     {
         os_free(block, block_sz);
     }
 
-    return rval;
+    if (ret)
+    {
+        return osal_report_load_error(
+            OSAL_STATUS_PARSING_CERT_OR_KEY_FAILED, block_nr, file_name);
+    }
+
+    return OSAL_SUCCESS;
 }
 
 /**
