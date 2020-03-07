@@ -1104,11 +1104,7 @@ static int osal_net_recv(
     switch (s)
     {
         case OSAL_SUCCESS:
-            if (n_read == 0)
-            {
-                osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
-                return MBEDTLS_ERR_SSL_WANT_READ;
-            }
+            if (n_read == 0)  return MBEDTLS_ERR_SSL_WANT_READ;
             return (int)n_read;
 
         case OSAL_STATUS_CONNECTION_RESET:
@@ -1145,6 +1141,9 @@ static int osal_net_send(
 {
     os_memsz n_written;
     osalStatus s;
+#if OSAL_DEBUG
+    static os_boolean warning_issued = OS_FALSE;
+#endif
 
     if (ctx == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
@@ -1154,15 +1153,27 @@ static int osal_net_send(
         case OSAL_SUCCESS:
             if (n_written == 0)
             {
+#if OSAL_DEBUG
                 osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
+                warning_issued = OS_TRUE;
+#endif
                 return MBEDTLS_ERR_SSL_WANT_WRITE;
             }
+#if OSAL_DEBUG
+            warning_issued = OS_FALSE;
+#endif
             return (int)n_written;
 
         case OSAL_STATUS_CONNECTION_RESET:
+#if OSAL_DEBUG
+            warning_issued = OS_FALSE;
+#endif
             return MBEDTLS_ERR_NET_CONN_RESET;
 
         default:
+#if OSAL_DEBUG
+            warning_issued = OS_FALSE;
+#endif
             return MBEDTLS_ERR_NET_SEND_FAILED;
     }
 }
