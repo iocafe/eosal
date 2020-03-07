@@ -288,7 +288,8 @@ static osalStream osal_mbedtls_open(
          */
         mbedtls_ssl_conf_authmode(&so->conf,
             osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
-            ? MBEDTLS_SSL_VERIFY_OPTIONAL : MBEDTLS_SSL_VERIFY_REQUIRED);
+            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_OPTIONAL);
+//            ? MBEDTLS_SSL_VERIFY_OPTIONAL : MBEDTLS_SSL_VERIFY_REQUIRED);
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
         mbedtls_ssl_conf_dbg(&so->conf, osal_mbedtls_debug, stdout);
