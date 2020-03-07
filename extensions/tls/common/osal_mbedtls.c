@@ -28,6 +28,8 @@
 #include MBEDTLS_CONFIG_FILE
 #endif
 
+#include "mbedtls/net_sockets.h"
+
 #if defined(MBEDTLS_PLATFORM_C)
 #include "mbedtls/platform.h"
 #else
@@ -1139,7 +1141,18 @@ static int osal_net_recv(
     if (s) return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
     if (n_read == 0) return MBEDTLS_ERR_SSL_WANT_READ;
 
-    return (int)n_read;
+    switch (s)
+    {
+        case OSAL_SUCCESS:
+            if (n_read == 0) return MBEDTLS_ERR_SSL_WANT_READ;
+            return (int)n_read;
+
+        case OSAL_STATUS_CONNECTION_RESET:
+            return MBEDTLS_ERR_NET_CONN_RESET;
+
+        default:
+            return MBEDTLS_ERR_NET_RECV_FAILED;
+    }
 }
 
 
@@ -1172,10 +1185,18 @@ static int osal_net_send(
     if (ctx == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
     s = osal_stream_write((osalStream)ctx, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
-    if (s) return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
-    if (n_written == 0) return MBEDTLS_ERR_SSL_WANT_WRITE;
+    switch (s)
+    {
+        case OSAL_SUCCESS:
+            if (n_written == 0) return MBEDTLS_ERR_SSL_WANT_WRITE;
+            return (int)n_written;
 
-    return (int)n_written;
+        case OSAL_STATUS_CONNECTION_RESET:
+            return MBEDTLS_ERR_NET_CONN_RESET;
+
+        default:
+            return MBEDTLS_ERR_NET_SEND_FAILED;
+    }
 }
 
 
