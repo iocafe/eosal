@@ -1154,8 +1154,11 @@ static int osal_net_send(
             if (n_written == 0)
             {
 #if OSAL_DEBUG
-                osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
-                warning_issued = OS_TRUE;
+                if (!warning_issued)
+                {
+                    osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
+                    warning_issued = OS_TRUE;
+                }
 #endif
                 return MBEDTLS_ERR_SSL_WANT_WRITE;
             }
