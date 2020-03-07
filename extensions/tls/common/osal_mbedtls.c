@@ -922,7 +922,7 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     const os_char *file_name)
 {
     osPersistentBlockNr block_nr;
-    osalStatus s, rval;
+    osalStatus s;
     os_char *block;
     os_memsz block_sz;
     int ret;
@@ -961,7 +961,6 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
         return osal_report_load_error(OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE, block_nr, file_name);
     }
 
-    rval = OSAL_SUCCESS;
     if (cert)
     {
         ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)block, block_sz);
