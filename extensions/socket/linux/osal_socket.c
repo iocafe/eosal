@@ -1874,18 +1874,20 @@ static os_int osal_socket_list_network_interfaces(
     struct sockaddr_in6 *sa_in6;
     int iface_ix;
     os_int n_interfaces;
-    char buf[OSAL_IPADDR_SZ];
+    char buf[OSAL_IPADDR_SZ], prev_ifa_name[64];
 
     getifaddrs(&addrs);
     a = addrs;
     n_interfaces = 0;
+    prev_ifa_name[0] = '\0';
 
     while (a)
     {
         if (a->ifa_addr &&
             a->ifa_addr->sa_family == family &&
             (a->ifa_flags & IFF_MULTICAST) &&
-            (a->ifa_flags & IFF_UP))
+            (a->ifa_flags & IFF_UP) &&
+            os_strcmp(a->ifa_name, prev_ifa_name)) /* Use only adapter's first address */
         {
             if (a->ifa_addr->sa_family == AF_INET)
             {
@@ -1919,6 +1921,7 @@ static os_int osal_socket_list_network_interfaces(
                 osal_stream_print_str(interface_list, buf, 0);
             }
         }
+        os_strncpy(prev_ifa_name, a->ifa_name, sizeof(prev_ifa_name));
         a = a->ifa_next;
     }
 
