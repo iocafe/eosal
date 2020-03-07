@@ -36,7 +36,7 @@
 
 /** Do we include code to automatically select one from known access points. Define 1 or 0.
  */
-#define OSAL_SUPPORT_WIFI_MULTI 1
+#define OSAL_SUPPORT_WIFI_MULTI 0
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -52,7 +52,9 @@ WiFiMulti wifiMulti;
 
 /* Global network adapter and wifi info
  */
+extern "C" {
 #include "extensions/net/common/osal_shared_net_info.h"
+}
 static osalSocketGlobal sg;
 
 /** Which NIC index we use for WiFi, for now we always assume that the first NIC is WiFi.
@@ -181,6 +183,8 @@ void osal_socket_initialize(
     /* If socket library is already initialized, do nothing.
      */
     if (osal_global->socket_global) return;
+    os_memclear(&sg, sizeof(sg));
+    os_memclear(&ans, sizeof(ans));
 
     /** Copy NIC serrings.
      */
@@ -345,6 +349,7 @@ osalStatus osal_are_sockets_initialized(
             break;
 
         case OSAL_WIFI_INIT_STEP3:
+
 #if OSAL_SUPPORT_WIFI_MULTI
             if (!ans.wifi_multi_on)
             {
