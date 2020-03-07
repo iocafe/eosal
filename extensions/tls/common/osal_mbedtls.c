@@ -1208,7 +1208,6 @@ static osalStatus osal_mbedtls_handshake(
     while (1)
     {
         ret = mbedtls_ssl_handshake(&so->ssl);
-        osal_stream_flush(so->tcpsocket, 0);
         if (ret == 0) break;
 
         if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
@@ -1219,7 +1218,14 @@ static osalStatus osal_mbedtls_handshake(
             return OSAL_STATUS_CONNECTION_REFUSED;
         }
 
+        if (ret == MBEDTLS_ERR_SSL_WANT_WRITE)
+        {
+            osal_stream_flush(so->tcpsocket, 0);
+        }
+        os_timeslice();
+
         if (++count >= 2) return OSAL_PENDING;
+return OSAL_PENDING;
     }
     so->peer_connected = OS_TRUE;
 
