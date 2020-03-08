@@ -334,7 +334,7 @@ void os_sleep(
 {
 #if OSAL_MULTITHREAD_SUPPORT
     time_ms /= portTICK_PERIOD_MS;
-    if (time_ms < 5) time_ms = 5;
+    if (time_ms < 1) time_ms = 1;
     vTaskDelay((TickType_t)time_ms);
 #else
     delay(time_ms);
@@ -390,7 +390,7 @@ void os_microsleep(
 void os_timeslice(void)
 {
 #if OSAL_MULTITHREAD_SUPPORT
-    vTaskDelay(5); /* 0 or vYieldTask will give no time to lower priottity */
+    vTaskDelay(1); /* 0 or vYieldTask will give no time to lower priottity */
 #endif
 }
 #endif
