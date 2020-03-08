@@ -160,3 +160,58 @@ os_boolean os_elapsed2(
 	 */
 	return (os_boolean)(osal_int64_compare(now_t, &end_t) >= 0);
 }
+
+
+/**
+****************************************************************************************************
+
+  @brief If it time for a periodic event?
+  @anchor os_elapsed2
+
+  The os_timer_hit() function returns OS_TRUE if it is time to do a periodic event. The function
+  keeps events times to be divisible by period (from initialization of memorized_t). If this
+  function is called that rarely that skew is one or more whole periods, events what happended
+  on that time will be skipped.
+
+  @param   memorized_t Memorized timer value to keep track of events, can be zero initially.
+  @param   now_t Current system timer value as set to t by the os_get_timer() function.
+  @param   period_ms Period how often to get "hits" in milliseconds.
+  @return  OS_TRUE (1) if "hit", or OS_FALSE (0) if not.
+
+****************************************************************************************************
+*/
+os_boolean os_timer_hit(
+    os_timer *memorized_t,
+    os_timer *now_t,
+    os_int period_ms)
+{
+    os_int64 diff, p, p2;
+
+    if (period_ms <= 0) return OS_TRUE;
+
+    osal_int64_set_long(&p, period_ms);
+    osal_int64_multiply(&p, &osal_int64_1000);
+    osal_int64_copy(&diff, now_t);
+    osal_int64_subtract(&diff, memorized_t);
+
+    /* If not enough time has elapsed.
+     */
+    if (osal_int64_compare(&diff, &p) < 0) return OS_FALSE;
+
+    /* If we have a skew more than a period, skip hit times.
+     */
+    osal_int64_copy(&p2, &p);
+    osal_int64_add(&p2, &p);
+    if (osal_int64_compare(&diff, &p2) >= 0)
+    {
+        osal_int64_divide(&diff, &p);
+        osal_int64_multiply(&diff, &p);
+        osal_int64_add(memorized_t, &diff);
+    }
+    else
+    {
+        osal_int64_add(memorized_t, &p);
+    }
+
+    return OS_TRUE;
+}

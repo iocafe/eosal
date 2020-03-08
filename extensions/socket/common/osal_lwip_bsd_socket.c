@@ -1216,8 +1216,6 @@ static osalStatus osal_socket_write2(
     handle = mysocket->handle;
     rval = send(handle, buf, (int)n, 0);
 
-    tcp_snd_buf
-
     if (rval < 0)
     {
         /* This matches with net_sockets.c

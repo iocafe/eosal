@@ -147,8 +147,8 @@ os_boolean os_timer_hit(
 
     if (period_ms <= 0) return OS_TRUE;
     u = (os_uint)*now_t;
-    m = (os_uint)memorized_t;
-    diff = u - c;
+    m = (os_uint)*memorized_t;
+    diff = u - m;
 
     /* Important, do signed compare: without this iocom, etc. may fail.
      */
