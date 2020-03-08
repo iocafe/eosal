@@ -45,7 +45,8 @@ osalStatus osal_main(
     // return osal_json_compress_test(argc, argv);
     // return osal_rand_test(argc, argv);
     // return osal_float_int_conv_test(argc, argv);
-    return osal_password_test(argc, argv);
+    // return osal_password_test(argc, argv);
+    return osal_persistent_test(argc, argv);
 }
 
 

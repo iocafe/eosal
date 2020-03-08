@@ -13,8 +13,6 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_EXAMPLE_COLLECTION_INCLUDED
-#define OSAL_EXAMPLE_COLLECTION_INCLUDED
 #include "eosalx.h"
 
 osalStatus osal_int64_test(
@@ -49,4 +47,7 @@ osalStatus osal_password_test(
     os_int argc,
     os_char *argv[]);
 
-#endif
+osalStatus osal_persistent_test(
+    os_int argc,
+    os_char *argv[]);
+
