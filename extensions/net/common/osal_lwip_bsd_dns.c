@@ -32,6 +32,9 @@
 
   If name is empty string: If listening, listen all IP addressess. If connecting, use local host.
 
+  Notes:
+  - FOR NOW ADDRESS FAMILY HINT stored in is_ipv6 before calling this function is IS IGNORED.
+
   @param   name Computer name or IP address string.
   @param   addr Pointer where to store the binary IP address. IP address is stored in
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
@@ -70,10 +73,6 @@ osalStatus osal_gethostbyname(
     os_memclear(addr, addr_sz);
     s = OSAL_STATUS_FAILED;
 
-osal_debug_error_str("HERE GEtH  ", name);
-
-// FOR NOW ADDRESS FAMILY HINT IS IGNORED, CHECK THIS
-
     /* Nowdays we enforce allocating enough memory also for IPv6.
      */
     if (addr_sz < 16)
@@ -97,8 +96,6 @@ osal_debug_error_str("HERE GEtH  ", name);
             name = *is_ipv6 ? "::1" : "127.0.0.1";
         }
     }
-
-// *is_ipv6 DEFAULT ???????????????????????
 
     buf = smallbuf;
     buf_sz = sizeof(smallbuf);
