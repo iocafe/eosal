@@ -53,4 +53,12 @@ os_boolean os_elapsed2(
     os_timer *now_t,
     os_int period_ms);
 
+/* If it time for a periodic event?
+ */
+os_boolean os_timer_hit(
+    os_timer *memorized_t,
+    os_timer *now_t,
+    os_int period_ms);
+
+
 /*@}*/
