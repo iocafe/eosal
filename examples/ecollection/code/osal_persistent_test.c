@@ -79,6 +79,13 @@ osalStatus osal_persistent_test(
 {
     int s = 0;
     os_int i;
+
+    /* Initialize persistent storage
+     */
+    os_persistent_initialze(OS_NULL);
+
+    /* Save and load block in micellenous order to test it
+     */
     for (i = 0; i<10; ++i)
     {
         s |= save_x(OS_PBNR_CUST_A, i);
@@ -120,7 +127,7 @@ static osalStatus save_x(
 
     s = ioc_save_persistent(block_nr, (os_char*)&x, sizeof(x), OS_FALSE);
     if (s) {
-        osal_console_write("Writing persistent block failed\n");
+        osal_console_write("Writing X to persistent block failed\n");
     }
     return s;
 }
@@ -137,12 +144,16 @@ static osalStatus load_x(
 {
     ContentX x;
     osalStatus s;
+    os_char nbuf[OSAL_NBUF_SZ];
 
     os_memclear(&x, sizeof(x));
 
     s = ioc_load_persistent(block_nr, (os_char*)&x, sizeof(x));
     if (s) {
-        osal_console_write("Loading persistent block failed");
+        osal_console_write("Loading X from persistent block ");
+        osal_int_to_str(nbuf, sizeof (nbuf), block_nr);
+        osal_console_write(nbuf);
+        osal_console_write(" failed. ");
     }
 
     if (i != x.i && !OSAL_IS_ERROR(s)) {
@@ -175,7 +186,7 @@ static osalStatus save_y(
 
     s = ioc_save_persistent(block_nr, (os_char*)&y, sizeof(y), OS_FALSE);
     if (s) {
-        osal_console_write("Writing persistent block failed\n");
+        osal_console_write("Writing Y to persistent block failed\n");
     }
     return s;
 }
@@ -192,13 +203,17 @@ static osalStatus load_y(
 {
     ContentY y;
     osalStatus s;
+    os_char nbuf[OSAL_NBUF_SZ];
 
     os_memclear(&y, sizeof(y));
 
 
     s = ioc_load_persistent(block_nr, (os_char*)&y, sizeof(y));
     if (s) {
-        osal_console_write("Loading persistent block failed");
+        osal_console_write("Loading Y from persistent block ");
+        osal_int_to_str(nbuf, sizeof (nbuf), block_nr);
+        osal_console_write(nbuf);
+        osal_console_write(" failed. ");
     }
 
     if (i != y.i && !OSAL_IS_ERROR(s)) {

@@ -56,9 +56,9 @@ void osal_init_os_specific(
 #ifdef ESP_PLATFORM
     /* No watchdog timers.
      */
+    disableLoopWDT();
     disableCore0WDT();
     disableCore1WDT();
-    disableLoopWDT();
 #endif
 }
 

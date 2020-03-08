@@ -49,7 +49,7 @@ myEEPROMHeader;
  */
 #define MY_HEADER_INITIALIZED 0xB3
 
-#define MY_EEPROM_MIN_SIZE 1024
+#define MY_EEPROM_MIN_SIZE 2048
 
 static myEEPROMHeader hdr;
 static os_ushort eeprom_sz;
@@ -245,6 +245,11 @@ osPersistentHandle *os_persistent_open(
     }
 #endif
 
+    if (!os_persistent_lib_initialized)
+    {
+        os_persistent_initialze(OS_NULL);
+    }
+
     block = hdr.blk + block_nr;
     block->flags = flags;
 
@@ -254,14 +259,22 @@ osPersistentHandle *os_persistent_open(
         for (i = 0; i< OS_N_PBNR; i++)
         {
             pos = hdr.blk[i].pos + hdr.blk[i].sz;
-            if (pos > first_free) first_free = pos;
+            if (pos > first_free) {
+                first_free = pos;
+            }
         }
 
         /* If this is not the last block, delete it.
          */
         if (block->sz && block->pos + block->sz == first_free)
         {
-            os_persistent_delete_block(block_nr);
+            if (os_persistent_delete_block(block_nr))
+            {
+                os_memclear(&hdr, sizeof(hdr));
+                hdr.touched = OS_TRUE;
+                os_persistent_commit();
+                first_free = (os_ushort)sizeof(hdr);
+            }
         }
         block->pos = first_free;
         block->sz = 0;
@@ -271,7 +284,7 @@ osPersistentHandle *os_persistent_open(
     {
         if (block_sz) *block_sz = block->sz;
         if (block->sz == 0) return OS_NULL;
-        block->read_ix = block->pos;
+        block->read_ix = 0;
 
         /* Verify checksum
          */
@@ -350,9 +363,9 @@ os_memsz os_persistent_read(
     myEEPROMBlock *block;
     block = (myEEPROMBlock*)handle;
 
-    if (block)
+    if (block) if (block->read_ix < block->sz)
     {
-        n = block->sz = block->read_ix;
+        n = block->sz - block->read_ix;
         if ((os_ushort)buf_sz < n) n = (os_ushort)buf_sz;
 
         os_persistent_read_internal(buf, block->pos + block->read_ix, n);
@@ -500,8 +513,8 @@ static osalStatus os_persistent_delete_block(
      */
     for (i = 0; i < n; i++)
     {
-        os_persistent_move(bpos[i] - saved_pos, bpos[i], bsz[i]);
-        hdr.blk[bnr[i]].pos -= saved_pos;
+        os_persistent_move(bpos[i] - saved_sz, bpos[i], bsz[i]);
+        hdr.blk[bnr[i]].pos -= saved_sz;
     }
 
     /* Clear data on deleted block and mark header touched.
