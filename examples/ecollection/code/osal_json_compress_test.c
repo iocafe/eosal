@@ -14,7 +14,7 @@
 ****************************************************************************************************
 */
 #include "osal_example_collection_main.h"
-
+#if OSAL_JSON_TEXT_SUPPORT
 
 const char example_json_path[] = "/coderoot/eosal/examples/ecollection/test_files/example.json";
 
@@ -95,3 +95,5 @@ getout:
     os_free(json_text, json_text_sz);
     return s;
 }
+
+#endif
