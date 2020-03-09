@@ -290,8 +290,8 @@ static osalStream osal_mbedtls_open(
          */
         mbedtls_ssl_conf_authmode(&so->conf,
             osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
-            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_OPTIONAL);
-//            ? MBEDTLS_SSL_VERIFY_OPTIONAL : MBEDTLS_SSL_VERIFY_REQUIRED);
+            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_REQUIRED);
+//            ? MBEDTLS_SSL_VERIFY_OPTIONAL : MBEDTLS_SSL_VERIFY_REQUIRED, MBEDTLS_SSL_VERIFY_OPTIONAL;
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
         mbedtls_ssl_conf_dbg(&so->conf, osal_mbedtls_debug, stdout);
@@ -1234,7 +1234,8 @@ static osalStatus osal_mbedtls_handshake(
 
     /* If client, verify the server certificate.
      */
-    if ((so->open_flags & OSAL_STREAM_LISTEN) == 0)
+    if ((so->open_flags & OSAL_STREAM_LISTEN) == 0 &&
+        !osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0))
     {
         xflags = mbedtls_ssl_get_verify_result(&so->ssl);
         if (xflags)
@@ -1243,11 +1244,8 @@ static osalStatus osal_mbedtls_handshake(
 
             mbedtls_x509_crt_verify_info(info_text, sizeof(info_text), "  ! ", xflags);
             osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SERVER_CERT_REJECTED, info_text);
-            if (!osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0))
-            {
-                so->handshake_failed = OS_TRUE;
-                return OSAL_STATUS_SERVER_CERT_REJECTED;
-            }
+            so->handshake_failed = OS_TRUE;
+            return OSAL_STATUS_SERVER_CERT_REJECTED;
         }
     }
 
