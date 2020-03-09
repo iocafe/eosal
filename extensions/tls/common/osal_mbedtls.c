@@ -984,6 +984,7 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     return OSAL_SUCCESS;
 }
 
+
 /**
 ****************************************************************************************************
 

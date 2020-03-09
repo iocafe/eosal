@@ -255,8 +255,9 @@ osPersistentHandle *os_persistent_open(
     if (flags & OSAL_PERSISTENT_WRITE)
     {
         first_free = (os_ushort)sizeof(hdr);
-        for (i = 0; i< OS_N_PBNR; i++)
+        for (i = 0; i < OS_N_PBNR; i++)
         {
+            if (hdr.blk[i].sz == 0 || i == block_nr) continue;
             pos = hdr.blk[i].pos + hdr.blk[i].sz;
             if (pos > first_free) {
                 first_free = pos;
@@ -265,7 +266,7 @@ osPersistentHandle *os_persistent_open(
 
         /* If this is not the last block, delete it.
          */
-        if (block->sz && block->pos + block->sz == first_free)
+        if (first_free < block->pos && block->sz)
         {
             if (os_persistent_delete_block(block_nr))
             {
@@ -273,6 +274,10 @@ osPersistentHandle *os_persistent_open(
                 hdr.touched = OS_TRUE;
                 os_persistent_commit();
                 first_free = (os_ushort)sizeof(hdr);
+            }
+            else
+            {
+                first_free -= block->sz;
             }
         }
         block->pos = first_free;
