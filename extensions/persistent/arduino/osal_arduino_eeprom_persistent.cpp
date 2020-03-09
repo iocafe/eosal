@@ -49,7 +49,7 @@ myEEPROMHeader;
  */
 #define MY_HEADER_INITIALIZED 0xB3
 
-#define MY_EEPROM_MIN_SIZE 2048
+#define MY_EEPROM_MIN_SIZE 4096
 
 static myEEPROMHeader hdr;
 static os_ushort eeprom_sz;
@@ -278,6 +278,7 @@ osPersistentHandle *os_persistent_open(
         block->pos = first_free;
         block->sz = 0;
         block->checksum = OSAL_CHECKSUM_INIT;
+        hdr.touched = OS_TRUE;
     }
     else
     {
