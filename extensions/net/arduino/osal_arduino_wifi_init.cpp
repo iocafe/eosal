@@ -425,7 +425,7 @@ osalStatus osal_are_sockets_initialized(
              */
             else
             {
-                ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;
+//                ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;   PEKKA TEST NOT TO REINITIALIZE
                 osal_trace("Wifi network disconnected");
                 s = OSAL_STATUS_FAILED;
             }
