@@ -1,3 +1,4 @@
+#if 0
 /* OTA example
    This example code is in the Public Domain (or CC0 licensed, at your option.)
    Unless required by applicable law or agreed to in writing, this
@@ -331,3 +332,5 @@ void app_main(void)
 
     xTaskCreate(&ota_example_task, "ota_example_task", 8192, NULL, 5, NULL);
 }
+
+#endif
