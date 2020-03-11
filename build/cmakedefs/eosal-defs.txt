@@ -36,6 +36,25 @@ else()
     set(ENV{E_OS} "linux")
   endif()
 
+  # Check for Android build
+  if (NOT DEFINED ENV{E_OSVER})
+     if (DEFINED ANDROID_ABI)
+       set(ENV{E_OSVER} "android")
+       if (ANDROID_ABI MATCHES "armeabi-v7a")
+         set(ENV{E_OSVER} "android_v7a")
+       endif()
+       if (ANDROID_ABI MATCHES "x86")
+         set(ENV{E_OSVER} "android_x86")
+       endif()
+       if (ANDROID_ABI MATCHES "x86_64")
+         set(ENV{E_OSVER} "android_x86_64")
+       endif()
+       if (ANDROID_ABI MATCHES "armeabi-v7a")
+         set(ENV{E_OSVER} "android_v7a")
+       endif()
+     endif()
+  endif()
+
   # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
   # Used as name for banary folders and as part of installation package name. 
   if (NOT DEFINED ENV{E_OSVER})

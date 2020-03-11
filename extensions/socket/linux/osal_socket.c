@@ -40,6 +40,15 @@
  */
 #include <sys/select.h>
 
+#ifdef __ANDROID__
+  #if __ANDROID_API__ < 24
+    #define OSAL_IFADDRS_SUPPORTED 0
+  #endif
+#endif
+#ifndef OSAL_IFADDRS_SUPPORTED
+  #define OSAL_IFADDRS_SUPPORTED 1
+#endif
+
 #include "extensions/net/common/osal_shared_net_info.h"
 
 /* The buffer stores 32 bit IPv4 addresses or 32 bit indexes (os_int) for IPv6.
@@ -1951,6 +1960,7 @@ static os_int osal_socket_list_network_interfaces(
     os_uint family,
     os_boolean get_interface_index)
 {
+#if OSAL_IFADDRS_SUPPORTED
     struct ifaddrs *addrs, *a;
     struct sockaddr_in *sa_in;
     struct sockaddr_in6 *sa_in6;
@@ -2009,6 +2019,9 @@ static os_int osal_socket_list_network_interfaces(
 
     freeifaddrs(addrs);
     return n_interfaces;
+#else
+    return 0;
+#endif
 }
 
 
