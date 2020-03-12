@@ -1,5 +1,5 @@
 # eosal/examples/simple_server/build/cmake/CmakeLists.txt - Cmake build for simple communication server example.
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "simple_server")

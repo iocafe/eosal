@@ -1,0 +1,1 @@
+cmake -DCMAKE_TOOLCHAIN_FILE=/home/john/Android/Sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake -DANDROID_NDK=/home/john/Android/Sdk/ndk/21.0.6113669 -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI="armeabi-v7a" -DANDROID_PLATFORM=21 $1 && cmake --build .

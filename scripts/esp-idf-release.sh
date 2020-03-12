@@ -1,0 +1,1 @@
+cmake -DCMAKE_TOOLCHAIN_FILE=$IDF_PATH/tools/cmake/toolchain-esp32.cmake -DTARGET=esp32 -GNinja -DCMAKE_BUILD_TYPE=Release $1 && cmake --build .

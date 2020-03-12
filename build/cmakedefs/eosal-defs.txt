@@ -1,6 +1,30 @@
 # eosal-defs.txt - Set cmake build environment variables common to all projects.
 # 8.1.2020/pekka
 
+# ESP32 esp-idf build
+set(SUPPORTED_TARGETS esp32)
+if("${TARGET}" STREQUAL "esp32")
+    # Include for ESP-IDF build system functions
+    include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
+
+    # Create idf::esp32 and idf::freertos static libraries
+    idf_build_process(esp32
+                    # try and trim the build; additional components
+                    # will be included as needed based on dependency tree
+                    #
+                    # although esptool_py does not generate static library,
+                    # processing the component is needed for flashing related
+                    # targets and file generation
+                    COMPONENTS esp32 freertos esptool_py
+                    SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
+                    BUILD_DIR ${CMAKE_BINARY_DIR})
+# else()
+    # Create stubs for esp32 and freertos, stub::esp32 and stub::freertos
+#    add_subdirectory(stubs/esp32)
+#    add_subdirectory(stubs/freertos)
+#    add_subdirectory(stubs/spi_flash)
+endif()
+
 # Windows 
 if(WIN32)
   # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.

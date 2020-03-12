@@ -1,5 +1,5 @@
 # eosal/CmakeLists.txt - Cmake build for eosal library.
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "eosal")
