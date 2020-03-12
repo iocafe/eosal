@@ -1,14 +1,14 @@
 /**
 
-  @file    defs/linux/osal_types.h
-  @brief   Definition of OS dependent primitive types for Arduino Platform.
+  @file    defs/esp/osal_types.h
+  @brief   Definition of OS dependent primitive types for esp-idf.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    12.8.2020
+  @date    12.3.2020
 
   This file defines operating system independent names for data types. 
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept 
   it fully.
@@ -50,13 +50,13 @@ typedef unsigned short os_ushort;
 /** 32 bit signed integer. The os_int is ususally same as int, if platform's int is 32 bit.
     If platforms integer is only 16 bit, this is defined as long.
  */
-typedef int os_int;
+typedef long os_int;
 
 /** 32 bit unsigned integer. The os_uint is ususally same as unsigned int, if platform's 
     integers are 32 bit. If platforms integer is only 16 bit, this is defined as unsigned 
 	long.
  */
-typedef unsigned int os_uint;
+typedef unsigned long os_uint;
 
 /** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then 32 bit integer.
     For Microsoft compilers this is "__int64" and for GNU compilers "long long". The
@@ -80,7 +80,7 @@ typedef unsigned long os_ulong;
 /** Memory size type. Define os_int 32 if maximum process memory space is <= 2GB, or
     os_long if more.
  */
-typedef os_long os_memsz;
+typedef os_int os_memsz;
 
 /** Single precision floating point number. In most cases this is same as float, 
     typically 4 bytes.
@@ -112,4 +112,3 @@ typedef void *os_pointer;
 #define OS_FLOAT_MAX 3.402823e+38
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
 /*@}*/
-

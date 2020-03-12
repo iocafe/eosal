@@ -1,13 +1,13 @@
 /**
 
-  @file    defs/arduino/osal_defs.h
-  @brief   Operating system specific defines for Arduino Platform.
+  @file    defs/esp/osal_defs.h
+  @brief   Operating system specific defines for esp-idf.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    12.3.2020
 
-  This file contains platform specific defines for building with Arduino compatible libraries
-  like ESP32/Arduino, TeensyDuino and STMduino. The defaults can be overridden by compiler settings.
+  This file contains platform specific defines for building with ESP32 chip using exp-idf
+  framework. The defaults here can be overridden by compiler settings.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -19,9 +19,9 @@
 
 /** Operating system identifier define. There is define for each supported operating system,
     for example OEAL_WINDOWS, OSAL_LINUX, OSAL_ARDUINO, OSAL_METAL... Compilation can be conditioned
-    by the define, for example "#ifdef OSAL_ARDUINO".
+    by the define, for example "#ifdef OSAL_ESP_IDF".
  */
-#define OSAL_ARDUINO 1
+#define OSAL_ESP_IDF 1
 
 
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.

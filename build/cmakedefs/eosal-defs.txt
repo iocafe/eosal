@@ -3,30 +3,53 @@
 
 # ESP32 esp-idf build
 set(SUPPORTED_TARGETS esp32)
-if("${TARGET}" STREQUAL "esp32")
-    # Include for ESP-IDF build system functions
-    include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 
-    # Create idf::esp32 and idf::freertos static libraries
-    idf_build_process(esp32
-                    # try and trim the build; additional components
-                    # will be included as needed based on dependency tree
-                    #
-                    # although esptool_py does not generate static library,
-                    # processing the component is needed for flashing related
-                    # targets and file generation
-                    COMPONENTS esp32 freertos esptool_py
-                    SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
-                    BUILD_DIR ${CMAKE_BINARY_DIR})
-# else()
-    # Create stubs for esp32 and freertos, stub::esp32 and stub::freertos
-#    add_subdirectory(stubs/esp32)
-#    add_subdirectory(stubs/freertos)
-#    add_subdirectory(stubs/spi_flash)
-endif()
+if("${TARGET}" STREQUAL "esp32")
+
+  # Include for ESP-IDF build system functions
+  include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
+
+  # Create idf::esp32 and idf::freertos static libraries
+  # Try and trim the build; additional components  will be included as needed based on dependency tree
+  # although esptool_py does not generate static library, processing the component is needed for flashing
+  # related targets and file generation.
+  idf_build_process(esp32
+    COMPONENTS esp32 freertos esptool_py log
+  #  SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig
+    SDKCONFIG /coderoot/eosal/build/esp-idf/menuconfig/sdkconfig
+    BUILD_DIR ${CMAKE_BINARY_DIR})
+
+  # Generic target operating system name like "esp". Used as folder name for OS specific code.
+  if (NOT DEFINED ENV{E_OS})
+    set(ENV{E_OS} "esp")
+  endif()
+
+  # Target operating system version "esp32" is used as name for banary folders and as part of
+  # the installation package name.
+  if (NOT DEFINED ENV{E_OSVER})
+    set(ENV{E_OSVER} "esp32")
+  endif()
+
+  # Compiler name, used as part of library and temporary folder name.
+  # For example "vs2015", "mingw", "gcc", "gccarm9"...
+  if (NOT DEFINED ENV{E_COMPILER})
+    set(ENV{E_COMPILER} "gcc")
+  endif()
+
+  # Root path for build.
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "/coderoot")
+  endif()
+
+  # Set up ESP32 include directories (this is not propably right way to do this)
+  include_directories("/coderoot/eosal/build/esp-idf/menuconfig/build/config")
+  include_directories("$ENV{IDF_PATH}/components/xtensa/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_common/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_rom/include")
+  include_directories("$ENV{IDF_PATH}/components/log/include")
 
 # Windows 
-if(WIN32)
+elseif(WIN32)
   # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.
   if (NOT DEFINED ENV{E_OS})
     set(ENV{E_OS} "windows")

@@ -6,8 +6,8 @@
   @version 1.0
   @date    8.1.2020
 
-  This file contains platform specific defines for windows compilation. The platform specific 
-  defines here are defaults, which can be overwritten by compiler settings.
+  This file contains platform specific defines for Linux compilation. The platform specific
+  defines here are defaults and overridden by compiler settings.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
