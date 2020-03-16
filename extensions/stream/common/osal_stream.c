@@ -252,7 +252,7 @@ osalStatus osal_stream_write(
 				}
 				else
 				{
-					if (os_elapsed2(&start_t, &now_t, write_timeout_ms)) break;
+					if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
 				}
 			}
 
@@ -338,7 +338,7 @@ osalStatus osal_stream_read(
 				}
 				else
 				{
-					if (os_elapsed2(&start_t, &now_t, read_timeout_ms)) break;
+					if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
 				}
 			}
 
@@ -406,7 +406,7 @@ osalStatus osal_stream_write_value(
 
 			if (use_timer) 
 			{
-				if (os_elapsed2(&start_t, &now_t, write_timeout_ms)) break;
+				if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
 			}
 
             os_timeslice();
@@ -462,7 +462,7 @@ osalStatus osal_stream_read_value(
 
 			if (use_timer) 
 			{
-				if (os_elapsed2(&start_t, &now_t, read_timeout_ms)) break;
+				if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
 			}
 
             os_timeslice();

@@ -76,7 +76,7 @@ osalStatus osal_loop(
     osPersistentHandle *h;
     os_memsz block_sz, sz;
 
-    if (os_elapsed(&t, 3000))
+    if (os_has_elapsed(&t, 3000))
     {
         os_memclear(&prm_a, sizeof(prm_a));
         h = os_persistent_open(OS_PBNR_CUST_A, &block_sz, OSAL_PERSISTENT_READ);

@@ -7,7 +7,7 @@
   @date    8.1.2020
 
   The os_get_timer() function gets the system timer as 64 bit integer, this is typically number
-  of microseconds since the computer booted up. The os_elapsed() function checks if the
+  of microseconds since the computer booted up. The os_has_elapsed() function checks if the
   specified time has elapsed.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
@@ -90,9 +90,9 @@ void os_get_timer(
 ****************************************************************************************************
 
   @brief Check if specific time period has elapsed, gets current timer value by os_get_timer().
-  @anchor os_elapsed
+  @anchor os_has_elapsed
 
-  The os_elapsed() function checks if time period given as argument has elapsed since
+  The os_has_elapsed() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
   @param   start_t Pointer to 64 bit integer which contains start timer value as returned by 
@@ -102,7 +102,7 @@ void os_get_timer(
 
 ****************************************************************************************************
 */
-os_boolean os_elapsed(
+os_boolean os_has_elapsed(
     os_timer *start_t,
     os_int period_ms)
 {
@@ -129,9 +129,9 @@ os_boolean os_elapsed(
 ****************************************************************************************************
 
   @brief Check if specific time period has elapsed, current timer value given as argument.
-  @anchor os_elapsed2
+  @anchor os_has_elapsed_since
 
-  The os_elapsed2() function checks if time period given as argument has elapsed since
+  The os_has_elapsed_since() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
   @param   start_t Pointer to 64 bit integer which contains start timer value as returned by 
@@ -142,7 +142,7 @@ os_boolean os_elapsed(
 
 ****************************************************************************************************
 */
-os_boolean os_elapsed2(
+os_boolean os_has_elapsed_since(
     os_timer *start_t,
     os_timer *now_t,
     os_int period_ms)
@@ -166,7 +166,7 @@ os_boolean os_elapsed2(
 ****************************************************************************************************
 
   @brief If it time for a periodic event?
-  @anchor os_elapsed2
+  @anchor os_has_elapsed_since
 
   The os_timer_hit() function returns OS_TRUE if it is time to do a periodic event. The function
   keeps events times to be divisible by period (from initialization of memorized_t). If this

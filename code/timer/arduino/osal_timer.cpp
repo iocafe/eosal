@@ -7,7 +7,7 @@
   @date    8.1.2020
 
   The os_get_timer() function gets the system timer as 64 bit integer, this is typically number
-  of microseconds since the computer booted up. The os_elapsed() function checks if the
+  of microseconds since the computer booted up. The os_has_elapsed() function checks if the
   specified time has elapsed.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
@@ -65,9 +65,9 @@ void os_get_timer(
 ****************************************************************************************************
 
   @brief Check if specific time period has elapsed, gets current timer value by os_get_timer().
-  @anchor os_elapsed
+  @anchor os_has_elapsed
 
-  The os_elapsed() function checks if time period given as argument has elapsed since
+  The os_has_elapsed() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
   @param   start_t Start timer value as set to t by the os_get_timer() function.
@@ -76,7 +76,7 @@ void os_get_timer(
 
 ****************************************************************************************************
 */
-os_boolean os_elapsed(
+os_boolean os_has_elapsed(
     os_timer *start_t,
     os_int period_ms)
 {
@@ -92,9 +92,9 @@ os_boolean os_elapsed(
 ****************************************************************************************************
 
   @brief Check if specific time period has elapsed, current timer value given as argument.
-  @anchor os_elapsed2
+  @anchor os_has_elapsed_since
 
-  The os_elapsed2() function checks if time period given as argument has elapsed since
+  The os_has_elapsed_since() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
   @param   start_t Start timer value as set to t by the os_get_timer() function.
@@ -104,7 +104,7 @@ os_boolean os_elapsed(
 
 ****************************************************************************************************
 */
-os_boolean os_elapsed2(
+os_boolean os_has_elapsed_since(
     os_timer *start_t,
     os_timer *now_t,
     os_int period_ms)
@@ -123,8 +123,33 @@ os_boolean os_elapsed2(
 /**
 ****************************************************************************************************
 
+  @brief Get number of milliseconds elapsed from start_t until now_t.
+  @anchor os_os_get_ms_elapsed
+
+  The os_os_get_ms_elapsed() function...
+
+  @param   start_t Start timer value as set to t by the os_get_timer() function.
+  @param   now_t Current system timer value as set to t by the os_get_timer() function.
+  @return  Number of milliseconds.
+
+****************************************************************************************************
+*/
+os_int os_get_ms_elapsed(
+    os_timer *start_t,
+    os_timer *now_t)
+{
+    os_uint diff;
+
+    diff = (os_uint)*now_t - (os_uint)*start_t;
+    return (os_int)diff;
+}
+
+
+/**
+****************************************************************************************************
+
   @brief If it time for a periodic event?
-  @anchor os_elapsed2
+  @anchor os_has_elapsed_since
 
   The os_timer_hit() function returns OS_TRUE if it is time to do a periodic event. The function
   keeps events times to be divisible by period (from initialization of memorized_t). If this

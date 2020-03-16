@@ -1521,7 +1521,7 @@ os_boolean osal_are_sockets_initialized(
          */
         if (WiFi.status() != WL_CONNECTED)
         {
-            if (os_elapsed(&osal_wifi_init_timer, 2000))
+            if (os_has_elapsed(&osal_wifi_init_timer, 2000))
             {
                 osal_trace2("Waiting for wifi");
                 os_get_timer(&osal_wifi_init_timer);

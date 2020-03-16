@@ -23,7 +23,7 @@
   @name System Timer Functions
 
   The os_get_timer() function gets the system timer as 64 bit integer, this is typically number
-  of microseconds since the computer booted up. The os_elapsed() and os_elapsed2() 
+  of microseconds since the computer booted up. The os_has_elapsed() and os_has_elapsed_since()
   functions check if the specified time interval has elapsed.
 
 ****************************************************************************************************
@@ -42,16 +42,22 @@ void os_get_timer(
 
 /* Check if specific time period (milliseconds) has elapsed, gets current timer value by os_get_timer().
  */
-os_boolean os_elapsed(
+os_boolean os_has_elapsed(
     os_timer *start_t,
     os_int period_ms);
 
 /* Check if specific time period (milliseconds) has elapsed, current timer value given as argument.
  */
-os_boolean os_elapsed2(
+os_boolean os_has_elapsed_since(
     os_timer *start_t,
     os_timer *now_t,
     os_int period_ms);
+
+/* Get number of milliseconds elapsed from start_t until now_t.
+ */
+os_int os_get_ms_elapsed(
+    os_timer *start_t,
+    os_timer *now_t);
 
 /* If it time for a periodic event?
  */

@@ -301,7 +301,7 @@ osalStatus osal_are_sockets_initialized(
             break;
 
         case OSAL_WIFI_INIT_STEP2:
-            if (os_elapsed(&ans.wifi_step_timer, 100))
+            if (os_has_elapsed(&ans.wifi_step_timer, 100))
             {
                 /* Start the WiFi.
                  */
@@ -382,7 +382,7 @@ osalStatus osal_are_sockets_initialized(
 
                 else
                 {
-                    if (os_elapsed(&ans.wifi_step_timer, 10000))
+                    if (os_has_elapsed(&ans.wifi_step_timer, 10000))
                     {
                         ans.wifi_init_failed_now = OS_TRUE;
                         ans.wifi_init_failed_once = OS_TRUE;

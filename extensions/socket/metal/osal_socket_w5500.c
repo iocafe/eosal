@@ -903,7 +903,7 @@ static void osal_initialize_wiz_chip(
     {
         if (osal_w5500_verify_physical_link()) break;
     }
-    while (!os_elapsed(&start_t, 12000));
+    while (!os_has_elapsed(&start_t, 12000));
 
     /* Convert MAC for string to binary. Convert default MAC first (will always succeed),
      * in case MAC set is errornous.

@@ -738,7 +738,7 @@ static void osal_socket_esp_client(
             if (nexthead == tail)
             {
                 w->rx_head = head;
-                if (os_elapsed(&start_t, 10000))
+                if (os_has_elapsed(&start_t, 10000))
                 {
                     osal_quit_worker(c, OSAL_STATUS_TIMEOUT);
                     return;
@@ -1095,7 +1095,7 @@ os_boolean osal_are_sockets_initialized(
          */
         if (WiFi.status() != WL_CONNECTED)
         {
-            if (os_elapsed(&osal_wifi_init_timer, 500))
+            if (os_has_elapsed(&osal_wifi_init_timer, 500))
             {
                 osal_trace2("Waiting for wifi");
                 os_get_timer(&osal_wifi_init_timer);
