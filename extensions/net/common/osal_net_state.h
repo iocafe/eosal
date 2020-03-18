@@ -62,6 +62,7 @@ typedef enum
     OSAL_NS_WIFI_NETWORK_NAME,
     OSAL_NS_WIFI_PASSWORD,
     OSAL_NS_LIGHTHOUSE_STATE,
+    OSAL_NS_GAZERBEAM_CONNECTED,
     OSAL_NS_SECURITY_CONF_ERROR,
     OSAL_NS_NO_CERT_CHAIN
 }
@@ -111,6 +112,10 @@ typedef struct osalNetworkState
     /** Ethwenet or Wifi network connected flag.
      */
     os_boolean network_connected;
+
+    /** Gazerbeam connected.
+     */
+    os_boolean gazerbeam_connected;
 
     /** No sertificate chain (transfer automatically?)
      */

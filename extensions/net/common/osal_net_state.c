@@ -249,8 +249,12 @@ void osal_set_network_state_int(
             if (ns->security_conf_error == value) return;
             ns->security_conf_error = value;
             break;
-
 #endif
+        case OSAL_NS_GAZERBEAM_CONNECTED:
+            if (ns->gazerbeam_connected == value) return;
+            ns->gazerbeam_connected = value;
+            break;
+
         default:
             return;
     }
@@ -300,6 +304,10 @@ os_int osal_get_network_state_int(
             rval = ns->security_conf_error;
             break;
 #endif
+        case OSAL_NS_GAZERBEAM_CONNECTED:
+            rval = ns->gazerbeam_connected;
+            break;
+
         default:
             break;
     }
