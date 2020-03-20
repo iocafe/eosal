@@ -56,3 +56,21 @@ void osal_shutdown_os_specific(
     void)
 {
 }
+
+/**
+****************************************************************************************************
+
+  @brief Reboot the computer.
+  @anchor osal_reboot
+
+  The osal_reboot() function...
+
+  @param   flags Reserved for future, set 0 for now.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_reboot(
+    os_int flags)
+{
+}
