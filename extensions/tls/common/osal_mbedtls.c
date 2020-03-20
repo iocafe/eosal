@@ -955,7 +955,7 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
     if (block_nr == 0) block_nr = default_block_nr;
 
-    s = ioc_load_persistent_malloc(block_nr, &block, &block_sz);
+    s = os_load_persistent_malloc(block_nr, &block, &block_sz);
     if (s != OSAL_SUCCESS && s != OSAL_MEMORY_ALLOCATED)
     {
         return osal_report_load_error(OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE, block_nr, file_name);

@@ -23,7 +23,7 @@
 
   @brief Load or access persistent memory block.
 
-  The ioc_load_persistent_malloc function loads memory block into buffer. If the data on flash
+  The os_load_persistent_malloc function loads memory block into buffer. If the data on flash
   memory can be accessed directly, the function just returns pointer to it, much like
   the os_persistent_get_ptr() function. If data must be loaded from file system, etc
   memory is allocated for it and the function returns OSAL_MEMORY_ALLOCATED.
@@ -41,7 +41,7 @@
 
 ****************************************************************************************************
 */
-osalStatus ioc_load_persistent_malloc(
+osalStatus os_load_persistent_malloc(
     osPersistentBlockNr block_nr,
     os_char **pblock,
     os_memsz *pblock_sz)
@@ -109,12 +109,12 @@ osalStatus ioc_load_persistent_malloc(
 
   @brief Load known persistent block of known size into buffer.
 
-  The ioc_load_persistent function floats known size persistent block into buffer given as argument.
+  The os_load_persistent function floats known size persistent block into buffer given as argument.
   @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
 
 ****************************************************************************************************
 */
-osalStatus ioc_load_persistent(
+osalStatus os_load_persistent(
     osPersistentBlockNr block_nr,
     os_char *block,
     os_memsz block_sz)

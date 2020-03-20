@@ -1048,10 +1048,10 @@ file_name = "myhome-bundle.crt";
 
     block_nr = (osPersistentBlockNr)osal_str_to_int(file_name, OS_NULL);
     if (block_nr == 0) block_nr = OS_PBNR_CLIENT_CERT_CHAIN;
-    s = ioc_load_persistent_malloc(block_nr, &block, &block_sz);
+    s = os_load_persistent_malloc(block_nr, &block, &block_sz);
     if (s != OSAL_SUCCESS && s != OSAL_MEMORY_ALLOCATED)
     {
-        osal_debug_error_int("ioc_load_persistent_malloc failed ", block_nr);
+        osal_debug_error_int("os_load_persistent_malloc failed ", block_nr);
 
        /* Mark to network info that we need certificate chain.
         */

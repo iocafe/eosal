@@ -186,21 +186,21 @@ osalStatus os_persistent_write(
 
 /* Load or access a persistent memory block.
  */
-osalStatus ioc_load_persistent_malloc(
+osalStatus os_load_persistent_malloc(
     osPersistentBlockNr block_nr,
     os_char **pblock,
     os_memsz *pblock_sz);
 
 /* Load known persistent block of known size into buffer.
  */
-osalStatus ioc_load_persistent(
+osalStatus os_load_persistent(
     osPersistentBlockNr block_nr,
     os_char *block,
     os_memsz block_sz);
 
 /* Save persistent block.
  */
-osalStatus ioc_save_persistent(
+osalStatus os_save_persistent(
     osPersistentBlockNr block_nr,
     const os_char *block,
     os_memsz block_sz,

@@ -315,7 +315,7 @@ void osal_initialize_secret(void)
 */
 static osalStatus ioc_load_secret(void)
 {
-    return ioc_load_persistent(OS_PBNR_SECRET,  osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
+    return os_load_persistent(OS_PBNR_SECRET,  osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
 }
 
 
@@ -333,7 +333,7 @@ static osalStatus ioc_load_secret(void)
 */
 static osalStatus ioc_save_secret(os_boolean delete_secret)
 {
-    return ioc_save_persistent(OS_PBNR_SECRET, osal_global->secret_bin,
+    return os_save_persistent(OS_PBNR_SECRET, osal_global->secret_bin,
         OSAL_SECRET_BIN_SZ, delete_secret);
 }
 

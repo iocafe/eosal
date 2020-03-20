@@ -21,7 +21,7 @@
 
   @brief Save persistent block.
 
-  The ioc_save_persistent function write a memory block from buffer to persistent storage.
+  The os_save_persistent function write a memory block from buffer to persistent storage.
 
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block Pointer to block (structure) to save.
@@ -31,7 +31,7 @@
 
 ****************************************************************************************************
 */
-osalStatus ioc_save_persistent(
+osalStatus os_save_persistent(
     osPersistentBlockNr block_nr,
     const os_char *block,
     os_memsz block_sz,
