@@ -23,6 +23,8 @@
  */
 #define OSAL_ARDUINO 1
 
+#include "Arduino.h"
+
 
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
@@ -158,7 +160,11 @@
     32 bit timer type is used.
  */
 #ifndef OSAL_TIMER_IS_64_BITS
-#define OSAL_TIMER_IS_64_BITS 0
+  #ifdef ESP_PLATFORM
+    #define OSAL_TIMER_IS_64_BITS 1
+  #else
+    #define OSAL_TIMER_IS_64_BITS 0
+  #endif
 #endif
 
 /** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero, 

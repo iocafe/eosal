@@ -18,8 +18,27 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+// #include "esp_timer/include/esp_timer.h"
+#include "esp_timer.h"
 
 #include "Arduino.h"
+
+#if 0
+// Writing directly to  watch dog timers
+
+#include "soc/timer_group_struct.h"
+#include "soc/timer_group_reg.h"
+void feedTheDog(){
+  // feed dog 0
+  TIMERG0.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
+  TIMERG0.wdt_feed=1;                       // feed dog
+  TIMERG0.wdt_wprotect=0;                   // write protect
+  // feed dog 1
+  TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
+  TIMERG1.wdt_feed=1;                       // feed dog
+  TIMERG1.wdt_wprotect=0;                   // write protect
+}
+#endif
 
 /**
 ****************************************************************************************************
@@ -57,7 +76,11 @@ void osal_timer_initialize(
 void os_get_timer(
     os_timer *t)
 {
+#ifdef ESP_PLATFORM
+    *t = (os_timer)esp_timer_get_time();
+#else
     *t = (os_timer)millis();
+#endif
 }
 
 	
@@ -80,11 +103,15 @@ os_boolean os_has_elapsed(
     os_timer *start_t,
     os_int period_ms)
 {
+#ifdef ESP_PLATFORM
+    return (os_boolean)(esp_timer_get_time() >= *start_t + 1000 * (os_timer)period_ms);
+#else
     os_uint diff;
 
     if (period_ms < 0) return OS_TRUE;
     diff = (os_uint)millis() - (os_uint)*start_t;
     return (os_boolean)((os_int)diff > period_ms);
+#endif
 }
 
 
@@ -109,6 +136,9 @@ os_boolean os_has_elapsed_since(
     os_timer *now_t,
     os_int period_ms)
 {
+#ifdef ESP_PLATFORM
+    return (os_boolean)(*now_t >= *start_t + 1000 * (os_timer)period_ms);
+#else
     os_uint diff;
 
     if (period_ms < 0) return OS_TRUE;
@@ -117,6 +147,7 @@ os_boolean os_has_elapsed_since(
     /* Important, do signed compare: without this iocom, etc. may fail!
      */
     return (os_boolean)((os_int)diff > period_ms);
+#endif
 }
 
 
@@ -138,10 +169,14 @@ os_int os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t)
 {
+#ifdef ESP_PLATFORM
+    return (os_int)(*now_t - *start_t) / 1000;
+#else
     os_uint diff;
 
     diff = (os_uint)*now_t - (os_uint)*start_t;
     return (os_int)diff;
+#endif
 }
 
 
@@ -168,6 +203,33 @@ os_boolean os_timer_hit(
     os_timer *now_t,
     os_int period_ms)
 {
+#ifdef ESP_PLATFORM
+    os_int64 diff, n, m, period_us;
+
+    if (period_ms <= 0) return OS_TRUE;
+
+    /* If not enough time has elapsed.
+     */
+    m = *memorized_t;
+    diff = *now_t - m;
+    period_us = 1000 * (os_timer)period_ms;
+    if (diff < (os_timer)period_us) return OS_FALSE;
+
+    /* If we have a skew more than a period, skip hit times.
+     */
+    if (diff >= 2 * period_us)
+    {
+        n = diff / period_us;
+        m += n * period_us;
+    }
+    else
+    {
+        m += period_us;
+    }
+
+    *memorized_t = m;
+    return OS_TRUE;
+#else
     os_uint diff, u, m, n;
 
     if (period_ms <= 0) return OS_TRUE;
@@ -193,4 +255,6 @@ os_boolean os_timer_hit(
 
     *memorized_t = m;
     return OS_TRUE;
+#endif
 }
+

@@ -158,7 +158,7 @@
     32 bit timer type is used.
  */
 #ifndef OSAL_TIMER_IS_64_BITS
-#define OSAL_TIMER_IS_64_BITS 0
+#define OSAL_TIMER_IS_64_BITS 1
 #endif
 
 /** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero, 

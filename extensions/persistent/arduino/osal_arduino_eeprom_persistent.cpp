@@ -52,7 +52,7 @@ myEEPROMHeader;
 #define MY_EEPROM_MIN_SIZE 4096
 
 static myEEPROMHeader hdr;
-static os_ushort eeprom_sz;
+static os_uint eeprom_sz;
 static os_boolean os_persistent_lib_initialized = OS_FALSE;
 
 /* Forward referred static functions.
@@ -112,7 +112,10 @@ void os_persistent_initialze(
      */
     os_persistent_lib_initialized = OS_TRUE;
 
-    EEPROM.begin(min_eeprom_sz);
+    if (!EEPROM.begin(min_eeprom_sz))
+    {
+         osal_debug_error("failed to initialise EEPROM");
+    }
 
     eeprom_sz = EEPROM.length();
     if (eeprom_sz == 0)
@@ -418,6 +421,21 @@ osalStatus os_persistent_write(
     return OSAL_STATUS_FAILED;
 }
 
+#if 0
+#include "soc/timer_group_struct.h"
+#include "soc/timer_group_reg.h"
+void feedTheDog(){
+  // feed dog 0
+  TIMERG0.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
+  TIMERG0.wdt_feed=1;                       // feed dog
+  TIMERG0.wdt_wprotect=0;                   // write protect
+  // feed dog 1
+  TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
+  TIMERG1.wdt_feed=1;                       // feed dog
+  TIMERG1.wdt_wprotect=0;                   // write protect
+}
+#endif
+
 
 /**
 ****************************************************************************************************
@@ -435,14 +453,28 @@ osalStatus os_persistent_write(
 static osalStatus os_persistent_commit(
     void)
 {
+//     portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;// to synv loop and isr
+
+osal_debug_error("HERE Z0");
+
     if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
     hdr.checksum = os_checksum((os_char*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 
+osal_debug_error("HERE Z1");
+
     os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
 
+osal_debug_error("HERE Z2");
+
+//feedTheDog();
+ //portENTER_CRITICAL_ISR(&timerMux);
     EEPROM.commit();
+ //portEXIT_CRITICAL_ISR(&timerMux);
+
+osal_debug_error("HERE Z3");
+
     return OSAL_SUCCESS;
 }
 
@@ -553,6 +585,12 @@ static void os_persistent_read_internal(
 {
     while (n--)
     {
+        if (addr >= eeprom_sz)
+        {
+            osal_debug_error("READ Out of EEPROM space");
+            break;
+        }
+
         *(buf++) = EEPROM.read(addr++);
     }
 }
@@ -580,6 +618,12 @@ static void os_persistent_write_internal(
 {
     while (n--)
     {
+        if (addr >= eeprom_sz)
+        {
+            osal_debug_error("WRITE Out of EEPROM space");
+            break;
+        }
+
         EEPROM.write(addr++, *(buf++));
     }
 }

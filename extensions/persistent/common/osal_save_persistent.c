@@ -40,8 +40,12 @@ osalStatus os_save_persistent(
     osPersistentHandle *h;
     osalStatus s;
 
+osal_debug_error("HERE Q1");
+
     h = os_persistent_open(block_nr, OS_NULL, OSAL_PERSISTENT_WRITE|OSAL_PERSISTENT_SECRET);
     if (h == OS_NULL) return OSAL_STATUS_FAILED;
+
+osal_debug_error("HERE Q2");
 
     if (delete_block)
     {
@@ -50,8 +54,10 @@ osalStatus os_save_persistent(
     else
     {
         s = os_persistent_write(h, block, block_sz);
+osal_debug_error("HERE Q3");
     }
     os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
+osal_debug_error("HERE Q4");
     return s;
 }
 
