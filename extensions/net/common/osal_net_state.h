@@ -41,6 +41,7 @@ osalNetStateNotificationHandler;
 
 /** Enumeration of counts, like number of connected sockets, number of listening sockets, etc.
  */
+ /*
 typedef enum
 {
     OSAL_NRO_CONNECTED_SOCKETS,
@@ -50,12 +51,22 @@ typedef enum
     OSAL_NRO_NET_COUNTS
 }
 osalNetCountIx;
+*/
 
 /** Enumeration of network state items (other than counts).
  */
 typedef enum
 {
-    OSAL_NS_NIC_STATE,
+    /* Counts must be enumerated 0, 1, 2... OSAL_NRO_NET_COUNTS - 1.
+     */
+    OSAL_NRO_CONNECTED_SOCKETS,
+    OSAL_NRO_LISTENING_SOCKETS,
+    OSAL_NRO_UDP_SOCKETS,
+    OSAL_NRO_NET_COUNTS,
+
+    /* Other network state items, but counts
+     */
+    OSAL_NS_NIC_STATE = 100,
     OSAL_NS_NIC_IP_ADDR,
     OSAL_NS_NETWORK_USED,
     OSAL_NS_NETWORK_CONNECTED,

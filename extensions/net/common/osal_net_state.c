@@ -26,7 +26,7 @@ typedef struct
 {
     os_short inc_status;
     os_short dec_status;
-    osalNetCountIx count_ix;
+    osalNetStateItem count_ix;
 }
 osalStatToNetCountIx;
 
@@ -309,6 +309,10 @@ os_int osal_get_network_state_int(
             break;
 
         default:
+            if (item >= 0 && item < OSAL_NRO_NET_COUNTS)
+            {
+                rval = ns->count[item];
+            }
             break;
     }
 
