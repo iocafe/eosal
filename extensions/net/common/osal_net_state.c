@@ -309,7 +309,7 @@ os_int osal_get_network_state_int(
             break;
 
         default:
-            if (item >= 0 && item < OSAL_NRO_NET_COUNTS)
+            if ((os_int)item >= 0 && item < OSAL_NRO_NET_COUNTS)
             {
                 rval = ns->count[item];
             }
