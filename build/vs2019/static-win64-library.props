@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\coderoot\eosal;c:\coderoot\iocom;C:\coderoot\iocom\extensions\nodeconf;C:\coderoot\iocom\extensions\devicedir;c:\coderoot\pins;$(ProjectDir)..\..;C:\coderoot\eosal\dependencies\windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>c:\coderoot\eosal;c:\coderoot\iocom;C:\coderoot\iocom\extensions\nodeconf;C:\coderoot\iocom\extensions\selectwifi;C:\coderoot\iocom\extensions\devicedir;c:\coderoot\pins;$(ProjectDir)..\..;C:\coderoot\eosal\dependencies\windows\include</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

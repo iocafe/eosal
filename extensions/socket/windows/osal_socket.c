@@ -2018,6 +2018,7 @@ osalStatus osal_socket_receive_packet(
     int nbytes, werr;
     socklen_t addr_size;
     char addrbuf[INET6_ADDRSTRLEN];
+    osalStatus status;
 
     if (n_read) *n_read = 0;
     if (remote_addr) *remote_addr = '\0';
@@ -2175,9 +2176,9 @@ static os_int osal_socket_list_network_interfaces(
     } 
     while ((rval == ERROR_BUFFER_OVERFLOW) && (++i < max_tries));
 
+    n_interfaces = 0;
     if (rval == NO_ERROR) 
     {
-        n_interfaces = 0;
         pCurrAddresses = pAddresses;
         while (pCurrAddresses) {
             /* Skip if no multicast (we are looking for it). Filter also for other reasons.
