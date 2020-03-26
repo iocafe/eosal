@@ -5,7 +5,7 @@ There are for convinience. THERE IS POTENTIAL SECURITY UNCERTAINTY: THE LIBRARIE
 
 Linux, OpenSSL: You can use libraries which come with your distribution, or ones here. Reason to use libraries from here is to link with a tested library version or link with library containing debug symbols.
 
-Used library paths, etc. set in /coderoot/eosal/build/cmakedefs/eosal-defs.txt.
+Used library paths, etc. set in /coderoot/eosal/osbuild/cmakedefs/eosal-defs.txt.
 
 The OpenSSL library build configuration (before make) 
 ./config --debug no-deprecated no-shared -static no-dgram no-legacy no-dtls no-tls1 no-tls1_1
