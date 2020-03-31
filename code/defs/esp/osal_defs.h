@@ -128,7 +128,7 @@
     files. If necessary, there there can be multiple names for same operating system.
  */
 #ifndef OSAL_BIN_NAME
-#define OSAL_BIN_NAME "arduino"
+#define OSAL_BIN_NAME "esp"
 #endif
 
 /** Default file system root. This is path to default root of the file system.
@@ -184,6 +184,13 @@
     #define OSAL_MULTITHREAD_SUPPORT 0
   #endif
 #endif
+
+/** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code
+    and for functions called from interrupt handler. Global data accessed from ISR
+    must have DRAM_ATTR flag.
+ */
+#define OS_ISR_FUNC_ATTR IRAM_ATTR
+#define OS_ISR_DATA_ATTR DRAM_ATTR
 
 /** If compiler can support function pointers and interfaces, define 1. Define zero
     only for systems which do not handle function pointers properly (for example PIC).
