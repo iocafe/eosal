@@ -105,26 +105,37 @@ void osal_event_delete(
   the system sets the state to nonsignaled. If no threads are waiting, the event object's state
   remains signaled, and first following osal_event_wait() call will return immediately.
 
+  Call osal_isr_event_set function is setting event from interrupt handler.
+
   @param   evnt Event pointer returned by osal_event_create() function.
   @return  None.
 
 ****************************************************************************************************
 */
-void osal_event_set(
+void OS_ISR_FUNC_ATTR osal_event_set(
     osalEvent evnt)
 {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
     if (evnt == OS_NULL)
     {
+        /* Report an error for app use. If this function is called from interrupt handler,
+           be sure that evnt is not NULL before calling the function: osal_debug_error()
+           function is likely to crash the microcontroller if called from ISR.
+         */
         osal_debug_error("osal_event_set: NULL argument");
         return;
     }
 
-    // xSemaphoreTake(evnt, 0);
-    // xSemaphoreGive(evnt); For unknown reason crash here at random.
+    xSemaphoreGiveFromISR(evnt, &xHigherPriorityTaskWoken);
 
-    BaseType_t xx;
-    xSemaphoreGiveFromISR(evnt, &xx);
-
+    /* If setting event woke up higher priority task, inform task scheduler that it
+       should do task switch immediately.
+     */
+    if (xHigherPriorityTaskWoken)
+    {
+        portYIELD_FROM_ISR();
+    }
 }
 
 

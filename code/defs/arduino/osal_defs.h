@@ -191,6 +191,15 @@
   #endif
 #endif
 
+/** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code
+    and for functions called from interrupt handler. Global data accessed from ISR
+    must have DRAM_ATTR flag.
+ */
+#ifdef ESP_PLATFORM
+#define OS_ISR_FUNC_ATTR IRAM_ATTR
+#define OS_ISR_DATA_ATTR DRAM_ATTR
+#endif
+
 /** If compiler can support function pointers and interfaces, define 1. Define zero
     only for systems which do not handle function pointers properly (for example PIC).
  */

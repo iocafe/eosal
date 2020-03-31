@@ -79,3 +79,12 @@ typedef os_char os_boolean;
 #endif
 #endif
 
+/** If we have no interrupt handler function type for this operating system,
+    define empty OS_ISR_FUNC_ATTR.
+ */
+#ifndef OS_ISR_FUNC_ATTR
+#define OS_ISR_FUNC_ATTR
+#endif
+#ifndef OS_ISR_DATA_ATTR
+#define OS_ISR_DATA_ATTR
+#endif
