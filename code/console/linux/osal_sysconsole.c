@@ -71,7 +71,7 @@ os_uint osal_sysconsole_read(
     void)
 {
     struct termios attr;
-    int nbytes;
+    int nbytes = 0;
     static os_boolean line_buffering_disabled = OS_FALSE;
     const int stdin_handle = 0;
 
