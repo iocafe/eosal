@@ -245,10 +245,6 @@ static void osal_thread_intermediate_func(
     osalEvent
         join_event;
 
-    /* Make sure that we are running on normal thread priority.
-     */
-    osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
-
     /* Cast the pointer and save join event, if any.
      */
     thrprm = (osalArduinoThreadPrms*)parameters;
