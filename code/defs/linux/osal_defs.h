@@ -183,6 +183,13 @@
 #define OSAL_MULTITHREAD_SUPPORT 1
 #endif
 
+/** Define 1 to maintain list of function pointers to enable/disable
+    all application interrupts by one function call.
+ */
+#ifndef OSAL_INTERRUPT_LIST_SUPPORT
+#define OSAL_INTERRUPT_LIST_SUPPORT 1
+#endif
+
 /** If compiler can support function pointers and interfaces, define 1. Define zero
     only for systems which do not handle function pointers properly (for example PIC).
  */

@@ -104,7 +104,7 @@ typedef struct osalSocket
 
     /* Worker thread handle and exit status code.
      */
-    osalThreadHandle *thread_handle;
+    osalThread *thread_handle;
     osalStatus worker_status;
 
     /* Events for triggering send and select.

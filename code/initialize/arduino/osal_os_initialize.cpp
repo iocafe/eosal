@@ -17,6 +17,9 @@
 */
 #include <Arduino.h>
 #include "eosal.h"
+// #include "soc/rtc_wdt.h"
+#include "soc/timer_group_struct.h"
+#include "soc/timer_group_reg.h"
 
 #ifndef OSAL_NVIC_RESET
   #ifdef STM32F4XX

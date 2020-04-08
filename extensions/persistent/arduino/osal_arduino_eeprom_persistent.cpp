@@ -78,6 +78,14 @@ static void os_persistent_move(
     os_ushort srcaddr,
     os_ushort n);
 
+/*
+static void diggy_dog_start(
+    void);
+
+static void diggy_dog_end(
+    void);
+*/
+
 
 /**
 ****************************************************************************************************
@@ -411,30 +419,18 @@ osalStatus os_persistent_write(
 
     if (block)
     {
+        osal_control_interrupts(OS_FALSE);
         os_persistent_write_internal(buf, block->pos + block->sz, buf_sz);
         os_checksum(buf, buf_sz, &block->checksum);
         block->sz += (os_ushort)buf_sz;
         hdr.touched = 1;
+        osal_control_interrupts(OS_TRUE);
         return OSAL_SUCCESS;
     }
 
     return OSAL_STATUS_FAILED;
 }
 
-#if 0
-#include "soc/timer_group_struct.h"
-#include "soc/timer_group_reg.h"
-void feedTheDog(){
-  // feed dog 0
-  TIMERG0.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
-  TIMERG0.wdt_feed=1;                       // feed dog
-  TIMERG0.wdt_wprotect=0;                   // write protect
-  // feed dog 1
-  TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
-  TIMERG1.wdt_feed=1;                       // feed dog
-  TIMERG1.wdt_wprotect=0;                   // write protect
-}
-#endif
 
 
 /**
@@ -453,7 +449,6 @@ void feedTheDog(){
 static osalStatus os_persistent_commit(
     void)
 {
-//     portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;// to synv loop and isr
 
 osal_debug_error("HERE Z0");
 
@@ -462,19 +457,19 @@ osal_debug_error("HERE Z0");
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 
+    osal_control_interrupts(OS_FALSE);
+
 osal_debug_error("HERE Z1");
 
     os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
 
 osal_debug_error("HERE Z2");
 
-//feedTheDog();
- //portENTER_CRITICAL_ISR(&timerMux);
     EEPROM.commit();
- //portEXIT_CRITICAL_ISR(&timerMux);
 
 osal_debug_error("HERE Z3");
 
+    osal_control_interrupts(OS_TRUE);
     return OSAL_SUCCESS;
 }
 
@@ -651,11 +646,15 @@ static void os_persistent_move(
 {
     os_uchar c;
 
+    osal_control_interrupts(OS_FALSE);
+
     while (n--)
     {
         c = EEPROM.read(srcaddr++);
         EEPROM.write(dstaddr++, c);
     }
+
+    osal_control_interrupts(OS_TRUE);
 }
 
 #endif

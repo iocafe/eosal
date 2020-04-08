@@ -158,6 +158,13 @@ typedef struct
     osal_shutdown_func *sockets_shutdown_func;
 #endif
 
+#if OSAL_INTERRUPT_LIST_SUPPORT
+    /* Linked list of interrupt control function pointers.
+     */
+    struct osalInterruptInfo *first_listed_interrupt;
+    struct osalInterruptInfo *last_listed_interrupt;
+    os_short interrupts_disable_count;
+#endif
 
    /** Error handler function and context pointers.
      */

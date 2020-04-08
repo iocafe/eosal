@@ -61,7 +61,7 @@ osalStatus osal_threads_example_2_main(
     MyThreadParameters 
 		myprm;
 
-	osalThreadHandle
+	osalThread
 		*handle;
 
     os_memclear(&myprm, sizeof(myprm));

@@ -99,6 +99,7 @@ OSAL_C_HEADER_BEGINS
 #include "code/defs/common/osal_global.h"
 #include "code/initialize/common/osal_initialize.h"
 #include "code/mutex/common/osal_mutex.h"
+#include "code/mutex/common/osal_interrupt_list.h"
 #include "code/event/common/osal_event.h"
 #include "code/thread/common/osal_thread.h"
 #include "code/utf16/common/osal_utf16.h"

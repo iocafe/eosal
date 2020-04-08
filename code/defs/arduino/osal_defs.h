@@ -185,9 +185,18 @@
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
   #ifdef ESP_PLATFORM
-    #define OSAL_MULTITHREAD_SUPPORT 0
+    #define OSAL_MULTITHREAD_SUPPORT 1
   #else
     #define OSAL_MULTITHREAD_SUPPORT 0
+  #endif
+#endif
+
+/** Define 1 to maintain list of function pointers to enable/disable
+    all application interrupts by one function call.
+ */
+#ifndef OSAL_INTERRUPT_LIST_SUPPORT
+  #ifdef ESP_PLATFORM
+    #define OSAL_INTERRUPT_LIST_SUPPORT 1
   #endif
 #endif
 

@@ -138,7 +138,7 @@ typedef struct
 	 */
 	os_int dummy;
 } 
-osalThreadHandle;
+osalThread;
 
 
 /**
@@ -218,7 +218,7 @@ osalThreadOptParams;
 #if OSAL_MULTITHREAD_SUPPORT
     /* Create a new thread.
      */
-    osalThreadHandle *osal_thread_create(
+    osalThread *osal_thread_create(
         osal_thread_func *func,
         void *prm,
         osalThreadOptParams *opt,
@@ -228,7 +228,7 @@ osalThreadOptParams;
        Releases thread handle.
      */
     void osal_thread_join(
-	    osalThreadHandle *handle);
+        osalThread *handle);
 
     /* Set thread priority.
      */

@@ -88,3 +88,10 @@ typedef os_char os_boolean;
 #ifndef OS_ISR_DATA_ATTR
 #define OS_ISR_DATA_ATTR
 #endif
+
+/** By default, do not maintain list of function pointers to enable/disable
+    all application interrupts by one function call.
+ */
+#ifndef OSAL_INTERRUPT_LIST_SUPPORT
+#define OSAL_INTERRUPT_LIST_SUPPORT 0
+#endif

@@ -219,7 +219,7 @@ osalStatus osal_main(
     os_char *argv[])
 {
     MyThreadParams mythreadprm;
-    osalThreadHandle *mythread;
+    osalThread *mythread;
     os_uint c;
 
     /* Initialize the underlying transport library.

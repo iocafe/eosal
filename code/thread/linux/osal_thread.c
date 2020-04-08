@@ -119,7 +119,7 @@ static void *osal_thread_intermediate_func(
 
 ****************************************************************************************************
 */
-osalThreadHandle *osal_thread_create(
+osalThread *osal_thread_create(
 	osal_thread_func *func,
 	void *prm,
     osalThreadOptParams *opt,
@@ -214,7 +214,7 @@ osalThreadHandle *osal_thread_create(
 
     /* Success.
      */
-    return (osalThreadHandle*)handle;
+    return (osalThread*)handle;
 }
 #endif
 
@@ -282,7 +282,7 @@ static void *osal_thread_intermediate_func(
 ****************************************************************************************************
 */
 void osal_thread_join(
-	osalThreadHandle *handle)
+    osalThread *handle)
 {
     osalLinuxThreadHandle *linuxhandle;
     void *res;
