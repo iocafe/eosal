@@ -100,6 +100,9 @@ void osal_shutdown_os_specific(
 void osal_reboot(
     os_int flags)
 {
+#if OSAL_INTERRUPT_LIST_SUPPORT
+    osal_control_interrupts(OS_FALSE);
+#endif
     os_sleep(200);
 
 #ifdef ESP_PLATFORM

@@ -68,12 +68,14 @@ void osal_timer_initialize(
   The os_get_timer() function get current system timer value. System timer counts microseconds,
   typically since computer was booted.
 
+  This function can be called from interrupt handler.
+
   @param   start_t Pointer to integer into which to store current system timer value.
   @return  None.
 
 ****************************************************************************************************
 */
-void os_get_timer(
+void OS_ISR_FUNC_ATTR os_get_timer(
     os_timer *t)
 {
 #ifdef ESP_PLATFORM
@@ -93,13 +95,15 @@ void os_get_timer(
   The os_has_elapsed() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
+  This function can be called from interrupt handler.
+
   @param   start_t Start timer value as set to t by the os_get_timer() function.
   @param   period_ms Period length in milliseconds.
   @return  OS_TRUE (1) if specified time period has elapsed, or OS_FALSE (0) if not.
 
 ****************************************************************************************************
 */
-os_boolean os_has_elapsed(
+os_boolean OS_ISR_FUNC_ATTR os_has_elapsed(
     os_timer *start_t,
     os_int period_ms)
 {
@@ -124,6 +128,8 @@ os_boolean os_has_elapsed(
   The os_has_elapsed_since() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
+  This function can be called from interrupt handler.
+
   @param   start_t Start timer value as set to t by the os_get_timer() function.
   @param   now_t Current system timer value as set to t by the os_get_timer() function.
   @param   period_ms Period length in milliseconds.
@@ -131,7 +137,7 @@ os_boolean os_has_elapsed(
 
 ****************************************************************************************************
 */
-os_boolean os_has_elapsed_since(
+os_boolean OS_ISR_FUNC_ATTR os_has_elapsed_since(
     os_timer *start_t,
     os_timer *now_t,
     os_int period_ms)
@@ -159,13 +165,15 @@ os_boolean os_has_elapsed_since(
 
   The os_os_get_ms_elapsed() function...
 
+  This function can be called from interrupt handler.
+
   @param   start_t Start timer value as set to t by the os_get_timer() function.
   @param   now_t Current system timer value as set to t by the os_get_timer() function.
   @return  Number of milliseconds.
 
 ****************************************************************************************************
 */
-os_int os_get_ms_elapsed(
+os_int OS_ISR_FUNC_ATTR os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t)
 {
@@ -191,6 +199,8 @@ os_int os_get_ms_elapsed(
   function is called that rarely that skew is one or more whole periods, events what happended
   on that time will be skipped.
 
+  This function can be called from interrupt handler.
+
   @param   memorized_t Memorized timer value to keep track of events, can be zero initially.
   @param   now_t Current system timer value as set to t by the os_get_timer() function.
   @param   period_ms Period how often to get "hits" in milliseconds.
@@ -198,7 +208,7 @@ os_int os_get_ms_elapsed(
 
 ****************************************************************************************************
 */
-os_boolean os_timer_hit(
+os_boolean OS_ISR_FUNC_ATTR os_timer_hit(
     os_timer *memorized_t,
     os_timer *now_t,
     os_int period_ms)
