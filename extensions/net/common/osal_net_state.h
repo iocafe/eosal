@@ -39,19 +39,15 @@ osalNetStateNotificationHandler;
 #define OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS 2
 #endif
 
-/** Enumeration of counts, like number of connected sockets, number of listening sockets, etc.
+/** Gazerbeam connection flags.
  */
- /*
 typedef enum
 {
-    OSAL_NRO_CONNECTED_SOCKETS,
-    OSAL_NRO_LISTENING_SOCKETS,
-    OSAL_NRO_UDP_SOCKETS,
-
-    OSAL_NRO_NET_COUNTS
+    OSAL_NS_GAZERBEAM_NOT_CONNECTED = 0,
+    OSAL_NS_GAZERBEAM_CONFIGURING = 1,
+    OSAL_NS_GAZERBEAM_CONFIGURATION_MATCH = 2
 }
-osalNetCountIx;
-*/
+osalGazerbeamConnectionState;
 
 /** Enumeration of network state items (other than counts).
  */
@@ -126,7 +122,7 @@ typedef struct osalNetworkState
 
     /** Gazerbeam connected.
      */
-    os_boolean gazerbeam_connected;
+    os_char gazerbeam_connected;
 
     /** No sertificate chain (transfer automatically?)
      */
