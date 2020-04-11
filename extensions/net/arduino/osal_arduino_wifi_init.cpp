@@ -186,7 +186,11 @@ void osal_socket_initialize(
     os_memclear(&sg, sizeof(sg));
     os_memclear(&ans, sizeof(ans));
 
-    /** Copy NIC serrings.
+    /* Do not keep wifi configuration on flagh.
+     */
+    esp_wifi_set_storage(WIFI_STORAGE_RAM);
+
+    /** Copy NIC settings.
      */
     if (nic) for (i = 0; i < n_nics; i++)
     {
