@@ -295,7 +295,9 @@ osalStatus osal_are_sockets_initialized(
             os_get_timer(&ans.wifi_step_timer);
             ans.wifi_boot_timer = ans.wifi_step_timer;
 
-            esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
+            /* Power management off. REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL.
+             */
+            esp_wifi_set_ps(WIFI_PS_NONE);
 
             ans.wifi_init_step = OSAL_WIFI_INIT_STEP2;
             break;
