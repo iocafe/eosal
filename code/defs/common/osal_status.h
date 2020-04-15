@@ -90,7 +90,7 @@ typedef enum
         IO devices do not need to be pre configured to network, if for example running in
         internal network of small automated system.
      */
-    OSAL_IO_NETWORK_NAME_SET = 40,
+    // OSAL_IO_NETWORK_NAME_SET = 40,
 
     /** End of file has been reached.
      */
