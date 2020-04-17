@@ -79,6 +79,16 @@ typedef os_char os_boolean;
 #endif
 #endif
 
+/** IN PC testing we can be more free about memory and include quite a bit of debug information
+    when OS_DEBUG is set. On microcontroller we need to be more conservative even when debugging.
+    The OSAL_PC_DEBUG define is used to check wether to include extra debug code for PC testing.
+ */
+#if OSAL_MICROCONTROLLER
+#define OSAL_PC_DEBUG 0
+#else
+#define OSAL_PC_DEBUG OSAL_DEBUG
+#endif
+
 /** If we have no interrupt handler function type for this operating system,
     define empty OS_ISR_FUNC_ATTR.
  */
