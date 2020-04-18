@@ -104,6 +104,10 @@ typedef enum
      */
     OSAL_STATUS_NOT_INITIALIZED = 102,
 
+    /** General, something is not connected.
+     */
+    OSAL_STATUS_NOT_CONNECTED = 103,
+
     /** General time out. Among other things, used by osal_event_wait() function. If event
         doesn't get signaled before timeout interval given as argument, this code is returned.
      */
