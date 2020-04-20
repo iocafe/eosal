@@ -190,7 +190,7 @@ os_int os_get_ms_elapsed(
 ****************************************************************************************************
 
   @brief If it time for a periodic event?
-  @anchor os_has_elapsed_since
+  @anchor os_timer_hit
 
   The os_timer_hit() function returns OS_TRUE if it is time to do a periodic event. The function
   keeps events times to be divisible by period (from initialization of memorized_t). If this
