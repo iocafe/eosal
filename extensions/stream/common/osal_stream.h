@@ -103,6 +103,10 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_LISTEN 0x0100
 
+/** Peek into stream buffer, do not empty receive buffer. Implemented only for some streams.
+ */
+#define OSAL_STREAM_PEEK 0x0200
+
 /** Open a UDP multicast socket. 
  */
 #define OSAL_STREAM_MULTICAST 0x0400
@@ -171,9 +175,13 @@ typedef enum
      */
 	OSAL_STREAM_READ_TIMEOUT_MS,
 
-    /** Amount of free spacee in TX buffer, bytes
+    /** Amount of free spacee in TX buffer, bytes.
      */
-    OSAL_STREAM_TX_AVAILABLE
+    OSAL_STREAM_TX_AVAILABLE,
+
+    /** Number of data bytes in RX buffer.
+     */
+    OSAL_STREAM_RX_AVAILABLE
 }
 osalStreamParameterIx;
 
