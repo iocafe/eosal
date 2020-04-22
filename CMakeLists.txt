@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.5)
 set(E_PROJECT "eosal")
 project(${E_PROJECT})
 
+# Select which TLS library, mbedtls or openssl to use for the OS.
+set(E_TLSLIB "mbedtls")
+
 # include build information common to all projects.
 include(osbuild/cmakedefs/eosal-defs.txt)
 
@@ -28,7 +31,7 @@ file(GLOB EX_CM_HEADERS "${EXTENSIONS}/*/common/*.h")
 # Add operating system specific files.
 file(GLOB BB_OS_SOURCES "${BACKBONE}/*/$ENV{E_OS}/*.c" "${BACKBONE}/*/$ENV{E_OS}/*.cpp")
 file(GLOB BB_OS_HEADERS "${BACKBONE}/*/$ENV{E_OS}/*.h")
-file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp")
+file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c")
 file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
 # Generate the static library
