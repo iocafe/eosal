@@ -120,10 +120,6 @@ typedef struct osalNetworkState
      */
     os_boolean network_connected;
 
-    /** Gazerbeam connected.
-     */
-    os_char gazerbeam_connected;
-
     /** No sertificate chain (transfer automatically?)
      */
     os_boolean no_cert_chain;
@@ -136,6 +132,10 @@ typedef struct osalNetworkState
      */
     osaLightHouseClientState lighthouse_state;
 #endif
+
+    /** Gazerbeam connected.
+     */
+    os_char gazerbeam_connected;
 
     /** Counts, like number of connected sockets, number of listening sockets, etc.
      */
