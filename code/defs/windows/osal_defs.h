@@ -226,7 +226,7 @@
 /** Select TLS wrapper implementation to use.
  */
 #ifndef OSAL_TLS_SUPPORT
-#define OSAL_TLS_SUPPORT OSAL_TLS_OPENSSL_WRAPPER
+#define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
 #endif
 
 /** If OpenSSL functionality is available (separate from TLS wrapper selection,

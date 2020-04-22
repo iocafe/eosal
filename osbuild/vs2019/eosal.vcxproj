@@ -158,9 +158,8 @@
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_bin.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_int.c" />
     <ClCompile Include="..\..\extensions\time\windows\osal_time.c" />
-    <ClCompile Include="..\..\extensions\tls\common\osal_crypto_hash.c" />
-    <ClCompile Include="..\..\extensions\tls\common\osal_mbedtls.c" />
-    <ClCompile Include="..\..\extensions\tls\common\osal_openssl.c" />
+    <ClCompile Include="..\..\extensions\tls\mbedtls\osal_crypto_hash.c" />
+    <ClCompile Include="..\..\extensions\tls\mbedtls\osal_mbedtls.c" />
     <ClCompile Include="..\..\extensions\typeid\common\osal_typeid.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -600,7 +600,7 @@ static osalStatus osal_mbedtls_write(
         if (s) return s;
     }
 
-    ret = mbedtls_ssl_write(&so->ssl, (os_uchar*)buf, n);
+    ret = mbedtls_ssl_write(&so->ssl, (os_uchar*)buf, (size_t)n);
     if (ret < 0)
     {
         if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
@@ -668,7 +668,7 @@ static osalStatus osal_mbedtls_read(
         if (s) return s;
     }
 
-    ret = mbedtls_ssl_read(&so->ssl, (os_uchar*)buf, n);
+    ret = mbedtls_ssl_read(&so->ssl, (os_uchar*)buf, (size_t)n);
     if (ret < 0)
     {
         // MBEDTLS_ERR_SSL_CONN_EOF
@@ -850,7 +850,7 @@ static void osal_mbedtls_init(
     mbedtls_ctr_drbg_init(&t->ctr_drbg);
     mbedtls_entropy_init(&t->entropy);
     ret = mbedtls_ctr_drbg_seed(&t->ctr_drbg, mbedtls_entropy_func, &t->entropy,
-        (const os_uchar*)personalization, os_strlen(personalization));
+        (const os_uchar*)personalization, (size_t)os_strlen(personalization));
     if (ret)
     {
         osal_debug_error_int("mbedtls_ctr_drbg_seed returned ", ret);
@@ -963,11 +963,11 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
 
     if (cert)
     {
-        ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)block, block_sz);
+        ret = mbedtls_x509_crt_parse(cert, (const unsigned char *)block, (size_t)block_sz);
     }
     else
     {
-        ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, block_sz, NULL, 0);
+        ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, (size_t)block_sz, NULL, 0);
     }
 
     if (s == OSAL_MEMORY_ALLOCATED)
