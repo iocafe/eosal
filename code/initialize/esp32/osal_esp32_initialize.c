@@ -97,4 +97,3 @@ void osal_reboot(
 
     esp_restart();
 }
-fs
