@@ -38,6 +38,10 @@
  */
 #define OSAL_WIFI_PRM_SZ 16
 
+/** Device number as string, buffer size.
+ */
+#define OSAL_DEVICE_NR_STR_SZ 8
+
 /** Maximum binary IP address size. 4 bytes for IPv4 and 16 bytes for IPv6.
  */
 #define OSAL_IP_BIN_ADDR_SZ 16
@@ -60,6 +64,10 @@
 #ifndef OSAL_MAX_NRO_WIFI_NETWORKS
 #define OSAL_MAX_NRO_WIFI_NETWORKS 2
 #endif
+
+/** Maximum network name string length.
+ */
+#define OSAL_NETWORK_NAME_SZ 24
 
 /** Wifi network name and password.
  */
@@ -176,12 +184,18 @@ typedef struct osalWifiNetworkBuf
 }
 osalWifiNetworkBuf;
 
-/** Structure to save Wifi configuration as persistent block
-    numer OS_PBNR_WIFI.
+/** Structure to save Wifi and other basic network configuration as persistent
+    block numer OS_PBNR_WIFI. If set, these override
  */
 typedef struct osalWifiPersistent
 {
     osalWifiNetworkBuf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
+
+    /* If set, these will overdrive settings elsewhere.
+     */
+    os_char network_name_overdrive[OSAL_NETWORK_NAME_SZ];
+    os_char device_nr_overdrive[OSAL_DEVICE_NR_STR_SZ];
+    os_char connect_to_overdrive[OSAL_HOST_BUF_SZ];
 }
 osalWifiPersistent;
 

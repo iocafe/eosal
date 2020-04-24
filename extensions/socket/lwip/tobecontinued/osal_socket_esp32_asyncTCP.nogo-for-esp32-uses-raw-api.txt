@@ -1013,7 +1013,7 @@ void osal_socket_initialize(
     os_int n_wifi)
 {
     const os_char *wifi_net_name = "bean24";
-    const os_char *wifi_net_password = "talvi333";
+    const os_char *wifi_net_password = "mysecret";
     os_int i;
 
     /* Initialize only once.

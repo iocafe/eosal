@@ -1456,7 +1456,7 @@ getout:
 void osal_socket_initialize_2(void)
 {
     const os_char *wifi_net_name = "bean24";
-    const os_char *wifi_net_password = "talvi333";
+    const os_char *wifi_net_password = "mysecret";
 
     /* Initialize only once.
      */
@@ -1586,7 +1586,7 @@ void osal_socket_initialize(
     if (osal_lwip.nic[0].wifi_net_name[0] == '\0')
         os_strncpy(osal_lwip.nic[0].wifi_net_name, "bean24", OSAL_WIFI_PRM_SZ);
     if (osal_lwip.nic[0].wifi_net_password[0] == '\0')
-        os_strncpy(osal_lwip.nic[0].wifi_net_password, "talvi333", OSAL_WIFI_PRM_SZ);
+        os_strncpy(osal_lwip.nic[0].wifi_net_password, "mysecret", OSAL_WIFI_PRM_SZ);
 
 #if OSAL_MULTITHREAD_SUPPORT
     osal_lwip.socket_struct_mutex = osal_mutex_create();
