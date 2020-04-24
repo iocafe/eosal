@@ -9,8 +9,8 @@
   Serial communication. Implementation of OSAL stream API for Windows serial ports.
 
   Windows overlapped IO is used to monitor received data and avaliablility of transmit buffer.
-  On top of this API windows serial port can be used with select much like a non blocking serial 
-  port in linux. 
+  On top of this API windows serial port can be used with select much like a non blocking serial
+  port in linux.
 
   Configuring a Communications Resource:
   https://msdn.microsoft.com/en-us/library/windows/desktop/aa363201(v=vs.85).aspx
@@ -19,8 +19,8 @@
   https://docs.microsoft.com/en-us/previous-versions/ff802693(v=msdn.10)
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only
-  be used, modified, and distributed under the terms of the project licensing. By continuing 
-  to use, modify, or distribute this file you indicate that you have read the license and 
+  be used, modified, and distributed under the terms of the project licensing. By continuing
+  to use, modify, or distribute this file you indicate that you have read the license and
   understand and accept it fully.
 
 ****************************************************************************************************
@@ -68,7 +68,7 @@ typedef struct osalSerial
     /** Stream open flags. Flags which were given to osal_serial_open() function.
      */
     os_int open_flags;
-} 
+}
 osalSerial;
 
 
@@ -137,8 +137,8 @@ static void osal_serial_monitor_status(
 osalStream osal_serial_open(
     const os_char *parameters,
     void *option,
-    osalStatus *status, 
-    os_int flags) 
+    osalStatus *status,
+    os_int flags)
 {
     HANDLE h = INVALID_HANDLE_VALUE;
     DCB dcb;
@@ -179,13 +179,13 @@ osalStream osal_serial_open(
 
     os_memclear(&dcb, sizeof(DCB));
     dcb.DCBlength = sizeof(DCB);
- 
+
     if (!GetCommState(h, &dcb))
     {
         osal_debug_error("GetCommState failed");
         goto getout;
     }
- 
+
     /* Baud rate.
      */
     dcb.BaudRate = (DWORD)osal_str_get_item_int(parameters,
@@ -208,7 +208,7 @@ osalStream osal_serial_open(
     dcb.ByteSize = 8;
     dcb.StopBits = ONESTOPBIT;
     // dcb.fOutxCtsFlow
-  
+
     if (!SetCommState(h, &dcb))
     {
         osal_debug_error("SetCommState failed");
@@ -225,7 +225,7 @@ osalStream osal_serial_open(
         goto getout;
     }
 
-    // SetCommBuffers?
+    // SetCommBuffers? txbuf, rxbuf
 
 #if OSAL_SERIAL_SELECT_SUPPORT
     if (use_select)
@@ -242,7 +242,7 @@ osalStream osal_serial_open(
         s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
         goto getout;
     }
-    
+
     os_memclear(myserial, sizeof(osalSerial));
     myserial->hdr.iface = &osal_serial_iface;
     myserial->open_flags = flags;
@@ -258,7 +258,7 @@ osalStream osal_serial_open(
             osal_debug_error("osal_serial:CreateEvent failed");
             goto getout;
         }
-        
+
         osal_serial_monitor_status(myserial);
     }
 #endif
@@ -369,8 +369,8 @@ void osal_serial_close(
 ****************************************************************************************************
 */
 osalStatus osal_serial_flush(
-    osalStream stream, 
-    os_int flags) 
+    osalStream stream,
+    os_int flags)
 {
     osalSerial *myserial;
     DWORD  dwFlags;
@@ -443,11 +443,11 @@ osalStatus osal_serial_flush(
 ****************************************************************************************************
 */
 osalStatus osal_serial_write(
-    osalStream stream, 
+    osalStream stream,
     const os_char *buf,
     os_memsz n,
-    os_memsz *n_written, 
-    os_int flags) 
+    os_memsz *n_written,
+    os_int flags)
 {
     DWORD nwr;
     osalSerial *myserial;
@@ -459,7 +459,7 @@ osalStatus osal_serial_write(
     OVERLAPPED ov;
 #endif
 
-    if (stream) 
+    if (stream)
     {
         /* Cast stream pointer to serial structure pointer.
             */
@@ -468,7 +468,7 @@ osalStatus osal_serial_write(
 
         /* Special case. Writing 0 bytes will trigger write callback by worker thread.
          */
-        if (n == 0) 
+        if (n == 0)
         {
             *n_written = 0;
             return OSAL_SUCCESS;
@@ -484,59 +484,59 @@ osalStatus osal_serial_write(
             os_memclear(&ov, sizeof(ov));
             ov.hEvent = myserial->rw_event;
             ResetEvent(ov.hEvent);
-            
-            if (!WriteFile(h, buf, (DWORD)n, &nwr, &ov)) 
+
+            if (!WriteFile(h, buf, (DWORD)n, &nwr, &ov))
             {
                 err = GetLastError();
-                if (err != ERROR_IO_PENDING) 
+                if (err != ERROR_IO_PENDING)
                 {
                     goto getout;
                 }
 
                 /* Wait for the overlapped write to complete.
                  */
-  			    switch (WaitForSingleObject(ov.hEvent, INFINITE))
-  			    {
-  			        case WAIT_OBJECT_0:
-  				        /* The overlapped operation has succesfully completed.
+                switch (WaitForSingleObject(ov.hEvent, INFINITE))
+                {
+                    case WAIT_OBJECT_0:
+                        /* The overlapped operation has succesfully completed.
                          */
-  				        if (!GetOverlappedResult(h, &ov, &nwr, FALSE))
-  				        {
-  					        osal_debug_error("osal_serial.c,write: no overlapped result");
-  					        return OSAL_STATUS_FAILED;
-  				        }
-  				        break;
-  
-  			        case WAIT_TIMEOUT:
-  				        /* The operation timed out, cancel the I/O operation. 
+                        if (!GetOverlappedResult(h, &ov, &nwr, FALSE))
+                        {
+                            osal_debug_error("osal_serial.c,write: no overlapped result");
+                            return OSAL_STATUS_FAILED;
+                        }
+                        break;
+
+                    case WAIT_TIMEOUT:
+                        /* The operation timed out, cancel the I/O operation.
                          */
-  				        CancelIo(h);
-  				        return OSAL_STATUS_TIMEOUT;
-  
-  			        default:
-  				        /* Failed, just quit.
+                        CancelIo(h);
+                        return OSAL_STATUS_TIMEOUT;
+
+                    default:
+                        /* Failed, just quit.
                          */
-  				        osal_debug_error("osal_serial.c,write: Wait failed?");
-  				        return OSAL_STATUS_FAILED;
+                        osal_debug_error("osal_serial.c,write: Wait failed?");
+                        return OSAL_STATUS_FAILED;
                 }
             }
         }
-        else 
+        else
         {
-            if (!WriteFile(h, buf, (DWORD)n, &nwr, NULL)) 
+            if (!WriteFile(h, buf, (DWORD)n, &nwr, NULL))
             {
                 err = GetLastError();
-                if (err != ERROR_IO_PENDING) 
+                if (err != ERROR_IO_PENDING)
                 {
                     goto getout;
                 }
             }
         }
 #else
-        if (!WriteFile(h, buf, (DWORD)n, &nwr, NULL)) 
+        if (!WriteFile(h, buf, (DWORD)n, &nwr, NULL))
         {
             err = GetLastError();
-            if (err != ERROR_IO_PENDING) 
+            if (err != ERROR_IO_PENDING)
             {
                 goto getout;
             }
@@ -577,11 +577,11 @@ getout:
 ****************************************************************************************************
 */
 osalStatus osal_serial_read(
-    osalStream stream, 
+    osalStream stream,
     os_char *buf,
     os_memsz n,
-    os_memsz *n_read, 
-    os_int flags) 
+    os_memsz *n_read,
+    os_int flags)
 {
     osalSerial *myserial;
     DWORD nr;
@@ -593,7 +593,7 @@ osalStatus osal_serial_read(
     OVERLAPPED ov;
 #endif
 
-    if (stream) 
+    if (stream)
     {
         /* Cast stream pointer to serial structure pointer, lock serial and get OS
            serial handle.
@@ -608,63 +608,63 @@ osalStatus osal_serial_read(
             os_memclear(&ov, sizeof(ov));
             ov.hEvent = myserial->rw_event;
             ResetEvent(ov.hEvent);
-            
-            if (!ReadFile(h, buf, (DWORD)n, &nr, &ov)) 
+
+            if (!ReadFile(h, buf, (DWORD)n, &nr, &ov))
             {
                 err = GetLastError();
-                if (err != ERROR_IO_PENDING) 
+                if (err != ERROR_IO_PENDING)
                 {
                     goto getout;
                 }
 
                 /* Wait for the overlapped write to complete.
                  */
-  			    switch (WaitForSingleObject(ov.hEvent, INFINITE))
-  			    {
-  			        case WAIT_OBJECT_0:
-  				        /* The overlapped operation has succesfully completed.
+                switch (WaitForSingleObject(ov.hEvent, INFINITE))
+                {
+                    case WAIT_OBJECT_0:
+                        /* The overlapped operation has succesfully completed.
                          */
-  				        if (!GetOverlappedResult(h, &ov, &nr, FALSE))
-  				        {
-  					        osal_debug_error("osal_serial.c,read: no overlapped result");
-  					        return OSAL_STATUS_FAILED;
-  				        }
-  				        break;
-  
-  			        case WAIT_TIMEOUT:
-  				        /* The operation timed out, cancel the I/O operation. 
+                        if (!GetOverlappedResult(h, &ov, &nr, FALSE))
+                        {
+                            osal_debug_error("osal_serial.c,read: no overlapped result");
+                            return OSAL_STATUS_FAILED;
+                        }
+                        break;
+
+                    case WAIT_TIMEOUT:
+                        /* The operation timed out, cancel the I/O operation.
                          */
-  				        CancelIo(h);
-  				        return OSAL_STATUS_TIMEOUT;
-  
-  			        default:
-  				        /* Failed, just quit.
+                        CancelIo(h);
+                        return OSAL_STATUS_TIMEOUT;
+
+                    default:
+                        /* Failed, just quit.
                          */
-  				        osal_debug_error("osal_serial.c,read: Wait failed?");
-  				        return OSAL_STATUS_FAILED;
+                        osal_debug_error("osal_serial.c,read: Wait failed?");
+                        return OSAL_STATUS_FAILED;
                 }
             }
         }
-        else 
+        else
         {
-            if (!ReadFile(h, buf, (DWORD)n, &nr, NULL)) 
+            if (!ReadFile(h, buf, (DWORD)n, &nr, NULL))
             {
                 err = GetLastError();
-                if (err != ERROR_IO_PENDING) 
+                if (err != ERROR_IO_PENDING)
                 {
                     goto getout;
                 }
             }
         }
 #else
-        if (!ReadFile(h, buf, (DWORD)n, &nr, NULL)) 
+        if (!ReadFile(h, buf, (DWORD)n, &nr, NULL))
         {
             int err = GetLastError();
-            if (err != ERROR_IO_PENDING) 
+            if (err != ERROR_IO_PENDING)
             {
                 goto getout;
             }
-        } 
+        }
 #endif
 
         *n_read = nr;
@@ -696,7 +696,7 @@ getout:
 */
 os_long osal_serial_get_parameter(
     osalStream stream,
-    osalStreamParameterIx parameter_ix) 
+    osalStreamParameterIx parameter_ix)
 {
     return osal_stream_default_get_parameter(stream, parameter_ix);
 }
@@ -722,7 +722,7 @@ os_long osal_serial_get_parameter(
 void osal_serial_set_parameter(
     osalStream stream,
     osalStreamParameterIx parameter_ix,
-    os_long value) 
+    os_long value)
 {
     osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
@@ -760,9 +760,9 @@ void osal_serial_set_parameter(
 ****************************************************************************************************
 */
 osalStatus osal_serial_select(
-    osalStream *streams, 
+    osalStream *streams,
     os_int nstreams,
-    osalEvent evnt, 
+    osalEvent evnt,
     osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
@@ -772,7 +772,7 @@ osalStatus osal_serial_select(
     DWORD dwWait;
     DWORD dwOvRes;
     static DWORD dwEventMask = 0;
-    os_int i, n_serials, n_events; 
+    os_int i, n_serials, n_events;
 
     os_memclear(selectdata, sizeof(osalSelectData));
 
@@ -800,7 +800,7 @@ osalStatus osal_serial_select(
     {
         events[n_events++] = evnt;
     }
-    
+
     dwWait = WaitForMultipleObjects (n_events, events, FALSE, timeout_ms ? timeout_ms : INFINITE);
 
     if (dwWait >= WAIT_OBJECT_0 && dwWait < WAIT_OBJECT_0 + n_serials)
@@ -865,11 +865,11 @@ osalStatus osal_serial_select(
 static void osal_serial_monitor_status(
     osalSerial *myserial)
 {
-    if (!myserial->monitoring_status) 
+    if (!myserial->monitoring_status)
     {
         myserial->status_event = 0;
 
-        if (!WaitCommEvent(myserial->h, &myserial->status_event, &myserial->ov)) 
+        if (!WaitCommEvent(myserial->h, &myserial->status_event, &myserial->ov))
         {
             if (GetLastError() == ERROR_IO_PENDING)
             {
@@ -899,8 +899,8 @@ static void osal_serial_monitor_status(
   @brief Get serial port name in format windows understands.
   @anchor osal_get_windows_serial_port_name
 
-  The osal_get_windows_serial_port_name() gets serial port name from beginning of parameter 
-  string, converts it for format windows understands (like "\\\\.\\COM10") and moves parameter 
+  The osal_get_windows_serial_port_name() gets serial port name from beginning of parameter
+  string, converts it for format windows understands (like "\\\\.\\COM10") and moves parameter
   pointer to position where additional parameters may begin. That format with backslashes is
   required for COM ports, where number is bigger than 9, but should work for all the COM ports.
 
@@ -918,7 +918,7 @@ static void osal_serial_monitor_status(
 static void osal_get_windows_serial_port_name(
     const os_char **parameters,
     os_char *portname,
-    os_memsz portname_sz) 
+    os_memsz portname_sz)
 {
     os_char *d, *e;
     const os_char *p;
@@ -929,7 +929,7 @@ static void osal_get_windows_serial_port_name(
     os_strncpy(portname, "\\\\.\\", portname_sz);
     d = os_strchr(portname, '\0');
 
-    while (!osal_char_isspace(*p) && (osal_char_isaplha(*p) || osal_char_isdigit(*p)) && d < e) 
+    while (!osal_char_isspace(*p) && (osal_char_isaplha(*p) || osal_char_isdigit(*p)) && d < e)
     {
         *(d++) = *(p++);
     }
@@ -958,7 +958,7 @@ static void osal_get_windows_serial_port_name(
 
 ****************************************************************************************************
 */
-void osal_serial_initialize(void) 
+void osal_serial_initialize(void)
 {
 }
 
@@ -977,7 +977,7 @@ void osal_serial_initialize(void)
 
 ****************************************************************************************************
 */
-void osal_serial_shutdown(void) 
+void osal_serial_shutdown(void)
 {
 }
 

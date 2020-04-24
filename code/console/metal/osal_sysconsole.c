@@ -10,15 +10,33 @@
   for debug output, and the osal_sysconsole_read() prosesses input from system console or
   serial port.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
 #include "eosal.h"
 #if OSAL_CONSOLE
+
+/**
+****************************************************************************************************
+
+  @brief Inititalize system console.
+  @anchor osal_sysconsole_initialize
+
+  The osal_sysconsole_initialize() function should do any initialization necessary to use the
+  system console, for example to set serial port.
+
+  @return  None
+
+****************************************************************************************************
+*/
+void osal_sysconsole_initialize(
+    void)
+{
+}
 
 
 /**
@@ -37,7 +55,7 @@
 ****************************************************************************************************
 */
 void osal_sysconsole_write(
-	const os_char *text)
+    const os_char *text)
 {
     /* Should wide character version fputws be used? */
 //    Serial.write(text);
@@ -58,7 +76,7 @@ void osal_sysconsole_write(
 ****************************************************************************************************
 */
 os_uint osal_sysconsole_read(
-	void)
+    void)
 {
     return 0;
 }

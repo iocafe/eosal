@@ -9,14 +9,8 @@
   Example to include simple server app to build it within Arduino IDE.
   The setup routine runs once when the device starts.
  */
-void setup() 
+void setup()
 {
-    /*  Set up serial port for trace output.
-     */
-    Serial.begin(115200);
-    while (!Serial);
-    Serial.println("Simple server starting (Arduino IDE mode)...");
-
     /* Initialize eosal library and start the very simple server.
      */
     osal_initialize(OSAL_INIT_DEFAULT);

@@ -2,17 +2,11 @@
 
 /*
   simple_client.ino
-  Include a simple client app to build it within Arduino IDE. 
+  Include a simple client app to build it within Arduino IDE.
   The setup routine runs once when the device starts.
  */
-void setup() 
+void setup()
 {
-    /* Set up serial port for trace output.
-     */
-    Serial.begin(115200);
-    while (!Serial);
-    Serial.println("Simple client starting (Arduino IDE mode)...");
-
     /* Initialize eosal library and start the simple client.
      */
     osal_initialize(OSAL_INIT_DEFAULT);
@@ -21,14 +15,14 @@ void setup()
 
 /* The loop function is called repeatedly while the device runs.
  */
-void loop() 
+void loop()
 {
     /* Forward loop call to osal_loop(). Reboot if osal_loop returns "no success".
      */
     if (osal_loop(osal_application_context)) osal_reboot(0);
 }
 
-/* Include code for client application (at the time of writing connects socket 
+/* Include code for client application (at the time of writing connects socket
    to IP 192.168.1.220, TCP port 6368, but these are set in client app code)
  */
 #include "/coderoot/eosal/examples/simple_client/code/simple_client_example.c"

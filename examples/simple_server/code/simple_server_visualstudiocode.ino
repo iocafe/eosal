@@ -3,17 +3,11 @@
 
 /*
   simple_server_example
-  Example to build simple server app with Visual Studio Code + Platform IO + Arduino libraries. 
+  Example to build simple server app with Visual Studio Code + Platform IO + Arduino libraries.
   The setup routine runs once when the device starts.
 */
-void setup() 
+void setup()
 {
-    /* Set up serial port for trace output.
-     */
-    Serial.begin(115200);
-    while (!Serial);
-    Serial.println("Simple server starting (Visual Studio Code + Platform IO + Arduino mode)...");
-
     /* Start the very simple server.
      */
     osal_initialize(OSAL_INIT_DEFAULT);

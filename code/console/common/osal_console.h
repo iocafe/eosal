@@ -6,11 +6,11 @@
   @version 1.0
   @date    8.1.2020
 
-  This header file contains functions prototypes for application's console IO. 
+  This header file contains functions prototypes for application's console IO.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -26,7 +26,7 @@
 #define OSAL_CONSOLE_ESC 27
 #define OSAL_CONSOLE_ENTER '\n'
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Console State Structure
@@ -37,14 +37,14 @@
 */
 typedef struct
 {
-	/** Console input buffer.
-	 */
-	os_uint buf[OSAL_CONSOLE_BUFFER_CHARS];
+    /** Console input buffer.
+     */
+    os_uint buf[OSAL_CONSOLE_BUFFER_CHARS];
 }
 osalConsoleState;
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Application's Console Functions
@@ -58,7 +58,11 @@ osalConsoleState;
 
 #if OSAL_CONSOLE
 
-    /* Write text trough console IO.
+    /* Initialize console.
+     */
+    #define osal_console_initialize() osal_sysconsole_initialize()
+
+    /* Write text to console.
      */
     #define osal_console_write(t) osal_sysconsole_write(t)
 
@@ -68,6 +72,7 @@ osalConsoleState;
 
 #else
 
+    #define osal_console_initialize()
     #define osal_console_write(t)
     #define osal_console_read() 0
 

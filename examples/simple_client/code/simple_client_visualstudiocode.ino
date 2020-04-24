@@ -3,17 +3,11 @@
 
 /*
   simple_client_visualstudiocode.ino
-  Example to build simple client app with Visual Studio Code + Platform IO + Arduino libraries. 
+  Example to build simple client app with Visual Studio Code + Platform IO + Arduino libraries.
   The setup routine runs once when the device starts.
  */
-void setup() 
+void setup()
 {
-    /* Set up serial port for trace output.
-     */
-    Serial.begin(115200);
-    while (!Serial);
-    Serial.println("Simple client starting (Arduino IDE mode)...");
-
     /* Initialize eosal library and start the simple client.
      */
     osal_initialize(OSAL_INIT_DEFAULT);
@@ -22,7 +16,7 @@ void setup()
 
 /* The loop function is called repeatedly while the device runs.
  */
-void loop() 
+void loop()
 {
     /* Start the included application.
      */

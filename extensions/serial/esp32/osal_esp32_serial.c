@@ -27,18 +27,15 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
 #include "eosalx.h"
-
 #if OSAL_SERIAL_SUPPORT
 
-#include <Arduino.h>
-#include <HardwareSerial.h>
-
+#include "driver/uart.h"
 
 /** Arduino specific serial point state data structure. OSAL functions cast their own
     structure pointers to osalStream pointers.
@@ -50,46 +47,23 @@ typedef struct osalSerial
      */
     osalStreamHeader hdr;
 
-    /** Pointer to global serial port object.
-	 */
-    HardwareSerial *serial;
+    /**
+     */
+//    QueueHandle_t uart_queue;
 
     /** Stream open flags. Flags which were given to osal_serial_open() function.
-	 */
-	os_int open_flags;
+     */
+    os_int open_flags;
 }
 osalSerial;
 
-#define OSAL_NRO_ARDUINO_SERIAL_PORTS 4
-static osalSerial serialport[OSAL_NRO_ARDUINO_SERIAL_PORTS];
+#define OSAL_NRO_ESP32_UARTS UART_NUM_MAX
+static osalSerial serialport[OSAL_NRO_ESP32_UARTS];
 
-#ifdef USART1
-  static HardwareSerial myUART1(USART1);
-#endif
-
-#ifdef USART2
-  static HardwareSerial myUART2(USART2);
-#endif
-
-#ifdef USART3
-  #define PIN_SERIAL3_TX PC4
-  #define PIN_SERIAL3_RX PC5
-  static HardwareSerial myUART3(USART3);
-#endif
-
-#ifdef USART4
-  static HardwareSerial myUART4(USART4);
-  #define MYUART4
-#else
-  #ifdef UART4
-    static HardwareSerial myUART4(UART4);
-    #define MYUART4
-  #endif
-#endif
 
 /* Prototypes for forward referred static functions.
  */
-static int osal_get_arduino_serial_port_nr(
+static uart_port_t osal_get_esp32_uart_nr(
     const os_char **parameters);
 
 
@@ -131,84 +105,85 @@ static int osal_get_arduino_serial_port_nr(
 ****************************************************************************************************
 */
 osalStream osal_serial_open(
-        const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    const os_char *parameters,
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     osalSerial *myserial = OS_NULL;
+    uart_config_t uart_config;
+    uart_port_t uart_nr;
+    int rxbuf_sz, txbuf_sz;
+    int rx_pin, tx_pin, rts_pin, cts_pin;
     const os_char *v;
-    long baudrate;
-    int port_config, portnr0;
+
+    os_memclear(&uart_config, sizeof(uart_config));
+    uart_config.data_bits = UART_DATA_8_BITS;
+    uart_config.stop_bits = UART_STOP_BITS_1;
 
     /* Get zero based port number and move parameters behind port name.
      */
-    portnr0 = osal_get_arduino_serial_port_nr(&parameters);
+    uart_nr = osal_get_esp32_uart_nr(&parameters);
 
     /* Baud rate.
      */
-    baudrate = (long)osal_str_get_item_int(parameters, "baud", 115200, OSAL_STRING_DEFAULT);
+    uart_config.baud_rate = osal_str_get_item_int(parameters,
+        "baud", 115200, OSAL_STRING_DEFAULT);
+
+    /* Flow control.
+     */
+    uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+    /* uart_config.flow_ctrl = UART_HW_FLOWCTRL_CTS_RTS;
+    uart_config.rx_flow_ctrl_thresh = 122; */
 
     /* Parity.
      */
     v = osal_str_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
-    port_config = SERIAL_8N1;
+    uart_config.parity = UART_PARITY_DISABLE;
     if (!os_strnicmp(v, "even", 4))
     {
-        port_config = SERIAL_8E1;
+        uart_config.parity = UART_PARITY_EVEN;
     }
     else if (!os_strnicmp(v, "odd", 3))
     {
-        port_config = SERIAL_8O1;
+        uart_config.parity = UART_PARITY_ODD;
     }
 
     /* Allocate and clear serial structure.
      */
-    myserial = serialport + portnr0;
-    os_memclear(myserial, sizeof(osalSerial));
+    myserial = serialport + uart_nr;
+    os_memclear((os_char*)myserial, sizeof(osalSerial));
     myserial->hdr.iface = &osal_serial_iface;
     myserial->open_flags = flags;
 
-    /* Set up serial port structure.
+    /* Configure UART parameters.
      */
-    switch (portnr0)
-    {
-        default:
+    ESP_ERROR_CHECK(uart_param_config(uart_nr, &uart_config));
 
-#ifdef USART1
-        case 0:
-            myserial->serial = &myUART1;
-            break;
+    // ESP_ERROR_CHECK(uart_set_mode(uart_nr, UART_MODE_RS485_HALF_DUPLEX));
 
-#endif
+    /* Set UART pins. If unspecified, ESP32 defaults are used.
+     */
+    rx_pin = osal_str_get_item_int(parameters, "rxpin", UART_PIN_NO_CHANGE, OSAL_STRING_DEFAULT);
+    tx_pin = osal_str_get_item_int(parameters, "txpin", UART_PIN_NO_CHANGE, OSAL_STRING_DEFAULT);
+    rts_pin = osal_str_get_item_int(parameters, "rtspin", UART_PIN_NO_CHANGE, OSAL_STRING_DEFAULT);
+    cts_pin = osal_str_get_item_int(parameters, "ctspin", UART_PIN_NO_CHANGE, OSAL_STRING_DEFAULT);
+    uart_set_pin(uart_nr, tx_pin, rx_pin, rts_pin, cts_pin);
 
-#ifdef USART2
-        case 1:
-            myserial->serial = &myUART2;
-            break;
-#endif
-
-#ifdef USART3
-        case 2:
-#ifdef PIN_SERIAL3_TX
-            myUART3.setTx(PIN_SERIAL3_TX);
-            myUART3.setRx(PIN_SERIAL3_RX);
-#endif
-            myserial->serial = &myUART3;
-            break;
-#endif
-
-#ifdef MYUART4
-        case 3:
-            myserial->serial = &myUART4;
-            break;
-#endif
-        break;
-    }
+    /* Setup UART buffered IO with event queue.
+     */
+    rxbuf_sz = osal_str_get_item_int(parameters, "rxbuf", 256, OSAL_STRING_DEFAULT);
+    txbuf_sz = osal_str_get_item_int(parameters, "txbuf", 256, OSAL_STRING_DEFAULT);
+    if (rxbuf_sz < UART_FIFO_LEN + 16) rxbuf_sz = UART_FIFO_LEN + 16;
+    if (txbuf_sz < UART_FIFO_LEN + 16) txbuf_sz = UART_FIFO_LEN + 16;
+txbuf_sz = 0; // MUST BE ZERO, OTHERWISE BLOCKS
+    ESP_ERROR_CHECK(uart_driver_install(uart_nr, rxbuf_sz, txbuf_sz,
+        0, NULL, 0));
+        //10, &myserial->uart_queue, 0));
 
     /* Configure the serial port.
      */
-    myserial->serial->begin(baudrate, port_config);
+//     myserial->serial->begin(baudrate, port_config);
 
     /* Success set status code and cast serial structure pointer to stream pointer and return it.
      */
@@ -237,19 +212,23 @@ void osal_serial_close(
     osalStream stream,
     os_int flags)
 {
-    osalSerial *myserial;
+    uart_port_t uart_nr;
 
-    /* If called with NULL argument, do nothing.
-	 */
-	if (stream == OS_NULL) return;
-
-    /* Cast stream pointer to serial port structure pointer.
-	 */
-    myserial = (osalSerial*)stream;
-
-    /* Finish with serial communication.
+    /* Get UART number, If called with NULL argument, do nothing.
      */
-    myserial->serial->end();
+    if (stream == OS_NULL) return;
+    uart_nr = (osalSerial*)stream - serialport;
+
+#if IDF_VERSION_MAJOR >= 4
+    /* esp-idf version 4
+     */
+    if (uart_is_driver_installed(uart_nr))
+    {
+        uart_driver_delete(uart_nr);
+    }
+#else
+    uart_driver_delete(uart_nr);
+#endif
 }
 
 
@@ -275,31 +254,21 @@ void osal_serial_close(
 ****************************************************************************************************
 */
 osalStatus osal_serial_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
-    osalSerial *myserial;
+   uart_port_t uart_nr;
 
-    /* If called with NULL argument, do nothing.
+    /* Get UART number, If called with NULL argument, do nothing.
      */
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-
-    /* Cast stream type to serial structure pointer, get operating system's serial port handle.
-     */
-    myserial = (osalSerial*)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+    uart_nr = (osalSerial*)stream - serialport;
 
     if (flags & OSAL_STREAM_CLEAR_RECEIVE_BUFFER)
     {
-        /* Clear the receive buffer.
-         */
-        while(myserial->serial->available())
-        {
-            myserial->serial->read();
-        }
+        uart_flush_input(uart_nr);
     }
-
-	return OSAL_SUCCESS;
+    return OSAL_SUCCESS;
 }
 
 
@@ -326,35 +295,30 @@ osalStatus osal_serial_flush(
 ****************************************************************************************************
 */
 osalStatus osal_serial_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
-    osalSerial *myserial;
+    uart_port_t uart_nr;
     int nwr;
 
-	if (stream)
-	{
-        /* Cast stream pointer to serial port structure pointer.
-		 */
-        myserial = (osalSerial*)stream;
+    /* Get UART number, If called with NULL argument, do nothing.
+     */
+    if (stream == OS_NULL) {
+        *n_written = 0;
+        return OSAL_STATUS_FAILED;
+    }
+    uart_nr = (osalSerial*)stream - serialport;
 
-        /* See how much we have space in TX buffer. Write smaller number of bytes, either how
-           many bytes can fit into TX buffer or buffer size n given as argument.
-         */
-        nwr = myserial->serial->availableForWrite();
-        if (n < nwr) nwr = n;
-        myserial->serial->write((const uint8_t*)buf, nwr);
+    nwr = uart_tx_chars(uart_nr, buf, n);
 
-        /* Return number of bytes written.
-         */
-        *n_written = nwr;
-        return OSAL_SUCCESS;
-	}
+    /* Return number of bytes written.
+     */
+    *n_written = nwr;
+    return nwr >= 0 ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 
-	*n_written = 0;
     return OSAL_STATUS_FAILED;
 }
 
@@ -383,36 +347,36 @@ osalStatus osal_serial_write(
 ****************************************************************************************************
 */
 osalStatus osal_serial_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
-    osalSerial *myserial;
-    int nrd;
+    uart_port_t uart_nr;
+    size_t nrd, available;
 
-    if (stream)
-    {
-        /* Cast stream pointer to serial port structure pointer.
-         */
-        myserial = (osalSerial*)stream;
+    /* Get UART number, If called with NULL argument, do nothing.
+     */
+    if (stream == OS_NULL) {
+        *n_read = 0;
+        return OSAL_STATUS_FAILED;
+    }
+    uart_nr = (osalSerial*)stream - serialport;
 
-        /* See how much data we in RX buffer. Read smaller number of bytes, either how
-           many bytes we have in RX buffer or buffer size n given as argument.
-         */
-        nrd = myserial->serial->available();
-        if (n < nrd) nrd = n;
-        myserial->serial->readBytes(buf, nrd);
-
-        /* Return number of bytes written.
-         */
-        *n_read = nrd;
-        return OSAL_SUCCESS;
+    ESP_ERROR_CHECK(uart_get_buffered_data_len(uart_nr, &available));
+    if (available <= 0) {
+        nrd = 0;
+    }
+    else {
+        if (n > available) n = available;
+        nrd = uart_read_bytes(uart_nr, (uint8_t*)buf, (uint32_t)n, 0);
     }
 
-    *n_read = 0;
-    return OSAL_STATUS_FAILED;
+    /* Return number of bytes written.
+     */
+    *n_read = nrd;
+    return OSAL_SUCCESS;
 }
 
 
@@ -433,12 +397,12 @@ osalStatus osal_serial_read(
 ****************************************************************************************************
 */
 os_long osal_serial_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
-	/* Call the default implementation
-	 */
-	return osal_stream_default_get_parameter(stream, parameter_ix);
+    /* Call the default implementation
+     */
+    return osal_stream_default_get_parameter(stream, parameter_ix);
 }
 
 
@@ -460,13 +424,13 @@ os_long osal_serial_get_parameter(
 ****************************************************************************************************
 */
 void osal_serial_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
-	/* Call the default implementation
-	 */
-	osal_stream_default_set_parameter(stream, parameter_ix, value);
+    /* Call the default implementation
+     */
+    osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -474,10 +438,11 @@ void osal_serial_set_parameter(
 ****************************************************************************************************
 
   @brief Get serial port number.
-  @anchor osal_get_arduino_serial_port_nr
+  @anchor osal_get_esp32_uart_nr
 
-  The osal_get_arduino_serial_port_nr() gets zero based com port number from Windows like COM
-  port name COM1 ... COM4 in beginning of the parameters string.
+  The osal_get_esp32_uart_nr() gets zero based UART number and moves parameters pointer past
+  com port selection to other serial paramerers:
+  - Windows like COM port name COM1 ... COM4 in is converted to UART0 .. UART 4.
 
   @param   parameters Pointer to parameter string pointer. The "parameters" string should start
            with serial port name, like "COM2", the port name can be followed by optional
@@ -488,33 +453,48 @@ void osal_serial_set_parameter(
 
 ****************************************************************************************************
 */
-static int osal_get_arduino_serial_port_nr(
+static uart_port_t osal_get_esp32_uart_nr(
     const os_char **parameters)
 {
     const os_char *p;
-    int portnr0;
+    uart_port_t uart_nr;
+    const os_char winport[] = "COM";
+    const os_int winport_n = sizeof(winport) - 1;
 
     p = *parameters;
     while (osal_char_isspace(*p)) p++;
 
-    portnr0 = 0;
-    while (osal_char_isaplha(*p) || osal_char_isdigit(*p))
-    {
-        if (osal_char_isdigit(*p)) portnr0 = *p - '1';
+    /* Get the first integer number (single digit) which we encouner in uart_nr.
+     */
+    uart_nr = 0;
+    while (osal_char_isaplha(*p) || osal_char_isdigit(*p)) {
+        if (osal_char_isdigit(*p)) uart_nr = *p - '1';
         p++;
     }
 
-    while (osal_char_isspace(*p) || *p == ',' || *p == ';' || *p == ':')
-    {
+    /* If this is windows specific marking, port number start from 1, decrement.
+     */
+    if (!os_strnicmp(p, winport, winport_n)) {
+        uart_nr--;
+    }
+
+    /* Skip until end end of serial port selection in parameter string.
+     */
+    while (osal_char_isspace(*p) || *p == ',' || *p == ';' || *p == ':') {
         p++;
     }
 
+    /* Make sure that UART number is legimate.
+     */
+    if (uart_nr < 0 || uart_nr >= OSAL_NRO_ESP32_UARTS)
+    {
+        uart_nr = 0;
+    }
+
+    /* Move parameter pointer past end of serial port selection and return UART number.
+     */
     *parameters = p;
-    if (portnr0 < 0 || portnr0 >= OSAL_NRO_ARDUINO_SERIAL_PORTS)
-    {
-        portnr0 = 0;
-    }
-    return portnr0;
+    return uart_nr;
 }
 
 
@@ -533,7 +513,7 @@ static int osal_get_arduino_serial_port_nr(
 ****************************************************************************************************
 */
 void osal_serial_initialize(
-	void)
+    void)
 {
 }
 
@@ -553,7 +533,7 @@ void osal_serial_initialize(
 ****************************************************************************************************
 */
 void osal_serial_shutdown(
-	void)
+    void)
 {
 }
 
@@ -569,11 +549,11 @@ const osalStreamInterface osal_serial_iface
     osal_serial_close,
     osal_stream_default_accept,
     osal_serial_flush,
-	osal_stream_default_seek,
+    osal_stream_default_seek,
     osal_serial_write,
     osal_serial_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
     osal_serial_get_parameter,
     osal_serial_set_parameter,
     osal_stream_default_select};

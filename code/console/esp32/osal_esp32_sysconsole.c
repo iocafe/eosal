@@ -10,18 +10,36 @@
   for debug output, and the osal_sysconsole_read() prosesses input from system console or
   serial port.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
-#include "eosal.h"
+#include "eosalx.h"
 #if OSAL_CONSOLE
 
-#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
-#include "esp_log.h"
+#include <stdio.h>
+
+
+/**
+****************************************************************************************************
+
+  @brief Inititalize system console.
+  @anchor osal_sysconsole_initialize
+
+  The osal_sysconsole_initialize() function should do any initialization necessary to use the
+  system console, for example to set serial port.
+
+  @return  None
+
+****************************************************************************************************
+*/
+void osal_sysconsole_initialize(
+    void)
+{
+}
 
 
 /**
@@ -33,16 +51,14 @@
   The osal_sysconsole_write() function writes a string to process'es default console, if any.
 
   @param   text Pointer to string to write.
-
-  @return  Pointer to the allocated memory block, or OS_NULL if the function failed (out of
-           memory).
+  @return  None
 
 ****************************************************************************************************
 */
 void osal_sysconsole_write(
-	const os_char *text)
+    const os_char *text)
 {
-    ESP_LOGI(eosal_mod, "%s", text);
+    printf ("%s", text);
 }
 
 
@@ -62,8 +78,9 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
-    return 0;
+    uint8_t ch;
+    ch = fgetc(stdin);
+    return ch != 0xff ? ch : 0;
 }
-
 
 #endif

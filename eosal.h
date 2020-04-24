@@ -7,11 +7,11 @@
   @date    8.1.2020
 
   This operating system abstraction layer (OSAL) base main header file. If further includes
-  rest of OSAL base headers. 
+  rest of OSAL base headers.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -21,9 +21,15 @@
 
 /* Include target operating system specific defines.
  */
+#ifdef E_OS_esp32
+  #include "code/defs/esp32/osal_defs.h"
+  #include "code/defs/esp32/osal_types.h"
+  #define EOSAL_TARGET_HDRS_INCLUDED
+#endif
+
 #ifdef E_OS_arduino
-  #include "code/defs/arduino/osal_defs.h"
-  #include "code/defs/arduino/osal_types.h"
+  #include "code/defs/duino/osal_defs.h"
+  #include "code/defs/duino/osal_types.h"
   #define EOSAL_TARGET_HDRS_INCLUDED
 #endif
 
@@ -48,9 +54,18 @@
 /* If target operating system is unspecified, include headers by build environment.
  */
 #ifndef EOSAL_TARGET_HDRS_INCLUDED
+  #ifdef ESP_PLATFORM
+    #include "code/defs/esp32/osal_defs.h"
+    #include "code/defs/esp32/osal_types.h"
+    #define EOSAL_TARGET_HDRS_INCLUDED
+    #define E_OS_esp32
+  #endif
+#endif
+
+#ifndef EOSAL_TARGET_HDRS_INCLUDED
   #ifdef ARDUINO
-    #include "code/defs/arduino/osal_defs.h"
-    #include "code/defs/arduino/osal_types.h"
+    #include "code/defs/duino/osal_defs.h"
+    #include "code/defs/duino/osal_types.h"
     #define EOSAL_TARGET_HDRS_INCLUDED
     #define E_OS_arduino
   #endif

@@ -8,9 +8,9 @@
 
   OSAL initialization and shut down.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -74,15 +74,21 @@ void osal_initialize(
     osal_static_mem_block_list = OS_NULL;
 #endif
 
-	/* Initialize mutexes. Creates system mutex.
-	 */
+    /* Initialize mutexes. Creates system mutex.
+     */
 #if OSAL_MULTITHREAD_SUPPORT
-	osal_mutex_initialize();
+    osal_mutex_initialize();
 #endif
 
-	/* Initialize timers.
-	 */
+    /* Initialize timers.
+     */
     osal_timer_initialize();
+
+    /* Initialize system console.
+     */
+#if OSAL_CONSOLE
+    osal_console_initialize();
+#endif
 
     /* Mark that OSAL library is initialized
      */
@@ -124,13 +130,13 @@ void osal_shutdown(
      */
     osal_shutdown_os_specific();
 
-	/* Shut down mutexes. Releases system mutex.
-	 */
+    /* Shut down mutexes. Releases system mutex.
+     */
 #if OSAL_MULTITHREAD_SUPPORT
-	osal_mutex_shutdown();
+    osal_mutex_shutdown();
 #endif
 
-    /* Shut down memory management. 
+    /* Shut down memory management.
      */
 #if OSAL_MEMORY_MANAGER
     osal_memory_shutdown();

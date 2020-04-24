@@ -10,7 +10,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -42,13 +42,13 @@ typedef struct osalSerial
     osalStreamHeader hdr;
 
     /** Operating system's serial handle.
-	 */
+     */
     int handle;
 
     /** Stream open flags. Flags which were given to osal_serial_open()
-        function. 
-	 */
-	os_int open_flags;
+        function.
+     */
+    os_int open_flags;
 
     /** OS_TRUE if last write to serial has been blocked.
      */
@@ -136,9 +136,9 @@ static void osal_get_linux_serial_port_name(
   @param  option Not used for serial ports, set OS_NULL.
 
   @param  status Pointer to integer into which to store the function status code. Value
-		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
+          OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
           See @ref osalStatus "OSAL function return codes" for full list.
-		  This parameter can be OS_NULL, if no status code is needed. 
+          This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the serial. Bit fields, combination of:
           - OSAL_STREAM_NO_SELECT: Open serial without select functionality.
@@ -148,7 +148,7 @@ static void osal_get_linux_serial_port_name(
           OSAL_SERIAL_SELECT_SUPPORT is 1 and select is called, it works. Anyhow flag should
           be set correctly for compatibility with other operating systems. If there are
           flags which are unknown to this function, these are simply ignored.
-		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
+          See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
   @return Stream pointer representing the serial port, or OS_NULL if the function failed.
 
@@ -156,9 +156,9 @@ static void osal_get_linux_serial_port_name(
 */
 osalStream osal_serial_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     osalSerial *myserial = OS_NULL;
     int handle = -1;
@@ -286,13 +286,13 @@ void osal_serial_close(
 {
     osalSerial *myserial;
 
-	/* If called with NULL argument, do nothing.
-	 */
-	if (stream == OS_NULL) return;
+    /* If called with NULL argument, do nothing.
+     */
+    if (stream == OS_NULL) return;
 
     /* Cast stream pointer to serial structure pointer. The osal_debug_assert here is used
        to detect access to already closed stream while debugging.
-	 */
+     */
     myserial = (osalSerial*)stream;
     osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
 
@@ -333,13 +333,13 @@ void osal_serial_close(
            buffer and OSAL_STREAM_CLEAR_TRANSMIT_BUFFER transmit buffer.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_serial_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
     osalSerial *myserial;
     int qs;
@@ -393,30 +393,30 @@ osalStatus osal_serial_flush(
 
   @param   stream Stream pointer representing the serial port.
   @param   buf Pointer to the beginning of data to place into the serial port.
-  @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
            actually written to serial port, which may be less than n if there is not enough space
            left in write buffer. If the function fails n_written is set to zero.
   @param   flags Flags for the function, ignored. Set OSAL_STREAM_DEFAULT (0).
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_serial_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     osalSerial *myserial;
     int rval, handle;
 
-	if (stream)
-	{
+    if (stream)
+    {
         /* Cast stream type to serial structure pointer, get operating system's serial port handle.
          */
         myserial = (osalSerial*)stream;
@@ -445,10 +445,10 @@ osalStatus osal_serial_write(
          */
         *n_written = rval;
         return OSAL_SUCCESS;
-	}
+    }
 
 getout:
-	*n_written = 0;
+    *n_written = 0;
     return OSAL_STATUS_FAILED;
 }
 
@@ -465,32 +465,32 @@ getout:
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
            at least this many bytes.
-  @param   n_read Pointer to integer into which the function stores the number of bytes read, 
-           which may be less than n if there are fewer bytes available. If the function fails 
-		   n_read is set to zero.
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
   @param   flags Flags for the function, ignored. Set OSAL_STREAM_DEFAULT (0).
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_serial_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     osalSerial *myserial;
     int handle, rval;
 
-	if (stream)
-	{
+    if (stream)
+    {
         /* Cast stream type to serial structure pointer, get operating system's serial
            port handle, check function argument.
-		 */
+         */
         myserial = (osalSerial*)stream;
         osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
         handle = myserial->handle;
@@ -506,8 +506,8 @@ osalStatus osal_serial_read(
         /* Success, set number of bytes read.
          */
         *n_read = rval;
-		return OSAL_SUCCESS;
-	}
+        return OSAL_SUCCESS;
+    }
 
 getout:
     *n_read = 0;
@@ -551,18 +551,18 @@ getout:
 ****************************************************************************************************
 */
 osalStatus osal_serial_select(
-	osalStream *streams,
+    osalStream *streams,
     os_int nstreams,
-	osalEvent evnt,
-	osalSelectData *selectdata,
+    osalEvent evnt,
+    osalSelectData *selectdata,
     os_int timeout_ms,
-	os_int flags)
+    os_int flags)
 {
     osalSerial *myserial;
     fd_set rdset, wrset;
     os_int i, handle, serial_nr, maxfd, pipefd, rval;
     struct timespec timeout, *to;
-    
+
     os_memclear(selectdata, sizeof(osalSelectData));
 
     FD_ZERO(&rdset);
@@ -710,7 +710,7 @@ static void osal_get_linux_serial_port_name(
 
     os_strncpy(portname, "/dev/", portname_sz);
 
-    if (!os_strnicmp(p, "COM", winport_n))
+    if (!os_strnicmp(p, winport, winport_n))
     {
         com_nr = osal_str_to_int(p + winport_n, OS_NULL);
         osal_int_to_str(nbuf, sizeof(nbuf),
@@ -756,7 +756,7 @@ static void osal_get_linux_serial_port_name(
 ****************************************************************************************************
 */
 void osal_serial_initialize(
-	void)
+    void)
 {
 }
 
@@ -776,7 +776,7 @@ void osal_serial_initialize(
 ****************************************************************************************************
 */
 void osal_serial_shutdown(
-	void)
+    void)
 {
 }
 
@@ -792,11 +792,11 @@ const osalStreamInterface osal_serial_iface
     osal_serial_close,
     osal_stream_default_accept,
     osal_serial_flush,
-	osal_stream_default_seek,
+    osal_stream_default_seek,
     osal_serial_write,
     osal_serial_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
 #if OSAL_SERIAL_SELECT_SUPPORT
