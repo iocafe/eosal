@@ -40,6 +40,8 @@
 
 #if OSAL_DEBUG == 0
   #define osal_debug_error(text)
+  #define osal_debug_error_int(text,v)
+  #define osal_debug_error_str(text,v)
   #define osal_debug_assert(cond)
 #endif
 /*@}*/
@@ -128,11 +130,6 @@
     void osal_debug_assert(
         os_long cond);
 #endif
-
-    /* Quiet mode silences debug prints to allow user to operate console.
-     */
-    void osal_quiet(
-        os_boolean enable);
 
 /*@}*/
 

@@ -364,27 +364,5 @@ void osal_debug_assert(
 
 #endif /* OSAL_DEBUG_FILE_AND_LINE */
 
-/**
-****************************************************************************************************
-
-  @brief Silence debug prints.
-  @anchor osal_quiet
-
-  The osal_quiet() enables (or disables) quiet mode. Quiet mode allows user to use console
-  for example for setting wifi network name and password.
-
-
-  @param   enable OS_TRUE to enable quiet mode, OS_FALSE to allow debug prints.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_quiet(
-    os_boolean enable)
-{
-    osal_global->quiet_mode = enable;
-}
-
-
 #endif /* OSAL_DEBUG */
 

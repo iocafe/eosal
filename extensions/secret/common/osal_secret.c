@@ -36,9 +36,9 @@
   - IO node's password is SHA-256 hash of the secret.
   - IO node's hash password is SHA-256 of the node's password. So SHA-256 hash is run twice.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -283,7 +283,7 @@ void osal_initialize_secret(void)
             osal_debug_error("osal_secret.c: saving secret failed");
         }
 #else
-        ioc_save_secret();
+        ioc_save_secret(OS_FALSE);
 #endif
     }
 

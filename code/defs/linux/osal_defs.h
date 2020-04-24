@@ -33,13 +33,13 @@
   #endif
 #endif
 
-/** Generic include debug code in compilation. The debug code checks for programming errors.
+/** Include debug code in compilation, either 0 or 1. The debug code checks for programming errors.
  */
 #ifndef OSAL_DEBUG
 #define OSAL_DEBUG 1
 #endif
 
-/** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
+/** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG is required to trace.
  */
 #ifndef OSAL_TRACE
 #define OSAL_TRACE 2

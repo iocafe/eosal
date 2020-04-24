@@ -137,12 +137,6 @@ typedef struct
     osalResourceMonitorState resstate;
 #endif
 
-#if OSAL_CONSOLE
-    /** Console state structure.
-     */
-    osalConsoleState constate;
-#endif
-
 #if OSAL_TLS_SUPPORT
     struct osalTLS *tls;
 #endif
@@ -182,3 +176,8 @@ osalGlobalStruct;
 
 #define osal_go() (!osal_global->exit_process)
 #define osal_stop() (osal_global->exit_process)
+
+/* Quiet mode silences debug prints, etc. to allow user to operate console.
+ */
+os_boolean osal_quiet(
+    os_boolean enable);
