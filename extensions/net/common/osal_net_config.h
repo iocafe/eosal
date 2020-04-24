@@ -10,7 +10,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -20,10 +20,15 @@
  */
 #define OSAL_HOST_BUF_SZ 64
 
-/** Default buffer size for IP address. 46 is typical default, we use 48 since we use angle 
+/** Default buffer size for IP address. 46 is typical default, we use 48 since we use angle
     brackets to mark IPv6 addressess.
  */
 #define OSAL_IPADDR_SZ 48
+
+/** Default buffer size for IP address and port number. This is IP address size, separating ':'
+    and 5 digits for port number.
+ */
+#define OSAL_IPADDR_AND_PORT_SZ (OSAL_IPADDR_SZ + 6)
 
 /** Default buffer size for MAC address string.
  */

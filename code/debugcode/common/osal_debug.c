@@ -297,6 +297,7 @@ void osal_debug_error_int(
      */
     osal_console_write(text);
     osal_int_to_str(nbuf, sizeof(nbuf), v);
+    osal_console_write(nbuf);
     osal_console_write(end_with);
 }
 

@@ -21,7 +21,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -62,7 +62,7 @@ osalLinuxThreadPrms;
 typedef struct
 {
     /* Linux thread handle.
-	*/
+    */
     pthread_t threadh;
 }
 osalLinuxThreadHandle;
@@ -94,7 +94,7 @@ static void *osal_thread_intermediate_func(
   function call, or by returning from entry point function which will result osal_exit_thread()
   call. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
   entry point function can call osal_thread_set_priority() to set it's own priority.
-  
+
   @param   func Pointer to thread entry point function. See osal_thread_func() for entry point
            function type.
   @param   prm Pointer to parameters (typically pointer to used defined structure) to pass to
@@ -106,22 +106,22 @@ static void *osal_thread_intermediate_func(
   @param   opt Pointer to thread options structure, like thread name, stack size, etc.  Can
            be set to OS_NULL to use defaults.
   @param   Flags OSAL_THREAD_ATTACHED or OSAL_THREAD_DETACHED given to osal_thread_create sets is
-		   the newly created thread is to be attached to the thread which created this one.
-		   If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
-		   and must eventually be joined back to it by osal_thread_join() function. In this case
-		   the osal_thread_create() returns thread handle which is used as argument to join and
-		   can be used to to request worker thread to exit by osal_thread_request_exit() call.
-		   If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
-		   created it. The osal_thread_create() returns OS_NULL and join or request exit functions
-		   are not available.
+           the newly created thread is to be attached to the thread which created this one.
+           If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
+           and must eventually be joined back to it by osal_thread_join() function. In this case
+           the osal_thread_create() returns thread handle which is used as argument to join and
+           can be used to to request worker thread to exit by osal_thread_request_exit() call.
+           If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
+           created it. The osal_thread_create() returns OS_NULL and join or request exit functions
+           are not available.
 
   @return  Pointer to thread handle if OSAL_THREAD_ATTACHED flags is given, or OS_NULL otherwise.
 
 ****************************************************************************************************
 */
 osalThread *osal_thread_create(
-	osal_thread_func *func,
-	void *prm,
+    osal_thread_func *func,
+    void *prm,
     osalThreadOptParams *opt,
     os_int flags)
 {
@@ -139,25 +139,25 @@ osalThread *osal_thread_create(
     linprm.func = func;
     linprm.prm = prm;
 
-    /* Create event to wait until newly created thread has processed it's parameters. If creating
-       the event failes, return the error code.
+    /* Create event to wait until newly created thread has processed it's parameters.
+       If creating the event failes, return the error code.
      */
     linprm.done = osal_event_create();
     if (linprm.done == OS_NULL)
     {
-		osal_debug_error("osal_thread,osal_event_create failed");
+        osal_debug_error("osal_thread,osal_event_create failed");
         return OS_NULL;
     }
 
-	if (flags & OSAL_THREAD_ATTACHED)
-	{
+    if (flags & OSAL_THREAD_ATTACHED)
+    {
         handle = (osalLinuxThreadHandle*)os_malloc(sizeof(osalLinuxThreadHandle), OS_NULL);
         os_memclear(handle, sizeof(osalLinuxThreadHandle));
-	}
-	else
-	{
-		handle = OS_NULL;
-	}
+    }
+    else
+    {
+        handle = OS_NULL;
+    }
 
     pthread_attr_init(&attrib);
     pthread_attr_setschedpolicy(&attrib, SCHED_OTHER);
@@ -190,7 +190,7 @@ osalThread *osal_thread_create(
     {
         osal_debug_error("osal_thread,pthread_create failed");
         os_free(handle, sizeof(osalLinuxThreadHandle));
-		return OS_NULL;
+        return OS_NULL;
     }
 
     /* Inform resource monitor that thread has been succesfully creted.
@@ -206,11 +206,11 @@ osalThread *osal_thread_create(
     osal_event_delete(linprm.done);
 
     /* If we created joinable thread, save linux thread handle.
-	 */
-	if (handle)
-	{
+     */
+    if (handle)
+    {
         handle->threadh = threadh;
-	}
+    }
 
     /* Success.
      */
@@ -252,10 +252,10 @@ static void *osal_thread_intermediate_func(
      */
     linprm->func(linprm->prm, linprm->done);
 
-	/* Inform resource monitor that thread is terminated.
-	*/
-	osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
-	
+    /* Inform resource monitor that thread is terminated.
+    */
+    osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
+
     /* Return.
      */
     return OS_NULL;
@@ -288,13 +288,13 @@ void osal_thread_join(
     void *res;
     int s;
 
-	/* Check for programming errors.
-	 */
-	if (handle == OS_NULL)
-	{
-		osal_debug_error("osal_thread,osal_thread_join: NULL handle");
-		return;
-	}
+    /* Check for programming errors.
+     */
+    if (handle == OS_NULL)
+    {
+        osal_debug_error("osal_thread,osal_thread_join: NULL handle");
+        return;
+    }
 
     linuxhandle = (osalLinuxThreadHandle*)handle;
     s = pthread_join(linuxhandle->threadh, &res);
@@ -306,8 +306,8 @@ void osal_thread_join(
 
     /* free(res); Free memory allocated by thread */
 
-	/* Delete the handle structure.
-	 */
+    /* Delete the handle structure.
+     */
     os_free(handle, sizeof(osalLinuxThreadHandle));
 }
 #endif
@@ -355,7 +355,7 @@ void os_sleep(
   processor time to lower priority threads. If time_ms is zero the function suspends execution
   of the thread until end of current processor time slice.
 
-  Windows specific: The function support only one millisecond precision. 
+  Windows specific: The function support only one millisecond precision.
 
   @param   time_us Time to sleep, microseconds. Value 0 sleeps until end of current processor
            time slice.
