@@ -11,7 +11,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -75,7 +75,7 @@ void osal_error(
 
     /* If no application error handler called, call default error handler.
      */
-    if (!app_error_handler_called)
+    if (!app_error_handler_called && !osal_global->quiet_mode)
     {
         osal_default_error_handler(level, module, code, description, OS_NULL);
     }

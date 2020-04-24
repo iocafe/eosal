@@ -12,9 +12,9 @@
   a breakpoint within osal_debug error. When debugger stops to the breakpoint follow
   call stack to find the cause.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -102,14 +102,15 @@ static void osal_append_C_file_name_and_line_nr(
 void osal_debug_error_func(
     const os_char *text,
     const os_char *file,
-	os_int line)
+    os_int line)
 {
     os_boolean new_line_at_end = OS_TRUE;
+    if (osal_global->quiet_mode) return;
     if (*text == '~') { new_line_at_end = OS_FALSE; text++; }
 
-	/* Write error message on debug console, if any.
-	 */
-	osal_console_write(text);
+    /* Write error message on debug console, if any.
+     */
+    osal_console_write(text);
 
     /* Strip path from file name to keep output more readable.
      */
@@ -140,17 +141,18 @@ void osal_debug_error_int_func(
     const os_char *text,
     os_long v,
     const os_char *file,
-	os_int line)
+    os_int line)
 {
     os_char nbuf[OSAL_NBUF_SZ];
     os_boolean new_line_at_end = OS_TRUE;
+    if (osal_global->quiet_mode) return;
     if (*text == '~') { new_line_at_end = OS_FALSE; text++; }
 
-	/* Write error message on debug console, if any.
-	 */
-	osal_console_write(text);
-	osal_int_to_str(nbuf, sizeof(nbuf), v);
-	osal_console_write(nbuf);
+    /* Write error message on debug console, if any.
+     */
+    osal_console_write(text);
+    osal_int_to_str(nbuf, sizeof(nbuf), v);
+    osal_console_write(nbuf);
 
     /* Strip path from file name to keep output more readable.
      */
@@ -185,6 +187,7 @@ void osal_debug_error_str_func(
     os_int line)
 {
     os_boolean new_line_at_end = OS_TRUE;
+    if (osal_global->quiet_mode) return;
     if (*text == '~')
     {
         new_line_at_end = OS_FALSE;
@@ -212,24 +215,25 @@ void osal_debug_error_str_func(
 
   Set breakpoint to this function to trap programming errors.
 
-  @param   text Pointer to error text to log. 
+  @param   text Pointer to error text to log.
 
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_debug_assert_func(
-    os_long cond, 
-	os_char *file, 
-	os_int line)
+    os_long cond,
+    os_char *file,
+    os_int line)
 {
-	if (!cond)
-	{
+    if (osal_global->quiet_mode) return;
+    if (!cond)
+    {
         osal_debug_error_func("Assert failed", file, line);
-	}
+    }
 }
 
-/* No file name and line number in error messages. 
+/* No file name and line number in error messages.
  */
 #else
 
@@ -243,7 +247,7 @@ void osal_debug_assert_func(
 
   Set breakpoint to this function to trap programming errors.
 
-  @param   text Pointer to error text to log. 
+  @param   text Pointer to error text to log.
 
   @return  None.
 
@@ -252,10 +256,14 @@ void osal_debug_assert_func(
 void osal_debug_error(
     const os_char *text)
 {
-	/* Write error message on debug console, if any.
-	 */
-	osal_console_write(text);
-	osal_console_write(".\n");
+    const os_char *end_with = ".\n";
+    if (osal_global->quiet_mode) return;
+    if (*text == '~') { end_with = ""; text++; }
+
+    /* Write error message on debug console, if any.
+     */
+    osal_console_write(text);
+    osal_console_write(end_with);
 }
 
 
@@ -263,30 +271,68 @@ void osal_debug_error(
 ****************************************************************************************************
 
   @brief Report a programming error.
-  @anchor osal_debug_error
+  @anchor osal_debug_error_int
 
   The osal_debug_error()...
 
   Set breakpoint to this function to trap programming errors.
 
-  @param   text Pointer to error text to log. 
+  @param   text Pointer to error text to log.
+  @param   v Integer to append to text.
 
   @return  None.
 
 ****************************************************************************************************
 */
-void osal_debug_error(
+void osal_debug_error_int(
     const os_char *text,
     os_long v)
 {
+    const os_char *end_with = ".\n";
     os_char nbuf[22];
+    if (osal_global->quiet_mode) return;
+    if (*text == '~') { end_with = ""; text++; }
 
-	/* Write error message and integer argument on debug console, if any.
-	 */
-	osal_console_write(text);
-	osal_int_to_str(nbuf, sizeof(nbuf), v);
-	osal_console_write(".\n");
+    /* Write error message and integer argument on debug console, if any.
+     */
+    osal_console_write(text);
+    osal_int_to_str(nbuf, sizeof(nbuf), v);
+    osal_console_write(end_with);
 }
+
+
+/**
+****************************************************************************************************
+
+  @brief Report a programming error.
+  @anchor osal_debug_error_int
+
+  The osal_debug_error()...
+
+  Set breakpoint to this function to trap programming errors.
+
+  @param   text Pointer to error text to log.
+  @param   v String to append to text.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_debug_error_str(
+    const os_char *text,
+    const os_char *v)
+{
+    const os_char *end_with = ".\n";
+    if (osal_global->quiet_mode) return;
+    if (*text == '~') { end_with = ""; text++; }
+
+    /* Write error message and integer argument on debug console, if any.
+     */
+    osal_console_write(text);
+    osal_console_write(v);
+    osal_console_write(end_with);
+}
+
 
 /**
 ****************************************************************************************************
@@ -297,7 +343,7 @@ void osal_debug_error(
   The osal_debug_assert_func() calls osal_debug_error to report a programming error.
 
 
-  @param   text Pointer to error text to log. 
+  @param   text Pointer to error text to log.
 
   @return  None.
 
@@ -306,13 +352,38 @@ void osal_debug_error(
 void osal_debug_assert(
     os_long cond)
 {
-	if (!cond)
-	{
-		osal_debug_error("Assert failed");
-	}
+    if (osal_global->quiet_mode) return;
+
+    if (!cond)
+    {
+        osal_debug_error("Assert failed");
+    }
 }
 
 
 #endif /* OSAL_DEBUG_FILE_AND_LINE */
+
+/**
+****************************************************************************************************
+
+  @brief Silence debug prints.
+  @anchor osal_quiet
+
+  The osal_quiet() enables (or disables) quiet mode. Quiet mode allows user to use console
+  for example for setting wifi network name and password.
+
+
+  @param   enable OS_TRUE to enable quiet mode, OS_FALSE to allow debug prints.
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_quiet(
+    os_boolean enable)
+{
+    osal_global->quiet_mode = enable;
+}
+
+
 #endif /* OSAL_DEBUG */
 

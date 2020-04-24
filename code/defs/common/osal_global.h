@@ -8,9 +8,9 @@
 
   This header file contains definition of OSAL global state structure.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -39,7 +39,7 @@ struct osalSocketGlobal;
  */
 #define OSAL_SECRET_STR_SZ 46
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Global Structure
@@ -47,7 +47,7 @@ struct osalSocketGlobal;
 
   The global structure saves OSAL library state. In practise this means all internal variables
   of the OSAL library. The variables are stored within a structure and the structure is always
-  referred through osal_global pointer. Thus DLLs can share the same global structure with the 
+  referred through osal_global pointer. Thus DLLs can share the same global structure with the
   process which loaded the DLL. This will require only setting osal_global pointer in DLL.
 
 ****************************************************************************************************
@@ -62,27 +62,31 @@ typedef struct
      */
     os_boolean exit_process;
 
+    /** Quiet mode silences debug prints to allow user to operate console.
+     */
+    os_boolean quiet_mode;
+
 #if OSAL_MULTITHREAD_SUPPORT
-	/** System mutex. System mutex is used to synchronize access to global variables, etc.
-	 */
-	struct osalMutexStruct *system_mutex;
+    /** System mutex. System mutex is used to synchronize access to global variables, etc.
+     */
+    struct osalMutexStruct *system_mutex;
 
 #if OSAL_TIME_CRITICAL_SYSTEM_LOCK
-	/** System mutex lock count. This is incremented by os_lock() function
-	    and decremented by os_unlock() function.
-	 */
-	os_int system_mutex_lock_count;
+    /** System mutex lock count. This is incremented by os_lock() function
+        and decremented by os_unlock() function.
+     */
+    os_int system_mutex_lock_count;
 
-	/** Saved priority when system mutex was locked. This is set by os_lock() 
-	    function and restored by os_unlock() function. The value is 
-		operating system's priority, not OSAL priority.
-	 */
-	os_int system_mutex_enter_priority;
+    /** Saved priority when system mutex was locked. This is set by os_lock()
+        function and restored by os_unlock() function. The value is
+        operating system's priority, not OSAL priority.
+     */
+    os_int system_mutex_enter_priority;
 
-	/** Saved system mutex thread handle. This is saved by os_lock() 
-	    function and used by os_unlock() function.
-	 */
-	void *system_mutex_thread;
+    /** Saved system mutex thread handle. This is saved by os_lock()
+        function and used by os_unlock() function.
+     */
+    void *system_mutex_thread;
 #endif
 #endif
 
@@ -124,28 +128,28 @@ typedef struct
     os_char auto_password[OSAL_SECRET_STR_SZ];
 #endif
 
-	/* Resource monitor related, see osal_resource_monitor.c.
-	 */
+    /* Resource monitor related, see osal_resource_monitor.c.
+     */
 #if OSAL_RESOURCE_MONITOR
 
     /** Resource monitor state structure, see osal_resource_monitor.h.
      */
-	osalResourceMonitorState resstate;
+    osalResourceMonitorState resstate;
 #endif
 
 #if OSAL_CONSOLE
-	/** Console state structure.
-	 */
-	osalConsoleState constate;
+    /** Console state structure.
+     */
+    osalConsoleState constate;
 #endif
 
 #if OSAL_TLS_SUPPORT
     struct osalTLS *tls;
 #endif
 
-	/** System timer parameter. Values differ for each operating system.
-	 */
-	os_int64 sys_timer_param;
+    /** System timer parameter. Values differ for each operating system.
+     */
+    os_int64 sys_timer_param;
 
 #if OSAL_SOCKET_SUPPORT
     /** Pointer to global socket structure

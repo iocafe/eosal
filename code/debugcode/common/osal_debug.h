@@ -14,17 +14,18 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
 
-/** Define OSAL_DEBUG_FILE_AND_LINE as 1 to include file name and line number in osal_debug 
+/** Define OSAL_DEBUG_FILE_AND_LINE as 1 to include file name and line number in osal_debug
     and osal_assert macros. Effective only when OSAL_DEBUG is 1.
  */
+#ifdef OSAL_DEBUG_FILE_AND_LINE
 #define OSAL_DEBUG_FILE_AND_LINE 1
-
+#endif
 
 /**
 ****************************************************************************************************
@@ -44,7 +45,7 @@
 /*@}*/
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Debug Functions
@@ -58,36 +59,36 @@
 #if OSAL_DEBUG
 
 #if OSAL_DEBUG_FILE_AND_LINE
-	/* Macro to add file name line number to osal_debug_error_func() function arguments.
-	 */
-	#define osal_debug_error(text) osal_debug_error_func(text, __FILE__, __LINE__)
+    /* Macro to add file name line number to osal_debug_error_func() function arguments.
+     */
+    #define osal_debug_error(text) osal_debug_error_func(text, __FILE__, __LINE__)
 
-	/* Macro to add file name line number to osal_debug_error_int_func() function arguments.
-	 */
-	#define osal_debug_error_int(text,v) osal_debug_error_int_func(text, v, __FILE__, __LINE__)
+    /* Macro to add file name line number to osal_debug_error_int_func() function arguments.
+     */
+    #define osal_debug_error_int(text,v) osal_debug_error_int_func(text, v, __FILE__, __LINE__)
 
     /* Macro to add file name line number to osal_debug_error_str_func() function arguments.
      */
     #define osal_debug_error_str(text,v) osal_debug_error_str_func(text, v, __FILE__, __LINE__)
 
-	/* Macro to add file name line number to osal_debug_assert_func() arguments.
-	 */
+    /* Macro to add file name line number to osal_debug_assert_func() arguments.
+     */
     #define osal_debug_assert(cond) osal_debug_assert_func((os_long)(cond), (os_char*)__FILE__, __LINE__)
 
-	/* Log a programming error.
-	 */
-	void osal_debug_error_func(
-		const os_char *text,
+    /* Log a programming error.
+     */
+    void osal_debug_error_func(
+        const os_char *text,
         const os_char *file,
-		os_int line);
+        os_int line);
 
-	/* Log a programming error with integer argument v (appended).
-	 */
-	void osal_debug_error_int_func(
-		const os_char *text,
+    /* Log a programming error with integer argument v (appended).
+     */
+    void osal_debug_error_int_func(
+        const os_char *text,
         os_long v,
         const os_char *file,
-		os_int line);
+        os_int line);
 
     /* Log a programming error with string argument v (appended).
      */
@@ -97,36 +98,41 @@
         const os_char *file,
         os_int line);
 
-	/* Report programming error if cond is zero.
-	 */
-	void osal_debug_assert_func(
-		os_long cond, 
-		os_char *file, 
-		os_int line);
+    /* Report programming error if cond is zero.
+     */
+    void osal_debug_assert_func(
+        os_long cond,
+        os_char *file,
+        os_int line);
 
 #else
-	/* Log a programming error.
-	 */
-	void osal_debug_error(
-		const os_char *text);
+    /* Log a programming error.
+     */
+    void osal_debug_error(
+        const os_char *text);
 
     /* Log a programming error with integer argument v (appended).
-	 */
-	void osal_debug_error_int(
-		const os_char *text
+     */
+    void osal_debug_error_int(
+        const os_char *text,
         os_long v);
 
     /* Log a programming error with string argument v (appended).
      */
     void osal_debug_error_str(
-        const os_char *text
+        const os_char *text,
         const os_char *v);
 
-	/* Report programming error if cond is zero.
-	 */
-	void osal_debug_assert(
-		os_long cond);
+    /* Report programming error if cond is zero.
+     */
+    void osal_debug_assert(
+        os_long cond);
 #endif
+
+    /* Quiet mode silences debug prints to allow user to operate console.
+     */
+    void osal_quiet(
+        os_boolean enable);
 
 /*@}*/
 
