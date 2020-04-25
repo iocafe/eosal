@@ -26,6 +26,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
+#include <unistd.h>
 /**
 ****************************************************************************************************
 
@@ -97,7 +98,7 @@ os_uint osal_sysconsole_read(
         line_buffering_disabled = OS_TRUE;
 
         tcgetattr(stdin_handle, &attr);
-        attr.c_lflag &= ~ICANON;
+        attr.c_lflag &= ~(ICANON | ECHO);
         tcsetattr(stdin_handle, TCSANOW, &attr);
         setbuf(stdin, NULL);
     }
@@ -107,6 +108,5 @@ os_uint osal_sysconsole_read(
 
     return (os_uint)getchar();
 }
-
 
 #endif
