@@ -1,14 +1,14 @@
 /**
 
-  @file    stringx/common/osal_str_get_item_value.c
+  @file    stringx/common/osal_str_get_next.c
   @brief   Find value of item in list string.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -26,7 +26,7 @@
   in list string
 
   @param   list_str Pointer to list string to search. If the str is OS_NULL the function
-		   will return pointer to null character.
+           will return pointer to null character.
 
   @return  Pointer to first character on next line of list string. OS_NULL If none found.
 
@@ -50,23 +50,23 @@ const os_char *osal_str_get_next(
         bc = '\t';
     }
 
-	/* If list string is NULL pointer, return pointer to null character.
-	 */
-	if (list_str) 
-	{
+    /* If list string is NULL pointer, return pointer to null character.
+     */
+    if (list_str)
+    {
         a = os_strchr((os_char*)list_str, ac);
         b = os_strchr((os_char*)list_str, bc);
-		if (a) 
-		{
-			if (b) if (b < a) a = b;
-			return a+1;
-		}
-		
-        if (b) return b + 1;
-	}
+        if (a)
+        {
+            if (b) if (b < a) a = b;
+            return a+1;
+        }
 
-	/* No next line.
-	 */
+        if (b) return b + 1;
+    }
+
+    /* No next line.
+     */
     return OS_NULL;
 }
 
