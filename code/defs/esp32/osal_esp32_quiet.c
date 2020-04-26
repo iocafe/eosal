@@ -1,6 +1,6 @@
 /**
 
-  @file    defs/common/osal_global.c
+  @file    defs/esp32/osal_esp32_quiet.c
   @brief   Global OSAL state.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+/* #include "esp_log.h" */
 
 /**
 ****************************************************************************************************
@@ -35,5 +36,8 @@ os_boolean osal_quiet(
     os_boolean prev_value;
     prev_value = osal_global->quiet_mode;
     osal_global->quiet_mode = enable;
+    /* esp_log_level_set("*", enable ? ESP_LOG_ERROR : ESP_LOG_WARN);
+    esp_log_level_set("wifi", enable ? ESP_LOG_ERROR : ESP_LOG_INFO);
+    esp_log_level_set("dhcpc", enable ? ESP_LOG_ERROR : ESP_LOG_INFO); */
     return prev_value;
 }

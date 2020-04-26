@@ -26,7 +26,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -359,7 +359,6 @@ osal_debug_error("HERE 2");
             break;
 
         case OSAL_WIFI_INIT_STEP3:
-
 #if OSAL_SUPPORT_WIFI_MULTI
             if (!ans.wifi_multi_on)
             {
@@ -460,7 +459,7 @@ osal_debug_error("HERE 2");
 ****************************************************************************************************
 */
 void osal_socket_shutdown(
-	void)
+    void)
 {
     osal_global->socket_global = OS_NULL;
 }
