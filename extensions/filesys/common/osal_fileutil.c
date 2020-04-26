@@ -334,7 +334,7 @@ osalStatus osal_remove_recursive(
                 goto getout;
             }
 
-            // s = osal_rmdir(new_path, 0);
+            s = osal_rmdir(new_path, 0);
             if (s) {
                 goto getout;
             }
@@ -342,7 +342,7 @@ osalStatus osal_remove_recursive(
 
         else
         {
-            // s = osal_remove(path, 0);
+            s = osal_remove(new_path, 0);
             if (s) {
                 goto getout;
             }

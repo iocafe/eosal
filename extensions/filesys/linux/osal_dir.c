@@ -118,7 +118,7 @@ osalStatus osal_dir(
             }
 
             os_memcpy(fspath + fspath_pos, pDirent->d_name, len);
-            if (!osal_filestat(path, &filestat))
+            if (!osal_filestat(fspath, &filestat))
             {
                 item->isdir = filestat.isdir;
                 item->sz = filestat.sz;
