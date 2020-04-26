@@ -600,8 +600,8 @@ static void os_persistent_read_internal(
   The os_persistent_write() function writes n bytes from buf to EEPROM starting from addr.
 
   @param   buf Buffer from where to write the data.
-  @param   addr First address to read.
-  @param   n Number of bytes to read.
+  @param   addr First address to write.
+  @param   n Number of bytes to write.
   @return  None.
 
 ****************************************************************************************************
@@ -620,6 +620,36 @@ static void os_persistent_write_internal(
         }
 
         EEPROM.write(addr++, *(buf++));
+    }
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Write zeros to EEPROM.
+  @anchor os_persistent_delete_internal
+
+  The os_persistent_delete_internal() function writes zeros to EEPROM starting from addr.
+
+  @param   addr First address to clear.
+  @param   n Number of bytes to clear.
+  @return  None.
+
+****************************************************************************************************
+*/
+static void os_persistent_delete_internal(
+    os_ushort addr,
+    os_ushort n)
+{
+    while (n--)
+    {
+        if (addr >= eeprom_sz)
+        {
+            break;
+        }
+
+        EEPROM.write(addr++, 0);
     }
 }
 
@@ -655,6 +685,30 @@ static void os_persistent_move(
     }
 
     osal_control_interrupts(OS_TRUE);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Wipe persistent data.
+
+  The os_persistent_delete function wipes out all persistent data.
+
+  @param   flags Set OSAL_PERSISTENT_DELETE_ALL for now.
+  @return  OSAL_SUCCESS if all good, other values indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus os_persistent_delete(
+    os_int flags)
+{
+    os_memclear((os_char*)&hdr, sizeof(hdr));
+    osal_control_interrupts(OS_FALSE);
+    os_persistent_delete_internal(0, eeprom_sz);
+    EEPROM.commit();
+    osal_control_interrupts(OS_TRUE);
+    return OSAL_SUCCESS;
 }
 
 #endif

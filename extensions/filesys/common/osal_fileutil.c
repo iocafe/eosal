@@ -6,16 +6,15 @@
   @version 1.0
   @date    8.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
 #include "eosalx.h"
 #if OSAL_FILESYS_SUPPORT
-
 
 /**
 ****************************************************************************************************
@@ -278,6 +277,85 @@ osalStatus os_write_file(
     s = osal_file_write(f, buf, n, &n_written, OSAL_STREAM_DEFAULT);
 
     osal_file_close(f, OSAL_STREAM_DEFAULT);
+    return s;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Delete a files or directories with wildcard.
+  @anchor osal_remove_recursive
+
+  The osal_remove_recursive() function removes files and directories matching to wildcard and
+  and all subdirectories and files.
+
+  @param  path Path to directory.
+  @param  wildcard Wildcard to match in directory fiven as argument.
+  @param  flags Reserved for future, set zero for now.
+  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
+          indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus osal_remove_recursive(
+    const os_char *path,
+    const os_char *wildcard,
+    os_int flags)
+{
+    osalDirListItem *list, *item;
+    os_char *new_path;
+    os_memsz path_sz, name_sz, alloc_sz;
+    osalStatus s;
+
+    path_sz = os_strlen(path);
+    new_path = OS_NULL;
+    alloc_sz = 0;
+
+    s = osal_dir(path, wildcard, &list, OSAL_DIR_FILESTAT);
+    if (s) return s;
+
+    for (item = list; item; item = item->next)
+    {
+        name_sz = os_strlen(item->name);
+        new_path = os_malloc(path_sz + name_sz, &alloc_sz);
+        if (new_path == OS_NULL) {
+            s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+            goto getout;
+        }
+        os_strncpy(new_path, path, alloc_sz);
+        os_strncat(new_path, "/", alloc_sz);
+        os_strncat(new_path, item->name, alloc_sz);
+
+        if (item->isdir)
+        {
+            s = osal_remove_recursive(new_path, "*", flags);
+            if (s) {
+                goto getout;
+            }
+
+            // s = osal_rmdir(new_path, 0);
+            if (s) {
+                goto getout;
+            }
+        }
+
+        else
+        {
+            // s = osal_remove(path, 0);
+            if (s) {
+                goto getout;
+            }
+        }
+
+        os_free(new_path, alloc_sz);
+        new_path = OS_NULL;
+        alloc_sz = 0;
+    }
+
+getout:
+    os_free(new_path, alloc_sz);
+    osal_free_dirlist(list);
     return s;
 }
 

@@ -8,9 +8,9 @@
 
   Functions for listing, creating and removing a directory.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -236,7 +236,7 @@ osalStatus osal_rmdir(
     {
         switch (errno)
         {
-            /* Process does not have rights to create directory.
+            /* Process does not have rights to delete the directory.
              */
             case EACCES:
             case EPERM:
@@ -257,5 +257,6 @@ osalStatus osal_rmdir(
 
     return OSAL_SUCCESS;
 }
+
 
 #endif

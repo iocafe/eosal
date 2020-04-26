@@ -32,9 +32,9 @@
   Warning: Do not use micro-controller flash to save any data which changes during normal
   run time operation, it will eventually burn out the flash (death of the micro controller).
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -123,6 +123,7 @@ osPersistentHandle;
 #define OSAL_PERSISTENT_READ 1
 #define OSAL_PERSISTENT_WRITE 2
 #define OSAL_PERSISTENT_SECRET 4
+#define OSAL_PERSISTENT_DELETE_ALL 8
 
 
 /**
@@ -205,5 +206,10 @@ osalStatus os_save_persistent(
     const os_char *block,
     os_memsz block_sz,
     os_boolean delete_block);
+
+/* Delete persistent data.
+ */
+osalStatus os_persistent_delete(
+    os_int flags);
 
 #endif

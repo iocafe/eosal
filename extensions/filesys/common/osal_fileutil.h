@@ -6,9 +6,9 @@
   @version 1.0
   @date    8.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -21,7 +21,7 @@
 #define OS_FILE_NULL_CHAR 1
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name File helper functions.
@@ -54,6 +54,13 @@ osalStatus os_write_file(
     const os_char *path,
     const os_char *buf,
     os_memsz n,
+    os_int flags);
+
+/* Delete a files or directories with wildcard.
+ */
+osalStatus osal_remove_recursive(
+    const os_char *path,
+    const os_char *wildcard,
     os_int flags);
 
 /*@}*/

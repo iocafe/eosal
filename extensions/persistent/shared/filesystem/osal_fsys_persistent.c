@@ -6,9 +6,9 @@
   @version 1.0
   @date    8.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -405,6 +405,30 @@ static void os_persistent_make_path(
     osal_int_to_str(buf, sizeof(buf), block_nr);
     os_strncat(path, buf, path_sz);
     os_strncat(path, ".dat", path_sz);
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Wipe persistent data.
+
+  The os_persistent_delete function wipes out all persistent data.
+
+  @param   flags Set OSAL_PERSISTENT_DELETE_ALL for now.
+  @return  OSAL_SUCCESS if all good, other values indicate an error.
+
+****************************************************************************************************
+*/
+osalStatus os_persistent_delete(
+    os_int flags)
+{
+    osalStatus s;
+    s = osal_remove_recursive(rootpath, "*.dat", 0);
+    if (s) {
+        osal_debug_error_int("os_persistent_delete failed ", s);
+    }
+    return s;
 }
 
 #endif

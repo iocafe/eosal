@@ -6,9 +6,9 @@
   @version 1.0
   @date    30.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -40,12 +40,8 @@ osalStatus os_save_persistent(
     osPersistentHandle *h;
     osalStatus s;
 
-osal_debug_error("HERE Q1");
-
     h = os_persistent_open(block_nr, OS_NULL, OSAL_PERSISTENT_WRITE|OSAL_PERSISTENT_SECRET);
     if (h == OS_NULL) return OSAL_STATUS_FAILED;
-
-osal_debug_error("HERE Q2");
 
     if (delete_block)
     {
@@ -54,10 +50,8 @@ osal_debug_error("HERE Q2");
     else
     {
         s = os_persistent_write(h, block, block_sz);
-osal_debug_error("HERE Q3");
     }
     os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
-osal_debug_error("HERE Q4");
     return s;
 }
 
