@@ -78,6 +78,7 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/filesys/common/osal_dir.h"
   #include "extensions/filesys/common/osal_filestat.h"
   #include "extensions/filesys/common/osal_fileutil.h"
+  #include "extensions/filesys/common/osal_filectrl.h"
 #endif
 
 #if OSAL_SERIALIZE_SUPPORT
