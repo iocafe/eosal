@@ -191,11 +191,11 @@ typedef struct osalWifiPersistent
 {
     osalWifiNetworkBuf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
 
-    /* If set, these will overdrive settings elsewhere.
+    /* If set, these will override settings elsewhere.
      */
-    os_char network_name_overdrive[OSAL_NETWORK_NAME_SZ];
-    os_char device_nr_overdrive[OSAL_DEVICE_NR_STR_SZ];
-    os_char connect_to_overdrive[OSAL_HOST_BUF_SZ];
+    os_char network_name_override[OSAL_NETWORK_NAME_SZ];
+    os_char device_nr_override[OSAL_DEVICE_NR_STR_SZ];
+    os_char connect_to_override[OSAL_HOST_BUF_SZ];
 }
 osalWifiPersistent;
 
