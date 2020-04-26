@@ -66,7 +66,7 @@
     for microcontrollers or other systems with very limited memory resources.
  */
 #ifndef OSAL_DYNAMIC_MEMORY_ALLOCATION
-#define OSAL_DYNAMIC_MEMORY_ALLOCATION 1
+#define OSAL_DYNAMIC_MEMORY_ALLOCATION 0
 #endif
 
 /** Include memory debug code. If OSAL_MEMORY_DEBUG flags is nonzero, the memory
@@ -160,11 +160,7 @@
     32 bit timer type is used.
  */
 #ifndef OSAL_TIMER_IS_64_BITS
-  #ifdef ESP_PLATFORM
-    #define OSAL_TIMER_IS_64_BITS 1
-  #else
-    #define OSAL_TIMER_IS_64_BITS 0
-  #endif
+#define OSAL_TIMER_IS_64_BITS 0
 #endif
 
 /** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero, 
@@ -184,30 +180,25 @@
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
-  #ifdef ESP_PLATFORM
-    #define OSAL_MULTITHREAD_SUPPORT 1
-  #else
-    #define OSAL_MULTITHREAD_SUPPORT 0
-  #endif
+#define OSAL_MULTITHREAD_SUPPORT 0
 #endif
 
 /** Define 1 to maintain list of function pointers to enable/disable
     all application interrupts by one function call.
  */
 #ifndef OSAL_INTERRUPT_LIST_SUPPORT
-  #ifdef ESP_PLATFORM
-    #define OSAL_INTERRUPT_LIST_SUPPORT 1
-  #endif
+#define OSAL_INTERRUPT_LIST_SUPPORT 0
 #endif
 
 /** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code
     and for functions called from interrupt handler. Global data accessed from ISR
     must have DRAM_ATTR flag.
  */
-#ifdef ESP_PLATFORM
+/* #ifdef ESP_PLATFORM
 #define OS_ISR_FUNC_ATTR IRAM_ATTR
 #define OS_ISR_DATA_ATTR DRAM_ATTR
 #endif
+*/
 
 /** If compiler can support function pointers and interfaces, define 1. Define zero
     only for systems which do not handle function pointers properly (for example PIC).
@@ -277,9 +268,6 @@
   #ifdef STM32F4xx
     #define OSAL_SOCKET_SUPPORT OSAL_ARDUINO_ETHERNET_LWIP
   #endif
-  #ifdef ESP_PLATFORM
-    #define OSAL_SOCKET_SUPPORT OSAL_LWIP_SOCKET_API_ARDUINO_WIFI
-  #endif
 #endif
 
 /* Unknown micro controller build, default to WizNET chip.
@@ -331,7 +319,7 @@
     the MBed TLS functions can be used outside the TLS wrapper).
  */
 #ifndef OSAL_MBED_TLS_SUPPORT
-#define OSAL_MBED_TLS_SUPPORT ESP_PLATFORM
+#define OSAL_MBED_TLS_SUPPORT 0
 #endif
 
 /** If serial communication is supported for the platform, define 1.
