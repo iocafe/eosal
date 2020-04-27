@@ -20,7 +20,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -154,7 +154,7 @@ typedef struct osalSerial
     osalStreamHeader hdr;
 
     /** Pointer to global usart confifuration.
-	 */
+     */
     osalStaticUARTConfig *uart;
 
     /* Ring buffers.
@@ -177,8 +177,8 @@ typedef struct osalSerial
         sendflag;
 
     /** Stream open flags. Flags which were given to osal_serial_open() function.
-	 */
-	os_int open_flags;
+     */
+    os_int open_flags;
 
 }
 osalSerial;
@@ -236,9 +236,9 @@ static void osal_serial_irq_handler(
 */
 osalStream osal_serial_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     LL_USART_InitTypeDef
         initstruc;
@@ -459,8 +459,8 @@ void osal_serial_close(
 ****************************************************************************************************
 */
 osalStatus osal_serial_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
     osalSerial *myserial;
 
@@ -480,7 +480,7 @@ osalStatus osal_serial_flush(
         myserial->rxhead = myserial->rxtail = myserial->rxbuf;
     }
 
-	return OSAL_SUCCESS;
+    return OSAL_SUCCESS;
 }
 
 
@@ -507,11 +507,11 @@ osalStatus osal_serial_flush(
 ****************************************************************************************************
 */
 osalStatus osal_serial_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     volatile os_uchar *next, *tail;
     __IO os_uchar c;
@@ -609,11 +609,11 @@ osalStatus osal_serial_write(
 ****************************************************************************************************
 */
 osalStatus osal_serial_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     osalSerial *myserial;
     os_uchar *end;
@@ -662,12 +662,12 @@ osalStatus osal_serial_read(
 ****************************************************************************************************
 */
 os_long osal_serial_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
     /* Call the default implementation.
-	 */
-	return osal_stream_default_get_parameter(stream, parameter_ix);
+     */
+    return osal_stream_default_get_parameter(stream, parameter_ix);
 }
 
 
@@ -689,13 +689,13 @@ os_long osal_serial_get_parameter(
 ****************************************************************************************************
 */
 void osal_serial_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
     /* Call the default implementation.
-	 */
-	osal_stream_default_set_parameter(stream, parameter_ix, value);
+     */
+    osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -925,7 +925,7 @@ static void osal_serial_irq_handler(
 ****************************************************************************************************
 */
 void osal_serial_initialize(
-	void)
+    void)
 {
     int i;
 
@@ -956,7 +956,7 @@ void osal_serial_initialize(
 ****************************************************************************************************
 */
 void osal_serial_shutdown(
-	void)
+    void)
 {
 }
 
@@ -966,17 +966,17 @@ void osal_serial_shutdown(
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
  */
-const osalStreamInterface osal_serial_iface
+OS_FLASH_MEM osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
     osal_serial_close,
     osal_stream_default_accept,
     osal_serial_flush,
-	osal_stream_default_seek,
+    osal_stream_default_seek,
     osal_serial_write,
     osal_serial_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
     osal_serial_get_parameter,
     osal_serial_set_parameter,
     osal_stream_default_select};

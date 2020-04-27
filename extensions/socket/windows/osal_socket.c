@@ -11,7 +11,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -39,15 +39,15 @@ typedef struct osalSocket
      */
     osalStreamHeader hdr;
 
-	/** Operating system's socket handle.
-	 */
-	SOCKET handle;
+    /** Operating system's socket handle.
+     */
+    SOCKET handle;
 
 #if OSAL_SOCKET_SELECT_SUPPORT
-	/** Even to be set when new data has been received, can be sent, new connection has been 
-		created, accepted or closed socket.
-	 */
-	WSAEVENT event;
+    /** Even to be set when new data has been received, can be sent, new connection has been
+        created, accepted or closed socket.
+     */
+    WSAEVENT event;
 #endif
 
     /** Multicast group address (binary)
@@ -60,42 +60,42 @@ typedef struct osalSocket
     os_char *send_mcast_ifaces;
     os_int send_mcast_ifaces_n;
     os_int send_mcast_ifaces_sz;
-    
+
     /** Port number for multicasts or listening connections.
      */
     os_int passive_port;
 
-	/** Stream open flags. Flags which were given to osal_socket_open() or osal_socket_accept()
-        function. 
-	 */
-	os_int open_flags;
+    /** Stream open flags. Flags which were given to osal_socket_open() or osal_socket_accept()
+        function.
+     */
+    os_int open_flags;
 
     /** This is IP v6 socket?
      */
     os_boolean is_ipv6;
 
     /** Ring buffer, OS_NULL if not used.
-	 */
-	os_uchar *buf;
+     */
+    os_uchar *buf;
 
     /** Buffer size in bytes.
-	 */
-	os_short buf_sz;
+     */
+    os_short buf_sz;
 
-	/** Head index. Position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
-	 */
-	os_short head;
+    /** Head index. Position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
+     */
+    os_short head;
 
-	/** Tail index. Position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
-	 */
-	os_short tail;
-} 
+    /** Tail index. Position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
+     */
+    os_short tail;
+}
 osalSocket;
 
 
 typedef union osalSocketAddress
 {
-	struct sockaddr_in ip4;
+    struct sockaddr_in ip4;
     struct sockaddr_in6 ip6;
 }
 osalSocketAddress;
@@ -105,36 +105,36 @@ osalSocketAddress;
  */
 static osalStatus osal_setup_tcp_socket(
     osalSocket *mysocket,
-    os_char *iface_addr_bin, 
+    os_char *iface_addr_bin,
     os_boolean iface_addr_is_ipv6,
     os_int port_nr,
-	os_int flags);
+    os_int flags);
 
 static osalStatus osal_setup_socket_for_udp_multicasts(
-	osalSocket *mysocket,
-    os_char *multicast_group_addr_str, 
-    os_char *iface_addr_bin, 
+    osalSocket *mysocket,
+    os_char *multicast_group_addr_str,
+    os_char *iface_addr_bin,
     os_boolean iface_addr_is_ipv6,
     os_int port_nr,
     os_int flags);
 
 static osalStatus osal_socket_alloc_send_mcast_ifaces(
-	osalSocket *mysocket,
+    osalSocket *mysocket,
     os_int n);
 
 static osalStatus osal_socket_write2(
-	osalSocket *mysocket,
+    osalSocket *mysocket,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags);
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags);
 
 static void osal_socket_set_nodelay(
     SOCKET handle,
     DWORD state);
 
 static void osal_socket_setup_ring_buffer(
-	osalSocket *mysocket);
+    osalSocket *mysocket);
 
 static os_int osal_socket_list_network_interfaces(
     osalStream interface_list,
@@ -152,32 +152,32 @@ static os_int osal_get_interface_index_by_ipv6_address(
   @brief Open a socket.
   @anchor osal_socket_open
 
-  The osal_socket_open() function opens a socket. The socket can be either listening TCP 
-  socket, connecting TCP socket or UDP multicast socket. 
+  The osal_socket_open() function opens a socket. The socket can be either listening TCP
+  socket, connecting TCP socket or UDP multicast socket.
 
   @param  parameters Socket parameters, a list string or direct value.
-		  Address and port to connect to, or interface and port to listen for.
+          Address and port to connect to, or interface and port to listen for.
           Socket IP address and port can be specified either as value of "addr" item
           or directly in parameter sstring. For example "192.168.1.55:20" or "localhost:12345"
-          specify IPv4 addressed. If only port number is specified, which is often 
+          specify IPv4 addressed. If only port number is specified, which is often
           useful for listening socket, for example ":12345".
           IPv4 address is automatically recognized from numeric address like
           "2001:0db8:85a3:0000:0000:8a2e:0370:7334", but not when address is specified as string
           nor for empty IP specifying only port to listen. Use brackets around IP address
           to mark IPv6 address, for example "[localhost]:12345", or "[]:12345" for empty IP.
 
-  @param  option UDP multicasts, the multicast group address as string.  
+  @param  option UDP multicasts, the multicast group address as string.
           Otherwise not used for sockets, set OS_NULL.
 
   @param  status Pointer to integer into which to store the function status code. Value
-		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
+          OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
           See @ref osalStatus "OSAL function return codes" for full list.
-		  This parameter can be OS_NULL, if no status code is needed. 
+          This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the socket. Bit fields, combination of:
-          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
-          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address.
+          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections.
+          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket.
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open socket with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket. Use TCP_CORK on
@@ -185,7 +185,7 @@ static os_int osal_get_interface_index_by_ipv6_address(
             must be called to actually transfer data.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
 
-		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
+          See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
   @return Stream pointer representing the socket, or OS_NULL if the function failed.
 
@@ -193,15 +193,15 @@ static os_int osal_get_interface_index_by_ipv6_address(
 */
 osalStream osal_socket_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
-	osalSocket *mysocket = OS_NULL;
+    osalSocket *mysocket = OS_NULL;
     os_char iface_addr_bin[OSAL_IP_BIN_ADDR_SZ];
-	os_int port_nr;
+    os_int port_nr;
     os_boolean is_ipv6;
-	osalStatus s; 
+    osalStatus s;
     os_int info_code;
 
     /* Return OS_NULL if network not (yet) initialized initialized.
@@ -213,8 +213,8 @@ osalStream osal_socket_open(
         return OS_NULL;
     }
 
-	/* Get host name or numeric IP address and TCP port number from parameters.
-	 */
+    /* Get host name or numeric IP address and TCP port number from parameters.
+     */
     s = osal_socket_get_ip_and_port(parameters, iface_addr_bin, sizeof(iface_addr_bin),
         &port_nr, &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
     if (s)
@@ -224,25 +224,25 @@ osalStream osal_socket_open(
     }
 
     /* Allocate and clear socket structure.
-	 */
-	mysocket = (osalSocket*)os_malloc(sizeof(osalSocket), OS_NULL);
-	if (mysocket == OS_NULL) 
-	{
-		s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-		goto getout;
-	}
-	os_memclear(mysocket, sizeof(osalSocket));
+     */
+    mysocket = (osalSocket*)os_malloc(sizeof(osalSocket), OS_NULL);
+    if (mysocket == OS_NULL)
+    {
+        s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+        goto getout;
+    }
+    os_memclear(mysocket, sizeof(osalSocket));
 
-	/* Save socket open flags and interface pointer.
-	 */
-	mysocket->open_flags = flags;
-	mysocket->hdr.iface = &osal_socket_iface;
+    /* Save socket open flags and interface pointer.
+     */
+    mysocket->open_flags = flags;
+    mysocket->hdr.iface = &osal_socket_iface;
 
     /* Open UDP multicast socket
      */
     if (flags & OSAL_STREAM_MULTICAST)
     {
-        s = osal_setup_socket_for_udp_multicasts(mysocket, option, 
+        s = osal_setup_socket_for_udp_multicasts(mysocket, option,
             iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
         info_code = OSAL_UDP_SOCKET_CONNECTED;
@@ -250,8 +250,8 @@ osalStream osal_socket_open(
 
     /* Open TCP socket.
      */
-	else 
-	{
+    else
+    {
         s = osal_setup_tcp_socket(mysocket, iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
         info_code = (flags & OSAL_STREAM_LISTEN)
@@ -262,7 +262,7 @@ osalStream osal_socket_open(
      */
     osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;
-	return (osalStream)mysocket;
+    return (osalStream)mysocket;
 
 getout:
     /* If we got far enough to allocate the socket structure.
@@ -272,16 +272,16 @@ getout:
     if (mysocket)
     {
         /* Close socket
-         */    
-	    if (mysocket->handle != INVALID_SOCKET) 
-	    {
-		    closesocket(mysocket->handle);
-	    }
+         */
+        if (mysocket->handle != INVALID_SOCKET)
+        {
+            closesocket(mysocket->handle);
+        }
 
-        if (mysocket->event) 
-	    {
-		    WSACloseEvent(mysocket->event);
-	    }
+        if (mysocket->event)
+        {
+            WSACloseEvent(mysocket->event);
+        }
 
         /* Release memory allocated for multicast iface list.
          */
@@ -293,12 +293,12 @@ getout:
         os_free(mysocket, sizeof(osalSocket));
     }
 
-	/* Set status code and return NULL pointer.
-	 */
-	if (status) *status = s;
-	return OS_NULL;
+    /* Set status code and return NULL pointer.
+     */
+    if (status) *status = s;
+    return OS_NULL;
 }
-    
+
 
 /**
 ****************************************************************************************************
@@ -306,7 +306,7 @@ getout:
   @brief Connect or listen for TCP socket (internal).
   @anchor osal_setup_tcp_socket
 
-  The osal_setup_tcp_socket() function.... 
+  The osal_setup_tcp_socket() function....
 
   @param  mysocket Pointer to my socket structure.
   @param  iface_addr_bin IP address of network interface to use, binary format, 4 bytes for IPv4
@@ -321,14 +321,14 @@ getout:
 */
 static osalStatus osal_setup_tcp_socket(
     osalSocket *mysocket,
-    os_char *iface_addr_bin, 
+    os_char *iface_addr_bin,
     os_boolean iface_addr_is_ipv6,
     os_int port_nr,
-	os_int flags)
+    os_int flags)
 {
-	osalStatus s; 
-	SOCKET handle = INVALID_SOCKET;
-	struct sockaddr_in saddr;
+    osalStatus s;
+    SOCKET handle = INVALID_SOCKET;
+    struct sockaddr_in saddr;
     struct sockaddr_in6 saddr6;
     struct sockaddr *sa;
     os_int af, sa_sz;
@@ -341,7 +341,7 @@ static osalStatus osal_setup_tcp_socket(
         os_memclear(&saddr6, sizeof(saddr6));
         saddr6.sin6_family = af;
         saddr6.sin6_port = htons(port_nr);
-        os_memcpy(&saddr6.sin6_addr, iface_addr_bin, OSAL_IPV6_BIN_ADDR_SZ); 
+        os_memcpy(&saddr6.sin6_addr, iface_addr_bin, OSAL_IPV6_BIN_ADDR_SZ);
         sa = (struct sockaddr *)&saddr6;
         sa_sz = sizeof(saddr6);
     }
@@ -359,11 +359,11 @@ static osalStatus osal_setup_tcp_socket(
     /* Create socket.
      */
     handle = socket(af, SOCK_STREAM,  IPPROTO_TCP);
-    if (handle == INVALID_SOCKET) 
-	{
-		s = OSAL_STATUS_FAILED;
-		goto getout;
-	}
+    if (handle == INVALID_SOCKET)
+    {
+        s = OSAL_STATUS_FAILED;
+        goto getout;
+    }
 
     /* Set socket reuse flag.
      */
@@ -373,61 +373,61 @@ static osalStatus osal_setup_tcp_socket(
         if (setsockopt(handle, SOL_SOCKET, SO_REUSEADDR,
             (char *)&on, sizeof(on)) < 0)
         {
-		    s = OSAL_STATUS_FAILED;
-		    goto getout;
+            s = OSAL_STATUS_FAILED;
+            goto getout;
         }
     }
 
-	/* Set non blocking mode.
-	 */
+    /* Set non blocking mode.
+     */
     on = 1;
-  	ioctlsocket(handle, FIONBIO, &on);
+    ioctlsocket(handle, FIONBIO, &on);
     bon = 1;
     setsockopt(handle, SOL_SOCKET, SO_DONTLINGER, (char *)&bon, sizeof(bon));
 
-	/* Save flags and interface pointer.
-	 */
-	mysocket->open_flags = flags;
+    /* Save flags and interface pointer.
+     */
+    mysocket->open_flags = flags;
     mysocket->is_ipv6 = iface_addr_is_ipv6;
-	mysocket->hdr.iface = &osal_socket_iface;
+    mysocket->hdr.iface = &osal_socket_iface;
 
 #if OSAL_SOCKET_SELECT_SUPPORT
     /* If we are preparing to use this with select function.
      */
     if ((flags & (OSAL_STREAM_NO_SELECT|OSAL_STREAM_SELECT)) == OSAL_STREAM_SELECT)
-    {   
+    {
         /* Create event
          */
         mysocket->event = WSACreateEvent();
         if (mysocket->event == WSA_INVALID_EVENT)
         {
-		    s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-		    goto getout;
+            s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+            goto getout;
         }
 
-        if (WSAEventSelect(handle, mysocket->event, FD_ACCEPT|FD_CONNECT|FD_CLOSE|FD_READ|FD_WRITE) 
+        if (WSAEventSelect(handle, mysocket->event, FD_ACCEPT|FD_CONNECT|FD_CLOSE|FD_READ|FD_WRITE)
             == SOCKET_ERROR)
         {
-		    s = OSAL_STATUS_FAILED;
-		    goto getout;
-        }           
+            s = OSAL_STATUS_FAILED;
+            goto getout;
+        }
     }
 #endif
 
-	if (flags & OSAL_STREAM_LISTEN)
-	{
-		if (bind(handle, sa, sa_sz)) 
-		{
-			s = OSAL_STATUS_FAILED;
-			goto getout;
-		}
+    if (flags & OSAL_STREAM_LISTEN)
+    {
+        if (bind(handle, sa, sa_sz))
+        {
+            s = OSAL_STATUS_FAILED;
+            goto getout;
+        }
 
         /* Set the listen back log
          */
         if (listen(handle, 32) != 0)
         {
-		    s = OSAL_STATUS_FAILED;
-		    goto getout;
+            s = OSAL_STATUS_FAILED;
+            goto getout;
         }
 
         /* Set any nonzero multicast port to indicate to close() function
@@ -436,16 +436,16 @@ static osalStatus osal_setup_tcp_socket(
         mysocket->passive_port = port_nr;
     }
 
-	else 
-	{
-		if (connect(handle, sa, sa_sz))
-		{
+    else
+    {
+        if (connect(handle, sa, sa_sz))
+        {
             if (WSAGetLastError() != WSAEWOULDBLOCK)
             {
-			    s = OSAL_STATUS_FAILED;
-			    goto getout;
+                s = OSAL_STATUS_FAILED;
+                goto getout;
             }
-		}
+        }
 
         /* If we work without Nagel.
          */
@@ -460,15 +460,15 @@ static osalStatus osal_setup_tcp_socket(
 
 getout:
     /* Close socket
-     */    
-	if (handle != INVALID_SOCKET) 
-	{
-		closesocket(handle);
-	}
+     */
+    if (handle != INVALID_SOCKET)
+    {
+        closesocket(handle);
+    }
 
-	/* Return status code
-	 */
-	return s;
+    /* Return status code
+     */
+    return s;
 }
 
 
@@ -478,7 +478,7 @@ getout:
   @brief Setup a socket either for sending or receiving UDP multicasts (internal).
   @anchor osal_setup_socket_for_udp_multicasts
 
-  The osal_setup_socket_for_udp_multicasts() function.... 
+  The osal_setup_socket_for_udp_multicasts() function....
 
   @param  mysocket Pointer to my socket structure.
   @param  multicast_group_addr_str The multicast group IP address as string.
@@ -493,16 +493,16 @@ getout:
 ****************************************************************************************************
 */
 static osalStatus osal_setup_socket_for_udp_multicasts(
-	osalSocket *mysocket,
-    os_char *multicast_group_addr_str, 
-    os_char *iface_addr_bin, 
+    osalSocket *mysocket,
+    os_char *multicast_group_addr_str,
+    os_char *iface_addr_bin,
     os_boolean iface_addr_is_ipv6,
     os_int port_nr,
     os_int flags)
 {
     osalSocketGlobal *sg;
     SOCKET handle = INVALID_SOCKET;
-	osalSocketAddress sin;
+    osalSocketAddress sin;
     struct ip_mreq mreq;
     struct ipv6_mreq mreq6;
     os_char ipbuf[OSAL_IPADDR_SZ], *p, *e;
@@ -536,28 +536,28 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     }
     has_iface_addr = (os_boolean)(i != n);
 
-	/* Get multicast group IP address from original "options" argument.
+    /* Get multicast group IP address from original "options" argument.
      */
-    s = osal_socket_get_ip_and_port(multicast_group_addr_str, mysocket->multicast_group, 
+    s = osal_socket_get_ip_and_port(multicast_group_addr_str, mysocket->multicast_group,
         OSAL_IP_BIN_ADDR_SZ, &tmp_port_nr, &opt_is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
     if (s) return s;
     mysocket->is_ipv6 = opt_is_ipv6;
 
-    /* Check that multicast and interface addresses (if given) as argument belong to the same 
-       address family. If there is conflict, issue error and use multicart group ip family 
-       and ignore interface address.       
+    /* Check that multicast and interface addresses (if given) as argument belong to the same
+       address family. If there is conflict, issue error and use multicart group ip family
+       and ignore interface address.
      */
     if (opt_is_ipv6 != iface_addr_is_ipv6)
     {
-        if (has_iface_addr) 
+        if (has_iface_addr)
         {
-            osal_debug_error_str("osal_socket_open UDP multicast and iface address family mismatch:", 
+            osal_debug_error_str("osal_socket_open UDP multicast and iface address family mismatch:",
                 multicast_group_addr_str);
             has_iface_addr = OS_FALSE;
         }
     }
-    
-    /* Set address family and prepare socket address structure for listening UDP multicasts: 
+
+    /* Set address family and prepare socket address structure for listening UDP multicasts:
         port number set, but IP not bound to any specific network interface.
      */
     os_memclear(&sin, sizeof(sin));
@@ -579,11 +579,11 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     /* Create socket.
      */
     handle = socket(af, SOCK_DGRAM, IPPROTO_UDP);
-    if (handle == INVALID_SOCKET) 
-	{
-		s = OSAL_STATUS_FAILED;
-		goto getout;
-	}
+    if (handle == INVALID_SOCKET)
+    {
+        s = OSAL_STATUS_FAILED;
+        goto getout;
+    }
 
     /* Set socket reuse flag.
      */
@@ -593,15 +593,15 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
         if (setsockopt(handle, SOL_SOCKET, SO_REUSEADDR,
             (char *)&on, sizeof(on)) < 0)
         {
-		    s = OSAL_STATUS_FAILED;
-		    goto getout;
+            s = OSAL_STATUS_FAILED;
+            goto getout;
         }
     }
 
-	/* Set non blocking mode.
-	 */
+    /* Set non blocking mode.
+     */
     on = 1;
-  	ioctlsocket(handle, FIONBIO, &on);
+    ioctlsocket(handle, FIONBIO, &on);
     bon = 1;
     setsockopt(handle, SOL_SOCKET, SO_DONTLINGER, (char *)&bon, sizeof(bon));
 
@@ -609,32 +609,32 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
     /* If we are preparing to use this with select function.
      */
     if ((flags & (OSAL_STREAM_NO_SELECT|OSAL_STREAM_SELECT)) == OSAL_STREAM_SELECT)
-    {   
+    {
         /* Create event
          */
         mysocket->event = WSACreateEvent();
         if (mysocket->event == WSA_INVALID_EVENT)
         {
-		    s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-		    goto getout;
+            s = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+            goto getout;
         }
 
-        if (WSAEventSelect(handle, mysocket->event, 
+        if (WSAEventSelect(handle, mysocket->event,
             FD_ACCEPT|FD_CONNECT|FD_CLOSE|FD_READ|FD_WRITE) == SOCKET_ERROR)
         {
-		    s = OSAL_STATUS_FAILED;
-		    goto getout;
-        }           
+            s = OSAL_STATUS_FAILED;
+            goto getout;
+        }
     }
 #endif
-       
+
     /* Listen for multicasts.
      */
     if (flags & OSAL_STREAM_LISTEN)
     {
         /* Bind the socket, here we never bind to specific interface or IP.
          */
-        if (bind(handle, (const struct sockaddr *)&sin, opt_is_ipv6 
+        if (bind(handle, (const struct sockaddr *)&sin, opt_is_ipv6
             ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in)))
         {
             s = OSAL_STATUS_FAILED;
@@ -650,7 +650,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             iface_list_str = osal_stream_buffer_content(interface_list, OS_NULL);
         }
 
-        /* Inititalize a request to join to a multicast group. 
+        /* Inititalize a request to join to a multicast group.
          */
         if (opt_is_ipv6)
         {
@@ -659,7 +659,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             os_memclear(&mreq6, sizeof(mreq6));
             os_memcpy(&mreq6.ipv6mr_multiaddr, mysocket->multicast_group, OSAL_IPV6_BIN_ADDR_SZ);
         }
-        else 
+        else
         {
             mr = (char*)&mreq;
             mr_sz = sizeof(mreq);
@@ -756,7 +756,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             {
                 e = os_strchr(p, ',');
                 if (e == OS_NULL) e = os_strchr(p, '\0');
-                if (e > p) 
+                if (e > p)
                 {
                     n = (os_int)(e - p + 1);
                     if (n > sizeof(ipbuf)) n = sizeof(ipbuf);
@@ -856,7 +856,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                 else
                 {
                     if (nic_is_ipv6) continue;
-                    os_memcpy(mysocket->send_mcast_ifaces + ni * OSAL_IPV4_BIN_ADDR_SZ, 
+                    os_memcpy(mysocket->send_mcast_ifaces + ni * OSAL_IPV4_BIN_ADDR_SZ,
                         nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                 }
                 ni++;
@@ -885,7 +885,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             {
                 e = os_strchr(p, ',');
                 if (e == OS_NULL) e = os_strchr(p, '\0');
-                if (e > p) 
+                if (e > p)
                 {
                     n = (os_int)(e - p + 1);
                     if (n > sizeof(ipbuf)) n = sizeof(ipbuf);
@@ -912,21 +912,21 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
         }
     }
 
-	/* We are good, cleanup, save socket handle and return.
-	 */
+    /* We are good, cleanup, save socket handle and return.
+     */
     osal_stream_close(interface_list, OSAL_STREAM_DEFAULT);
-	mysocket->handle = handle;
+    mysocket->handle = handle;
     return OSAL_SUCCESS;
 
 getout:
-	/* Cleanup and return status code
-	 */
-	if (handle != INVALID_SOCKET) 
-	{
-		closesocket(handle);
-	}
+    /* Cleanup and return status code
+     */
+    if (handle != INVALID_SOCKET)
+    {
+        closesocket(handle);
+    }
     osal_stream_close(interface_list, OSAL_STREAM_DEFAULT);
-	return s;
+    return s;
 }
 
 
@@ -936,7 +936,7 @@ getout:
   @brief Allocate interface list (internal).
   @anchor osal_socket_alloc_send_mcast_ifaces
 
-  Allocate empty list of of interfaces (either interface indexes for IPv6 or interface 
+  Allocate empty list of of interfaces (either interface indexes for IPv6 or interface
   addressess for IPv4) where to send udp multicast. If n is 0, the list is released.
 
   @param   mysocket My socket structure.
@@ -946,7 +946,7 @@ getout:
 ****************************************************************************************************
 */
 static osalStatus osal_socket_alloc_send_mcast_ifaces(
-	osalSocket *mysocket,
+    osalSocket *mysocket,
     os_int n)
 {
     os_int sz;
@@ -977,12 +977,12 @@ static osalStatus osal_socket_alloc_send_mcast_ifaces(
   @brief Close socket.
   @anchor osal_socket_close
 
-  The osal_socket_close() function closes a socket, which was creted by osal_socket_open() 
+  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
   function. All resource related to the socket are freed. Any attemp to use the socket after
   this call may result crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will
-		   point to invalid memory location.
+           point to invalid memory location.
   @return  None.
 
 ****************************************************************************************************
@@ -991,18 +991,18 @@ void osal_socket_close(
     osalStream stream,
     os_int flags)
 {
-	osalSocket *mysocket;
-	SOCKET handle;
+    osalSocket *mysocket;
+    SOCKET handle;
     char buf[64], nbuf[OSAL_NBUF_SZ];
     os_int n, rval, info_code;
 
-	/* If called with NULL argument, do nothing.
-	 */
-	if (stream == OS_NULL) return;
+    /* If called with NULL argument, do nothing.
+     */
+    if (stream == OS_NULL) return;
 
     /* Cast stream pointer to socket structure pointer, get operating system's socket handle.
-	 */
-	mysocket = (osalSocket*)stream;
+     */
+    mysocket = (osalSocket*)stream;
     osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
     handle = mysocket->handle;
 
@@ -1083,7 +1083,7 @@ void osal_socket_close(
 
     /* Free ring buffer, if any, and memory allocated for socket structure.
      */
-	os_free(mysocket->buf, mysocket->buf_sz);
+    os_free(mysocket->buf, mysocket->buf_sz);
     os_free(mysocket, sizeof(osalSocket));
 }
 
@@ -1099,44 +1099,44 @@ void osal_socket_close(
   @param   stream Stream pointer representing the listening socket.
 
   @param   status Pointer to integer into which to store the function status code. Value
-		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
+           OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
            The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
-		   connection, was accepted.  All other nonzero values indicate an error,
+           connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
-		   This parameter can be OS_NULL, if no status code is needed. 
+           This parameter can be OS_NULL, if no status code is needed.
 
   @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Stream pointer representing the socket, or OS_NULL if the function failed.
 
 ****************************************************************************************************
 */
 osalStream osal_socket_accept(
-	osalStream stream,
+    osalStream stream,
     os_char *remote_ip_addr,
     os_memsz remote_ip_addr_sz,
     osalStatus *status,
-	os_int flags)
+    os_int flags)
 {
-	osalSocket *mysocket, *newsocket = OS_NULL;
+    osalSocket *mysocket, *newsocket = OS_NULL;
     SOCKET handle, new_handle = INVALID_SOCKET;
-	os_int addr_size, on = 1;
-	struct sockaddr_in sin_remote;
-	struct sockaddr_in6 sin_remote6;
-	osalStatus rval;
+    os_int addr_size, on = 1;
+    struct sockaddr_in sin_remote;
+    struct sockaddr_in6 sin_remote6;
+    osalStatus rval;
     char addrbuf[INET6_ADDRSTRLEN];
 
-	if (stream)
-	{
+    if (stream)
+    {
         /* Cast stream pointer to socket structure pointer, get operating system's socket handle.
          */
-		mysocket = (osalSocket*)stream;
+        mysocket = (osalSocket*)stream;
         osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
         handle = mysocket->handle;
 
         /* Accept incoming connections.
-		 */
+         */
         if (mysocket->is_ipv6)
         {
             addr_size = sizeof(sin_remote6);
@@ -1150,13 +1150,13 @@ osalStream osal_socket_accept(
             new_handle = accept(handle, (struct sockaddr*)&sin_remote, &addr_size);
         }
 
-		/* If no new connection, do nothing more.
-		 */
-        if (new_handle == INVALID_SOCKET) 
-		{
+        /* If no new connection, do nothing more.
+         */
+        if (new_handle == INVALID_SOCKET)
+        {
             if (status) *status = OSAL_NO_NEW_CONNECTION;
-			return OS_NULL;
-		}
+            return OS_NULL;
+        }
 
         /* Set socket reuse, blocking mode
          */
@@ -1167,8 +1167,8 @@ osalStream osal_socket_accept(
             if (setsockopt(new_handle, SOL_SOCKET,  SO_REUSEADDR,
                 (char *)&on, sizeof(on)) < 0)
             {
-		        rval = OSAL_STATUS_FAILED;
-		        goto getout;
+                rval = OSAL_STATUS_FAILED;
+                goto getout;
             }
         }
         if (ioctlsocket(new_handle, FIONBIO, &on) == SOCKET_ERROR) {
@@ -1176,28 +1176,28 @@ osalStream osal_socket_accept(
             goto getout;
         }
 
-		/* Allocate and clear socket structure.
-		 */
-		newsocket = (osalSocket*)os_malloc(sizeof(osalSocket), OS_NULL);
-		if (newsocket == OS_NULL) 
-		{
-			closesocket(new_handle);
-			if (status) *status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-			return OS_NULL;
-		}
-		os_memclear(newsocket, sizeof(osalSocket));
+        /* Allocate and clear socket structure.
+         */
+        newsocket = (osalSocket*)os_malloc(sizeof(osalSocket), OS_NULL);
+        if (newsocket == OS_NULL)
+        {
+            closesocket(new_handle);
+            if (status) *status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+            return OS_NULL;
+        }
+        os_memclear(newsocket, sizeof(osalSocket));
 
-		/* Save socket handle and open flags.
-		 */
-		newsocket->handle = new_handle;
-		newsocket->open_flags = flags;
+        /* Save socket handle and open flags.
+         */
+        newsocket->handle = new_handle;
+        newsocket->open_flags = flags;
         newsocket->is_ipv6 = mysocket->is_ipv6;
 
-		/* Save interface pointer.
-		 */
-	#if OSAL_FUNCTION_POINTER_SUPPORT
-		newsocket->hdr.iface = &osal_socket_iface;
-	#endif
+        /* Save interface pointer.
+         */
+    #if OSAL_FUNCTION_POINTER_SUPPORT
+        newsocket->hdr.iface = &osal_socket_iface;
+    #endif
 
         /* If we work without Nagel.
          */
@@ -1209,25 +1209,25 @@ osalStream osal_socket_accept(
         /* If we are preparing to use this with select function.
          */
         if ((flags & (OSAL_STREAM_NO_SELECT|OSAL_STREAM_SELECT)) == OSAL_STREAM_SELECT)
-        {   
+        {
             /* Create event
              */
             newsocket->event = WSACreateEvent();
             if (newsocket->event == WSA_INVALID_EVENT)
             {
-		        rval = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-		        goto getout;
+                rval = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+                goto getout;
             }
 
             if (WSAEventSelect(new_handle, newsocket->event,
                 FD_ACCEPT|FD_CONNECT|FD_CLOSE|FD_READ|FD_WRITE) == SOCKET_ERROR)
             {
-		        rval = OSAL_STATUS_FAILED;
-		        goto getout;
-            }           
+                rval = OSAL_STATUS_FAILED;
+                goto getout;
+            }
         }
 
-        if (remote_ip_addr) 
+        if (remote_ip_addr)
         {
             if (mysocket->is_ipv6)
             {
@@ -1243,38 +1243,38 @@ osalStream osal_socket_accept(
             }
         }
 
-		/* Success set status code and cast socket structure pointer to stream pointer 
-		   and return it.
-		 */
-		if (status) *status = OSAL_SUCCESS;
-		return (osalStream)newsocket;
-	}
+        /* Success set status code and cast socket structure pointer to stream pointer
+           and return it.
+         */
+        if (status) *status = OSAL_SUCCESS;
+        return (osalStream)newsocket;
+    }
 
 getout:
-	/* Opt out on error. If we got far enough to allocate the socket structure.
+    /* Opt out on error. If we got far enough to allocate the socket structure.
        Close the event handle (if any) and free memory allocated  for the socket structure.
      */
     if (newsocket)
     {
-        if (newsocket->event) 
-	    {
-		    WSACloseEvent(newsocket->event);
-	    }
+        if (newsocket->event)
+        {
+            WSACloseEvent(newsocket->event);
+        }
 
         os_free(newsocket, sizeof(osalSocket));
     }
 
     /* Close socket
-     */    
-	if (new_handle != INVALID_SOCKET) 
-	{
-		closesocket(new_handle);
-	}
+     */
+    if (new_handle != INVALID_SOCKET)
+    {
+        closesocket(new_handle);
+    }
 
-	/* Set status code and return NULL pointer.
-	 */
-	if (status) *status = OSAL_STATUS_FAILED;
-	return OS_NULL;
+    /* Set status code and return NULL pointer.
+     */
+    if (status) *status = OSAL_STATUS_FAILED;
+    return OS_NULL;
 }
 
 
@@ -1294,13 +1294,13 @@ getout:
   @param   stream Stream pointer representing the socket.
   @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_socket_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
     osalSocket *mysocket;
     os_short head, tail, wrnow;
@@ -1314,7 +1314,7 @@ osalStatus osal_socket_flush(
         tail = mysocket->tail;
         if (head != tail)
         {
-            if (head < tail) 
+            if (head < tail)
             {
                 wrnow = mysocket->buf_sz - tail;
 
@@ -1325,7 +1325,7 @@ osalStatus osal_socket_flush(
                 else tail += (os_short)nwr;
             }
 
-            if (head > tail) 
+            if (head > tail)
             {
                 wrnow = head - tail;
 
@@ -1335,7 +1335,7 @@ osalStatus osal_socket_flush(
                 tail += (os_short)nwr;
             }
 
-            if (tail == head) 
+            if (tail == head)
             {
                 tail = head = 0;
             }
@@ -1345,7 +1345,7 @@ osalStatus osal_socket_flush(
         }
     }
 
-	return OSAL_SUCCESS;
+    return OSAL_SUCCESS;
 
 getout:
     return status;
@@ -1362,35 +1362,35 @@ getout:
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
-  @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
-		   actually written to socket,  which may be less than n if there is not enough space
-		   left in the socket. If the function fails n_written is set to zero.
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
+           actually written to socket,  which may be less than n if there is not enough space
+           left in the socket. If the function fails n_written is set to zero.
   @param   flags Flags for the function.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 static osalStatus osal_socket_write2(
-	osalSocket *mysocket,
+    osalSocket *mysocket,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
-	os_int rval, werr;
-	SOCKET handle;
+    os_int rval, werr;
+    SOCKET handle;
     osalStatus status = OSAL_SUCCESS;
 
     /* Ret operating system's socket handle and write to the socket.
     */
-	handle = mysocket->handle;
-	rval = send(handle, buf, (int)n, 0);
+    handle = mysocket->handle;
+    rval = send(handle, buf, (int)n, 0);
 
-	if (rval == SOCKET_ERROR)
-	{
+    if (rval == SOCKET_ERROR)
+    {
         werr = WSAGetLastError();
 
         /* This matches with net_sockets.c
@@ -1414,10 +1414,10 @@ static osalStatus osal_socket_write2(
                 break;
         }
 
-		rval = 0;
-	}
+        rval = 0;
+    }
 
-	*n_written = rval;
+    *n_written = rval;
     return status;
 }
 
@@ -1432,37 +1432,37 @@ static osalStatus osal_socket_write2(
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
-  @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
-		   actually written to socket,  which may be less than n if there is not enough space
-		   left in the socket. If the function fails n_written is set to zero.
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
+           actually written to socket,  which may be less than n if there is not enough space
+           left in the socket. If the function fails n_written is set to zero.
   @param   flags Flags for the function.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_socket_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
-	os_int count, wrnow;
-	osalSocket *mysocket;
+    os_int count, wrnow;
+    osalSocket *mysocket;
     osalStatus status;
     os_uchar *rbuf;
     os_short head, tail, buf_sz, nexthead;
     os_memsz nwr;
     os_boolean all_not_flushed;
 
-	if (stream)
-	{
-		/* Cast stream pointer to socket structure pointer.
-		 */
-		mysocket = (osalSocket*)stream;
+    if (stream)
+    {
+        /* Cast stream pointer to socket structure pointer.
+         */
+        mysocket = (osalSocket*)stream;
         osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
 
         /* Check for errorneous arguments.
@@ -1473,13 +1473,13 @@ osalStatus osal_socket_write(
             goto getout;
         }
 
-		/* Special case. Writing 0 bytes will trigger write callback by worker thread.
-		 */
-		if (n == 0)
-		{
+        /* Special case. Writing 0 bytes will trigger write callback by worker thread.
+         */
+        if (n == 0)
+        {
             status = OSAL_SUCCESS;
             goto getout;
-		}
+        }
 
         if (mysocket->buf)
         {
@@ -1508,7 +1508,7 @@ osalStatus osal_socket_write(
                     break;
                 }
 
-                if (head < tail) 
+                if (head < tail)
                 {
                     wrnow = buf_sz - tail;
 
@@ -1519,7 +1519,7 @@ osalStatus osal_socket_write(
                     else tail += (os_short)nwr;
                 }
 
-                if (head > tail) 
+                if (head > tail)
                 {
                     wrnow = head - tail;
 
@@ -1529,7 +1529,7 @@ osalStatus osal_socket_write(
                     tail += (os_short)nwr;
                 }
 
-                if (tail == head) 
+                if (tail == head)
                 {
                     tail = head = 0;
                 }
@@ -1546,11 +1546,11 @@ osalStatus osal_socket_write(
         }
 
         return osal_socket_write2(mysocket, buf, n, n_written, flags);
-	}
+    }
     status = OSAL_STATUS_FAILED;
 
 getout:
-	*n_written = 0;
+    *n_written = 0;
     return status;
 }
 
@@ -1561,39 +1561,39 @@ getout:
   @brief Read data from socket.
   @anchor osal_socket_read
 
-  The osal_socket_read() function reads up to n bytes of data from socket into buffer. 
+  The osal_socket_read() function reads up to n bytes of data from socket into buffer.
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
-		   at least this many bytes. 
-  @param   n_read Pointer to integer into which the function stores the number of bytes read, 
-           which may be less than n if there are fewer bytes available. If the function fails 
-		   n_read is set to zero.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation. 
+           at least this many bytes.
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_socket_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     os_int rval, werr;
-	osalSocket *mysocket;
-	SOCKET handle;
+    osalSocket *mysocket;
+    SOCKET handle;
     osalStatus status;
 
-	if (stream)
-	{
+    if (stream)
+    {
         /* Cast stream pointer to socket structure pointer, get operating system's socket handle.
-		 */
-		mysocket = (osalSocket*)stream;
+         */
+        mysocket = (osalSocket*)stream;
         osal_debug_assert(mysocket->hdr.iface == &osal_socket_iface);
         handle = mysocket->handle;
 
@@ -1605,7 +1605,7 @@ osalStatus osal_socket_read(
             goto getout;
         }
 
-		rval = recv(handle, buf, (int)n, 0);
+        rval = recv(handle, buf, (int)n, 0);
 
         /* If other end has gracefylly closed.
          */
@@ -1615,8 +1615,8 @@ osalStatus osal_socket_read(
             goto getout;
         }
 
-		if (rval == SOCKET_ERROR)
-		{
+        if (rval == SOCKET_ERROR)
+        {
             werr = WSAGetLastError();
 
             /* This matches with net_sockets.c
@@ -1640,16 +1640,16 @@ osalStatus osal_socket_read(
                     goto getout;
             }
 
-			rval = 0;
-		}
+            rval = 0;
+        }
 
-		*n_read = rval;
-		return OSAL_SUCCESS;
-	}
+        *n_read = rval;
+        return OSAL_SUCCESS;
+    }
     status = OSAL_STATUS_FAILED;
 
 getout:
-	*n_read = 0;
+    *n_read = 0;
     return status;
 }
 
@@ -1664,18 +1664,18 @@ getout:
 
   @param   stream Stream pointer representing the socket.
   @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
   @return  Parameter value.
 
 ****************************************************************************************************
 */
 os_long osal_socket_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
-	/* Call the default implementation
-	 */
-	return osal_stream_default_get_parameter(stream, parameter_ix);
+    /* Call the default implementation
+     */
+    return osal_stream_default_get_parameter(stream, parameter_ix);
 }
 
 
@@ -1689,20 +1689,20 @@ os_long osal_socket_get_parameter(
 
   @param   stream Stream pointer representing the socket.
   @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
   @param   value Parameter value to set.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
-	/* Call the default implementation
-	 */
-	osal_stream_default_set_parameter(stream, parameter_ix, value);
+    /* Call the default implementation
+     */
+    osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -1739,21 +1739,21 @@ void osal_socket_set_parameter(
 ****************************************************************************************************
 */
 osalStatus osal_socket_select(
-	osalStream *streams,
+    osalStream *streams,
     os_int nstreams,
-	osalEvent evnt,
-	osalSelectData *selectdata,
+    osalEvent evnt,
+    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {
-	osalSocket *mysocket;
+    osalSocket *mysocket;
     osalSocket *sockets[OSAL_SOCKET_SELECT_MAX+1];
-	WSAEVENT events[OSAL_SOCKET_SELECT_MAX+1];
-	os_int ixtable[OSAL_SOCKET_SELECT_MAX+1];
-	WSANETWORKEVENTS network_events;
+    WSAEVENT events[OSAL_SOCKET_SELECT_MAX+1];
+    os_int ixtable[OSAL_SOCKET_SELECT_MAX+1];
+    WSANETWORKEVENTS network_events;
     os_int i, n_sockets, n_events, event_nr;
     DWORD rval;
-    
+
     os_memclear(selectdata, sizeof(osalSelectData));
 
     if (nstreams < 1 || nstreams > OSAL_SOCKET_SELECT_MAX)
@@ -1794,18 +1794,18 @@ osalStatus osal_socket_select(
     if (evnt && event_nr == n_sockets)
     {
         selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
-		return OSAL_SUCCESS;
+        return OSAL_SUCCESS;
     }
 
     if (event_nr < 0 || event_nr >= n_sockets)
     {
-		return OSAL_STATUS_FAILED;
+        return OSAL_STATUS_FAILED;
     }
 
     if (WSAEnumNetworkEvents(sockets[event_nr]->handle,
         events[event_nr], &network_events) == SOCKET_ERROR)
     {
-		return OSAL_STATUS_FAILED;
+        return OSAL_STATUS_FAILED;
     }
 
     selectdata->stream_nr = ixtable[event_nr];
@@ -1869,7 +1869,7 @@ osalStatus osal_socket_send_packet(
          */
         for (i = 0; i < n_ifaces; i++)
         {
-            /* Select network interface to use. 
+            /* Select network interface to use.
              */
             os_memclear(&mreq6, sizeof(mreq6));
             mreq6.ipv6mr_interface = ((os_int*)mysocket->send_mcast_ifaces)[i];
@@ -1888,7 +1888,7 @@ osalStatus osal_socket_send_packet(
 
             /* Handle "sendto" errors.
              */
-            if (nbytes < 0) 
+            if (nbytes < 0)
             {
                 werr = WSAGetLastError();
                 switch (werr)
@@ -1926,10 +1926,10 @@ osalStatus osal_socket_send_packet(
          */
         for (i = 0; i < n_ifaces; i++)
         {
-            /* Select network interface to use. 
+            /* Select network interface to use.
              */
             os_memclear(&mreq, sizeof(mreq));
-            os_memcpy(&mreq.imr_interface.s_addr, mysocket->send_mcast_ifaces 
+            os_memcpy(&mreq.imr_interface.s_addr, mysocket->send_mcast_ifaces
                 + i * OSAL_IPV4_BIN_ADDR_SZ, OSAL_IPV4_BIN_ADDR_SZ);
 
             if (setsockopt(mysocket->handle, IPPROTO_IP, IP_MULTICAST_IF, (char*)&mreq, sizeof(mreq)) < 0)
@@ -1946,7 +1946,7 @@ osalStatus osal_socket_send_packet(
 
             /* Handle "sendto" errors.
              */
-            if (nbytes < 0) 
+            if (nbytes < 0)
             {
                 werr = WSAGetLastError();
                 switch (werr)
@@ -2099,25 +2099,25 @@ osalStatus osal_socket_receive_packet(
   @brief List network interfaces which can be used for UDP multicasts.
   @anchor osal_socket_list_network_interfaces
 
-  The osal_socket_list_network_interfaces() function ... 
+  The osal_socket_list_network_interfaces() function ...
 
   It is stuck in there very deep.
-  The member you want is FirstUnicastAddress, this has a member Address which is of type 
-  SOCKET_ADDRESS, which has a member named lpSockaddr which is a pointer to a SOCKADDR structure. 
-  Once you get to this point you should notice the familiar winsock structure and be able to 
-  get the address on your own. 
+  The member you want is FirstUnicastAddress, this has a member Address which is of type
+  SOCKET_ADDRESS, which has a member named lpSockaddr which is a pointer to a SOCKADDR structure.
+  Once you get to this point you should notice the familiar winsock structure and be able to
+  get the address on your own.
 
   @param   interface_list Stream into which write the interface list. In practice stream
-           buffer to simply to hold variable length string. 
+           buffer to simply to hold variable length string.
            For example for IPv4 "192.168.1.229,192.168.80.1,192.168.10.1,169.254.102.98"
   @param   family Address family AF_INET or AF_INET6.
-  @param   get_interface_index If OS_TRUE the function returns list of interface indiexes in 
-           addition to IP addresses. Format will be like 
+  @param   get_interface_index If OS_TRUE the function returns list of interface indiexes in
+           addition to IP addresses. Format will be like
            "4=2600:1700:20c0:7050::35,22=fe80::ac67:637f:82a3:f4ae,10=fe80::c9a7:1924:8b0d:3d5f".
            This option is needed only with AF_INET6, when we need adapter indexes, but is
            implemented also for IPv4.
 
-  @return  Number of interfaces, or 0 if failed. 
+  @return  Number of interfaces, or 0 if failed.
 
 ****************************************************************************************************
 */
@@ -2169,15 +2169,15 @@ static os_int osal_socket_list_network_interfaces(
             os_free(pAddresses, outbuf_sz);
             pAddresses = NULL;
             outbuf_sz = (os_memsz)win_outbuf_sz;
-        } 
+        }
         else {
             break;
         }
-    } 
+    }
     while ((rval == ERROR_BUFFER_OVERFLOW) && (++i < max_tries));
 
     n_interfaces = 0;
-    if (rval == NO_ERROR) 
+    if (rval == NO_ERROR)
     {
         pCurrAddresses = pAddresses;
         while (pCurrAddresses) {
@@ -2187,15 +2187,15 @@ static os_int osal_socket_list_network_interfaces(
             if (pCurrAddresses->NoMulticast) goto goon;
             if (family == AF_INET) if (!pCurrAddresses->Ipv4Enabled) goto goon;
             if (family == AF_INET6) if (!pCurrAddresses->Ipv6Enabled) goto goon;
-            if (pCurrAddresses->IfType != IF_TYPE_IEEE80211 && 
+            if (pCurrAddresses->IfType != IF_TYPE_IEEE80211 &&
                 pCurrAddresses->IfType != IF_TYPE_ETHERNET_CSMACD &&
                 pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK) goto goon;
             if (pCurrAddresses->OperStatus != IfOperStatusUp) goto goon;
 
             pUnicast = pCurrAddresses->FirstUnicastAddress;
-            if (pUnicast != NULL) 
+            if (pUnicast != NULL)
             {
-                /* Uh huh, it seems to be here. We only need first unicast address, otherwise 
+                /* Uh huh, it seems to be here. We only need first unicast address, otherwise
                    we could loop with pUnicast = pUnicast->Next;
                  */
                 SOCKADDR *sa = pUnicast->Address.lpSockaddr;
@@ -2230,26 +2230,26 @@ static os_int osal_socket_list_network_interfaces(
                         osal_stream_print_str(interface_list, buf, 0);
                     }
                 }
-            } 
+            }
 
 goon:
             pCurrAddresses = pCurrAddresses->Next;
         }
-    } 
+    }
 
     /* Something went wrong with Windows, generate debug info.
      */
 #if OSAL_DEBUG
-    else 
+    else
     {
         if (rval == ERROR_NO_DATA) {
             osal_debug_error("GetAdaptersAddresses returned no data?");
         }
         else {
             if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-                    NULL, rval, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
-                    (LPTSTR) &lpMsgBuf, 0, NULL)) 
+                    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL, rval, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                    (LPTSTR) &lpMsgBuf, 0, NULL))
             {
                 osal_debug_error_str("GetAdaptersAddresses failed: ", (os_char*)lpMsgBuf);
                 LocalFree(lpMsgBuf);
@@ -2277,11 +2277,11 @@ goon:
   to which adapter we send an UDP multicast by interface address (inherited from IPv4)
   and IPv6 multicast functions require adapter index.
 
-  @param   iface_list_str Pointer to interface list string, Format like 
-           "4=2600:1700:20c0:7050::35,22=fe80::ac67:637f:82a3:f4ae,10=fe80::c9a7:1924:8b0d:3d5f". 
+  @param   iface_list_str Pointer to interface list string, Format like
+           "4=2600:1700:20c0:7050::35,22=fe80::ac67:637f:82a3:f4ae,10=fe80::c9a7:1924:8b0d:3d5f".
   @param   iface_addr_bin IPv6 address, 16 bytes.
 
-  @return  Interface index, -1 if none found. 
+  @return  Interface index, -1 if none found.
 
 ****************************************************************************************************
 */
@@ -2297,7 +2297,7 @@ static os_int osal_get_interface_index_by_ipv6_address(
     {
         e = os_strchr(p, ',');
         if (e == OS_NULL) e = os_strchr(p, '\0');
-        if (e > p) 
+        if (e > p)
         {
             n = (os_int)(e - p + 1);
             if (n > sizeof(ipbuf)) n = sizeof(ipbuf);
@@ -2309,7 +2309,7 @@ static os_int osal_get_interface_index_by_ipv6_address(
 
             if (inet_pton(AF_INET6, q + 1, addr) != 1) {
                 osal_debug_error_str("osal_get_interface_index_by_ipv6_address: inet_pton() failed:", ipbuf);
-            } 
+            }
             else
             {
                 for (i = 0; i < OSAL_IPV6_BIN_ADDR_SZ; i++) {
@@ -2368,26 +2368,26 @@ static void osal_socket_set_nodelay(
 ****************************************************************************************************
 */
 static void osal_socket_setup_ring_buffer(
-	osalSocket *mysocket)
+    osalSocket *mysocket)
 {
-	mysocket->buf_sz = 1420; /* selected for TCP sockets */
-	mysocket->buf = os_malloc(mysocket->buf_sz, OS_NULL);
+    mysocket->buf_sz = 1420; /* selected for TCP sockets */
+    mysocket->buf = os_malloc(mysocket->buf_sz, OS_NULL);
 }
 
 
-const osalStreamInterface osal_socket_iface
+OS_FLASH_MEM osalStreamInterface osal_socket_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_socket_open,
-	osal_socket_close,
-	osal_socket_accept,
-	osal_socket_flush,
-	osal_stream_default_seek,
-	osal_socket_write,
-	osal_socket_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
-	osal_socket_get_parameter,
-	osal_socket_set_parameter,
+    osal_socket_close,
+    osal_socket_accept,
+    osal_socket_flush,
+    osal_stream_default_seek,
+    osal_socket_write,
+    osal_socket_read,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
+    osal_socket_get_parameter,
+    osal_socket_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
     osal_socket_select,
 #else

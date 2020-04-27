@@ -12,7 +12,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -114,7 +114,7 @@ typedef struct osalSocket
     osalSocketUse use;
 
     /** Index in osal_client, osal_server or osal_udp array, depending on "use" member.
-	 */
+     */
     os_short index;
 
     /** Wiznet chip's or other socket port index.
@@ -142,14 +142,14 @@ static os_short osal_get_unused_server(void);
   @brief Open a socket.
   @anchor osal_socket_open
 
-  The osal_socket_open() function opens a socket. The socket can be either listening TCP 
-  socket, connecting TCP socket or UDP multicast socket. 
+  The osal_socket_open() function opens a socket. The socket can be either listening TCP
+  socket, connecting TCP socket or UDP multicast socket.
 
   @param  parameters Socket parameters, a list string or direct value.
-		  Address and port to connect to, or interface and port to listen for.
+          Address and port to connect to, or interface and port to listen for.
           Socket IP address and port can be specified either as value of "addr" item
           or directly in parameter sstring. For example "192.168.1.55:20" or "localhost:12345"
-          specify IPv4 addressed. If only port number is specified, which is often 
+          specify IPv4 addressed. If only port number is specified, which is often
           useful for listening socket, for example ":12345".
           IPv4 address is automatically recognized from numeric address like
           "2001:0db8:85a3:0000:0000:8a2e:0370:7334", but not when address is specified as string
@@ -159,20 +159,20 @@ static os_short osal_get_unused_server(void);
   @param  option Not used for sockets, set OS_NULL.
 
   @param  status Pointer to integer into which to store the function status code. Value
-		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
+          OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
           See @ref osalStatus "OSAL function return codes" for full list.
-		  This parameter can be OS_NULL, if no status code is needed. 
+          This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the socket. Bit fields, combination of:
-          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
-          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
-          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket. 
+          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address.
+          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections.
+          - OSAL_STREAM_MULTICAST: Open a UDP multicast socket.
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open socket with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
 
-		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
+          See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
   @return Stream pointer representing the socket, or OS_NULL if the function failed.
 
@@ -180,9 +180,9 @@ static os_short osal_get_unused_server(void);
 */
 osalStream osal_socket_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     os_int port_nr;
     os_char host[OSAL_HOST_BUF_SZ];
@@ -200,8 +200,8 @@ osalStream osal_socket_open(
         return OS_NULL;
     }
 
-	/* Get host name or numeric IP address and TCP port number from parameters.
-	 */
+    /* Get host name or numeric IP address and TCP port number from parameters.
+     */
     osal_socket_get_ip_and_port(parameters,
         &port_nr, host, sizeof(host), &is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
 
@@ -286,15 +286,15 @@ osalStream osal_socket_open(
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
-	 */
-	if (status) *status = OSAL_SUCCESS;
+     */
+    if (status) *status = OSAL_SUCCESS;
     return (osalStream)mysocket;
 
 getout:
     /* Set status code and return NULL pointer to indicate failure.
-	 */
+     */
     if (status) *status = rval;
-	return OS_NULL;
+    return OS_NULL;
 }
 
 
@@ -304,12 +304,12 @@ getout:
   @brief Close socket.
   @anchor osal_socket_close
 
-  The osal_socket_close() function closes a socket, which was creted by osal_socket_open() 
+  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
   function. All resource related to the socket are freed. Any attemp to use the socket after
   this call may result crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will
-		   point to invalid memory location.
+           point to invalid memory location.
   @return  None.
 
 ****************************************************************************************************
@@ -355,23 +355,23 @@ void osal_socket_close(
 
   @param   stream Stream pointer representing the listening socket.
   @param   status Pointer to integer into which to store the function status code. Value
-		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
-		   The value OSAL_NO_NEW_CONNECTION indicates that no new incoming 
-		   connection, was accepted.  All other nonzero values indicate an error,
+           OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
+           The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
+           connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
-		   This parameter can be OS_NULL, if no status code is needed. 
+           This parameter can be OS_NULL, if no status code is needed.
   @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Stream pointer representing the socket, or OS_NULL if the function failed.
 
 ****************************************************************************************************
 */
 osalStream osal_socket_accept(
-	osalStream stream,
+    osalStream stream,
     os_char *remote_ip_addr,
     os_memsz remote_ip_addr_sz,
-	osalStatus *status,
-	os_int flags)
+    osalStatus *status,
+    os_int flags)
 {
     osalSocket *mysocket;
     os_short mysocket_ix, six, cix, j;
@@ -448,10 +448,10 @@ osalStream osal_socket_accept(
     rval = OSAL_NO_NEW_CONNECTION;
 
 getout:
-	/* Set status code and return NULL pointer.
-	 */
+    /* Set status code and return NULL pointer.
+     */
     if (status) *status = rval;
-	return OS_NULL;
+    return OS_NULL;
 }
 
 
@@ -471,15 +471,15 @@ getout:
   @param   stream Stream pointer representing the socket.
   @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_socket_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
-	return OSAL_SUCCESS;
+    return OSAL_SUCCESS;
 }
 
 
@@ -493,23 +493,23 @@ osalStatus osal_socket_flush(
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
-  @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
-		   actually written to socket,  which may be less than n if there is not enough space
-		   left in the socket. If the function fails n_written is set to zero.
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
+           actually written to socket,  which may be less than n if there is not enough space
+           left in the socket. If the function fails n_written is set to zero.
   @param   flags Flags for the function.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_socket_write(
     osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     osalSocket *mysocket;
     os_int bytes;
@@ -551,30 +551,30 @@ osalStatus osal_socket_write(
   @brief Read data from socket.
   @anchor osal_socket_read
 
-  The osal_socket_read() function reads up to n bytes of data from socket into buffer. 
+  The osal_socket_read() function reads up to n bytes of data from socket into buffer.
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
-		   at least this many bytes. 
-  @param   n_read Pointer to integer into which the function stores the number of bytes read, 
-           which may be less than n if there are fewer bytes available. If the function fails 
-		   n_read is set to zero.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation. 
+           at least this many bytes.
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_socket_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
-	osalSocket *mysocket;
+    osalSocket *mysocket;
     os_int bytes;
     os_short ix;
 
@@ -626,18 +626,18 @@ osalStatus osal_socket_read(
 
   @param   stream Stream pointer representing the socket.
   @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
   @return  Parameter value.
 
 ****************************************************************************************************
 */
 os_long osal_socket_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
-	/* Call the default implementation
-	 */
-	return osal_stream_default_get_parameter(stream, parameter_ix);
+    /* Call the default implementation
+     */
+    return osal_stream_default_get_parameter(stream, parameter_ix);
 }
 
 
@@ -651,20 +651,20 @@ os_long osal_socket_get_parameter(
 
   @param   stream Stream pointer representing the socket.
   @param   parameter_ix Index of parameter to get.
-		   See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
+           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
   @param   value Parameter value to set.
   @return  None.
 
 ****************************************************************************************************
 */
 void osal_socket_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
-	/* Call the default implementation
-	 */
-	osal_stream_default_set_parameter(stream, parameter_ix, value);
+    /* Call the default implementation
+     */
+    osal_stream_default_set_parameter(stream, parameter_ix, value);
 }
 
 
@@ -928,7 +928,7 @@ void osal_socket_initialize(
 ****************************************************************************************************
 */
 void osal_socket_shutdown(
-	void)
+    void)
 {
     if (osal_sockets_initialized)
     {
@@ -975,19 +975,19 @@ void osal_socket_maintain(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-const osalStreamInterface osal_socket_iface
+OS_FLASH_MEM osalStreamInterface osal_socket_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_socket_open,
-	osal_socket_close,
-	osal_socket_accept,
-	osal_socket_flush,
-	osal_stream_default_seek,
-	osal_socket_write,
-	osal_socket_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
-	osal_socket_get_parameter,
-	osal_socket_set_parameter,
+    osal_socket_close,
+    osal_socket_accept,
+    osal_socket_flush,
+    osal_stream_default_seek,
+    osal_socket_write,
+    osal_socket_read,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
+    osal_socket_get_parameter,
+    osal_socket_set_parameter,
     OS_NULL};
 
 #endif

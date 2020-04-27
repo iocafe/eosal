@@ -100,8 +100,8 @@ typedef struct osalTlsSocket
     osalStream tcpsocket;
 
     /** Flags which were given to osal_mbedtls_open() or osal_mbedtls_accept() function.
-	 */
-	os_int open_flags;
+     */
+    os_int open_flags;
 
     /** Remote peer is connected and needs to be notified on close.
      */
@@ -182,13 +182,13 @@ static void osal_mbedtls_debug(
   @anchor osal_mbedtls_open
 
   The osal_mbedtls_open() function opens a TLS socket. The socket can be either listening TCP
-  socket, connecting TCP socket or UDP multicast socket. 
+  socket, connecting TCP socket or UDP multicast socket.
 
   @param  parameters Socket parameters, a list string or direct value.
-		  Address and port to connect to, or interface and port to listen for.
+          Address and port to connect to, or interface and port to listen for.
           Socket IP address and port can be specified either as value of "addr" item
           or directly in parameter sstring. For example "192.168.1.55:20" or "localhost:12345"
-          specify IPv4 addressed. If only port number is specified, which is often 
+          specify IPv4 addressed. If only port number is specified, which is often
           useful for listening socket, for example ":12345".
           IPv4 address is automatically recognized from numeric address like
           "2001:0db8:85a3:0000:0000:8a2e:0370:7334", but not when address is specified as string
@@ -198,13 +198,13 @@ static void osal_mbedtls_debug(
   @param  option Not used for sockets, set OS_NULL.
 
   @param  status Pointer to integer into which to store the function status code. Value
-		  OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
+          OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
           See @ref osalStatus "OSAL function return codes" for full list.
-		  This parameter can be OS_NULL, if no status code is needed. 
+          This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the socket. Bit fields, combination of:
-          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address. 
-          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections. 
+          - OSAL_STREAM_CONNECT: Connect to specified socket port at specified IP address.
+          - OSAL_STREAM_LISTEN: Open a socket to listen for incoming connections.
           - OSAL_STREAM_NO_SELECT: Open socket without select functionality.
           - OSAL_STREAM_SELECT: Open serial with select functionality.
           - OSAL_STREAM_TCP_NODELAY: Disable Nagle's algorithm on TCP socket. Use TCP_CORK on
@@ -212,7 +212,7 @@ static void osal_mbedtls_debug(
             must be called to actually transfer data.
           - OSAL_STREAM_NO_REUSEADDR: Disable reusability of the socket descriptor.
 
-		  See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
+          See @ref osalStreamFlags "Flags for Stream Functions" for full list of stream flags.
 
   @return Stream pointer representing the socket, or OS_NULL if the function failed.
 
@@ -220,9 +220,9 @@ static void osal_mbedtls_debug(
 */
 static osalStream osal_mbedtls_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     osalStream tcpsocket = OS_NULL;
     osalTlsSocket *so = OS_NULL;
@@ -340,7 +340,7 @@ getout:
   this call may result crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will
-		   point to invalid memory location.
+           point to invalid memory location.
   @return  None.
 
 ****************************************************************************************************
@@ -351,12 +351,12 @@ static void osal_mbedtls_close(
 {
     osalTlsSocket *so;
 
-	/* If called with NULL argument, do nothing.
-	 */
-	if (stream == OS_NULL) return;
+    /* If called with NULL argument, do nothing.
+     */
+    if (stream == OS_NULL) return;
 
     /* Cast stream pointer to socket structure pointer, get operating system's socket handle.
-	 */
+     */
     so = (osalTlsSocket*)stream;
     osal_debug_assert(so->hdr.iface == &osal_tls_iface);
 
@@ -394,23 +394,23 @@ static void osal_mbedtls_close(
 
   @param   stream Stream pointer representing the listening socket.
   @param   status Pointer to integer into which to store the function status code. Value
-		   OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
+           OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
            The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
-		   connection, was accepted.  All other nonzero values indicate an error,
+           connection, was accepted.  All other nonzero values indicate an error,
            See @ref osalStatus "OSAL function return codes" for full list.
-		   This parameter can be OS_NULL, if no status code is needed. 
+           This parameter can be OS_NULL, if no status code is needed.
   @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Stream pointer representing the socket, or OS_NULL if the function failed.
 
 ****************************************************************************************************
 */
 static osalStream osal_mbedtls_accept(
-	osalStream stream,
+    osalStream stream,
     os_char *remote_ip_addr,
     os_memsz remote_ip_addr_sz,
     osalStatus *status,
-	os_int flags)
+    os_int flags)
 {
     osalStream tcpsocket;
     osalTlsSocket *so, *newso = OS_NULL;
@@ -508,7 +508,7 @@ getout:
      */
     osal_mbedtls_close((osalStream)newso, 0);
     if (status) *status = s;
-	return OS_NULL;
+    return OS_NULL;
 }
 
 
@@ -564,23 +564,23 @@ static osalStatus osal_mbedtls_flush(
 
   @param   stream Stream pointer representing the socket.
   @param   buf Pointer to the beginning of data to place into the socket.
-  @param   n Maximum number of bytes to write. 
-  @param   n_written Pointer to integer into which the function stores the number of bytes 
-		   actually written to socket,  which may be less than n if there is not enough space
-		   left in the socket. If the function fails n_written is set to zero.
+  @param   n Maximum number of bytes to write.
+  @param   n_written Pointer to integer into which the function stores the number of bytes
+           actually written to socket,  which may be less than n if there is not enough space
+           left in the socket. If the function fails n_written is set to zero.
   @param   flags Flags for the function.
-		   See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
+           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 static osalStatus osal_mbedtls_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     osalTlsSocket *so;
     int ret;
@@ -635,22 +635,22 @@ static osalStatus osal_mbedtls_write(
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
            at least this many bytes.
-  @param   n_read Pointer to integer into which the function stores the number of bytes read, 
-           which may be less than n if there are fewer bytes available. If the function fails 
-		   n_read is set to zero.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation. 
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
+  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 static osalStatus osal_mbedtls_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     osalTlsSocket *so;
     int ret;
@@ -808,7 +808,7 @@ void osal_tls_initialize(
 ****************************************************************************************************
 */
 void osal_tls_shutdown(
-	void)
+    void)
 {
     if (osal_global->tls == OS_NULL) return;
 
@@ -1296,17 +1296,17 @@ static void osal_mbedtls_debug(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-const osalStreamInterface osal_tls_iface
+OS_FLASH_MEM osalStreamInterface osal_tls_iface
  = {OSAL_STREAM_IFLAG_SECURE,
     osal_mbedtls_open,
     osal_mbedtls_close,
     osal_mbedtls_accept,
     osal_mbedtls_flush,
-	osal_stream_default_seek,
+    osal_stream_default_seek,
     osal_mbedtls_write,
     osal_mbedtls_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
     osal_stream_default_get_parameter, /* This does not access parameters of contained TCP socket? */
     osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT

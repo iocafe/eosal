@@ -21,7 +21,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -85,7 +85,7 @@ osalSecurityConfig;
 
 /** Stream interface structure for OpenSLL sockets.
  */
-extern const osalStreamInterface osal_tls_iface;
+extern OS_FLASH_MEM_H osalStreamInterface osal_tls_iface;
 
 /** Define to get socket interface pointer.
  */

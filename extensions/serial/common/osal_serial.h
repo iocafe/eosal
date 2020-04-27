@@ -10,7 +10,7 @@
   OSAL stream API is abstraction which makes streams (including serial ports) look similar to upper
   levels of code, regardless of operating system or data transport implementation.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.
@@ -22,7 +22,7 @@
 /** Stream interface structure for serials.
  */
 #if OSAL_FUNCTION_POINTER_SUPPORT
-extern const osalStreamInterface osal_serial_iface;
+extern OS_FLASH_MEM_H osalStreamInterface osal_serial_iface;
 #endif
 
 /** Define to get serial interface pointer. The define is used so that this can
@@ -30,12 +30,12 @@ extern const osalStreamInterface osal_serial_iface;
  */
 #define OSAL_SERIAL_IFACE &osal_serial_iface
 
-/* Needed for Windows: Maximum number of socket streams to pass as an argument to 
+/* Needed for Windows: Maximum number of socket streams to pass as an argument to
    osal_serial_select().
  */
 #define OSAL_SERIAL_SELECT_MAX 8
 
-/** 
+/**
 ****************************************************************************************************
 
   @name OSAL Serial Functions.
@@ -51,9 +51,9 @@ extern const osalStreamInterface osal_serial_iface;
  */
 osalStream osal_serial_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags);
+    void *option,
+    osalStatus *status,
+    os_int flags);
 
 /* Close serial.
  */
@@ -64,68 +64,68 @@ void osal_serial_close(
 /* Accept connection from listening serial.
  */
 osalStream osal_serial_accept(
-	osalStream stream,
-	osalStatus *status,
-	os_int flags);
+    osalStream stream,
+    osalStatus *status,
+    os_int flags);
 
 /* Flush written data to serial.
  */
 osalStatus osal_serial_flush(
-	osalStream stream,
-	os_int flags);
+    osalStream stream,
+    os_int flags);
 
 /* Write data to serial.
  */
 osalStatus osal_serial_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags);
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags);
 
 /* Read data from serial.
  */
 osalStatus osal_serial_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags);
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags);
 
 /* Get serial parameter.
  */
 os_long osal_serial_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix);
+    osalStream stream,
+    osalStreamParameterIx parameter_ix);
 
 /* Set serial parameter.
  */
 void osal_serial_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value);
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value);
 
 /* Wait for new data to read, time to write or operating system event, etc.
  */
 #if OSAL_SERIAL_SELECT_SUPPORT
 osalStatus osal_serial_select(
-	osalStream *streams,
+    osalStream *streams,
     os_int nstreams,
-	osalEvent evnt,
-	osalSelectData *selectdata,
+    osalEvent evnt,
+    osalSelectData *selectdata,
     os_int timeout_ms,
-	os_int flags);
+    os_int flags);
 #endif
 
 /* Initialize OSAL serials library.
  */
 void osal_serial_initialize(
-	void);
+    void);
 
 /* Shut down OSAL serials library.
  */
 void osal_serial_shutdown(
-	void);
+    void);
 
 /*@}*/
 

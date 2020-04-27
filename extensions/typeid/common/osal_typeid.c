@@ -8,12 +8,12 @@
 
   This is typeid module header file. This module enumerates data types and implements functions
   for converting type name (text) to type identifier (integer) and vice versa, plus function
-  to get type size in bytes. To use type enumeration only, just include this header file. 
+  to get type size in bytes. To use type enumeration only, just include this header file.
   If also functions are needed, link with the typeid library.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -27,17 +27,17 @@ typedef struct
 {
     /** Data type name string.
      */
-	os_char *name;
+    const os_char *name;
 
     /* Data type size in bytes. 0 if variable or unknown.
      */
-	os_int sz;
+    os_int sz;
 }
 osalTypeInfo;
 
 /** Type names and sizes.
  */
-static const osalTypeInfo osal_typeinfo[] = {
+static OS_FLASH_MEM osalTypeInfo osal_typeinfo[] = {
     {"undef", 0},					  /* OS_UNDEFINED_TYPE = 0 */
     {"boolean", sizeof(os_boolean)},  /* OS_BOOLEAN = 1 */
     {"char", sizeof(os_char)},		  /* OS_CHAR = 2 */
@@ -114,7 +114,7 @@ osalTypeId osal_typeid_from_name(
   The osal_typeid_to_name function converts type identifier like OS_INT (5) or OS_DOUBLE (10)
   to type name like "int" or "double".
 
-  @param   type_id Type identifier. 
+  @param   type_id Type identifier.
   @return  Type name corresponding to type identifier given as argument. Enupt string if type
            identifier is illegal.
 
@@ -139,7 +139,7 @@ const os_char *osal_typeid_to_name(
 
   The osal_typeid_size function gets data type size in bytes.
 
-  @param   type_id Type identifier. 
+  @param   type_id Type identifier.
   @return  Size in bytes, 0 if variable or unknown.
 
 ****************************************************************************************************

@@ -12,7 +12,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -21,7 +21,7 @@
 /** Stream interface structure for sockets.
  */
 #if OSAL_SOCKET_SUPPORT
-extern const osalStreamInterface osal_socket_iface;
+extern OS_FLASH_MEM_H osalStreamInterface osal_socket_iface;
 #endif
 
 /* Default socket port number for IOCOM.
@@ -45,12 +45,12 @@ extern const osalStreamInterface osal_socket_iface;
 extern os_boolean osal_sockets_initialized;
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name OSAL Socket Functions.
 
-  These functions implement sockets as OSAL stream. These functions can either be called 
+  These functions implement sockets as OSAL stream. These functions can either be called
   directly or through stream interface.
 
 ****************************************************************************************************
