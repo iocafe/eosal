@@ -112,3 +112,9 @@ typedef os_char os_boolean;
 #ifndef OSAL_INTERRUPT_LIST_SUPPORT
 #define OSAL_INTERRUPT_LIST_SUPPORT 0
 #endif
+
+/** Maximum number of error handlers. Define 0 to disable error handlers.
+ */
+#ifndef OSAL_MAX_ERROR_HANDLERS
+#define OSAL_MAX_ERROR_HANDLERS 3
+#endif

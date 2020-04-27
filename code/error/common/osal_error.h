@@ -74,7 +74,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -94,7 +94,7 @@ osalErrorLevel;
 
 /* Module name used by eosal library to report errors.
  */
-const extern os_char eosal_mod[];
+extern const os_char eosal_mod[];
 
 /* Flags for osal_set_error_handler() function and in osalErrorHandler structure.
  */
@@ -102,12 +102,6 @@ const extern os_char eosal_mod[];
 #define OSAL_ADD_ERROR_HANDLER 1
 #define OSAL_SYSTEM_ERROR_HANDLER 2
 #define OSAL_APP_ERROR_HANDLER 0
-
-/* Maximum number of error handlers.
- */
-#ifndef OSAL_MAX_ERROR_HANDLERS
-#define OSAL_MAX_ERROR_HANDLERS 3
-#endif
 
 /** Error handler function type.
  */

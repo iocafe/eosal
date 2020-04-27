@@ -53,6 +53,7 @@ void osal_error(
     os_int code,
     const os_char *description)
 {
+#if OSAL_MAX_ERROR_HANDLERS > 0
     osalErrorHandler *error_handler;
     int i;
     os_boolean app_error_handler_called = OS_FALSE;
@@ -79,6 +80,7 @@ void osal_error(
     {
         osal_default_error_handler(level, module, code, description, OS_NULL);
     }
+#endif
 }
 
 
@@ -173,6 +175,7 @@ osalStatus osal_set_error_handler(
     void *context,
     os_short flags)
 {
+#if OSAL_MAX_ERROR_HANDLERS > 0
     int i;
     osalErrorHandler *error_handler;
 
@@ -210,10 +213,12 @@ osalStatus osal_set_error_handler(
 
     /* Too many error handlers.
      */
+#endif
     return OSAL_STATUS_FAILED;
 }
 
 
+#if OSAL_MAX_ERROR_HANDLERS > 0
 /**
 ****************************************************************************************************
 
@@ -294,3 +299,4 @@ void osal_default_error_handler(
      */
     osal_console_write(line);
 }
+#endif

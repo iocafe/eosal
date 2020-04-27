@@ -21,7 +21,7 @@
 #include "eosalx.h"
 #if OSAL_TYPEID_SUPPORT
 
-/** Structure to store information about data type.
+/** Structure to store information about data type (includes type name).
  */
 typedef struct
 {
@@ -56,11 +56,42 @@ static OS_FLASH_MEM osalTypeInfo osal_typeinfo[] = {
     {"object", 0},	                  /* OS_OBJECT = 15 */
     {"pointer", sizeof(os_pointer)}}; /* OS_POINTER = 16 */
 
+
 /** Number of rows in osal_typeinfo table.
  */
 #define OSAL_NRO_TYPE_INFO_ROWS (sizeof(osal_typeinfo) / sizeof(osalTypeInfo))
 
+#else
 
+/** Type size.
+ */
+static OS_FLASH_MEM os_char osal_typesz[] = {
+    0,                                /* OS_UNDEFINED_TYPE = 0 */
+    sizeof(os_boolean),               /* OS_BOOLEAN = 1 */
+    sizeof(os_char),		          /* OS_CHAR = 2 */
+    sizeof(os_uchar),                 /* OS_UCHAR = 3 */
+    sizeof(os_short),                 /* OS_SHORT = 4 */
+    sizeof(os_ushort),                /* OS_USHORT = 5 */
+    sizeof(os_int),                   /* OS_INT = 6 */
+    sizeof(os_uint),                  /* OS_UINT = 7 */
+    sizeof(os_int64),                 /* OS_INT64 = 8 */
+    sizeof(os_long),                  /* OS_LONG = 9 */
+    sizeof(os_float),                 /* OS_FLOAT = 10 */
+    sizeof(os_double),                /* OS_DOUBLE = 11 */
+    sizeof(os_short),                 /* OS_DEC01 = 12 */
+    sizeof(os_short),                 /* OS_DEC001 = 13 */
+    0,                                /* OS_STR = 14 */
+    0,                                /* OS_OBJECT = 15 */
+    sizeof(os_pointer)};              /* OS_POINTER = 16 */
+
+/** Number of rows in osal_typeinfo table.
+ */
+#define OSAL_NRO_TYPE_INFO_ROWS (sizeof(osal_typesz) / sizeof(os_char))
+
+#endif
+
+
+#if OSAL_TYPEID_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -135,7 +166,7 @@ const os_char *osal_typeid_to_name(
 /**
 ****************************************************************************************************
 
-  @brief Get type size in bytes.
+  @brief Get type size in bytes (code with type names).
 
   The osal_typeid_size function gets data type size in bytes.
 
@@ -153,6 +184,31 @@ os_memsz osal_typeid_size(
     }
 
     return osal_typeinfo[type_id].sz;
+}
+
+#else
+
+/**
+****************************************************************************************************
+
+  @brief Get type size in bytes (code without type names).
+
+  The osal_typeid_size function gets data type size in bytes.
+
+  @param   type_id Type identifier.
+  @return  Size in bytes, 0 if variable or unknown.
+
+****************************************************************************************************
+*/
+os_memsz osal_typeid_size(
+    osalTypeId type_id)
+{
+    if ((os_int)type_id < 0 || (os_int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
+    {
+        return 0;
+    }
+
+    return osal_typesz[type_id];
 }
 
 #endif

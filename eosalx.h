@@ -6,12 +6,12 @@
   @version 1.0
   @date    8.1.2020
 
-  This operating system abstraction layer (OSAL) base main header file with extensions. 
-  If further OSAL base and extension headers. 
+  This operating system abstraction layer (OSAL) base main header file with extensions.
+  If further OSAL base and extension headers.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -54,12 +54,10 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/stringx/common/osal_stringx.h"
 #endif
 
-#if OSAL_TYPEID_SUPPORT
-  #include "extensions/typeid/common/osal_typeid.h"
-#endif
+#include "extensions/typeid/common/osal_typeid.h"
 
 /* We need to include headers, even if we do not need sockets, tls or serial.
-   We need empty placeholder macros when these are not supportted.
+   We need empty placeholder macros, etc. when these are not supportted.
  */
 #include "extensions/net/common/osal_dns.h"
 #include "extensions/net/common/osal_net_config.h"
