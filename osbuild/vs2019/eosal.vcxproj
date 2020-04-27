@@ -47,6 +47,7 @@
     <ClInclude Include="..\..\extensions\checksum\common\osal_checksum.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_dir.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_file.h" />
+    <ClInclude Include="..\..\extensions\filesys\common\osal_filectrl.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_filestat.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_fileutil.h" />
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
@@ -80,6 +81,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\code\console\windows\osal_sysconsole.c" />
     <ClCompile Include="..\..\code\debugcode\common\osal_debug.c" />
+    <ClCompile Include="..\..\code\defs\windows\osal_windows_quiet.c" />
     <ClCompile Include="..\..\code\error\common\osal_error.c" />
     <ClCompile Include="..\..\code\event\windows\osal_event.c" />
     <ClCompile Include="..\..\code\initialize\common\osal_initialize.c" />
@@ -116,6 +118,7 @@
     <ClCompile Include="..\..\extensions\filesys\common\osal_fileutil.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_dir.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_file.c" />
+    <ClCompile Include="..\..\extensions\filesys\windows\osal_filectrl.c" />
     <ClCompile Include="..\..\extensions\filesys\windows\osal_filestat.c" />
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_divide.c" />
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_double.c" />

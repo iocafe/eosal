@@ -25,12 +25,15 @@
   @brief Delete a file.
   @anchor osal_remove
 
-  The osal_remove() function...
+  The osal_remove() function deletes one file. Do not use this function for recursively or
+  with wild cards.
 
   @param  path Path to file.
   @param  flags Reserved for future, set zero for now.
   @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
-          indicate an error, specifically OSAL_STATUS_DIR_NOT_EMPTY means that directory is not empty.
+          indicate an error, for example:
+          - OSAL_STATUS_FILE_DOES_NOT_EXIST: File doesn't exist.
+          - OSAL_STATUS_NO_ACCESS_RIGHT: User doesn't have rights to delete the file.
 
 ****************************************************************************************************
 */
