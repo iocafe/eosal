@@ -177,7 +177,6 @@
 /** Multithreading support. Define 1 if operating system supports multi threading. This
     enables code for thread, mutexes, event, etc. Define 0 if there is no multithreading
     support for this operating system.
-    The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
 #define OSAL_MULTITHREAD_SUPPORT 0
@@ -411,7 +410,11 @@
     local confidential data.
  */
 #ifndef OSAL_SECRET_SUPPORT
-#define OSAL_SECRET_SUPPORT OSAL_PERSISTENT_SUPPORT
+#if OSAL_TLS_SUPPORT && OSAL_PERSISTENT_SUPPORT
+#define OSAL_SECRET_SUPPORT 1
+#else
+#define OSAL_SECRET_SUPPORT 0
+#endif
 #endif
 
 /** Having a console for testing makes sense in linux and windows PC environments,
