@@ -78,7 +78,7 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
-    uint8_t ch;
+    os_uchar ch;
     ch = fgetc(stdin);
     return ch != 0xff ? ch : 0;
 }
