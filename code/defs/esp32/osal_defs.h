@@ -23,9 +23,7 @@
  */
 #define OSAL_ESP32
 
-
-// #include "Arduino.h"
-
+#include <freertos/FreeRTOS.h>
 
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
