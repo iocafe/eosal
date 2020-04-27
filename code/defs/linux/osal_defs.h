@@ -223,7 +223,11 @@
     security library.
  */
 #ifndef OSAL_TLS_SUPPORT
+#if OSAL_SOCKET_SUPPORT
 #define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
+#else
+#define OSAL_TLS_SUPPORT OSAL_TLS_NONE
+#endif
 #endif
 
 /** If OpenSSL functionality is available (separate from TLS wrapper selection,

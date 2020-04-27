@@ -26,8 +26,8 @@ def process_source_file(path, variablename):
 
         l = len(file_content)
 
-        cfile.write('const os_char ' + variablename + '[' + str(l) + '] = {\n')
-        hfile.write('extern const os_char ' + variablename + '[' + str(l) + '];\n')
+        cfile.write('OS_FLASH_MEM os_char ' + variablename + '[' + str(l) + '] = {\n')
+        hfile.write('extern OS_FLASH_MEM_H os_char ' + variablename + '[' + str(l) + '];\n')
 
         columns = 0
         for x in range(0, l):
@@ -41,7 +41,7 @@ def process_source_file(path, variablename):
             columns = columns + 1
 
         cfile.write('};\n')
-            
+
 def mymain():
     global cfilepath, hfilepath
 
@@ -64,7 +64,7 @@ def mymain():
         else:
             if expectpath:
                 sourcefiles.append(sys.argv[i])
-            expectpath = True    
+            expectpath = True
 
     if len(sourcefiles) < 1:
         print("No source files")

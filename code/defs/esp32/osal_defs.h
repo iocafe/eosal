@@ -185,30 +185,22 @@
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
-  #ifdef ESP_PLATFORM
-    #define OSAL_MULTITHREAD_SUPPORT 1
-  #else
-    #define OSAL_MULTITHREAD_SUPPORT 0
-  #endif
+#define OSAL_MULTITHREAD_SUPPORT 1
 #endif
 
 /** Define 1 to maintain list of function pointers to enable/disable
     all application interrupts by one function call.
  */
 #ifndef OSAL_INTERRUPT_LIST_SUPPORT
-  #ifdef ESP_PLATFORM
-    #define OSAL_INTERRUPT_LIST_SUPPORT 1
-  #endif
+#define OSAL_INTERRUPT_LIST_SUPPORT 1
 #endif
 
 /** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code
     and for functions called from interrupt handler. Global data accessed from ISR
     must have DRAM_ATTR flag.
  */
-#ifdef ESP_PLATFORM
 #define OS_ISR_FUNC_ATTR IRAM_ATTR
 #define OS_ISR_DATA_ATTR DRAM_ATTR
-#endif
 
 /** If compiler can support function pointers and interfaces, define 1. Define zero
     only for systems which do not handle function pointers properly (for example PIC).

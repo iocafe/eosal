@@ -118,12 +118,14 @@ void osal_shutdown(
 #if OSAL_PROCESS_CLEANUP_SUPPORT
 
 #if OSAL_FUNCTION_POINTER_SUPPORT
+#if OSAL_SOCKET_SUPPORT
     /* Shutdown sockets library if it has been used, this is mostly for windows.
      */
     if (osal_global->sockets_shutdown_func)
     {
         osal_global->sockets_shutdown_func();
     }
+#endif
 #endif
 
     /* Shut down operating system specific functionality.

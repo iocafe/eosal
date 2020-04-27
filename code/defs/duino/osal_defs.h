@@ -11,7 +11,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -73,7 +73,7 @@
     block overwflows and freed block size are checked.
  */
 #ifndef OSAL_MEMORY_DEBUG
-#define OSAL_MEMORY_DEBUG 1
+#define OSAL_MEMORY_DEBUG 0
 #endif
 
 /** OSAL memory allocation manager flag. If OSAL_MEMORY_MANAGER flags is nonzero, then
@@ -93,17 +93,17 @@
 
 /** Include code to force os_lock() to switch to time critical priority
     when in system mutex is locked. This can be used on systems which do not support
-	priority inheritance to avoid priority reversal, like desktop windows. Anyhow setting
-	this option slows the code down. On systems which do support priority inheritance,
-	like Windows mobile, ThreadX, etc. this should be set to zero.
+    priority inheritance to avoid priority reversal, like desktop windows. Anyhow setting
+    this option slows the code down. On systems which do support priority inheritance,
+    like Windows mobile, ThreadX, etc. this should be set to zero.
  */
-#ifndef OSAL_TIME_CRITICAL_SYSTEM_LOCK 
+#ifndef OSAL_TIME_CRITICAL_SYSTEM_LOCK
 #define OSAL_TIME_CRITICAL_SYSTEM_LOCK 0
 #endif
 
-/** Include UTF8 character encoding support, define 1 or 0. For most systems UTF8 character 
-    encoding should be enabled. Disale UTF8 only for very minimalistic systems which need 
-	only English strings and where every extra byte counts. 
+/** Include UTF8 character encoding support, define 1 or 0. For most systems UTF8 character
+    encoding should be enabled. Disale UTF8 only for very minimalistic systems which need
+    only English strings and where every extra byte counts.
  */
 #ifndef OSAL_UTF8
 #define OSAL_UTF8 1
@@ -139,18 +139,18 @@
 #define OSAL_FS_ROOT "/"
 #endif
 
-/** Needed memory alignment. Some processors require that variables are allocated at 
-    type size boundary. For example ARM7 requires that 2 byte integers starts from 
-	pair addressess and 4 byte integers from addressess dividable by four. If so, 
-	define "OSAL_MEMORY_TYPE_ALIGNMENT 4". If no aligment is needed define 0 here.
+/** Needed memory alignment. Some processors require that variables are allocated at
+    type size boundary. For example ARM7 requires that 2 byte integers starts from
+    pair addressess and 4 byte integers from addressess dividable by four. If so,
+    define "OSAL_MEMORY_TYPE_ALIGNMENT 4". If no aligment is needed define 0 here.
  */
 #ifndef OSAL_MEMORY_TYPE_ALIGNMENT
 #define OSAL_MEMORY_TYPE_ALIGNMENT 0
 #endif
 
 /** Support for 64 bit integers. Define 1 if compiler supports 64 bit integers, like "__int64"
-    or "long long" or plain "long" in 64 bit GNU compilers. Define 0 if compiler doesn't 
-	have 64 bit support.
+    or "long long" or plain "long" in 64 bit GNU compilers. Define 0 if compiler doesn't
+    have 64 bit support.
  */
 #ifndef OSAL_LONG_IS_64_BITS
 #define OSAL_LONG_IS_64_BITS 1
@@ -163,10 +163,10 @@
 #define OSAL_TIMER_IS_64_BITS 0
 #endif
 
-/** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero, 
-    then code to do memory, etc. cleanup when process exists or restarts is included. 
-	If this flag is zero, then cleanup code is not included. The cleanup code should 
-	be included in platforms like Windows or Linux, where processes can be terminated
+/** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero,
+    then code to do memory, etc. cleanup when process exists or restarts is included.
+    If this flag is zero, then cleanup code is not included. The cleanup code should
+    be included in platforms like Windows or Linux, where processes can be terminated
     or restarted. Memory cleanup code is not necessary on most of embedded systems,
     disabling it saves a few bytes of memory.
  */
@@ -175,8 +175,8 @@
 #endif
 
 /** Multithreading support. Define 1 if operating system supports multi threading. This
-    enables code for thread, mutexes, event, etc. Define 0 if there is no multithreading 
-	support for this operating system.
+    enables code for thread, mutexes, event, etc. Define 0 if there is no multithreading
+    support for this operating system.
     The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
@@ -190,15 +190,10 @@
 #define OSAL_INTERRUPT_LIST_SUPPORT 0
 #endif
 
-/** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code
-    and for functions called from interrupt handler. Global data accessed from ISR
-    must have DRAM_ATTR flag.
+/** On Arduino P32 we need to have PROGMEM attribute to place data on flash only
  */
-/* #ifdef ESP_PLATFORM
-#define OS_ISR_FUNC_ATTR IRAM_ATTR
-#define OS_ISR_DATA_ATTR DRAM_ATTR
-#endif
-*/
+#define OS_FLASH_MEM const __attribute__((progmem))
+#define OS_FLASH_MEM_H const
 
 /** If compiler can support function pointers and interfaces, define 1. Define zero
     only for systems which do not handle function pointers properly (for example PIC).

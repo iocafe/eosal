@@ -9,9 +9,9 @@
   This file contains micellenous defines, like OS_NULL, OS_TRUE..., which are common
   to all operating systems.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -90,13 +90,20 @@ typedef os_char os_boolean;
 #endif
 
 /** If we have no interrupt handler function type for this operating system,
-    define empty OS_ISR_FUNC_ATTR.
+    define empty OS_ISR_FUNC_ATTR. Define OS_FLASH_MEM is used to force data
+    to flash.
  */
 #ifndef OS_ISR_FUNC_ATTR
 #define OS_ISR_FUNC_ATTR
 #endif
 #ifndef OS_ISR_DATA_ATTR
 #define OS_ISR_DATA_ATTR
+#endif
+#ifndef OS_FLASH_MEM
+#define OS_FLASH_MEM const
+#endif
+#ifndef OS_FLASH_MEM_H
+#define OS_FLASH_MEM_H const
 #endif
 
 /** By default, do not maintain list of function pointers to enable/disable
