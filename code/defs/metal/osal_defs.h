@@ -6,12 +6,12 @@
   @version 1.0
   @date    8.1.2020
 
-  This file contains platform specific defines for windows compilation. The platform specific 
+  This file contains platform specific defines for windows compilation. The platform specific
   defines here are defaults, which can be overwritten by compiler settings.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -19,7 +19,7 @@
 
 /** Operating system identifier define. There is define for each supported operating system,
     for example OEAL_WINDOWS, OSAL_LINUX, OSAL_ARDUINO, OSAL_METAL... Compilation can be conditioned
-	by the define, for example "#ifdef OSAL_LINUX". 
+    by the define, for example "#ifdef OSAL_LINUX".
  */
 #define OSAL_METAL 1
 
@@ -100,17 +100,17 @@
 
 /** Include code to force os_lock() to switch to time critical priority
     when in system mutex is locked. This can be used on systems which do not support
-	priority inheritance to avoid priority reversal, like desktop windows. Anyhow setting
-	this option slows the code down. On systems which do support priority inheritance,
-	like Windows mobile, ThreadX, etc. this should be set to zero.
+    priority inheritance to avoid priority reversal, like desktop windows. Anyhow setting
+    this option slows the code down. On systems which do support priority inheritance,
+    like Windows mobile, ThreadX, etc. this should be set to zero.
  */
-#ifndef OSAL_TIME_CRITICAL_SYSTEM_LOCK 
+#ifndef OSAL_TIME_CRITICAL_SYSTEM_LOCK
 #define OSAL_TIME_CRITICAL_SYSTEM_LOCK 0
 #endif
 
-/** Include UTF8 character encoding support, define 1 or 0. For most systems UTF8 character 
-    encoding should be enabled. Disale UTF8 only for very minimalistic systems which need 
-	only English strings and where every extra byte counts. 
+/** Include UTF8 character encoding support, define 1 or 0. For most systems UTF8 character
+    encoding should be enabled. Disale UTF8 only for very minimalistic systems which need
+    only English strings and where every extra byte counts.
  */
 #ifndef OSAL_UTF8
 #define OSAL_UTF8 1
@@ -146,10 +146,10 @@
 #define OSAL_FS_ROOT "/"
 #endif
 
-/** Needed memory alignment. Some processors require that variables are allocated at 
+/** Needed memory alignment. Some processors require that variables are allocated at
     type size boundary. For example ARMv6 requires that 2 byte integers starts from
-	pair addressess and 4 byte integers from addressess dividable by four. If so, 
-	define "OSAL_MEMORY_TYPE_ALIGNMENT 4". If no aligment is needed define 0 here.
+    pair addressess and 4 byte integers from addressess dividable by four. If so,
+    define "OSAL_MEMORY_TYPE_ALIGNMENT 4". If no aligment is needed define 0 here.
 
     ARM: Hardware support for unaligned accesses was first introduced in ARMv6.
     Cortex-M4(F) is based on ARMv7-M and supports unaligned accesses.
@@ -167,8 +167,8 @@
 #endif
 
 /** Support for 64 bit integers. Define 1 if compiler supports 64 bit integers, like "__int64"
-    or "long long" or plain "long" in 64 bit GNU compilers. Define 0 if compiler doesn't 
-	have 64 bit support.
+    or "long long" or plain "long" in 64 bit GNU compilers. Define 0 if compiler doesn't
+    have 64 bit support.
  */
 #ifndef OSAL_LONG_IS_64_BITS
 #define OSAL_LONG_IS_64_BITS 1
@@ -181,10 +181,10 @@
 #define OSAL_TIMER_IS_64_BITS 0
 #endif
 
-/** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero, 
-    then code to do memory, etc. cleanup when process exists or restarts is included. 
-	If this flag is zero, then cleanup code is not included. The cleanup code should 
-	be included in platforms like Windows or Linux, where processes can be terminated
+/** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero,
+    then code to do memory, etc. cleanup when process exists or restarts is included.
+    If this flag is zero, then cleanup code is not included. The cleanup code should
+    be included in platforms like Windows or Linux, where processes can be terminated
     or restarted. Memory cleanup code is not necessary on most of embedded systems,
     disabling it saves a few bytes of memory.
  */
@@ -193,8 +193,8 @@
 #endif
 
 /** Multithreading support. Define 1 if operating system supports multi threading. This
-    enables code for thread, mutexes, event, etc. Define 0 if there is no multithreading 
-	support for this operating system.
+    enables code for thread, mutexes, event, etc. Define 0 if there is no multithreading
+    support for this operating system.
  */
 #ifdef STM32F429xx
 #ifndef OSAL_MULTITHREAD_SUPPORT
@@ -277,21 +277,6 @@
  */
 #ifndef OSAL_TLS_SUPPORT
 #define OSAL_TLS_SUPPORT OSAL_TLS_NONE
-#endif
-
-/** If OpenSSL functionality is available (separate from TLS wrapper selection,
-    OpenSSL functions can be used for other purposes outside the TLS wrapper,
-    like SHA-256 hashes, random number, etc).
- */
-#ifndef OSAL_OPENSSL_SUPPORT
-#define OSAL_OPENSSL_SUPPORT 0
-#endif
-
-/** If MBed TLS functionality is available. (similarly to OSAL_OPENSSL_SUPPORT,
-    the MBed TLS functions can be used outside the TLS wrapper).
- */
-#ifndef OSAL_MBED_TLS_SUPPORT
-#define OSAL_MBED_TLS_SUPPORT 0
 #endif
 
 /** If serial communication is supported for the platform, define 1.

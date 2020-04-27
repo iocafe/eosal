@@ -230,19 +230,6 @@
 #endif
 #endif
 
-/** If OpenSSL functionality is available (separate from TLS wrapper selection,
-    OpenSSL functions can be used for other purposes outside the TLS wrapper,
-    like SHA-256 hashes, random number, etc).
- */
-#undef OSAL_OPENSSL_SUPPORT
-#define OSAL_OPENSSL_SUPPORT (OSAL_TLS_SUPPORT==OSAL_TLS_OPENSSL_WRAPPER)
-
-/** If MBed TLS functionality is available. (similarly to OSAL_OPENSSL_SUPPORT,
-    the MBed TLS functions can be used outside the TLS wrapper).
- */
-#undef OSAL_MBED_TLS_SUPPORT
-#define OSAL_MBED_TLS_SUPPORT (OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER)
-
 /** If serial communication is supported for the platform, define 1.
  */
 #ifndef OSAL_SERIAL_SUPPORT

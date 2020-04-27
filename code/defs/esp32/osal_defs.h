@@ -24,7 +24,7 @@
 #define OSAL_ESP32
 
 
-#include "Arduino.h"
+// #include "Arduino.h"
 
 
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
@@ -161,11 +161,7 @@
     32 bit timer type is used.
  */
 #ifndef OSAL_TIMER_IS_64_BITS
-  #ifdef ESP_PLATFORM
-    #define OSAL_TIMER_IS_64_BITS 1
-  #else
-    #define OSAL_TIMER_IS_64_BITS 0
-  #endif
+#define OSAL_TIMER_IS_64_BITS 1
 #endif
 
 /** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero,
@@ -182,7 +178,6 @@
 /** Multithreading support. Define 1 if operating system supports multi threading. This
     enables code for thread, mutexes, event, etc. Define 0 if there is no multithreading
     support for this operating system.
-    The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_MULTITHREAD_SUPPORT
 #define OSAL_MULTITHREAD_SUPPORT 1
@@ -234,9 +229,6 @@
  */
 #define OSAL_WIZ_NIC 4
 
-/* Bits in socket type enumeration, these may select common components.
- */
-
 /* Enumeration of socket wrapper.
  */
 #define OSAL_SOCKET_NONE 0
@@ -254,7 +246,6 @@
 #define OSAL_LWIP_RAW_API (OSAL_LWIP_RAW_API_BIT + 0)
 #define OSAL_LWIP_RAW_API_ARDUINO_WIFI (OSAL_LWIP_RAW_API_BIT + OSAL_ARDUINO_WIFI_INIT_BIT)
 
-
 /* If socket support if not selected by compiler define, select now.
  * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
  */
@@ -264,15 +255,7 @@
   #endif
 #endif
 #ifndef OSAL_SOCKET_SUPPORT
-  #ifdef STM32L4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_ARDUINO_ETHERNET_WIZ
-  #endif
-  #ifdef STM32F4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_ARDUINO_ETHERNET_LWIP
-  #endif
-  #ifdef ESP_PLATFORM
-    #define OSAL_SOCKET_SUPPORT OSAL_LWIP_SOCKET_API_ARDUINO_WIFI
-  #endif
+  #define OSAL_SOCKET_SUPPORT OSAL_LWIP_SOCKET_API_ARDUINO_WIFI
 #endif
 
 /* Unknown micro controller build, default to WizNET chip.
@@ -310,21 +293,9 @@
 #define OSAL_TLS_ARDUINO_WRAPPER 3
 
 /** Select TLS wrapper implementation to use.
-    The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_TLS_SUPPORT
 #define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
-#endif
-
-/** OpenSSL cannot be used with Arduino.
- */
-#define OSAL_OPENSSL_SUPPORT 0
-
-/** If MBed TLS functionality is available. (similarly to OSAL_OPENSSL_SUPPORT,
-    the MBed TLS functions can be used outside the TLS wrapper).
- */
-#ifndef OSAL_MBED_TLS_SUPPORT
-#define OSAL_MBED_TLS_SUPPORT ESP_PLATFORM
 #endif
 
 /** If serial communication is supported for the platform, define 1.

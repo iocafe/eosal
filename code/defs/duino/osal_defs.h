@@ -4,10 +4,10 @@
   @brief   Operating system specific defines for Arduino Platform.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    12.3.2020
+  @date    26.4.2020
 
   This file contains platform specific defines for building with Arduino compatible libraries
-  like ESP32/Arduino, TeensyDuino and STMduino. The defaults can be overridden by compiler settings.
+  like TeensyDuino and STM32duino. The defaults can be overridden by compiler settings.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -226,9 +226,6 @@
  */
 #define OSAL_WIZ_NIC 4
 
-/* Bits in socket type enumeration, these may select common components.
- */
-
 /* Enumeration of socket wrapper.
  */
 #define OSAL_SOCKET_NONE 0
@@ -299,21 +296,9 @@
 #define OSAL_TLS_ARDUINO_WRAPPER 3
 
 /** Select TLS wrapper implementation to use.
-    The ESP_PLATFORM flag is defined by Arduino IDE build for ESP32 micro-controller.
  */
 #ifndef OSAL_TLS_SUPPORT
 #define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
-#endif
-
-/** OpenSSL cannot be used with Arduino.
- */
-#define OSAL_OPENSSL_SUPPORT 0
-
-/** If MBed TLS functionality is available. (similarly to OSAL_OPENSSL_SUPPORT,
-    the MBed TLS functions can be used outside the TLS wrapper).
- */
-#ifndef OSAL_MBED_TLS_SUPPORT
-#define OSAL_MBED_TLS_SUPPORT 0
 #endif
 
 /** If serial communication is supported for the platform, define 1.
