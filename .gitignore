@@ -1,8 +1,10 @@
-# Local modifications to build configuration defines
+# Local modifications to build configuration defines in /coderoot/eosal/eosal_windows_config.h
+# or /coderoot/eosal/eosal_linux_config.h
 eosal_windows_config.h
+eosal_linux_config.h
+eosal_esp32_config.h
 
 # C++ objects and libs
-
 *.slo
 *.lo
 *.o

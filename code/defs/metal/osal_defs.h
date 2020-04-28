@@ -23,6 +23,12 @@
  */
 #define OSAL_METAL 1
 
+/* If we want the default defines for a minimalistic serial communication device.
+ */
+#if OSAL_MINIMALISTIC
+#include "code/defs/common/osal_minimalistic.h"
+#endif
+
 #ifdef OSAL_INCLUDE_METAL_HEADERS
 #ifdef STM32L476xx
 #include "stm32l4xx_hal.h"

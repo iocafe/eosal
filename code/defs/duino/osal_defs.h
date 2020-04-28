@@ -25,6 +25,11 @@
 
 #include "Arduino.h"
 
+/* If we want the default defines for a minimalistic serial communication device.
+ */
+#if OSAL_MINIMALISTIC
+  #include "code/defs/common/osal_minimalistic.h"
+#endif
 
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */

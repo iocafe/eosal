@@ -23,6 +23,21 @@
  */
 #define OSAL_LINUX 1
 
+/* If there is custom configuration file for Linux, include it. The custom configuration file 
+   should  be placed as /coderoot/eosal/eosal_linux_config.h.
+ */
+#if defined __has_include
+#if __has_include ("eosal_linux_config.h")
+#include "eosal_linux_config.h"
+#endif
+#endif
+
+/* If we want the default defines for a minimalistic serial communication device.
+ */
+#if OSAL_MINIMALISTIC
+  #include "code/defs/common/osal_minimalistic.h"
+#endif
+
 /** C compiler's debug build flag.
  */
 #ifndef OSAL_CC_DEBUG

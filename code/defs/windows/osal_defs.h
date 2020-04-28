@@ -44,13 +44,13 @@
    should  be placed as c:\coderoot\eosal\eosal_windows_config.h.
    MSVC++ 14.12, _MSC_VER == 1912 (Visual Studio 2017 version 15.5)
  */
-#if _MSC_VER >= 1912
+// #if _MSC_VER >= 1912
 #if defined __has_include
 #if __has_include ("eosal_windows_config.h")
 #include "eosal_windows_config.h"
 #endif
 #endif
-#endif
+// #endif
 
 /* If we want the default defines for a minimalistic serial communication device.
  */

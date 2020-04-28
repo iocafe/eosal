@@ -25,6 +25,21 @@
 
 #include <freertos/FreeRTOS.h>
 
+/* If there is custom configuration file for ESP32, include it. The custom configuration file 
+   should  be placed as /coderoot/eosal/eosal_esp32_config.h.
+ */
+#if defined __has_include
+#if __has_include ("eosal_esp_config.h")
+#include "eosal_esp_config.h"
+#endif
+#endif
+
+/* If we want the default defines for a minimalistic serial communication device.
+ */
+#if OSAL_MINIMALISTIC
+#include "code/defs/common/osal_minimalistic.h"
+#endif
+
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
