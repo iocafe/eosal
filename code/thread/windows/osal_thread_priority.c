@@ -16,8 +16,6 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#include <windows.h>
-
 
 /* Forward referred static functions.
  */

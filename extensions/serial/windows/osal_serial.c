@@ -27,11 +27,6 @@
 */
 #include "eosalx.h"
 #if OSAL_SERIAL_SUPPORT
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-
 
 /** Windows specific serial point state data structure. OSAL functions cast their own
     structure pointers to osalStream pointers.

@@ -33,9 +33,7 @@
 */
 #include "eosalx.h"
 #if OSAL_MAIN_SUPPORT
-
-#include <windows.h>
-
+#include <shellapi.h>
 
 /**
 ****************************************************************************************************

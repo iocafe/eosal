@@ -34,8 +34,6 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#define _WIN32_WINNT 0x0403
-#include <windows.h>
 
 #if OSAL_MULTITHREAD_SUPPORT
 

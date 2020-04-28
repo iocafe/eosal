@@ -18,8 +18,6 @@
 #include "eosalx.h"
 #if OSAL_TIME_SUPPORT
 
-#include <windows.h>
-
 
 /* 64 bit integer constants for clock.
  */

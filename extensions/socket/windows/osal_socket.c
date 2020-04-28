@@ -16,12 +16,14 @@
 
 ****************************************************************************************************
 */
+
+/* Impoetant: WIN32_LEAN_AND_MEAN must be defined to use winsock2! Do this before including
+   eosalx.h, because it further includes Windows headers.
+*/
+#define WIN32_LEAN_AND_MEAN
+
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>

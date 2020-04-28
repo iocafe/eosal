@@ -17,11 +17,46 @@
 ****************************************************************************************************
 */
 
+/* Include Windows main header. Specify Windows 7 as the oldest supported platform (WINVER 
+   / _WIN32_WINNT 0x0601 is Windows 7)
+ */
+#ifndef WINVER
+#define WINVER 0x0601
+#endif
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0601
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef VC_EXTRALEAN
+#define VC_EXTRALEAN
+#endif
+#include <windows.h>
+
 /** Operating system identifier define. There is define for each supported operating system,
     for example OEAL_WINDOWS, OSAL_LINUX, OSAL_ARDUINO, OSAL_METAL... Compilation can be conditioned
     by the define, for example "#ifdef OSAL_LINUX".
  */
 #define OSAL_WINDOWS 1
+
+/* If there is custom configuration file for Windows, include it. The custom configuration file 
+   should  be placed as c:\coderoot\eosal\eosal_windows_config.h.
+   MSVC++ 14.12, _MSC_VER == 1912 (Visual Studio 2017 version 15.5)
+ */
+#if _MSC_VER >= 1912
+#if defined __has_include
+#if __has_include ("eosal_windows_config.h")
+#include "eosal_windows_config.h"
+#endif
+#endif
+#endif
+
+/* If we want the default defines for a minimalistic serial communication device.
+ */
+#if OSAL_MINIMALISTIC
+  #include "code/defs/common/osal_minimalistic.h"
+#endif
 
 /** C compiler's debug build flag.
  */

@@ -1,3 +1,6 @@
+# Local modifications to build configuration defines
+eosal_windows_config.h
+
 # C++ objects and libs
 
 *.slo

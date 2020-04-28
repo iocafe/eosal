@@ -21,9 +21,10 @@
 
 /* If we want the minimalistic serial communication defaults.
  */
-#if OSAL_MINIMALISTIC
+/* #if OSAL_MINIMALISTIC
   #include "code/defs/common/osal_minimalistic.h"
 #endif
+*/
 
 /* Include target operating system specific defines.
  */
