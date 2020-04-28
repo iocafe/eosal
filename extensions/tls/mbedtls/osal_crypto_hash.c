@@ -84,7 +84,7 @@ void osal_sha256(
   mbedtls_md_init(&ctx);
   mbedtls_md_setup(&ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 0);
   mbedtls_md_starts(&ctx);
-  mbedtls_md_update(&ctx, d, n);
+  mbedtls_md_update(&ctx, d, (size_t)n);
   mbedtls_md_finish(&ctx, md);
   mbedtls_md_free(&ctx);
 }
