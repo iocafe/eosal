@@ -20,18 +20,17 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_FUNCTION_POINTER_SUPPORT
 
 osalStream osal_stream_default_accept(
-	osalStream stream,
+    osalStream stream,
     os_char *remote_ip_addr,
     os_memsz remote_ip_addr_sz,
     osalStatus *status,
-	os_int flags)
+    os_int flags)
 {
-	if (status) *status = OSAL_STATUS_FAILED;
+    if (status) *status = OSAL_STATUS_FAILED;
     if (remote_ip_addr) *remote_ip_addr = '\0';
-	return OS_NULL;
+    return OS_NULL;
 }
 
 
@@ -52,9 +51,9 @@ osalStatus osal_stream_default_seek(
 
 
 osalStatus osal_stream_default_write_value(
-	osalStream stream,
-	os_ushort c,
-	os_int flags)
+    osalStream stream,
+    os_ushort c,
+    os_int flags)
 {
 #if OSAL_MICROCONTROLLER
     return OSAL_STATUS_FAILED;
@@ -62,51 +61,51 @@ osalStatus osal_stream_default_write_value(
     os_char
         c8;
 
-	os_memsz 
-		n_written;
+    os_memsz
+        n_written;
 
-	osalStatus 
-		status;
+    osalStatus
+        status;
 
     c8 = (os_char)c;
 
     status = stream->iface->stream_write(stream, &c8, 1, &n_written, flags);
-	if (status) return status;
+    if (status) return status;
 
-	return n_written ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
+    return n_written ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
 #endif
 }
 
 
 osalStatus osal_stream_default_read_value(
-	osalStream stream,
-	os_ushort *c,
-	os_int flags)
+    osalStream stream,
+    os_ushort *c,
+    os_int flags)
 {
 #if OSAL_MICROCONTROLLER
     return OSAL_STATUS_FAILED;
 #else
     os_uchar
-		u = 0;
+        u = 0;
 
-	os_memsz 
-		n_read;
+    os_memsz
+        n_read;
 
-	osalStatus 
-		status;
+    osalStatus
+        status;
 
     status = stream->iface->stream_read(stream, (os_char*)&u, 1, &n_read, flags);
-	*c = u;
+    *c = u;
 
-	if (status) return status;
-	return n_read ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
+    if (status) return status;
+    return n_read ? OSAL_SUCCESS : OSAL_STATUS_STREAM_WOULD_BLOCK;
 #endif
 }
 
 
 os_long osal_stream_default_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
     os_long value = -1;
 
@@ -128,9 +127,9 @@ os_long osal_stream_default_get_parameter(
 }
 
 void osal_stream_default_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
     if (stream) switch (parameter_ix)
     {
@@ -148,16 +147,15 @@ void osal_stream_default_set_parameter(
 }
 
 osalStatus osal_stream_default_select(
-	osalStream *streams,
+    osalStream *streams,
     os_int nstreams,
-	osalEvent evnt,
-	osalSelectData *selectdata,
+    osalEvent evnt,
+    osalSelectData *selectdata,
     os_int timeout_ms,
-	os_int flags)
+    os_int flags)
 {
     /* Return value OSAL_STATUS_NOT_SUPPORTED indicates that select is not implemented.
      */
     return OSAL_STATUS_NOT_SUPPORTED;
 }
 
-#endif

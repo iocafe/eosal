@@ -10,9 +10,9 @@
   and for basic file IO.  OSAL stream API is abstraction which makes streams (including files)
   look similar to upper levels of code, regardless of operating system and implementation.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -21,9 +21,7 @@
 
 /** Stream interface structure for files.
  */
-#if OSAL_FUNCTION_POINTER_SUPPORT
 extern const osalStreamInterface osal_file_iface;
-#endif
 
 /** Define to get file interface pointer. The define is used so that this can
     be converted to function call.
@@ -35,7 +33,7 @@ extern const osalStreamInterface osal_file_iface;
 #define OSAL_WINDOWS_FILETIME_OFFSET 11644473600000000ULL
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name OSAL file Functions.
@@ -51,9 +49,9 @@ extern const osalStreamInterface osal_file_iface;
  */
 osalStream osal_file_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags);
+    void *option,
+    osalStatus *status,
+    os_int flags);
 
 /* Close file.
  */
@@ -64,26 +62,26 @@ void osal_file_close(
 /* Flush written data to file.
  */
 osalStatus osal_file_flush(
-	osalStream stream,
-	os_int flags);
+    osalStream stream,
+    os_int flags);
 
 /* Write data to file.
  */
 osalStatus osal_file_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags);
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags);
 
 /* Read data from file.
  */
 osalStatus osal_file_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags);
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags);
 
 /*@}*/
 

@@ -981,8 +981,6 @@ void osal_serial_shutdown(void)
 {
 }
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 OS_FLASH_MEM osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
@@ -1002,5 +1000,4 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
     osal_stream_default_select};
 #endif
 
-#endif
 #endif

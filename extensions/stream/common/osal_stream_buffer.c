@@ -11,7 +11,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -67,9 +67,9 @@ osalStreamBuffer;
 */
 osalStream osal_stream_buffer_open(
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
     osalStreamBuffer *sbuf;
     osalStatus s;
@@ -81,9 +81,7 @@ osalStream osal_stream_buffer_open(
         goto getout;
     }
     os_memclear(sbuf, sizeof(osalStreamBuffer));
-#if OSAL_FUNCTION_POINTER_SUPPORT
     sbuf->hdr.iface = &osal_stream_buffer_iface;
-#endif
 
     s = osal_stream_buffer_realloc((osalStream)sbuf, 64);
     if (s)
@@ -194,7 +192,7 @@ osalStatus osal_stream_buffer_seek(
 
   @param   stream Pointer to the stream buffer object.
   @param   buf Pointer to the beginning of data to place into the stream_buffer.
-  @param   n Maximum number of bytes to write. 
+  @param   n Maximum number of bytes to write.
   @param   n_written Always set to n, unless memory allocation fails (set to 0).
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
   @return  Function status code. OSAL_SUCCESS (0) indicates success and value
@@ -203,11 +201,11 @@ osalStatus osal_stream_buffer_seek(
 ****************************************************************************************************
 */
 osalStatus osal_stream_buffer_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     osalStreamBuffer *sbuf;
     osalStatus s;
@@ -241,22 +239,22 @@ osalStatus osal_stream_buffer_write(
   @param   buf Pointer to buffer to read into.
   @param   n Maximum number of bytes to read. The data buffer must large enough to hold
            at least this many bytes.
-  @param   n_read Pointer to integer into which the function stores the number of bytes read, 
-           which may be less than n if there are fewer bytes available. If the function fails 
-		   n_read is set to zero.
+  @param   n_read Pointer to integer into which the function stores the number of bytes read,
+           which may be less than n if there are fewer bytes available. If the function fails
+           n_read is set to zero.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-		   indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
 osalStatus osal_stream_buffer_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     *n_read = 0;
     return OSAL_STATUS_FAILED;
@@ -343,8 +341,6 @@ os_char *osal_stream_buffer_content(
 }
 
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 /** Stream interface for OSAL stream_buffers. This is structure osalStreamInterface filled with
     function pointers to OSAL stream_buffers implementation.
  */
@@ -357,11 +353,9 @@ const osalStreamInterface osal_stream_buffer_iface
     osal_stream_buffer_seek,
     osal_stream_buffer_write,
     osal_stream_buffer_read,
-	osal_stream_default_write_value,
-	osal_stream_default_read_value,
+    osal_stream_default_write_value,
+    osal_stream_default_read_value,
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
     osal_stream_default_select};
-
-#endif
 

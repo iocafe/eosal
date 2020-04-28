@@ -558,8 +558,6 @@ void osal_serial_shutdown(
 }
 
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
  */
@@ -577,7 +575,5 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
     osal_serial_get_parameter,
     osal_serial_set_parameter,
     osal_stream_default_select};
-
-#endif
 
 #endif

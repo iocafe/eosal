@@ -20,11 +20,9 @@ struct osalMutexStruct;
 struct osalNetworkState;
 struct osalSocketGlobal;
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-    /* Extension module shutdown function type.
-     */
-    typedef void osal_shutdown_func(void);
-#endif
+/* Extension module shutdown function type.
+ */
+typedef void osal_shutdown_func(void);
 
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
     struct osalTLS;

@@ -195,20 +195,6 @@
 #define OS_ISR_FUNC_ATTR IRAM_ATTR
 #define OS_ISR_DATA_ATTR DRAM_ATTR
 
-/** If compiler can support function pointers and interfaces, define 1. Define zero
-    only for systems which do not handle function pointers properly (for example PIC).
- */
-#ifndef OSAL_FUNCTION_POINTER_SUPPORT
-#define OSAL_FUNCTION_POINTER_SUPPORT 1
-#endif
-
-/** If compiler can support recursive function calls, define 1. Define zero
-    only for micro controllers which do not have stack (for example PIC).
- */
-#ifndef OSAL_RECURSION_SUPPORT
-#define OSAL_RECURSION_SUPPORT 1
-#endif
-
 /* Bits in socket type enumeration, these may select common components.
  */
 #define OSAL_LWIP_SOCKET_API_BIT 32

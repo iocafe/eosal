@@ -970,8 +970,6 @@ void osal_socket_maintain(
 #endif
 
 
-#if OSAL_FUNCTION_POINTER_SUPPORT
-
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
@@ -989,7 +987,5 @@ OS_FLASH_MEM osalStreamInterface osal_socket_iface
     osal_socket_get_parameter,
     osal_socket_set_parameter,
     OS_NULL};
-
-#endif
 
 #endif

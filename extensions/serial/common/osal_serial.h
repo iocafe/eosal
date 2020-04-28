@@ -21,9 +21,7 @@
 
 /** Stream interface structure for serials.
  */
-#if OSAL_FUNCTION_POINTER_SUPPORT
 extern OS_FLASH_MEM_H osalStreamInterface osal_serial_iface;
-#endif
 
 /** Define to get serial interface pointer. The define is used so that this can
     be converted to function call.

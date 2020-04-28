@@ -15,13 +15,12 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_FUNCTION_POINTER_SUPPORT
 
 
 /**
@@ -50,11 +49,11 @@
 osalStream osal_stream_open(
     const osalStreamInterface *iface,
     const os_char *parameters,
-	void *option,
-	osalStatus *status,
-	os_int flags)
+    void *option,
+    osalStatus *status,
+    os_int flags)
 {
-	return iface->stream_open(parameters, option, status, flags);
+    return iface->stream_open(parameters, option, status, flags);
 }
 
 
@@ -78,10 +77,10 @@ void osal_stream_close(
     osalStream stream,
     os_int flags)
 {
-	if (stream)
-	{
+    if (stream)
+    {
         stream->iface->stream_close(stream, flags);
-	}
+    }
 }
 
 
@@ -112,19 +111,19 @@ void osal_stream_close(
 ****************************************************************************************************
 */
 osalStream osal_stream_accept(
-	osalStream stream,
+    osalStream stream,
     os_char *remote_ip_addr,
     os_memsz remote_ip_addr_sz,
     osalStatus *status,
-	os_int flags)
+    os_int flags)
 {
-	if (stream)
-	{
+    if (stream)
+    {
         return stream->iface->stream_accept(stream, remote_ip_addr,
             remote_ip_addr_sz, status, flags);
-	}
-	if (status) *status = OSAL_STATUS_FAILED;
-	return OS_NULL;
+    }
+    if (status) *status = OSAL_STATUS_FAILED;
+    return OS_NULL;
 }
 
 
@@ -150,14 +149,14 @@ osalStream osal_stream_accept(
 ****************************************************************************************************
 */
 osalStatus osal_stream_flush(
-	osalStream stream,
-	os_int flags)
+    osalStream stream,
+    os_int flags)
 {
-	if (stream)
-	{
-		return stream->iface->stream_flush(stream, flags);
-	}
-	return OSAL_STATUS_FAILED;
+    if (stream)
+    {
+        return stream->iface->stream_flush(stream, flags);
+    }
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -180,15 +179,15 @@ osalStatus osal_stream_flush(
 ****************************************************************************************************
 */
 osalStatus osal_stream_seek(
-	osalStream stream,
-	os_long *pos,
-	os_int flags)
+    osalStream stream,
+    os_long *pos,
+    os_int flags)
 {
-	if (stream)
-	{
-		return stream->iface->stream_seek(stream, pos, flags);
-	}
-	return OSAL_STATUS_FAILED;
+    if (stream)
+    {
+        return stream->iface->stream_seek(stream, pos, flags);
+    }
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -218,11 +217,11 @@ osalStatus osal_stream_seek(
 ****************************************************************************************************
 */
 osalStatus osal_stream_write(
-	osalStream stream,
+    osalStream stream,
     const os_char *buf,
-	os_memsz n,
-	os_memsz *n_written,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_written,
+    os_int flags)
 {
     os_timer start_t, now_t;
     osalStatus rval;
@@ -230,43 +229,43 @@ osalStatus osal_stream_write(
     os_int write_timeout_ms;
     os_boolean use_timer;
 
-	if (stream)
-	{
-		write_timeout_ms = stream->write_timeout_ms;
-		use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && write_timeout_ms > 0);
+    if (stream)
+    {
+        write_timeout_ms = stream->write_timeout_ms;
+        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && write_timeout_ms > 0);
         if (use_timer) os_get_timer(&start_t);
-		total_written = 0;
-		do
-		{
+        total_written = 0;
+        do
+        {
             if (use_timer) os_get_timer(&now_t);
-			rval = stream->iface->stream_write(stream, buf, n, &n_written_now, flags);
-			total_written += n_written_now;
-			n -= n_written_now;
-			if (rval || write_timeout_ms == 0 || n == 0) break;
+            rval = stream->iface->stream_write(stream, buf, n, &n_written_now, flags);
+            total_written += n_written_now;
+            n -= n_written_now;
+            if (rval || write_timeout_ms == 0 || n == 0) break;
 
-			if (use_timer) 
-			{
-				if (n_written)
-				{
+            if (use_timer)
+            {
+                if (n_written)
+                {
                     os_get_timer(&start_t);
-				}
-				else
-				{
-					if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
-				}
-			}
+                }
+                else
+                {
+                    if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
+                }
+            }
 
-			buf += n_written_now;
+            buf += n_written_now;
             os_timeslice();
-		}
-		while (1);
+        }
+        while (1);
 
-		if (n_written) *n_written = total_written;
-		return rval;
-	}
+        if (n_written) *n_written = total_written;
+        return rval;
+    }
 
-	if (n_written) *n_written = 0;
-	return OSAL_STATUS_FAILED;
+    if (n_written) *n_written = 0;
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -293,66 +292,66 @@ osalStatus osal_stream_write(
 ****************************************************************************************************
 */
 osalStatus osal_stream_read(
-	osalStream stream,
+    osalStream stream,
     os_char *buf,
-	os_memsz n,
-	os_memsz *n_read,
-	os_int flags)
+    os_memsz n,
+    os_memsz *n_read,
+    os_int flags)
 {
     os_timer
-		start_t,
-		now_t;
+        start_t,
+        now_t;
 
-	osalStatus 
-		rval;
+    osalStatus
+        rval;
 
-	os_memsz
-		n_read_now,
-		total_read;
+    os_memsz
+        n_read_now,
+        total_read;
 
-	os_int 
-		read_timeout_ms;
+    os_int
+        read_timeout_ms;
 
-	os_boolean
-		use_timer;
+    os_boolean
+        use_timer;
 
-	if (stream)
-	{
-		read_timeout_ms = stream->read_timeout_ms;
-		use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && read_timeout_ms > 0);
+    if (stream)
+    {
+        read_timeout_ms = stream->read_timeout_ms;
+        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && read_timeout_ms > 0);
         if (use_timer) os_get_timer(&start_t);
-		total_read = 0;
-		do
-		{
+        total_read = 0;
+        do
+        {
             if (use_timer) os_get_timer(&now_t);
-			rval = stream->iface->stream_read(stream, buf, n, &n_read_now, flags);
-			total_read += n_read_now;
-			n -= n_read_now;
-			if (rval || read_timeout_ms == 0 || n == 0) break;
+            rval = stream->iface->stream_read(stream, buf, n, &n_read_now, flags);
+            total_read += n_read_now;
+            n -= n_read_now;
+            if (rval || read_timeout_ms == 0 || n == 0) break;
 
-			if (use_timer) 
-			{
-				if (n_read)
-				{
+            if (use_timer)
+            {
+                if (n_read)
+                {
                     os_get_timer(&start_t);
-				}
-				else
-				{
-					if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
-				}
-			}
+                }
+                else
+                {
+                    if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
+                }
+            }
 
-			buf += n_read_now;
+            buf += n_read_now;
             os_timeslice();
-		}
-		while (1);
+        }
+        while (1);
 
-		if (n_read) *n_read = total_read;
-		return rval;
-	}
+        if (n_read) *n_read = total_read;
+        return rval;
+    }
 
-	if (n_read) *n_read = 0;
-	return OSAL_STATUS_FAILED;
+    if (n_read) *n_read = 0;
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -376,46 +375,46 @@ osalStatus osal_stream_read(
 ****************************************************************************************************
 */
 osalStatus osal_stream_write_value(
-	osalStream stream,
-	os_ushort c,
-	os_int flags)
+    osalStream stream,
+    os_ushort c,
+    os_int flags)
 {
     os_timer
-		start_t,
-		now_t;
+        start_t,
+        now_t;
 
-	osalStatus 
-		rval;
+    osalStatus
+        rval;
 
-	os_int 
-		write_timeout_ms;
+    os_int
+        write_timeout_ms;
 
-	os_boolean
-		use_timer;
+    os_boolean
+        use_timer;
 
-	if (stream)
-	{
-		write_timeout_ms = stream->write_timeout_ms;
-		use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && write_timeout_ms > 0);
+    if (stream)
+    {
+        write_timeout_ms = stream->write_timeout_ms;
+        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && write_timeout_ms > 0);
         if (use_timer) os_get_timer(&start_t);
-		do
-		{
+        do
+        {
             if (use_timer) os_get_timer(&now_t);
-			rval = stream->iface->stream_write_value(stream, c, flags);
-			if (rval != OSAL_STATUS_STREAM_WOULD_BLOCK || write_timeout_ms == 0) break;
+            rval = stream->iface->stream_write_value(stream, c, flags);
+            if (rval != OSAL_STATUS_STREAM_WOULD_BLOCK || write_timeout_ms == 0) break;
 
-			if (use_timer) 
-			{
-				if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
-			}
+            if (use_timer)
+            {
+                if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
+            }
 
             os_timeslice();
-		}
-		while (1);
+        }
+        while (1);
 
-		return rval;
-	}
-	return OSAL_STATUS_FAILED;
+        return rval;
+    }
+    return OSAL_STATUS_FAILED;
 }
 #endif
 
@@ -440,40 +439,40 @@ osalStatus osal_stream_write_value(
 ****************************************************************************************************
 */
 osalStatus osal_stream_read_value(
-	osalStream stream,
-	os_ushort *c,
-	os_int flags)
+    osalStream stream,
+    os_ushort *c,
+    os_int flags)
 {
     os_timer start_t, now_t;
     osalStatus rval;
     os_int read_timeout_ms;
     os_boolean use_timer;
 
-	if (stream)
-	{
-		read_timeout_ms = stream->read_timeout_ms;
-		use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && read_timeout_ms > 0);
+    if (stream)
+    {
+        read_timeout_ms = stream->read_timeout_ms;
+        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && read_timeout_ms > 0);
         if (use_timer) os_get_timer(&start_t);
-		do
-		{
+        do
+        {
             if (use_timer) os_get_timer(&now_t);
-			rval = stream->iface->stream_read_value(stream, c, flags);
-			if (rval != OSAL_STATUS_STREAM_WOULD_BLOCK || read_timeout_ms == 0) break;
+            rval = stream->iface->stream_read_value(stream, c, flags);
+            if (rval != OSAL_STATUS_STREAM_WOULD_BLOCK || read_timeout_ms == 0) break;
 
-			if (use_timer) 
-			{
-				if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
-			}
+            if (use_timer)
+            {
+                if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
+            }
 
             os_timeslice();
-		}
-		while (1);
+        }
+        while (1);
 
-		return rval;
-	}
+        return rval;
+    }
 
-	*c = 0;
-	return OSAL_STATUS_FAILED;
+    *c = 0;
+    return OSAL_STATUS_FAILED;
 }
 #endif
 
@@ -494,14 +493,14 @@ osalStatus osal_stream_read_value(
 ****************************************************************************************************
 */
 os_long osal_stream_get_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix)
 {
-	if (stream)
-	{
-		return stream->iface->stream_get_parameter(stream, parameter_ix);
-	}
-	return 0;
+    if (stream)
+    {
+        return stream->iface->stream_get_parameter(stream, parameter_ix);
+    }
+    return 0;
 }
 
 
@@ -522,14 +521,14 @@ os_long osal_stream_get_parameter(
 ****************************************************************************************************
 */
 void osal_stream_set_parameter(
-	osalStream stream,
-	osalStreamParameterIx parameter_ix,
-	os_long value)
+    osalStream stream,
+    osalStreamParameterIx parameter_ix,
+    os_long value)
 {
-	if (stream)
-	{
-		stream->iface->stream_set_parameter(stream, parameter_ix, value);
-	}
+    if (stream)
+    {
+        stream->iface->stream_set_parameter(stream, parameter_ix, value);
+    }
 }
 
 
@@ -564,15 +563,15 @@ void osal_stream_set_parameter(
 ****************************************************************************************************
 */
 osalStatus osal_stream_select(
-	osalStream *streams,
+    osalStream *streams,
     os_int nstreams,
-	osalEvent evnt,
-	osalSelectData *selectdata,
+    osalEvent evnt,
+    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {
-	if (nstreams) if (streams[0])
-	{
+    if (nstreams) if (streams[0])
+    {
         if (streams[0]->iface->stream_select)
         {
             return streams[0]->iface->stream_select(streams, nstreams,
@@ -582,9 +581,9 @@ osalStatus osal_stream_select(
         {
             return OSAL_STATUS_NOT_SUPPORTED;
         }
-	}
+    }
 
-	return OSAL_STATUS_FAILED;
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -622,4 +621,3 @@ osalStatus osal_stream_receive_packet(
     return OSAL_STATUS_NOT_SUPPORTED;
 }
 
-#endif

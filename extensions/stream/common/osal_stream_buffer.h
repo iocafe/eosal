@@ -11,7 +11,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -19,17 +19,15 @@
 
 /** Stream interface structure for the stream buffer class.
  */
-#if OSAL_FUNCTION_POINTER_SUPPORT
 extern const osalStreamInterface osal_stream_buffer_iface;
 
 /** Define to get stream_buffer interface pointer. The define is used so that this can
     be converted to function call.
  */
 #define OSAL_STREAM_BUFFER_IFACE &osal_stream_buffer_iface
-#endif
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name OSAL stream buffer Functions.

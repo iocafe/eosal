@@ -1195,9 +1195,7 @@ osalStream osal_socket_accept(
 
         /* Save interface pointer.
          */
-    #if OSAL_FUNCTION_POINTER_SUPPORT
         newsocket->hdr.iface = &osal_socket_iface;
-    #endif
 
         /* If we work without Nagel.
          */
