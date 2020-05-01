@@ -23,7 +23,7 @@
  */
 #define OSAL_LINUX 1
 
-/* If there is custom configuration file for Linux, include it. The custom configuration file 
+/* If there is custom configuration file for Linux, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_linux_config.h.
  */
 #if defined __has_include
@@ -206,7 +206,9 @@
 
 /** Socket options for the platform. Suppport select function with sockets.
  */
-#define OSAL_SOCKET_SELECT_SUPPORT 1
+#ifndef OSAL_SOCKET_SELECT_SUPPORT
+#define OSAL_SOCKET_SELECT_SUPPORT OSAL_MULTITHREAD_SUPPORT
+#endif
 
 /** Socket maintain support is something typical to single thread mode in
     micro controllers. For those we may need to call a maintain function
@@ -240,7 +242,7 @@
 /** Serial communication options for the platform. Support select function with serial ports.
  */
 #ifndef OSAL_SERIAL_SELECT_SUPPORT
-#define OSAL_SERIAL_SELECT_SUPPORT 1
+#define OSAL_SERIAL_SELECT_SUPPORT OSAL_MULTITHREAD_SUPPORT
 #endif
 
 /** If bluetooth serial communication is supported and to be included, define 1.

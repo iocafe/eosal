@@ -27,11 +27,12 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+
+#include <unistd.h>
 #if OSAL_MULTITHREAD_SUPPORT
 
 #include <sched.h>
 #include <pthread.h>
-#include <unistd.h>
 #include <limits.h>
 
 
