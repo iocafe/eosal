@@ -37,6 +37,12 @@ typedef void osal_shutdown_func(void);
  */
 #define OSAL_SECRET_STR_SZ 46
 
+/* Some common strings.
+ */
+extern OS_FLASH_MEM_H os_char osal_str_asterisk[];
+extern OS_FLASH_MEM_H os_char osal_str_empty[];
+
+
 /**
 ****************************************************************************************************
 

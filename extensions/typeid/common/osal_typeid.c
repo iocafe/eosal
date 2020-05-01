@@ -156,7 +156,7 @@ const os_char *osal_typeid_to_name(
 {
     if ((os_int)type_id < 0 || (os_int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
     {
-        return "";
+        return osal_str_empty;
     }
 
     return osal_typeinfo[type_id].name;

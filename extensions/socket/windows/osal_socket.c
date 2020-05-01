@@ -2261,7 +2261,7 @@ goon:
     /* Almost done, free buffer, terminate interface list with NULL character and return status.
      */
     os_free(pAddresses, outbuf_sz);
-    osal_stream_write(interface_list, "", 1, &n_written, OSAL_STREAM_DEFAULT);
+    osal_stream_write(interface_list, osal_str_empty, 1, &n_written, OSAL_STREAM_DEFAULT);
     return n_interfaces;
 }
 

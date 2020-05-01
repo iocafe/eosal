@@ -9,9 +9,9 @@
   Conversion of UTF8 encoded string to UTF16 encoded string, or necessary UTF16 buffer
   length calculation for conversion.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -60,7 +60,7 @@ os_memsz osal_str_utf8_to_utf16(
      */
     if (str8 == OS_NULL)
     {
-        str8 = "";
+        str8 = osal_str_empty;
     }
 
     /* Convert the string. First destination character position is 0.

@@ -8,7 +8,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -63,7 +63,7 @@ void osal_socket_initialize(
     if (nic) for (i = 0; i < n_nics; i++)
     {
         if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
-        if (nic[i].ip_address[0] == '\0' || !os_strcmp(nic[i].ip_address, "*")) continue;
+        if (nic[i].ip_address[0] == '\0' || !os_strcmp(nic[i].ip_address, osal_str_asterisk)) continue;
 
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
@@ -90,7 +90,7 @@ void osal_socket_initialize(
 ****************************************************************************************************
 */
 void osal_socket_shutdown(
-	void)
+    void)
 {
     /* If we ave global data, release memory.
      */

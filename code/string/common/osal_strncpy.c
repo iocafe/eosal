@@ -6,9 +6,9 @@
   @version 1.0
   @date    8.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -28,7 +28,7 @@
   @param   dst Destination pointer.
   @param   src Source pointer.
   @param   dst_size Size of destination buffer. This is the maximum number of bytes to copy
-		   including terminating null character.
+           including terminating null character.
 
   @return  None.
 
@@ -39,23 +39,23 @@ void os_strncpy(
     const os_char *src,
     os_memsz dst_size)
 {
-	/* If we can do nothing.
-	 */
-	if (dst == OS_NULL || dst_size <= 0) return;
+    /* If we can do nothing.
+     */
+    if (dst == OS_NULL || dst_size <= 0) return;
 
-	/* If source string is NULL pointer, act as if copying empry string.
-	 */
-	if (src == OS_NULL) src = "";
+    /* If source string is NULL pointer, act as if copying empry string.
+     */
+    if (src == OS_NULL) src = osal_str_empty;
 
-	/* Copy string until null character found, or out of destination buffer (space left for null 
-	   character only).
-	 */
-	while (dst_size-- > 1 && *src)
-	{
-		*(dst++) = *(src++);
-	}
+    /* Copy string until null character found, or out of destination buffer (space left for null
+       character only).
+     */
+    while (dst_size-- > 1 && *src)
+    {
+        *(dst++) = *(src++);
+    }
 
-	/* Terminate with null character
-	 */
-	*(dst++) = '\0';
+    /* Terminate with null character
+     */
+    *(dst++) = '\0';
 }

@@ -488,7 +488,7 @@ static osalStatus parse_json_value(
      */
     if (state->is_password)
     {
-        if (os_strcmp(data, "auto") && os_strcmp(data, "*") && os_strcmp(data, ""))
+        if (os_strcmp(data, "auto") && os_strcmp(data, osal_str_asterisk) && os_strcmp(data, osal_str_empty))
         {
             osal_hash_password(hashbuf, data, sizeof(hashbuf));
             osal_stream_buffer_seek(state->str, &seekzero, OSAL_STREAM_SEEK_WRITE_POS|OSAL_STREAM_SEEK_SET);

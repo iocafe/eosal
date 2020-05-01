@@ -10,7 +10,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -60,13 +60,13 @@ void osal_socket_initialize(
      */
     WSADATA osal_wsadata;
 
-	/* If socket library is already initialized, do nothing.
-	 */
+    /* If socket library is already initialized, do nothing.
+     */
     if (osal_global->socket_global) return;
 
-	/* Lock the system mutex to synchronize.
-	 */
-	os_lock();
+    /* Lock the system mutex to synchronize.
+     */
+    os_lock();
 
     /* Allocate global structure
      */
@@ -74,12 +74,12 @@ void osal_socket_initialize(
     os_memclear(sg, sizeof(osalSocketGlobal));
     osal_global->socket_global = sg;
 
-    /** Copy NIC info for UDP multicasts. 
+    /** Copy NIC info for UDP multicasts.
      */
     if (nic) for (i = 0; i < n_nics; i++)
     {
         if (!nic[i].receive_udp_multicasts && !nic[i].send_udp_multicasts) continue;
-        if (nic[i].ip_address[0] == '\0' || !strcmp(nic[i].ip_address, "*")) continue;
+        if (nic[i].ip_address[0] == '\0' || !strcmp(nic[i].ip_address, osal_str_asterisk)) continue;
 
         os_strncpy(sg->nic[sg->n_nics].ip_address, nic[i].ip_address, OSAL_IPADDR_SZ);
         sg->nic[sg->n_nics].receive_udp_multicasts = nic[i].receive_udp_multicasts;
@@ -87,30 +87,30 @@ void osal_socket_initialize(
         if (++(sg->n_nics) >= OSAL_MAX_NRO_NICS) break;
     }
 
-	/* If socket library is already initialized, do nothing. Double checked here
-	   for thread synchronization.
-	 */
-	if (osal_global->sockets_shutdown_func == OS_NULL) 
-	{
-		/* Initialize winsock.
-		 */
-		if (WSAStartup(MAKEWORD(2,2), &osal_wsadata))
-		{
-			osal_debug_error("WSAStartup() failed");
-			return;
-		}
+    /* If socket library is already initialized, do nothing. Double checked here
+       for thread synchronization.
+     */
+    if (osal_global->sockets_shutdown_func == OS_NULL)
+    {
+        /* Initialize winsock.
+         */
+        if (WSAStartup(MAKEWORD(2,2), &osal_wsadata))
+        {
+            osal_debug_error("WSAStartup() failed");
+            return;
+        }
 
-		/* Mark that socket library has been initialized by setting shutdown function pointer.
+        /* Mark that socket library has been initialized by setting shutdown function pointer.
            Now the pointer is shared on windows by main program and DLL. If this needs to
            be separated, move sockets_shutdown_func pointer from global structure to
            plain global variable.
-		 */
-		osal_global->sockets_shutdown_func = osal_socket_shutdown;
-	}
+         */
+        osal_global->sockets_shutdown_func = osal_socket_shutdown;
+    }
 
-	/* End synchronization.
-	 */
-	os_unlock();
+    /* End synchronization.
+     */
+    os_unlock();
 }
 
 
@@ -127,22 +127,22 @@ void osal_socket_initialize(
 ****************************************************************************************************
 */
 void osal_socket_shutdown(
-	void)
+    void)
 {
-	/* If socket we have shut down function.
-	 */
-	if (osal_global->sockets_shutdown_func) 
+    /* If socket we have shut down function.
+     */
+    if (osal_global->sockets_shutdown_func)
     {
-	    /* Initialize winsock.
-	     */
-	    if (WSACleanup())
-	    {
-		    osal_debug_error("WSACleanup() failed");
-		    return;
-	    }
+        /* Initialize winsock.
+         */
+        if (WSACleanup())
+        {
+            osal_debug_error("WSACleanup() failed");
+            return;
+        }
 
-	    /* Mark that socket library is no longer initialized.
-	     */
+        /* Mark that socket library is no longer initialized.
+         */
         osal_global->sockets_shutdown_func = OS_NULL;
     }
 

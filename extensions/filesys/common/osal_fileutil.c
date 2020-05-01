@@ -329,7 +329,7 @@ osalStatus osal_remove_recursive(
 
         if (item->isdir)
         {
-            s = osal_remove_recursive(new_path, "*", flags);
+            s = osal_remove_recursive(new_path, osal_str_asterisk, flags);
             if (s) {
                 goto getout;
             }

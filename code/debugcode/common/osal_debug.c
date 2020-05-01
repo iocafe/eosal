@@ -258,7 +258,7 @@ void osal_debug_error(
 {
     const os_char *end_with = ".\n";
     if (osal_global->quiet_mode) return;
-    if (*text == '~') { end_with = ""; text++; }
+    if (*text == '~') { end_with = osal_str_empty; text++; }
 
     /* Write error message on debug console, if any.
      */
@@ -291,7 +291,7 @@ void osal_debug_error_int(
     const os_char *end_with = ".\n";
     os_char nbuf[22];
     if (osal_global->quiet_mode) return;
-    if (*text == '~') { end_with = ""; text++; }
+    if (*text == '~') { end_with = osal_str_empty; text++; }
 
     /* Write error message and integer argument on debug console, if any.
      */
@@ -325,7 +325,7 @@ void osal_debug_error_str(
 {
     const os_char *end_with = ".\n";
     if (osal_global->quiet_mode) return;
-    if (*text == '~') { end_with = ""; text++; }
+    if (*text == '~') { end_with = osal_str_empty; text++; }
 
     /* Write error message and integer argument on debug console, if any.
      */

@@ -45,7 +45,7 @@ osalStatus os_save_persistent(
 
     if (delete_block)
     {
-        s = os_persistent_write(h, "", 0);
+        s = os_persistent_write(h, osal_str_empty, 0);
     }
     else
     {

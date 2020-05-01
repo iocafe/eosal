@@ -6,9 +6,9 @@
   @version 1.0
   @date    8.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -30,94 +30,94 @@
   and each row by semicolon or new line character. Items themselfs consist of item name
   and item value. These may be separated by '=' character or space. Item value may be
   quoted, but it doesn't have to be. Advantage of quoted values are that these can contain
-  any characters, including comma, semicolon, tabulator or new line. 
-  
+  any characters, including comma, semicolon, tabulator or new line.
+
   For example list could be 'ip="192.168.1.232:22",timeout=2500'. Calling
   osal_str_get_item_value() on this string with item name "ip" would return
   pointer to '192.168.1.232:22",timeout=2500' position within this string
   and set n_chars to 16.
 
   @param   list_str Pointer to list string to search. If the str is OS_NULL the function
-		   will return OS_NULL.
+           will return OS_NULL.
   @param   item_name Pointer to list item name to search for. If this is OS_NULL,
-		   the function will return OS_NULL. 
+           the function will return OS_NULL.
   @param   n_chars Pointer to integer into which to store the number of characters in
-		   item value. This can be OS_NULL if not needed.
-  @param   flags Set OSAL_STRING_DEFAULT to search whole list string, or 
-		   OSAL_STRING_SEARCH_LINE_ONLY to search only from first line.
+           item value. This can be OS_NULL if not needed.
+  @param   flags Set OSAL_STRING_DEFAULT to search whole list string, or
+           OSAL_STRING_SEARCH_LINE_ONLY to search only from first line.
 
-  @return  If item with name was found, pointer to first character of actual item value. 
-		   If item has no value, the function returns pointer to empty string.
-		   If item with the specified name was not found at all, the function returns
-		   OS_NULL.
+  @return  If item with name was found, pointer to first character of actual item value.
+           If item has no value, the function returns pointer to empty string.
+           If item with the specified name was not found at all, the function returns
+           OS_NULL.
 
 ****************************************************************************************************
 */
 const os_char *osal_str_get_item_value(
     const os_char *list_str,
-	const os_char *item_name,
-	os_memsz *n_chars,
-	os_short flags)
+    const os_char *item_name,
+    os_memsz *n_chars,
+    os_short flags)
 {
     os_char c;
     const os_char *p, *start;
 
-	/* Find item by name.
-	 */
-	p = os_strstr(list_str, item_name, 
-		(os_short)(flags|OSAL_STRING_SEARCH_ITEM_NAME));
+    /* Find item by name.
+     */
+    p = os_strstr(list_str, item_name,
+        (os_short)(flags|OSAL_STRING_SEARCH_ITEM_NAME));
 
-	/* If not found, just return OS_NULL.
-	 */
-	if (p == OS_NULL) return OS_NULL;
+    /* If not found, just return OS_NULL.
+     */
+    if (p == OS_NULL) return OS_NULL;
 
-	/* Move on by item name's length.
-	 */
-	p += os_strlen(item_name) - 1;
+    /* Move on by item name's length.
+     */
+    p += os_strlen(item_name) - 1;
 
-	/* Skip space and '=' character.
-	 */
-	while (1)
-	{
-		c = *p;
-		if (c == '\0' || c == '\t' || c == ',' || c == '\n' || c == ';') goto getout;
-		if (!osal_char_isspace(c) && c != '=') break;
-		p++;
-	}
+    /* Skip space and '=' character.
+     */
+    while (1)
+    {
+        c = *p;
+        if (c == '\0' || c == '\t' || c == ',' || c == '\n' || c == ';') goto getout;
+        if (!osal_char_isspace(c) && c != '=') break;
+        p++;
+    }
 
-	/* If this is quoted value. Look for end quotation mark.
-	 */
-	if (c == '\"')
-	{
-		start = p+1;
-		while (*(++p) != '\"') if (*p == '\0') goto getout;
-	}
+    /* If this is quoted value. Look for end quotation mark.
+     */
+    if (c == '\"')
+    {
+        start = p+1;
+        while (*(++p) != '\"') if (*p == '\0') goto getout;
+    }
 
-	/* Not quoted value
-	 */
-	else
-	{
-		start = p;
-		while (1)
-		{
-			c = *p;
-			if (c == '\0' || c == '\t' || c == ',' || c == '\n' || c == ';') break;
-			p++;
-		}
+    /* Not quoted value
+     */
+    else
+    {
+        start = p;
+        while (1)
+        {
+            c = *p;
+            if (c == '\0' || c == '\t' || c == ',' || c == '\n' || c == ';') break;
+            p++;
+        }
 
-		while (p-- != start)
-		{
-			if (!osal_char_isspace(*p)) break;
-		}
-		p++;
-	}
+        while (p-- != start)
+        {
+            if (!osal_char_isspace(*p)) break;
+        }
+        p++;
+    }
 
-	if (n_chars) *n_chars = (os_memsz)(p - start);
-	return start;
+    if (n_chars) *n_chars = (os_memsz)(p - start);
+    return start;
 
 getout:
-	if (n_chars) *n_chars = 0;
-	return "";
+    if (n_chars) *n_chars = 0;
+    return osal_str_empty;
 }
 
 #endif

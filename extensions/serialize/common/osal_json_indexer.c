@@ -179,7 +179,7 @@ osalStatus osal_get_json_item(
 
         case OSAL_JSON_VALUE_EMPTY:
             item->code = OSAL_JSON_VALUE_STRING;
-            item->value.s = "";
+            item->value.s = osal_str_empty;
             break;
 
         case OSAL_JSON_VALUE_STRING:
@@ -240,7 +240,7 @@ osalStatus osal_get_json_item(
             break;
 
         case OSAL_JSON_VALUE_NULL:
-            item->value.s = "";
+            item->value.s = osal_str_empty;
             break;
 
         default:
