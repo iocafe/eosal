@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\code\console\windows\osal_sysconsole.c" />
     <ClCompile Include="..\..\code\debugcode\common\osal_debug.c" />
+    <ClCompile Include="..\..\code\defs\common\osal_global.c" />
     <ClCompile Include="..\..\code\defs\windows\osal_windows_quiet.c" />
     <ClCompile Include="..\..\code\error\common\osal_error.c" />
     <ClCompile Include="..\..\code\event\windows\osal_event.c" />
