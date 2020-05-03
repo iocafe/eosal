@@ -2165,7 +2165,6 @@ static os_int osal_socket_list_network_interfaces(
         if (pAddresses == NULL) {
             goto getout;
         }
-        return 0;
 
         win_outbuf_sz = (ULONG)outbuf_sz;
         rval = GetAdaptersAddresses(family, flags, NULL, pAddresses, &win_outbuf_sz);
