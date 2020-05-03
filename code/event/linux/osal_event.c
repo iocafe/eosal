@@ -9,9 +9,9 @@
   This file implements event related functionality for Windows. Generally events are used for
   a thread wait until it needs to do something.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -116,7 +116,7 @@ osalEvent osal_event_create(
   The osal_event_delete() function deletes an event which was created by osal_event_create()
   function. Resource monitor's event count is decremented, if resource monitor is enabled.
 
-  @param   evnt Pointer to event to delete. 
+  @param   evnt Pointer to event to delete.
 
   @return  None.
 
@@ -372,7 +372,7 @@ int osal_event_pipefd(
 
     if (pe->pipefd[0] == -1)
     {
-        printf ("Initializing pipe...");
+        osal_trace("Initializing pipe...");
 
         // if (pipe(pe->pipefd) == -1)
         if (pipe2(pe->pipefd, O_NONBLOCK) == -1)
@@ -385,7 +385,7 @@ int osal_event_pipefd(
             osal_debug_error("pipe2 write failed");
         }
 
-        printf ("OK\n");
+        osal_trace("OK\n");
     }
 
     return pe->pipefd[0];

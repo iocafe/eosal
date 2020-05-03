@@ -827,6 +827,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             {
                 interface_list = osal_stream_buffer_open(OS_NULL, OS_NULL, OS_NULL, OSAL_STREAM_DEFAULT);
                 osal_socket_list_network_interfaces(interface_list, af, OS_FALSE);
+
                 iface_list_str = osal_stream_buffer_content(interface_list, OS_NULL);
             }
 
@@ -1960,6 +1961,8 @@ static os_int osal_socket_list_network_interfaces(
     os_uint family,
     os_boolean get_interface_index)
 {
+    os_memsz n_written;
+
 #if OSAL_IFADDRS_SUPPORTED
     struct ifaddrs *addrs, *a;
     struct sockaddr_in *sa_in;
@@ -2018,8 +2021,10 @@ static os_int osal_socket_list_network_interfaces(
     }
 
     freeifaddrs(addrs);
+    osal_stream_write(interface_list, osal_str_empty, 1, &n_written, OSAL_STREAM_DEFAULT);
     return n_interfaces;
 #else
+    osal_stream_write(interface_list, osal_str_empty, 1, &n_written, OSAL_STREAM_DEFAULT);
     return 0;
 #endif
 }

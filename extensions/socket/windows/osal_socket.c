@@ -2159,9 +2159,13 @@ static os_int osal_socket_list_network_interfaces(
           GAA_FLAG_SKIP_DNS_SERVER;
 
     i = 0;
+    n_interfaces = 0;
     do {
         pAddresses = (IP_ADAPTER_ADDRESSES *) os_malloc(outbuf_sz, &outbuf_sz);
-        if (pAddresses == NULL) return 0;
+        if (pAddresses == NULL) {
+            goto getout;
+        }
+        return 0;
 
         win_outbuf_sz = (ULONG)outbuf_sz;
         rval = GetAdaptersAddresses(family, flags, NULL, pAddresses, &win_outbuf_sz);
@@ -2176,7 +2180,6 @@ static os_int osal_socket_list_network_interfaces(
     }
     while ((rval == ERROR_BUFFER_OVERFLOW) && (++i < max_tries));
 
-    n_interfaces = 0;
     if (rval == NO_ERROR)
     {
         pCurrAddresses = pAddresses;
@@ -2261,6 +2264,7 @@ goon:
     /* Almost done, free buffer, terminate interface list with NULL character and return status.
      */
     os_free(pAddresses, outbuf_sz);
+getout:
     osal_stream_write(interface_list, osal_str_empty, 1, &n_written, OSAL_STREAM_DEFAULT);
     return n_interfaces;
 }
