@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\code\ioc_authentication.h" />
+    <ClInclude Include="..\..\code\ioc_brick.h" />
+    <ClInclude Include="..\..\code\ioc_compress.h" />
+    <ClInclude Include="..\..\code\ioc_connection.h" />
+    <ClInclude Include="..\..\code\ioc_debug.h" />
+    <ClInclude Include="..\..\code\ioc_end_point.h" />
+    <ClInclude Include="..\..\code\ioc_handle.h" />
+    <ClInclude Include="..\..\code\ioc_ioboard.h" />
+    <ClInclude Include="..\..\code\ioc_memory.h" />
+    <ClInclude Include="..\..\code\ioc_memory_block.h" />
+    <ClInclude Include="..\..\code\ioc_memory_block_info.h" />
+    <ClInclude Include="..\..\code\ioc_poolsize.h" />
+    <ClInclude Include="..\..\code\ioc_root.h" />
+    <ClInclude Include="..\..\code\ioc_signal.h" />
+    <ClInclude Include="..\..\code\ioc_source_buffer.h" />
+    <ClInclude Include="..\..\code\ioc_streamer.h" />
+    <ClInclude Include="..\..\code\ioc_target_buffer.h" />
+    <ClInclude Include="..\..\code\ioc_timing.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_dyn_mblk_list.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_dyn_network.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_dyn_queue.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_dyn_root.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_dyn_signal.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_dyn_stream.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_identifiers.h" />
+    <ClInclude Include="..\..\extensions\dynamicio\ioc_remove_mblk_list.h" />
+    <ClInclude Include="..\..\iocom.h" />
+    <ClInclude Include="..\..\iocomx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\code\ioc_authentication.c" />
+    <ClCompile Include="..\..\code\ioc_brick.c" />
+    <ClCompile Include="..\..\code\ioc_compress.c" />
+    <ClCompile Include="..\..\code\ioc_connection.c" />
+    <ClCompile Include="..\..\code\ioc_connection_receive.c" />
+    <ClCompile Include="..\..\code\ioc_connection_send.c" />
+    <ClCompile Include="..\..\code\ioc_end_point.c" />
+    <ClCompile Include="..\..\code\ioc_establish_serial_connection.c" />
+    <ClCompile Include="..\..\code\ioc_handle.c" />
+    <ClCompile Include="..\..\code\ioc_ioboard.c" />
+    <ClCompile Include="..\..\code\ioc_memory.c" />
+    <ClCompile Include="..\..\code\ioc_memory_block.c" />
+    <ClCompile Include="..\..\code\ioc_memory_block_info.c" />
+    <ClCompile Include="..\..\code\ioc_root.c" />
+    <ClCompile Include="..\..\code\ioc_signal.c" />
+    <ClCompile Include="..\..\code\ioc_source_buffer.c" />
+    <ClCompile Include="..\..\code\ioc_streamer.c" />
+    <ClCompile Include="..\..\code\ioc_target_buffer.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_dyn_mblk_list.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_dyn_network.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_dyn_queue.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_dyn_root.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_dyn_signal.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_dyn_stream.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_identifiers.c" />
+    <ClCompile Include="..\..\extensions\dynamicio\ioc_remove_mblk_list.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{19FB0104-F92B-4FF2-BD45-577449621E88}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>iocom</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\osbuild\vs2019\static-win32-library.props" />
+    <Import Project="..\..\..\..\osbuild\vs2019\debug-vs2019.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\osbuild\vs2019\static-win32-library.props" />
+    <Import Project="..\..\..\..\osbuild\vs2019\release-vs2019.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\osbuild\vs2019\static-win64-library.props" />
+    <Import Project="..\..\..\..\osbuild\vs2019\debug-vs2019.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\osbuild\vs2019\static-win64-library.props" />
+    <Import Project="..\..\..\..\osbuild\vs2019\release-vs2019.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
