@@ -63,16 +63,16 @@
  * but the pointer arrays can fit in near memory.
  */
 
-typedef JSAMPLE FAR *JSAMPROW;	/* ptr to one image row of pixel samples. */
+typedef JSAMPLE *JSAMPROW;	/* ptr to one image row of pixel samples. */
 typedef JSAMPROW *JSAMPARRAY;	/* ptr to some rows (a 2-D sample array) */
 typedef JSAMPARRAY *JSAMPIMAGE;	/* a 3-D sample array: top index is color */
 
 typedef JCOEF JBLOCK[DCTSIZE2];	/* one block of coefficients */
-typedef JBLOCK FAR *JBLOCKROW;	/* pointer to one row of coefficient blocks */
+typedef JBLOCK *JBLOCKROW;	/* pointer to one row of coefficient blocks */
 typedef JBLOCKROW *JBLOCKARRAY;		/* a 2-D array of coefficient blocks */
 typedef JBLOCKARRAY *JBLOCKIMAGE;	/* a 3-D array of coefficient blocks */
 
-typedef JCOEF FAR *JCOEFPTR;	/* useful in a couple of places */
+typedef JCOEF *JCOEFPTR;	/* useful in a couple of places */
 
 
 /* Types for JPEG compression parameters and working tables. */
