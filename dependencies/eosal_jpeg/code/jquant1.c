@@ -530,7 +530,7 @@ quantize_ord_dither (j_decompress_ptr cinfo, JSAMPARRAY input_buf,
 
   for (row = 0; row < num_rows; row++) {
     /* Initialize output values to 0 so can process components separately */
-    jzero_far((void FAR *) output_buf[row],
+    jzero_far((void *) output_buf[row],
 	      (size_t) (width * SIZEOF(JSAMPLE)));
     row_index = cquantize->row_index;
     for (ci = 0; ci < nc; ci++) {
@@ -635,7 +635,7 @@ quantize_fs_dither (j_decompress_ptr cinfo, JSAMPARRAY input_buf,
 
   for (row = 0; row < num_rows; row++) {
     /* Initialize output values to 0 so can process components separately */
-    jzero_far((void FAR *) output_buf[row],
+    jzero_far((void *) output_buf[row],
 	      (size_t) (width * SIZEOF(JSAMPLE)));
     for (ci = 0; ci < nc; ci++) {
       input_ptr = input_buf[row] + ci;
@@ -781,7 +781,7 @@ start_pass_1_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
     /* Initialize the propagated errors to zero. */
     arraysize = (size_t) ((cinfo->output_width + 2) * SIZEOF(FSERROR));
     for (i = 0; i < cinfo->out_color_components; i++)
-      jzero_far((void FAR *) cquantize->fserrors[i], arraysize);
+      jzero_far((void *) cquantize->fserrors[i], arraysize);
     break;
   default:
     ERREXIT(cinfo, JERR_NOT_COMPILED);

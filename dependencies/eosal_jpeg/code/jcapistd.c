@@ -75,7 +75,7 @@ jpeg_start_compress (j_compress_ptr cinfo, boolean write_all_tables)
 
 GLOBAL(JDIMENSION)
 jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
-		      JDIMENSION num_lines)
+              JDIMENSION num_lines)
 {
   JDIMENSION row_ctr, rows_left;
 
@@ -105,7 +105,7 @@ jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
     num_lines = rows_left;
 
   row_ctr = 0;
-  (*cinfo->main->process_data) (cinfo, scanlines, &row_ctr, num_lines);
+  (*cinfo->pmain->process_data) (cinfo, scanlines, &row_ctr, num_lines);
   cinfo->next_scanline += row_ctr;
   return row_ctr;
 }
@@ -118,7 +118,7 @@ jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
 
 GLOBAL(JDIMENSION)
 jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
-		     JDIMENSION num_lines)
+             JDIMENSION num_lines)
 {
   JDIMENSION lines_per_iMCU_row;
 

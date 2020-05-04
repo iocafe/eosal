@@ -375,7 +375,7 @@ EXTERN(void) jcopy_sample_rows JPP((JSAMPARRAY input_array, int source_row,
                     int num_rows, JDIMENSION num_cols));
 EXTERN(void) jcopy_block_row JPP((JBLOCKROW input_row, JBLOCKROW output_row,
                   JDIMENSION num_blocks));
-EXTERN(void) jzero_far JPP((void FAR * target, size_t bytestozero));
+EXTERN(void) jzero_far JPP((void * target, size_t bytestozero));
 /* Constant tables in jutils.c */
 #if 0				/* This table is not actually needed in v6a */
 extern const int jpeg_zigzag_order[]; /* natural coef order to zigzag order */

@@ -97,7 +97,7 @@ typedef union small_pool_struct {
   ALIGN_TYPE dummy;		/* included in union to ensure alignment */
 } small_pool_hdr;
 
-typedef union large_pool_struct FAR * large_pool_ptr;
+typedef union large_pool_struct * large_pool_ptr;
 
 typedef union large_pool_struct {
   struct {
@@ -338,7 +338,7 @@ alloc_small (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
  * deliberately bunch rows together to ensure a large request size.
  */
 
-METHODDEF(void FAR *)
+METHODDEF(void *)
 alloc_large (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
 /* Allocate a "large" object */
 {
@@ -374,7 +374,7 @@ alloc_large (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
   hdr_ptr->hdr.bytes_left = 0;
   mem->large_list[pool_id] = hdr_ptr;
 
-  return (void FAR *) (hdr_ptr + 1); /* point to first data byte in pool */
+  return (void *) (hdr_ptr + 1); /* point to first data byte in pool */
 }
 
 
@@ -708,11 +708,11 @@ do_sarray_io (j_common_ptr cinfo, jvirt_sarray_ptr ptr, boolean writing)
     byte_count = rows * bytesperrow;
     if (writing)
       (*ptr->b_s_info.write_backing_store) (cinfo, & ptr->b_s_info,
-					    (void FAR *) ptr->mem_buffer[i],
+					    (void *) ptr->mem_buffer[i],
 					    file_offset, byte_count);
     else
       (*ptr->b_s_info.read_backing_store) (cinfo, & ptr->b_s_info,
-					   (void FAR *) ptr->mem_buffer[i],
+					   (void *) ptr->mem_buffer[i],
 					   file_offset, byte_count);
     file_offset += byte_count;
   }
@@ -741,11 +741,11 @@ do_barray_io (j_common_ptr cinfo, jvirt_barray_ptr ptr, boolean writing)
     byte_count = rows * bytesperrow;
     if (writing)
       (*ptr->b_s_info.write_backing_store) (cinfo, & ptr->b_s_info,
-					    (void FAR *) ptr->mem_buffer[i],
+					    (void *) ptr->mem_buffer[i],
 					    file_offset, byte_count);
     else
       (*ptr->b_s_info.read_backing_store) (cinfo, & ptr->b_s_info,
-					   (void FAR *) ptr->mem_buffer[i],
+					   (void *) ptr->mem_buffer[i],
 					   file_offset, byte_count);
     file_offset += byte_count;
   }
@@ -821,7 +821,7 @@ access_virt_sarray (j_common_ptr cinfo, jvirt_sarray_ptr ptr,
       undef_row -= ptr->cur_start_row; /* make indexes relative to buffer */
       end_row -= ptr->cur_start_row;
       while (undef_row < end_row) {
-	jzero_far((void FAR *) ptr->mem_buffer[undef_row], bytesperrow);
+	jzero_far((void *) ptr->mem_buffer[undef_row], bytesperrow);
 	undef_row++;
       }
     } else {
@@ -906,7 +906,7 @@ access_virt_barray (j_common_ptr cinfo, jvirt_barray_ptr ptr,
       undef_row -= ptr->cur_start_row; /* make indexes relative to buffer */
       end_row -= ptr->cur_start_row;
       while (undef_row < end_row) {
-	jzero_far((void FAR *) ptr->mem_buffer[undef_row], bytesperrow);
+	jzero_far((void *) ptr->mem_buffer[undef_row], bytesperrow);
 	undef_row++;
       }
     } else {
@@ -972,7 +972,7 @@ free_pool (j_common_ptr cinfo, int pool_id)
     space_freed = lhdr_ptr->hdr.bytes_used +
 		  lhdr_ptr->hdr.bytes_left +
 		  SIZEOF(large_pool_hdr);
-    jpeg_free_large(cinfo, (void FAR *) lhdr_ptr, space_freed);
+    jpeg_free_large(cinfo, (void *) lhdr_ptr, space_freed);
     mem->total_space_allocated -= space_freed;
     lhdr_ptr = next_lhdr_ptr;
   }

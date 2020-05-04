@@ -190,14 +190,14 @@ typedef struct {
 
 /* The decompressor can save APPn and COM markers in a list of these: */
 
-typedef struct jpeg_marker_struct FAR * jpeg_saved_marker_ptr;
+typedef struct jpeg_marker_struct * jpeg_saved_marker_ptr;
 
 struct jpeg_marker_struct {
   jpeg_saved_marker_ptr next;	/* next in list, or NULL */
   UINT8 marker;			/* marker code: JPEG_COM, or JPEG_APP0+n */
   unsigned int original_length;	/* # bytes of data in the file */
   unsigned int data_length;	/* # bytes of data saved at data[] */
-  JOCTET FAR * data;		/* the data contained in the marker */
+  JOCTET * data;		/* the data contained in the marker */
   /* the marker length word is not counted in data_length or original_length */
 };
 
@@ -393,7 +393,7 @@ struct jpeg_compress_struct {
    * Links to compression subobjects (methods and private variables of modules)
    */
   struct jpeg_comp_master * master;
-  struct jpeg_c_main_controller * main;
+  struct jpeg_c_main_controller * pmain;
   struct jpeg_c_prep_controller * prep;
   struct jpeg_c_coef_controller * coef;
   struct jpeg_marker_writer * marker;
@@ -617,7 +617,7 @@ struct jpeg_decompress_struct {
    * Links to decompression subobjects (methods, private variables of modules)
    */
   struct jpeg_decomp_master * master;
-  struct jpeg_d_main_controller * main;
+  struct jpeg_d_main_controller * pmain;
   struct jpeg_d_coef_controller * coef;
   struct jpeg_d_post_controller * post;
   struct jpeg_input_controller * inputctl;
@@ -757,7 +757,7 @@ struct jpeg_memory_mgr {
   /* Method pointers */
   JMETHOD(void *, alloc_small, (j_common_ptr cinfo, int pool_id,
                 size_t sizeofobject));
-  JMETHOD(void FAR *, alloc_large, (j_common_ptr cinfo, int pool_id,
+  JMETHOD(void *, alloc_large, (j_common_ptr cinfo, int pool_id,
                      size_t sizeofobject));
   JMETHOD(JSAMPARRAY, alloc_sarray, (j_common_ptr cinfo, int pool_id,
                      JDIMENSION samplesperrow,

@@ -101,8 +101,8 @@ jround_up (long a, long b)
 #define FMEMZERO(target,size)	MEMZERO(target,size)
 #else				/* 80x86 case, define if we can */
 #ifdef USE_FMEM
-#define FMEMCOPY(dest,src,size)	_fmemcpy((void FAR *)(dest), (const void FAR *)(src), (size_t)(size))
-#define FMEMZERO(target,size)	_fmemset((void FAR *)(target), 0, (size_t)(size))
+#define FMEMCOPY(dest,src,size)	_fmemcpy((void *)(dest), (const void *)(src), (size_t)(size))
+#define FMEMZERO(target,size)	_fmemset((void *)(target), 0, (size_t)(size))
 #endif
 #endif
 
@@ -162,14 +162,14 @@ jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
 
 
 GLOBAL(void)
-jzero_far (void FAR * target, size_t bytestozero)
+jzero_far (void * target, size_t bytestozero)
 /* Zero out a chunk of FAR memory. */
 /* This might be sample-array data, block-array data, or alloc_large data. */
 {
 #ifdef FMEMZERO
   FMEMZERO(target, bytestozero);
 #else
-  register char FAR * ptr = (char FAR *) target;
+  register char * ptr = (char *) target;
   register size_t count;
 
   for (count = bytestozero; count > 0; count--) {

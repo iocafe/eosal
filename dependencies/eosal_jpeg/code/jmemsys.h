@@ -57,9 +57,9 @@ EXTERN(void) jpeg_free_small JPP((j_common_ptr cinfo, void * object,
  * in case a different allocation strategy is desirable for large chunks.
  */
 
-EXTERN(void FAR *) jpeg_get_large JPP((j_common_ptr cinfo,
+EXTERN(void *) jpeg_get_large JPP((j_common_ptr cinfo,
                        size_t sizeofobject));
-EXTERN(void) jpeg_free_large JPP((j_common_ptr cinfo, void FAR * object,
+EXTERN(void) jpeg_free_large JPP((j_common_ptr cinfo, void * object,
                   size_t sizeofobject));
 
 /*
@@ -140,11 +140,11 @@ typedef struct backing_store_struct {
   /* Methods for reading/writing/closing this backing-store object */
   JMETHOD(void, read_backing_store, (j_common_ptr cinfo,
                      backing_store_ptr info,
-                     void FAR * buffer_address,
+                     void * buffer_address,
                      long file_offset, long byte_count));
   JMETHOD(void, write_backing_store, (j_common_ptr cinfo,
                       backing_store_ptr info,
-                      void FAR * buffer_address,
+                      void * buffer_address,
                       long file_offset, long byte_count));
   JMETHOD(void, close_backing_store, (j_common_ptr cinfo,
                       backing_store_ptr info));

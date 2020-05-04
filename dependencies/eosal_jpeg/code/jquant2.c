@@ -146,10 +146,10 @@
 
 typedef UINT16 histcell;	/* histogram cell; prefer an unsigned type */
 
-typedef histcell FAR * histptr;	/* for pointers to histogram cells */
+typedef histcell * histptr;	/* for pointers to histogram cells */
 
 typedef histcell hist1d[HIST_C2_ELEMS]; /* typedefs for the array */
-typedef hist1d FAR * hist2d;	/* type for the 2nd-level pointers */
+typedef hist1d * hist2d;	/* type for the 2nd-level pointers */
 typedef hist2d * hist3d;	/* type for top-level pointer */
 
 
@@ -1203,7 +1203,7 @@ start_pass_2_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
 	cquantize->fserrors = (FSERRPTR) (*cinfo->mem->alloc_large)
 	  ((j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
       /* Initialize the propagated errors to zero. */
-      jzero_far((void FAR *) cquantize->fserrors, arraysize);
+      jzero_far((void *) cquantize->fserrors, arraysize);
       /* Make the error-limit table if we didn't already. */
       if (cquantize->error_limiter == NULL)
 	init_error_limit(cinfo);
@@ -1214,7 +1214,7 @@ start_pass_2_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
   /* Zero the histogram or inverse color map, if necessary */
   if (cquantize->needs_zeroed) {
     for (i = 0; i < HIST_C0_ELEMS; i++) {
-      jzero_far((void FAR *) histogram[i],
+      jzero_far((void *) histogram[i],
 		HIST_C1_ELEMS*HIST_C2_ELEMS * SIZEOF(histcell));
     }
     cquantize->needs_zeroed = FALSE;
