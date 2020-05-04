@@ -13,7 +13,7 @@
 #undef NEED_BSD_STRINGS
 #undef NEED_SYS_TYPES_H
 #undef NEED_FAR_POINTERS
-#undef NEED_SHORT_EXTERNAL_NAMES
+#define NEED_SHORT_EXTERNAL_NAMES
 /* Define this if you get warnings about undefined structures. */
 #undef INCOMPLETE_TYPES_BROKEN
 
