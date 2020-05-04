@@ -18,15 +18,13 @@
  * These routines are used by both the compression and decompression code.
  */
 
+#include "eosal.h"
+
 /* this is not a core library module, so it doesn't define JPEG_INTERNALS */
 #include "jinclude.h"
 #include "jpeglib.h"
 #include "jversion.h"
 #include "jerror.h"
-
-#ifdef USE_WINDOWS_MESSAGEBOX
-#include <windows.h>
-#endif
 
 #ifndef EXIT_FAILURE		/* define exit() codes if not provided */
 #define EXIT_FAILURE  1
@@ -72,10 +70,11 @@ error_exit (j_common_ptr cinfo)
   /* Always display the message */
   (*cinfo->err->output_message) (cinfo);
 
-  /* Let the memory manager delete any temp files before we die */
-  jpeg_destroy(cinfo);
+  /* Let the memory manager delete any temp files before we die
+     Do not do this, we attempt to continue regardless of error
+     jpeg_destroy(cinfo); */
 
-  exit(EXIT_FAILURE);
+  osal_debug_error("libjpeg request to exit");
 }
 
 
@@ -102,14 +101,7 @@ output_message (j_common_ptr cinfo)
   /* Create the message */
   (*cinfo->err->format_message) (cinfo, buffer);
 
-#ifdef USE_WINDOWS_MESSAGEBOX
-  /* Display it in a message dialog box */
-  MessageBox(GetActiveWindow(), buffer, "JPEG Library Error",
-         MB_OK | MB_ICONERROR);
-#else
-  /* Send it to stderr, adding a newline */
-  fprintf(stderr, "%s\n", buffer);
-#endif
+  osal_debug_error(buffer);
 }
 
 
@@ -188,15 +180,20 @@ format_message (j_common_ptr cinfo, char * buffer)
     }
   }
 
-  /* Format the message into the passed buffer */
-  if (isstring)
-    sprintf(buffer, msgtext, err->msg_parm.s);
-  else
+  os_strncpy(buffer, msgtext, JMSG_LENGTH_MAX);
+  if (isstring) {
+    /* sprintf(buffer, msgtext, err->msg_parm.s); */
+    os_strncat(buffer, ": ", JMSG_LENGTH_MAX);
+    os_strncat(buffer, err->msg_parm.s, JMSG_LENGTH_MAX);
+  }
+  /* else {
     sprintf(buffer, msgtext,
         err->msg_parm.i[0], err->msg_parm.i[1],
         err->msg_parm.i[2], err->msg_parm.i[3],
         err->msg_parm.i[4], err->msg_parm.i[5],
-        err->msg_parm.i[6], err->msg_parm.i[7]);
+        err->msg_parm.i[6], err->msg_parm.i[7
+    osal_debug_error(msgtext);
+  } */
 }
 
 

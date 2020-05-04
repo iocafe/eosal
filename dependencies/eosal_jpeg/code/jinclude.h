@@ -20,6 +20,8 @@
 #include "jconfig.h"		/* auto configuration options */
 #define JCONFIG_INCLUDED	/* so that jpeglib.h doesn't do it again */
 
+#include "eosal.h"
+
 /*
  * We need the NULL macro and size_t typedef.
  * On an ANSI-conforming system it is sufficient to include <stddef.h>.
@@ -31,6 +33,7 @@
  * You can remove those references if you want to compile without <stdio.h>.
  */
 
+#if 0
 #ifdef HAVE_STDDEF_H
 #include <stddef.h>
 #endif
@@ -44,6 +47,7 @@
 #endif
 
 #include <stdio.h>
+#endif
 
 /*
  * We need memory copying and zeroing functions, plus strncpy().
@@ -55,19 +59,10 @@
  * Change the casts in these macros if not!
  */
 
-#ifdef NEED_BSD_STRINGS
 
-#include <strings.h>
-#define MEMZERO(target,size)	bzero((void *)(target), (size_t)(size))
-#define MEMCOPY(dest,src,size)	bcopy((const void *)(src), (void *)(dest), (size_t)(size))
+#define MEMZERO(target,size) os_memclear((target), (os_memsz)(size))
+#define MEMCOPY(dest,src,size) os_memcpy((dest), (src), (os_memsz)(size))
 
-#else /* not BSD, assume ANSI/SysV string lib */
-
-#include <string.h>
-#define MEMZERO(target,size)	memset((void *)(target), 0, (size_t)(size))
-#define MEMCOPY(dest,src,size)	memcpy((void *)(dest), (const void *)(src), (size_t)(size))
-
-#endif
 
 /*
  * In ANSI C, and indeed any rational implementation, size_t is also the
