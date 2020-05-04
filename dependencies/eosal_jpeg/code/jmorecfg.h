@@ -122,44 +122,8 @@ typedef char JOCTET;
 #endif /* HAVE_UNSIGNED_CHAR */
 
 
-/* These typedefs are used for various table entries and so forth.
- * They must be at least as wide as specified; but making them too big
- * won't cost a huge amount of memory, so we don't provide special
- * extraction code like we did for JSAMPLE.  (In other words, these
- * typedefs live at a different point on the speed/space tradeoff curve.)
- */
 
-/* UINT8 must hold at least the values 0..255. */
 
-#ifdef HAVE_UNSIGNED_CHAR
-typedef unsigned char UINT8;
-#else /* not HAVE_UNSIGNED_CHAR */
-#ifdef CHAR_IS_UNSIGNED
-typedef char UINT8;
-#else /* not CHAR_IS_UNSIGNED */
-typedef short UINT8;
-#endif /* CHAR_IS_UNSIGNED */
-#endif /* HAVE_UNSIGNED_CHAR */
-
-/* UINT16 must hold at least the values 0..65535. */
-
-#ifdef HAVE_UNSIGNED_SHORT
-typedef unsigned short UINT16;
-#else /* not HAVE_UNSIGNED_SHORT */
-typedef unsigned int UINT16;
-#endif /* HAVE_UNSIGNED_SHORT */
-
-/* INT16 must hold at least the values -32768..32767. */
-
-#ifndef XMD_H			/* X11/xmd.h correctly defines INT16 */
-typedef short INT16;
-#endif
-
-/* INT32 must hold at least signed 32-bit values. */
-
-#ifndef XMD_H			/* X11/xmd.h correctly defines INT32 */
-typedef long INT32;
-#endif
 
 /* Datatype used for image dimensions.  The JPEG standard only supports
  * images up to 64K*64K due to 16-bit fields in SOF markers.  Therefore
@@ -201,20 +165,6 @@ typedef unsigned int JDIMENSION;
 #else
 #define JMETHOD(type,methodname,arglist)  type (*methodname) ()
 #endif
-
-
-/* Here is the pseudo-keyword for declaring pointers that must be "far"
- * on 80x86 machines.  Most of the specialized coding for 80x86 is handled
- * by just saying "*" where such a pointer is needed.  In a few places
- * explicit coding is needed; see uses of the NEED_FAR_POINTERS symbol.
- */
-
-#ifdef NEED_FAR_POINTERS
-#define FAR  far
-#else
-#define FAR
-#endif
-
 
 /*
  * On a few systems, type boolean and/or its values FALSE, TRUE may appear

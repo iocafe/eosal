@@ -144,7 +144,7 @@
 #define C2_SHIFT  (BITS_IN_JSAMPLE-HIST_C2_BITS)
 
 
-typedef UINT16 histcell;	/* histogram cell; prefer an unsigned type */
+typedef os_ushort histcell;	/* histogram cell; prefer an unsigned type */
 
 typedef histcell * histptr;	/* for pointers to histogram cells */
 
@@ -178,11 +178,11 @@ typedef hist2d * hist3d;	/* type for top-level pointer */
  */
 
 #if BITS_IN_JSAMPLE == 8
-typedef INT16 FSERROR;		/* 16 bits should be enough */
+typedef os_short FSERROR;		/* 16 bits should be enough */
 typedef int LOCFSERROR;		/* use 'int' for calculation temps */
 #else
-typedef INT32 FSERROR;		/* may need more than 16 bits */
-typedef INT32 LOCFSERROR;	/* be sure calculation temps are big enough */
+typedef os_int FSERROR;		/* may need more than 16 bits */
+typedef os_int LOCFSERROR;	/* be sure calculation temps are big enough */
 #endif
 
 typedef FSERROR FAR *FSERRPTR;	/* pointer to error array (in FAR storage!) */
@@ -261,7 +261,7 @@ typedef struct {
   int c1min, c1max;
   int c2min, c2max;
   /* The volume (actually 2-norm) of the box */
-  INT32 volume;
+  os_int volume;
   /* The number of nonzero histogram cells within this box */
   long colorcount;
 } box;
@@ -296,7 +296,7 @@ find_biggest_volume (boxptr boxlist, int numboxes)
 {
   register boxptr boxp;
   register int i;
-  register INT32 maxv = 0;
+  register os_int maxv = 0;
   boxptr which = NULL;
   
   for (i = 0, boxp = boxlist; i < numboxes; i++, boxp++) {
@@ -319,7 +319,7 @@ update_box (j_decompress_ptr cinfo, boxptr boxp)
   histptr histp;
   int c0,c1,c2;
   int c0min,c0max,c1min,c1max,c2min,c2max;
-  INT32 dist0,dist1,dist2;
+  os_int dist0,dist1,dist2;
   long ccount;
   
   c0min = boxp->c0min;  c0max = boxp->c0max;
@@ -658,8 +658,8 @@ find_nearby_colors (j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
   int maxc0, maxc1, maxc2;
   int centerc0, centerc1, centerc2;
   int i, x, ncolors;
-  INT32 minmaxdist, min_dist, max_dist, tdist;
-  INT32 mindist[MAXNUMCOLORS];	/* min distance to colormap entry i */
+  os_int minmaxdist, min_dist, max_dist, tdist;
+  os_int mindist[MAXNUMCOLORS];	/* min distance to colormap entry i */
 
   /* Compute true coordinates of update box's upper corner and center.
    * Actually we compute the coordinates of the center of the upper-corner
@@ -783,15 +783,15 @@ find_best_colors (j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
 {
   int ic0, ic1, ic2;
   int i, icolor;
-  register INT32 * bptr;	/* pointer into bestdist[] array */
+  register os_int * bptr;	/* pointer into bestdist[] array */
   JSAMPLE * cptr;		/* pointer into bestcolor[] array */
-  INT32 dist0, dist1;		/* initial distance values */
-  register INT32 dist2;		/* current distance in inner loop */
-  INT32 xx0, xx1;		/* distance increments */
-  register INT32 xx2;
-  INT32 inc0, inc1, inc2;	/* initial values for increments */
+  os_int dist0, dist1;		/* initial distance values */
+  register os_int dist2;		/* current distance in inner loop */
+  os_int xx0, xx1;		/* distance increments */
+  register os_int xx2;
+  os_int inc0, inc1, inc2;	/* initial values for increments */
   /* This array holds the distance to the nearest-so-far color for each cell */
-  INT32 bestdist[BOX_C0_ELEMS * BOX_C1_ELEMS * BOX_C2_ELEMS];
+  os_int bestdist[BOX_C0_ELEMS * BOX_C1_ELEMS * BOX_C2_ELEMS];
 
   /* Initialize best-distance for each cell of the update box */
   bptr = bestdist;

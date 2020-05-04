@@ -27,7 +27,7 @@
  */
 
 typedef struct {
-  INT32 put_buffer;		/* current bit-accumulation buffer */
+  os_int put_buffer;		/* current bit-accumulation buffer */
   int put_bits;			/* # of bits now in it */
   int last_dc_val[MAX_COMPS_IN_SCAN]; /* last DC coef for each component */
 } savable_state;
@@ -232,7 +232,7 @@ jpeg_make_c_derived_tbl (j_compress_ptr cinfo, boolean isDC, int tblno,
     /* code is now 1 more than the last code used for codelength si; but
      * it must still fit in si bits, since no code is allowed to be all ones.
      */
-    if (((INT32) code) >= (((INT32) 1) << si))
+    if (((os_int) code) >= (((os_int) 1) << si))
       ERREXIT(cinfo, JERR_BAD_HUFF_TABLE);
     code <<= 1;
     si++;
@@ -303,14 +303,14 @@ emit_bits (working_state * state, unsigned int code, int size)
 /* Emit some bits; return TRUE if successful, FALSE if must suspend */
 {
   /* This routine is heavily used, so it's worth coding tightly. */
-  register INT32 put_buffer = (INT32) code;
+  register os_int put_buffer = (os_int) code;
   register int put_bits = state->cur.put_bits;
 
   /* if size is 0, caller used an invalid Huffman table entry */
   if (size == 0)
     ERREXIT(state->cinfo, JERR_HUFF_MISSING_CODE);
 
-  put_buffer &= (((INT32) 1)<<size) - 1; /* mask off any extra bits in code */
+  put_buffer &= (((os_int) 1)<<size) - 1; /* mask off any extra bits in code */
   
   put_bits += size;		/* new number of bits in buffer */
   
@@ -705,7 +705,7 @@ GLOBAL(void)
 jpeg_gen_optimal_table (j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[])
 {
 #define MAX_CLEN 32		/* assumed maximum initial code length */
-  UINT8 bits[MAX_CLEN+1];	/* bits[k] = # of symbols with code length k */
+  os_uchar bits[MAX_CLEN+1];	/* bits[k] = # of symbols with code length k */
   int codesize[257];		/* codesize[k] = code length of symbol k */
   int others[257];		/* next symbol in current branch of tree */
   int c1, c2;
@@ -827,7 +827,7 @@ jpeg_gen_optimal_table (j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[])
   for (i = 1; i <= MAX_CLEN; i++) {
     for (j = 0; j <= 255; j++) {
       if (codesize[j] == i) {
-	htbl->huffval[p] = (UINT8) j;
+	htbl->huffval[p] = (os_uchar) j;
 	p++;
       }
     }

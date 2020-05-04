@@ -22,43 +22,10 @@
 
 #include "eosal.h"
 
-/*
- * We need the NULL macro and size_t typedef.
- * On an ANSI-conforming system it is sufficient to include <stddef.h>.
- * Otherwise, we get them from <stdlib.h> or <stdio.h>; we may have to
- * pull in <sys/types.h> as well.
- * Note that the core JPEG library does not require <stdio.h>;
- * only the default error handler and data source/destination modules do.
- * But we must pull it in because of the references to FILE in jpeglib.h.
- * You can remove those references if you want to compile without <stdio.h>.
- */
-
-#if 0
-#ifdef HAVE_STDDEF_H
-#include <stddef.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef NEED_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#include <stdio.h>
-#endif
 
 /*
- * We need memory copying and zeroing functions, plus strncpy().
- * ANSI and System V implementations declare these in <string.h>.
- * BSD doesn't have the mem() functions, but it does have bcopy()/bzero().
- * Some systems may declare memset and memcpy in <memory.h>.
- *
- * NOTE: we assume the size parameters to these functions are of type size_t.
- * Change the casts in these macros if not!
+ * We need memory copying and zeroing functions
  */
-
 
 #define MEMZERO(target,size) os_memclear((target), (os_memsz)(size))
 #define MEMCOPY(dest,src,size) os_memcpy((dest), (src), (os_memsz)(size))

@@ -25,9 +25,9 @@
 
 typedef struct {
   /* Basic tables: (element [0] of each array is unused) */
-  INT32 maxcode[18];		/* largest code of length k (-1 if none) */
+  os_int maxcode[18];		/* largest code of length k (-1 if none) */
   /* (maxcode[17] is a sentinel to ensure jpeg_huff_decode terminates) */
-  INT32 valoffset[17];		/* huffval[] offset for codes of length k */
+  os_int valoffset[17];		/* huffval[] offset for codes of length k */
   /* valoffset[k] = huffval[] index of 1st symbol of code length k, less
    * the smallest code of length k; so given a code of length k, the
    * corresponding symbol is huffval[code + valoffset[k]]
@@ -42,7 +42,7 @@ typedef struct {
    * the corresponding symbol directly from these tables.
    */
   int look_nbits[1<<HUFF_LOOKAHEAD]; /* # bits, or 0 if too long */
-  UINT8 look_sym[1<<HUFF_LOOKAHEAD]; /* symbol, or unused */
+  os_uchar look_sym[1<<HUFF_LOOKAHEAD]; /* symbol, or unused */
 } d_derived_tbl;
 
 /* Expand a Huffman table definition into the derived format */
@@ -69,7 +69,7 @@ EXTERN(void) jpeg_make_d_derived_tbl
  * necessary.
  */
 
-typedef INT32 bit_buf_type;	/* type of bit-extraction buffer */
+typedef os_int bit_buf_type;	/* type of bit-extraction buffer */
 #define BIT_BUF_SIZE  32	/* size of buffer in bits */
 
 /* If long is > 32 bits on your machine, and shifting/masking longs is
