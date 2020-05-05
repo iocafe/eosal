@@ -195,8 +195,7 @@ static void reset_error_mgr (
     j_common_ptr cinfo)
 {
     cinfo->err->num_warnings = 0;
-    /* trace_level is not reset since it is an application-supplied parameter */
-    cinfo->err->msg_code = 0;	/* may be useful as a flag for "no error" */
+    cinfo->err->msg_code = 0;
 }
 
 
