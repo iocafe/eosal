@@ -120,7 +120,7 @@ osalStatus os_uncompress_JPEG(
     h = prm.output_height;
     format = prm.num_components == 1 ? OSAL_GRAYSCALE8 : OSAL_RGB24,
 
-    sz = w * h * prm.num_components;
+    sz = w * (os_memsz)h * prm.num_components;
 
     /* Verify that parameters within JPEG are correct.
      */
@@ -143,7 +143,7 @@ osalStatus os_uncompress_JPEG(
     }
     else if (alloc_context->buf == OS_NULL)
     {
-        alloc_context->buf = (os_uchar*)os_malloc(sz, OS_NULL);
+        alloc_context->buf = (os_uchar*)os_malloc(sz, &alloc_context->buf_sz);
     }
     dst_buf = alloc_context->buf;
     if (dst_buf == OS_NULL)
@@ -172,7 +172,7 @@ osalStatus os_uncompress_JPEG(
         case OSAL_RGB24:
             /* Allocate buffer for reading 24 bit RGB data.
              */
-            b = (os_uchar*)os_malloc(3 * w, OS_NULL);
+            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
@@ -192,7 +192,7 @@ osalStatus os_uncompress_JPEG(
 
                 while (count--)
                 {
-#if OE_BGR_COLORS
+#if OSAL_BGR_COLORS
                     d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
 #else
                     *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
@@ -201,10 +201,10 @@ osalStatus os_uncompress_JPEG(
 
                 /* Advance to next scan line.
                  */
-                scanline += 3 * w;
+                scanline += 3 * (os_memsz)w;
             }
 
-            os_free(b, 3 * w);
+            os_free(b, 3 * (os_memsz)w);
             break;
 
         /* 32 bit/pixel RGB image with alpha channel
@@ -212,7 +212,7 @@ osalStatus os_uncompress_JPEG(
         case OSAL_RGBA32:
             /* Allocate buffer for reading 24 bit RGB data.
              */
-            b = (os_uchar*)os_malloc(3 * w, OS_NULL);
+            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
@@ -232,7 +232,7 @@ osalStatus os_uncompress_JPEG(
 
                 while (count--)
                 {
-#if OE_BGR_COLORS
+#if OSAL_BGR_COLORS
                     d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
 #else
                     *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
@@ -242,10 +242,10 @@ osalStatus os_uncompress_JPEG(
 
                 /* Next scan line.
                  */
-                scanline += 4 * w;
+                scanline += 4 * (os_memsz)w;
             }
 
-            os_free(b, 3 * w);
+            os_free(b, 3 * (os_memsz)w);
             break;
 
         default:
@@ -266,7 +266,7 @@ getout:
 ****************************************************************************************************
 
   @brief Jump to exit compression/decompression on error.
-  @anchor os_compress_JPEG
+  @anchor osal_jpeg_disaster_exit
 
   This function is called by libjpeg if compression or decompression fails. It calls longjump
   to terminate compression/decompression.

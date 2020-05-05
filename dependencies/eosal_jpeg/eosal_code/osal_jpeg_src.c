@@ -158,6 +158,6 @@ void osal_jpeg_setup_source(
     src->pub.skip_input_data = osal_jpeg_skip_input_data;
     src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
     src->pub.term_source = osal_jpeg_term_source;
-    src->pub.bytes_in_buffer = src_nbytes;
+    src->pub.bytes_in_buffer = (size_t)src_nbytes;
     src->pub.next_input_byte = (os_char*)src_buf;
 }

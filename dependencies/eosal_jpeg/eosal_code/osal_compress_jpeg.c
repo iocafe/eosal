@@ -88,7 +88,7 @@ osalStatus os_compress_JPEG(
     os_uchar *s, *d, *b, *scanline;
     os_int count;
     osalStatus status = OSAL_SUCCESS, finish_status;
-
+    
     *dst_nbytes = 0;
 
     /* Check arguments.
@@ -181,7 +181,7 @@ osalStatus os_compress_JPEG(
         case OSAL_GRAYSCALE8:
             while (prm.next_scanline < prm.image_height)
             {
-                row_pointer[0] = (os_char*)(src + prm.next_scanline * w);
+                row_pointer[0] = (os_char*)(src + prm.next_scanline * (os_memsz)w);
                 jpeg_write_scanlines(&prm, row_pointer, 1);
             }
             break;
@@ -228,7 +228,7 @@ osalStatus os_compress_JPEG(
 
                 /* Advance to next scan line.
                  */
-                scanline += 2 * w;
+                scanline += 2 * (os_memsz)w;
             }
 
             /* Release scan line buffer.
@@ -241,7 +241,7 @@ osalStatus os_compress_JPEG(
         case OSAL_RGB24:
             /* Allocate buffer to convert a scan line to 24 bit RGB.
              */
-            b = (os_uchar*)os_malloc(3*w, OS_NULL);
+            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
@@ -263,7 +263,7 @@ osalStatus os_compress_JPEG(
                  */
                 while (count--)
                 {
-#if OE_BGR_COLORS
+#if OSAL_BGR_COLORS
                     d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
 #else
                     *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
@@ -274,12 +274,12 @@ osalStatus os_compress_JPEG(
                  */
                 row_pointer[0] = (os_char*)b;
                 jpeg_write_scanlines(&prm, row_pointer, 1);
-                scanline += 3 * w;
+                scanline += 3 * (os_memsz)w;
             }
 
             /* Release scan line buffer.
              */
-            os_free(b, 3 * w);
+            os_free(b, 3 * (os_memsz)w);
             break;
 
         /* 32 bit/pixel color image with alpha channel.
@@ -287,7 +287,7 @@ osalStatus os_compress_JPEG(
         case OSAL_RGBA32:
             /* Allocate buffer to convert a scan line to 24 bit RGB.
              */
-            b = (os_uchar*)os_malloc(3*w, OS_NULL);
+            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
@@ -309,7 +309,7 @@ osalStatus os_compress_JPEG(
                  */
                 while (count--)
                 {
-#if OE_BGR_COLORS
+#if OSAL_BGR_COLORS
                     d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
 #else
                     *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
@@ -321,22 +321,21 @@ osalStatus os_compress_JPEG(
                  */
                 row_pointer[0] = (os_char*)b;
                 jpeg_write_scanlines(&prm, row_pointer, 1);
-                scanline += 4 * w;
+                scanline += 4 * (os_memsz)w;
             }
 
             /* Release scan line buffer.
              */
-            os_free(b, 3 * w);
+            os_free(b, 3 * (os_memsz)w);
             break;
     }
 
     /* Finished.
      */
 getout:
+    jpeg_finish_compress(&prm);
     finish_status = osal_jpeg_destination_finished(&prm, dst_nbytes);
     if (finish_status) status = finish_status;
-
-    jpeg_finish_compress(&prm);
     jpeg_destroy_compress(&prm);
     return status;
 }
@@ -346,7 +345,7 @@ getout:
 ****************************************************************************************************
 
   @brief Jump to exit compression/decompression on error.
-  @anchor os_compress_JPEG
+  @anchor osal_jpeg_disaster_exit
 
   This function is called by libjpeg if compression or decompression fails. It calls longjump
   to terminate compression/decompression.

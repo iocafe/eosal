@@ -267,7 +267,10 @@ alloc_small (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
 
   /* See if space is available in any existing pool */
   if (pool_id < 0 || pool_id >= JPOOL_NUMPOOLS)
+  {
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
+    return NULL;
+  }
   prev_hdr_ptr = NULL;
   hdr_ptr = mem->small_list[pool_id];
   while (hdr_ptr != NULL) {
@@ -350,8 +353,10 @@ alloc_large (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
     sizeofobject += SIZEOF(ALIGN_TYPE) - odd_bytes;
 
   /* Always make a new pool */
-  if (pool_id < 0 || pool_id >= JPOOL_NUMPOOLS)
+  if (pool_id < 0 || pool_id >= JPOOL_NUMPOOLS) {
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
+    return NULL;
+  }
 
   hdr_ptr = (large_pool_ptr) jpeg_get_large(cinfo, sizeofobject +
                         SIZEOF(large_pool_hdr));

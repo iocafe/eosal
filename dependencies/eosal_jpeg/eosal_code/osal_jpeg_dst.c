@@ -60,8 +60,8 @@ static void osal_jpeg_init_destination(
     osaJpegDstManager *dest;
     dest = (osaJpegDstManager *) cinfo->dest;
 
-    dest->pub.next_output_byte = 0;
-    dest->pub.free_in_buffer = dest->dst_buf_sz;
+    dest->pub.next_output_byte = dest->dst_buf;
+    dest->pub.free_in_buffer = (size_t)dest->dst_buf_sz;
 }
 
 
@@ -106,8 +106,8 @@ static boolean osal_jpeg_empty_output_buffer(
     }
 
     dest->dst_nbytes += n;
-    dest->pub.next_output_byte = 0;
-    dest->pub.free_in_buffer = dest->dst_buf_sz;
+    dest->pub.next_output_byte = dest->dst_buf;
+    dest->pub.free_in_buffer = (size_t)dest->dst_buf_sz;
 
     return TRUE;
 }
@@ -244,6 +244,11 @@ osalStatus osal_jpeg_destination_finished(
     {
         *dst_nbytes = dest->dst_nbytes;
         s = dest->status;
+
+        if (dest->buf_allocated)
+        {
+            os_free(dest->dst_buf, dest->dst_buf_sz);
+        }
     }
     else
     {
@@ -251,10 +256,6 @@ osalStatus osal_jpeg_destination_finished(
         s = OSAL_STATUS_FAILED;
     }
 
-    if (dest->buf_allocated)
-    {
-        os_free(dest->dst_buf, dest->dst_buf_sz);
-    }
     return s;
 }
 

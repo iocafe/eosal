@@ -125,6 +125,7 @@ typedef os_char os_boolean;
  */
 #define OSAL_BITMAP_COLOR_FLAG 0x100
 #define OSAL_BITMAP_ALPHA_CHANNEL_FLAG 0x200
+#define OSAL_BITMAP_BYTES_PER_PIX(f) (((os_int)(f) & 0xFF) >> 3)
 typedef enum osalBitmapFormat
 {
     OSAL_GRAYSCALE8 = 8,
@@ -136,4 +137,4 @@ osalBitmapFormat;
 
 /** Define either 0 or 1 depending if we use RGB or BGR color order in internal bitmaps.
  */
-#define OE_BGR_COLORS 0
+#define OSAL_BGR_COLORS 0

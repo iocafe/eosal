@@ -68,7 +68,6 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
-
     /* Initialize underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
@@ -96,7 +95,7 @@ osalStatus osal_main(
        real micro-controller.
      */
     osal_simulated_loop(OS_NULL);
-    return 0;
+    return OSAL_SUCCESS;
 }
 
 
