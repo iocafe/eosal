@@ -1,25 +1,32 @@
-/*
- * jmemnobs.c
- *
- * Copyright (C) 1992-1996, Thomas G. Lane.
- * This file is part of the Independent JPEG Group's software.
- * For conditions of distribution and use, see the accompanying README file.
- *
- * This file provides a really simple implementation of the system-
- * dependent portion of the JPEG memory manager.  This implementation
- * assumes that no backing-store files are needed: all required space
- * can be obtained from malloc().
- * This is very portable in the sense that it'll compile on almost anything,
- * but you'd better have lots of main memory (or virtual memory) if you want
- * to process big images.
- * Note that the max_memory_to_use option is ignored by this implementation.
- */
+/**
 
-#include "eosal.h"
+  @file    eosal_jpeg/eosal_code/osal_jmem.c
+  @brief   eosal API for libjpeg.
+  @author  Pekka Lehtikoski
+  @version 1.0
+  @date    5.5.2020
+
+  This file provides a really simple implementation of the system dependent portion of
+  the JPEG memory manager. This implementation  assumes that no backing-store files are
+  needed: all required space can be obtained from os_malloc().
+
+  This is very portable in the sense that it'll compile on almost anything, but you'd better
+  have lots of main memory (or virtual memory) if you want to process big images.
+  Note that the max_memory_to_use option is ignored by this implementation.
+
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  modified, and distributed under the terms of the project licensing. By continuing to use, modify,
+  or distribute this file you indicate that you have read the license and understand and accept
+  it fully.
+
+  Copyright (C) 1991-1998, Thomas G. Lane. This file is derived from work of the Independent
+  JPEG Group's software.
+
+****************************************************************************************************
+*/
 #define JPEG_INTERNALS
-#include "jinclude.h"
-#include "jpeglib.h"
-#include "jmemsys.h"		/* import the system-dependent declarations */
+#include "eosal_jpeg.h"
+#include "code/jmemsys.h"		/* import the system-dependent declarations */
 
 
 /*
@@ -42,9 +49,6 @@ jpeg_free_small (j_common_ptr cinfo, void * object, size_t sizeofobject)
 
 /*
  * "Large" objects are treated the same as "small" ones.
- * NB: although we include FAR keywords in the routine declarations,
- * this file won't actually work in 80x86 small/medium model; at least,
- * you probably won't be able to process useful-size images in only 64KB.
  */
 
 GLOBAL(void *)
@@ -85,7 +89,6 @@ jpeg_open_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 {
   ERREXIT(cinfo, JERR_NO_BACKING_STORE);
 }
-
 
 /*
  * These routines take care of any system-dependent initialization and

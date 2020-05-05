@@ -118,3 +118,22 @@ typedef os_char os_boolean;
 #ifndef OSAL_MAX_ERROR_HANDLERS
 #define OSAL_MAX_ERROR_HANDLERS 3
 #endif
+
+/** Enumeration of bitmap format and color flag. Bitmap format enumeration value is number
+    of bits per pixel, with OSAL_BITMAP_COLOR_FLAG (0x100) to indicate color or
+    OSAL_BITMAP_ALPHA_CHANNEL_FLAG (0x200) to indicate that bitmap has alpha channel.
+ */
+#define OSAL_BITMAP_COLOR_FLAG 0x100
+#define OSAL_BITMAP_ALPHA_CHANNEL_FLAG 0x200
+typedef enum osalBitmapFormat
+{
+    OSAL_GRAYSCALE8 = 8,
+    OSAL_GRAYSCALE16 = 16,
+    OSAL_RGB24 = 24 | OSAL_BITMAP_COLOR_FLAG,
+    OSAL_RGBA32 = 32  | OSAL_BITMAP_COLOR_FLAG | OSAL_BITMAP_ALPHA_CHANNEL_FLAG
+}
+osalBitmapFormat;
+
+/** Define either 0 or 1 depending if we use RGB or BGR color order in internal bitmaps.
+ */
+#define OE_BGR_COLORS 0

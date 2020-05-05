@@ -15,6 +15,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${E_DEPS_LIB})
 
 # Set path to source files.
 set(BACKBONE "$ENV{E_ROOT}/eosal/dependencies/${E_PROJECT}/code")
+set(EOSALCODE "$ENV{E_ROOT}/eosal/dependencies/${E_PROJECT}/eosal_code")
+
+# Add libjpeg to include path.
+include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
 
 # Add main headers.
 set(MAIN_HEADERS "$ENV{E_ROOT}/eosal/dependencies/${E_PROJECT}/${E_PROJECT}.h")
@@ -22,6 +26,8 @@ set(MAIN_HEADERS "$ENV{E_ROOT}/eosal/dependencies/${E_PROJECT}/${E_PROJECT}.h")
 # Add source files common to all operating systems.
 file(GLOB BB_SOURCES "${BACKBONE}/*.c")
 file(GLOB BB_HEADERS "${BACKBONE}/*.h")
+file(GLOB EC_SOURCES "${EOSALCODE}/*.c")
+file(GLOB EC_HEADERS "${EOSALCODE}/*.h")
 
 # Generate the static library.
-add_library(${E_PROJECT}${E_POSTFIX} STATIC ${MAIN_HEADERS} ${BB_HEADERS} ${BB_SOURCES})
+add_library(${E_PROJECT}${E_POSTFIX} STATIC ${MAIN_HEADERS} ${BB_HEADERS} ${EC_HEADERS} ${BB_SOURCES} ${EC_SOURCES})

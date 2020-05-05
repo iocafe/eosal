@@ -27,9 +27,9 @@ typedef struct {
 
   FILE * outfile;		/* target stream */
   JOCTET * buffer;		/* start of buffer */
-} my_destination_mgr;
+} osaJpegDstManager;
 
-typedef my_destination_mgr * my_dest_ptr;
+typedef osaJpegDstManager * osaJpegDstPtr;
 
 #define OUTPUT_BUF_SIZE  4096	/* choose an efficiently fwrite'able size */
 
@@ -42,7 +42,7 @@ typedef my_destination_mgr * my_dest_ptr;
 METHODDEF(void)
 init_destination (j_compress_ptr cinfo)
 {
-  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  osaJpegDstPtr dest = (osaJpegDstPtr) cinfo->dest;
 
   /* Allocate the output buffer --- it will be released when done with image */
   dest->buffer = (JOCTET *)
@@ -80,7 +80,7 @@ init_destination (j_compress_ptr cinfo)
 METHODDEF(boolean)
 empty_output_buffer (j_compress_ptr cinfo)
 {
-  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  osaJpegDstPtr dest = (osaJpegDstPtr) cinfo->dest;
 
   if (JFWRITE(dest->outfile, dest->buffer, OUTPUT_BUF_SIZE) !=
       (size_t) OUTPUT_BUF_SIZE)
@@ -105,7 +105,7 @@ empty_output_buffer (j_compress_ptr cinfo)
 METHODDEF(void)
 term_destination (j_compress_ptr cinfo)
 {
-  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  osaJpegDstPtr dest = (osaJpegDstPtr) cinfo->dest;
   size_t datacount = OUTPUT_BUF_SIZE - dest->pub.free_in_buffer;
 
   /* Write any data remaining in the buffer */
@@ -129,7 +129,7 @@ term_destination (j_compress_ptr cinfo)
 GLOBAL(void)
 jpeg_stdio_dest (j_compress_ptr cinfo, FILE * outfile)
 {
-  my_dest_ptr dest;
+  osaJpegDstPtr dest;
 
   /* The destination object is made permanent so that multiple JPEG images
    * can be written to the same file without re-executing jpeg_stdio_dest.
@@ -140,10 +140,10 @@ jpeg_stdio_dest (j_compress_ptr cinfo, FILE * outfile)
   if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  SIZEOF(my_destination_mgr));
+				  SIZEOF(osaJpegDstManager));
   }
 
-  dest = (my_dest_ptr) cinfo->dest;
+  dest = (osaJpegDstPtr) cinfo->dest;
   dest->pub.init_destination = init_destination;
   dest->pub.empty_output_buffer = empty_output_buffer;
   dest->pub.term_destination = term_destination;

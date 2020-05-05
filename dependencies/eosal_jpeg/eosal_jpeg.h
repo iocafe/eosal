@@ -21,6 +21,9 @@
   or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
+  Copyright (C) 1991-1998, Thomas G. Lane. This file is derived from work of the Independent
+  JPEG Group's software.
+
 ****************************************************************************************************
 */
 #ifndef EOSAL_JPEG
@@ -38,6 +41,7 @@ OSAL_C_HEADER_BEGINS
 #include "code/jinclude.h"
 #include "code/jpeglib.h"
 #include "code/jerror.h"		/* get library error codes too */
+#include "eosal_code/osal_jpeg.h"
 
 /* If C++ compilation, end the undecorated code.
  */
