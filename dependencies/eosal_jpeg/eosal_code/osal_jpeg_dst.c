@@ -60,7 +60,7 @@ static void osal_jpeg_init_destination(
     osaJpegDstManager *dest;
     dest = (osaJpegDstManager *) cinfo->dest;
 
-    dest->pub.next_output_byte = dest->dst_buf;
+    dest->pub.next_output_byte = (char*)dest->dst_buf;
     dest->pub.free_in_buffer = (size_t)dest->dst_buf_sz;
 }
 
@@ -106,7 +106,7 @@ static boolean osal_jpeg_empty_output_buffer(
     }
 
     dest->dst_nbytes += n;
-    dest->pub.next_output_byte = dest->dst_buf;
+    dest->pub.next_output_byte = (char*)dest->dst_buf;
     dest->pub.free_in_buffer = (size_t)dest->dst_buf_sz;
 
     return TRUE;
