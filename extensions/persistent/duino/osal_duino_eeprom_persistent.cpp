@@ -449,25 +449,14 @@ osalStatus os_persistent_write(
 static osalStatus os_persistent_commit(
     void)
 {
-
-osal_debug_error("HERE Z0");
-
     if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
     hdr.checksum = os_checksum((os_char*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     hdr.initialized = MY_HEADER_INITIALIZED;
     hdr.touched = OS_FALSE;
 
     osal_control_interrupts(OS_FALSE);
-
-osal_debug_error("HERE Z1");
-
     os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
-
-osal_debug_error("HERE Z2");
-
     EEPROM.commit();
-
-osal_debug_error("HERE Z3");
 
     osal_control_interrupts(OS_TRUE);
     return OSAL_SUCCESS;
