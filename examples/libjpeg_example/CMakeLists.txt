@@ -18,9 +18,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $ENV{E_BIN})
 # Set path to source files.
 set(E_SOURCE_PATH "$ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code")
 
-# Add eosal_jpeg headers.
-include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
-
 # Add header files, the file(GLOB_RECURSE...) allows for wildcards and recurses subdirs.
 file(GLOB_RECURSE HEADERS "${E_SOURCE_PATH}/*.h")
 

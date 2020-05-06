@@ -6,9 +6,9 @@
   @version 1.0
   @date    5.6.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -38,13 +38,10 @@ osalStatus osal_main(
        real micro-controller.
      */
     osal_simulated_loop(OS_NULL);
-
     return OSAL_SUCCESS;
 }
 
 
-/*  Empty function implementation needed to build for microcontroller.
- */
 osalStatus osal_loop(
     void *app_context)
 {

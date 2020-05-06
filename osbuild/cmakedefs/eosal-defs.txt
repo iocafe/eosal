@@ -48,7 +48,7 @@ if("${TARGET}" STREQUAL "esp32")
   include_directories("$ENV{IDF_PATH}/components/esp_rom/include")
   include_directories("$ENV{IDF_PATH}/components/log/include")
 
-# Windows 
+# Windows
 elseif(WIN32)
   # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.
   if (NOT DEFINED ENV{E_OS})
@@ -56,7 +56,7 @@ elseif(WIN32)
   endif()
 
   # Generic target operating system version "win32", "win64", "ubuntu16064", "mint18", etc.
-  # Used as name for banary folders and as part of installation package name. 
+  # Used as name for banary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
     if (CMAKE_CL_64)
       set(ENV{E_OSVER} "win64")
@@ -65,7 +65,7 @@ elseif(WIN32)
     endif()
   endif()
 
-  # Compiler name, used as part of library and temporary folder name. 
+  # Compiler name, used as part of library and temporary folder name.
   # For example "vs2019", "mingw", "gcc", "gccarm9"...
   if (NOT DEFINED ENV{E_COMPILER})
     set(ENV{E_COMPILER} "vs2019")
@@ -103,12 +103,12 @@ else()
   endif()
 
   # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
-  # Used as name for banary folders and as part of installation package name. 
+  # Used as name for banary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
     set(ENV{E_OSVER} "linux")
   endif()
 
-  # Compiler name, used as part of library and temporary folder name. 
+  # Compiler name, used as part of library and temporary folder name.
   # For example "vs2015", "mingw", "gcc", "gccarm9"...
   if (NOT DEFINED ENV{E_COMPILER})
     set(ENV{E_COMPILER} "gcc")
@@ -127,8 +127,9 @@ else()
   set(E_POSTFIX "")
 endif()
 
-# Include path.
+# Include paths.
 include_directories("$ENV{E_ROOT}/eosal")
+include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
 include_directories("$ENV{E_ROOT}/${E_PROJECT}")
 
 # Library path.
@@ -156,7 +157,7 @@ set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OSVER}_$ENV{E_COMPILER}")
 set(ENV{OSAL_CONSOLE_APP_LIBS} "eosal${E_POSTFIX}")
 
 # Commonly used libraries for eosal application with TLS communication.
-set(ENV{OSAL_TLS_APP_LIBS} "eosal${E_POSTFIX}")
+set(ENV{OSAL_TLS_APP_LIBS} "eosal_jpeg${E_POSTFIX};eosal${E_POSTFIX}")
 
 # Commonly used libraries for objects console application.
 set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
