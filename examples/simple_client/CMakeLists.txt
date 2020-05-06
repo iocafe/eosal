@@ -6,7 +6,7 @@ set(E_PROJECT "simple_client")
 project(${E_PROJECT})
 
 # include build information common to all projects.
-include(../../build/cmakedefs/eosal-defs.txt)
+include(../../osbuild/cmakedefs/eosal-defs.txt)
 
 # Build individual library projects.
 if (NOT DEFINED ENV{E_NO_SUBDIR_BUILDS})
