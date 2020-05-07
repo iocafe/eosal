@@ -123,9 +123,9 @@ typedef os_char os_boolean;
     of bits per pixel, with OSAL_BITMAP_COLOR_FLAG (0x100) to indicate color or
     OSAL_BITMAP_ALPHA_CHANNEL_FLAG (0x200) to indicate that bitmap has alpha channel.
  */
-#define OSAL_BITMAP_COLOR_FLAG 0x100
-#define OSAL_BITMAP_ALPHA_CHANNEL_FLAG 0x200
-#define OSAL_BITMAP_BYTES_PER_PIX(f) (((os_int)(f) & 0xFF) >> 3)
+#define OSAL_BITMAP_COLOR_FLAG 0x80
+#define OSAL_BITMAP_ALPHA_CHANNEL_FLAG 0x40
+#define OSAL_BITMAP_BYTES_PER_PIX(f) (((os_int)(f) & 0x3F) >> 3)
 typedef enum osalBitmapFormat
 {
     OSAL_GRAYSCALE8 = 8,
