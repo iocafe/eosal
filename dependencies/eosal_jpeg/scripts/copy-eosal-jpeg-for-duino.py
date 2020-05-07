@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # copy-eosal-jpeg-for-duino.py 2.5.2020/pekka
 # Copies libjpeg files needed for PlatformIO Arduino build
-# into /coderoot/lib/arduino-platformio/eosal_jpeg directory. 
+# into /coderoot/lib/arduino-platformio/eosal_jpeg directory.
 # To make this look like Arduino library all .c and .cpp
 # files are copied to target root folder, and all header
 # files info subfolders.
@@ -52,6 +52,7 @@ def copy_level_1(sourcedir,targetdir):
 
     # Copy code and extensions folders
     copy_level_2(sourcedir + '/code', targetdir, targetdir + '/code')
+    copy_level_2(sourcedir + '/eosal_code', targetdir, targetdir + '/eosal_code')
 
     # Copy informative arduino files
     copy_info('library.json', sourcedir, targetdir)
@@ -70,7 +71,7 @@ def mymain():
             if not expectplatform:
                 outdir = sys.argv[i];
 
-            expectplatform = True    
+            expectplatform = True
 
     copy_level_1("/coderoot/eosal/dependencies/eosal_jpeg", outdir)
 

@@ -15,9 +15,9 @@
  */
 
 #define JPEG_INTERNALS
-#include "jinclude.h"
-#include "jpeglib.h"
-#include "jchuff.h"		/* Declarations shared with jcphuff.c */
+#include "code/jinclude.h"
+#include "code/jpeglib.h"
+#include "code/jchuff.h"		/* Declarations shared with jcphuff.c */
 
 
 /* Expanded entropy encoder object for Huffman encoding.
