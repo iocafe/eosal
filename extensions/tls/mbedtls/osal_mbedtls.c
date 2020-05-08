@@ -294,9 +294,9 @@ static osalStream osal_mbedtls_open(
             ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_REQUIRED);
 
 
-osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0) ? " NO CERT CHAIN": "HAS_CHAIN");
+        osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
+            ? " NO CERT CHAIN": "certificate chain loaded");
 
-//            ? MBEDTLS_SSL_VERIFY_OPTIONAL : MBEDTLS_SSL_VERIFY_REQUIRED, MBEDTLS_SSL_VERIFY_OPTIONAL;
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
         mbedtls_ssl_conf_dbg(&so->conf, osal_mbedtls_debug, stdout);
@@ -311,7 +311,7 @@ osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0) ? " NO CER
         /* We cannot set host name for security validation, because
          * we often connect by IP address
         ret = mbedtls_ssl_set_hostname(&so->ssl, host); */
-        mbedtls_ssl_conf_read_timeout(&so->conf, 3000);
+        /* mbedtls_ssl_conf_read_timeout(&so->conf, 3000); */
         /* mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout); */
 
         /* We use osal socket implementation for reads and writes.
