@@ -9,9 +9,9 @@
   Main function for set of example. Multiple simple examples/tests have been packed in this
   project to avoid creating many projets.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -38,15 +38,16 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
-	// return osal_threads_example_main(argc, argv);
-	// return osal_threads_example_2_main(argc, argv);
+    // return osal_threads_example_main(argc, argv);
+    // return osal_threads_example_2_main(argc, argv);
     // return osal_int64_test(argc, argv);
     // return osal_intser_test(argc, argv);
     // return osal_json_compress_test(argc, argv);
     // return osal_rand_test(argc, argv);
     // return osal_float_int_conv_test(argc, argv);
     // return osal_password_test(argc, argv);
-    return osal_persistent_test(argc, argv);
+    // return osal_persistent_test(argc, argv);
+    return osal_timer_test(argc, argv);
 }
 
 
