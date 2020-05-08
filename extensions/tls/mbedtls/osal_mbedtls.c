@@ -228,6 +228,7 @@ static osalStream osal_mbedtls_open(
     osalTlsSocket *so = OS_NULL;
     os_char hostbuf[OSAL_HOST_BUF_SZ];
     os_int ret;
+    osalStatus s;
 
     osalTLS *t;
     t = osal_global->tls;
@@ -291,6 +292,10 @@ static osalStream osal_mbedtls_open(
         mbedtls_ssl_conf_authmode(&so->conf,
             osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
             ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_REQUIRED);
+
+
+osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0) ? " NO CERT CHAIN": "HAS_CHAIN");
+
 //            ? MBEDTLS_SSL_VERIFY_OPTIONAL : MBEDTLS_SSL_VERIFY_REQUIRED, MBEDTLS_SSL_VERIFY_OPTIONAL;
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
@@ -305,15 +310,20 @@ static osalStream osal_mbedtls_open(
 
         /* We cannot set host name for security validation, because
          * we often connect by IP address
-        ret = mbedtls_ssl_set_hostname(&so->ssl, host);
+        ret = mbedtls_ssl_set_hostname(&so->ssl, host); */
         mbedtls_ssl_conf_read_timeout(&so->conf, 3000);
-        mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout); */
+        /* mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout); */
 
         /* We use osal socket implementation for reads and writes.
          */
         mbedtls_ssl_set_bio(&so->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
 
-        if (OSAL_IS_ERROR(osal_mbedtls_handshake(so))) goto getout;
+        s = osal_mbedtls_handshake(so);
+        if (OSAL_IS_ERROR(s))
+        {
+            osal_debug_error_int("first osal_mbedtls_handshake failed, status = ", s);
+            goto getout;
+        }
     }
 
     /* Success: Set status code and cast socket structure pointer to stream
@@ -1220,7 +1230,13 @@ static osalStatus osal_mbedtls_handshake(
         if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
         {
             osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_CONNECTION_REFUSED, OS_NULL);
+#if OSAL_DEBUG
             osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
+            if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
+                osal_debug_error("MBEDTLS_ERR_MPI_ALLOC_FAILED");
+            }
+#endif
+
             so->handshake_failed = OS_TRUE;
             return OSAL_STATUS_CONNECTION_REFUSED;
         }

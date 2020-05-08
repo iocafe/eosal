@@ -25,7 +25,7 @@
 
 #include <freertos/FreeRTOS.h>
 
-/* If there is custom configuration file for ESP32, include it. The custom configuration file 
+/* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.
  */
 #if defined __has_include
@@ -43,7 +43,7 @@
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 1
+#define OSAL_TRACE 2
 #endif
 
 /** C compiler's debug build flag.

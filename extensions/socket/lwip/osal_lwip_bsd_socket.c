@@ -867,6 +867,8 @@ void osal_socket_close(
      */
     if (stream == OS_NULL) return;
 
+    osal_trace2("closing socket");
+
     /* Cast stream pointer to socket structure pointer, get operating system's socket handle.
      */
     mysocket = (osalSocket*)stream;
@@ -902,11 +904,13 @@ void osal_socket_close(
             {
     #if OSAL_DEBUG
 
+                /* ECONNRESET closed by peer */
                 if (errno != EWOULDBLOCK &&
                     errno != EINPROGRESS &&
-                    errno != ENOTCONN)
+                    errno != ENOTCONN &&
+                    errno != ECONNRESET)
                 {
-                    osal_debug_error("reading end failed");
+                    osal_debug_error_int("reading end failed, errno=", errno);
                 }
     #endif
                 break;
@@ -917,7 +921,7 @@ void osal_socket_close(
 
     /* Close the socket.
      */
-    if (close(handle))
+    if (closesocket(handle))
     {
         osal_debug_error("closesocket failed");
     }
