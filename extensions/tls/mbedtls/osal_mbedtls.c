@@ -1267,6 +1267,7 @@ static osalStatus osal_mbedtls_handshake(
     }
 
     so->handshake_done = OS_TRUE;
+    osal_trace2("TLS handshake ok");
     return OSAL_SUCCESS;
 }
 
