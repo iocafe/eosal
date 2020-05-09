@@ -207,7 +207,6 @@ static osalStatus load_y(
 
     os_memclear(&y, sizeof(y));
 
-
     s = os_load_persistent(block_nr, (os_char*)&y, sizeof(y));
     if (s) {
         osal_console_write("Loading Y from persistent block ");
