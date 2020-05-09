@@ -1,7 +1,7 @@
 /**
 
-  @file    socket/arduino/osal_socket_arduino_wifi.cpp
-  @brief   OSAL stream API layer to use Arduino WiFi sockets.
+  @file    socket/duino/osal_sam_socket_wifi.cpp
+  @brief   OSAL stream API layer to use Arduino SAM WiFi sockets.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
@@ -18,6 +18,9 @@
   Notes:
   - Wifi.config() function in ESP does not follow same argument order as arduino. This
     can create problem if using static IP address.
+  - Static WiFi IP address doesn't work for ESP32. This seems to be a bug in espressif Arduino
+    support (replacing success check with 15 sec delay will patch it). Wait for espressif
+    updates, ESP32 is still quite new.
 
   MISSING - TO BE DONE
   - DNS to resolve host names
@@ -31,25 +34,12 @@
 
 ****************************************************************************************************
 */
-/* Force tracing on for this source file.
- */
-/* #define OSAL_TRACE 3 */
-
 #include "eosalx.h"
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIFI
-
-
-/** Use WifiMulti to automatically select one from known access points. Define 1 or 0.
- */
-#define OSAL_WIFI_MULTI 1
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI
 
 #include <Arduino.h>
-#include <WiFi.h>
+#include <WiFi101.h>
 
-#if OSAL_WIFI_MULTI
-#include <WiFiMulti.h>
-WiFiMulti wifiMulti;
-#endif
 
 /* Two known wifi networks to select from in NIC configuration.
  */
@@ -1247,21 +1237,6 @@ void osal_socket_initialize(
         osal_debug_error("osal_socket_initialize(): No NIC configuration");
     }
 
-#if OSAL_WIFI_MULTI
-    /* Use WiFiMulti if we have second access point.
-     */
-    osal_wifi_multi_on = OS_FALSE;
-    if (n_wifi > 1)
-    {
-        osal_wifi_multi_on = (wifi[1].wifi_net_name[0] != '\0');
-        if (osal_wifi_multi_on)
-        {
-            wifiMulti.addAP(wifi[0].wifi_net_name, wifi[0].wifi_net_password);
-            wifiMulti.addAP(wifi[1].wifi_net_name, wifi[1].wifi_net_password);
-        }
-    }
-#endif
-
     os_memclear(osal_socket, sizeof(osal_socket));
     os_memclear(osal_client_state, sizeof(osal_client_state));
     os_memclear(osal_server_state, sizeof(osal_server_state));
@@ -1394,18 +1369,7 @@ osalStatus osal_are_sockets_initialized(
             break;
 
         case OSAL_WIFI_INIT_STEP3:
-#if OSAL_WIFI_MULTI
-            if (!osal_wifi_multi_on)
-            {
-                osal_wifi_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
-            }
-            else
-            {
-                osal_wifi_connected = (os_boolean) (wifiMulti.run() == WL_CONNECTED);
-            }
-#else
             osal_wifi_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
-#endif
 
             /* If no change in connection status:
                - If we are connected or connection has never failed (boot), or

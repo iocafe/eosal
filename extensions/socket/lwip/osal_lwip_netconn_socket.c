@@ -20,7 +20,7 @@
 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT & OSAL_LWIP_NETCONN_API_BIT
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_LWIP_NETCONN_API
 
 /* Force tracing on for this source file.
  */

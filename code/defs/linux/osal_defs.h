@@ -198,10 +198,20 @@
 #define OSAL_MULTITHREAD_SUPPORT 1
 #endif
 
-/** If sockets are supported for the platform, define 1.
+/** Bits in socket type enumeration, these may select common components.
  */
+#define OSAL_SOCKET_NONE 0
+#define OSAL_SOCKET_AUTO_SELECT 1
+#define OSAL_OS_SOCKETS 2
+#define OSAL_SOCKET_MASK 0xFF
+#define OSAL_OS_ETHERNET_INIT (1 << 8)
+#define OSAL_NET_INIT_MASK 0xFF00
+
+#if OSAL_SOCKET_SUPPORT == OSAL_SOCKET_AUTO_SELECT
+#undef OSAL_SOCKET_SUPPORT
+#endif
 #ifndef OSAL_SOCKET_SUPPORT
-#define OSAL_SOCKET_SUPPORT 1
+#define OSAL_SOCKET_SUPPORT (OSAL_OS_SOCKETS + OSAL_OS_ETHERNET_INIT)
 #endif
 
 /** Socket options for the platform. Suppport select function with sockets.

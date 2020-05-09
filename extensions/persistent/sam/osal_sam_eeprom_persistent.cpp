@@ -1,7 +1,7 @@
 /**
 
-  @file    persistent/duino/osal_arduino_eeprom_persistent.c
-  @brief   Save persistent parameters on Arduino EEPROM.
+  @file    persistent/duino/osal_sam_eeprom_persistent.c
+  @brief   Save persistent parameters on Arduino SAM.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
@@ -19,10 +19,8 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_PERSISTENT_SUPPORT==OSAL_ARDUINO_EEPROM_API
+#if OSAL_PERSISTENT_SUPPORT==OSAL_SAM_PERSISTENT
 #include <Arduino.h>
-#include <EEPROM.h>
-
 
 typedef struct
 {
@@ -77,6 +75,7 @@ static void os_persistent_move(
     os_ushort dstaddr,
     os_ushort srcaddr,
     os_ushort n);
+
 
 
 /**
