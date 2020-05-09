@@ -35,10 +35,14 @@ osalStatus osal_timer_test(
     os_int argc,
     os_char *argv[])
 {
-    os_timer start_t = 0;
-    os_int count = 0;
+    os_timer start_t, end_t;
+    os_int count = 0, elapsed_ms;
 
-    while (1)
+    osal_console_initialize();
+
+    osal_debug_error("Starting os_get_timer() test, press 'x' to move to sleep test.");
+    os_get_timer(&start_t);
+    while (osal_console_read() != 'x')
     {
         if (os_has_elapsed(&start_t, 10000))
         {
@@ -47,6 +51,17 @@ osalStatus osal_timer_test(
         }
 
         os_timeslice();
+    }
+
+    osal_debug_error("Starting os_sleep() test, press 'x' to quit (takes up to 10 seconds)");
+    while (osal_console_read() != 'x')
+    {
+        os_get_timer(&start_t);
+        os_sleep(10000);
+        os_get_timer(&end_t);
+        elapsed_ms = os_get_ms_elapsed(&start_t, &end_t);
+
+        osal_debug_error_int("10 second sleep, elapsed ms=", elapsed_ms);
     }
 
     return OSAL_SUCCESS;
