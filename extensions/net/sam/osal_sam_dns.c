@@ -14,9 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_ETHERNET_AP || \
-    (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIFI_API || \
-    (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI_API
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI_API
 
 
 /**
