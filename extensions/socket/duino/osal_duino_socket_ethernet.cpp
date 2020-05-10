@@ -17,20 +17,17 @@
 
 ****************************************************************************************************
 */
-/* Force tracing on for this source file.
- */
-/* #undef OSAL_TRACE
-#define OSAL_TRACE 1 */
 
 #include "eosalx.h"
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_ETHERNET
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_LWIP_ETHERNET_API || \
+    (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIZ_ETHERNET_API
 
-#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_WIZ
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIZ_ETHERNET_API
   #include <SPI.h>
   #include <Ethernet.h>
 #endif
 
-#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_LWIP
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_LWIP_ETHERNET_API
   #include <LwIP.h>
   #include <STM32Ethernet.h>
 #endif
