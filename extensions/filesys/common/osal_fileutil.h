@@ -13,12 +13,12 @@
 
 ****************************************************************************************************
 */
-#if OSAL_FILESYS_SUPPORT
-
 /* Flags for file utility functions.
  */
 #define OS_FILE_DEFAULT 0
 #define OS_FILE_NULL_CHAR 1
+
+#if OSAL_FILESYS_SUPPORT
 
 
 /**

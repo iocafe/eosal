@@ -35,7 +35,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI
+#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI_API
 
 #include <Arduino.h>
 #include <WiFi101.h>
@@ -101,7 +101,7 @@ typedef enum
 }
 osalSocketState;
 
-
+#if 0
 /* Client sockets.
  */
 #define OSAL_MAX_CLIENT_SOCKETS 6
@@ -123,6 +123,7 @@ static osalSocketState osal_server_state[OSAL_MAX_SERVER_SOCKETS];
 static WiFiUDP osal_udp[OSAL_MAX_UDP_SOCKETS];
 static osalSocketState osal_udp_used[OSAL_MAX_UDP_SOCKETS];
 */
+#endif
 
 /** Index to mark that there are no unused items in array.
  */
@@ -276,6 +277,7 @@ osalStream osal_socket_open(
     osalStatus *status,
     os_int flags)
 {
+#if 0
     os_short mysocket_ix, ix, i;
     osalSocket *mysocket;
     os_char addr[16], nbuf[OSAL_NBUF_SZ];
@@ -389,6 +391,7 @@ getout:
     /* Set status code and return NULL pointer to indicate failure.
      */
     if (status) *status = rval;
+#endif
     return OS_NULL;
 }
 
@@ -407,6 +410,7 @@ getout:
 static void osal_socket_setup_ring_buffer(
     osalSocket *mysocket)
 {
+#if 0
     os_memsz sz;
 
     if (mysocket->buf == OS_NULL)
@@ -416,6 +420,7 @@ static void osal_socket_setup_ring_buffer(
         mysocket->buf = os_malloc(1760, &sz);
         mysocket->buf_sz = sz;
     }
+#endif
 }
 
 
@@ -435,6 +440,7 @@ static void osal_socket_setup_ring_buffer(
 static osalStatus osal_socket_really_connect(
     osalSocket *mysocket)
 {
+#if 0
     os_short ix;
     ix = mysocket->index;
 
@@ -454,6 +460,7 @@ static osalStatus osal_socket_really_connect(
     mysocket->sockindex = osal_client[ix].fd();
 
     osal_client_state[ix] = OSAL_RUNNING_STATE;
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -474,6 +481,7 @@ static osalStatus osal_socket_really_connect(
 static osalStatus osal_socket_really_listen(
     osalSocket *mysocket)
 {
+#if 0
     os_short ix;
     ix = mysocket->index;
 
@@ -483,6 +491,7 @@ static osalStatus osal_socket_really_listen(
     osal_trace_int("Listening TCP port ", mysocket->port_nr);
 
     osal_server_state[ix] = OSAL_RUNNING_STATE;
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -506,6 +515,7 @@ static osalStatus osal_socket_really_listen(
 osalStatus osal_socket_check(
     osalSocket *mysocket)
 {
+#if 0
     osalStatus  s;
     os_int  ix;
 
@@ -526,6 +536,8 @@ osalStatus osal_socket_check(
     }
 
     return OSAL_STATUS_FAILED;
+#endif
+    return 0;
 }
 
 
@@ -549,6 +561,7 @@ void osal_socket_close(
     osalStream stream,
     os_int flags)
 {
+#if 0
     osalSocket *mysocket;
     os_short ix;
 
@@ -606,6 +619,7 @@ void osal_socket_close(
      */
     os_free(mysocket->buf, mysocket->buf_sz);
     os_memclear(mysocket, sizeof(osalSocket));
+#endif
 }
 
 
@@ -637,6 +651,7 @@ osalStream osal_socket_accept(
     osalStatus *status,
     os_int flags)
 {
+#if 0
     osalSocket *mysocket;
     os_short mysocket_ix, six, cix, j;
     MY_SOCKIX_TYPE sockindex;
@@ -727,6 +742,7 @@ getout:
     /* Set status code and return NULL pointer.
      */
     if (status) *status = rval;
+#endif
     return OS_NULL;
 }
 
@@ -755,6 +771,7 @@ osalStatus osal_socket_flush(
     osalStream stream,
     os_int flags)
 {
+#if 0
     osalSocket *mysocket;
     os_short head, tail, wrnow;
     os_memsz nwr;
@@ -794,6 +811,7 @@ osalStatus osal_socket_flush(
         mysocket->tail = tail;
     }
 
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -826,6 +844,7 @@ static osalStatus osal_socket_write2(
     os_memsz *n_written,
     os_int flags)
 {
+#if 0
     os_int bytes;
     os_short ix;
 
@@ -857,6 +876,7 @@ static osalStatus osal_socket_write2(
     if (bytes > 0) osal_trace("Data written to socket");
 #endif
 
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -889,6 +909,7 @@ osalStatus osal_socket_write(
     os_memsz *n_written,
     os_int flags)
 {
+#if 0
     os_int count, wrnow;
     osalSocket *mysocket;
     osalStatus status;
@@ -985,6 +1006,8 @@ osalStatus osal_socket_write(
     }
 
     return osal_socket_write2(mysocket, buf, n, n_written, flags);
+#endif
+    return 0;
 }
 
 
@@ -1017,6 +1040,7 @@ osalStatus osal_socket_read(
     os_memsz *n_read,
     os_int flags)
 {
+#if 0
     osalSocket *mysocket;
     osalStatus status;
     os_int read_now, bytes;
@@ -1061,6 +1085,7 @@ osalStatus osal_socket_read(
 #endif
 
     *n_read = bytes;
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -1080,6 +1105,7 @@ osalStatus osal_socket_read(
 */
 static os_short osal_get_unused_socket(void)
 {
+#if 0
     os_short index;
 
     for (index = 0; index < OSAL_MAX_CLIENT_SOCKETS; index++)
@@ -1087,6 +1113,8 @@ static os_short osal_get_unused_socket(void)
         if (osal_socket[index].use == OSAL_SOCKET_UNUSED) return index;
     }
     return OSAL_ALL_USED;
+#endif
+    return 0;
 }
 
 
@@ -1105,6 +1133,7 @@ static os_short osal_get_unused_socket(void)
 */
 static os_short osal_get_unused_client(void)
 {
+#if 0
     os_short index;
 
     for (index = 0; index < OSAL_MAX_CLIENT_SOCKETS; index++)
@@ -1112,6 +1141,8 @@ static os_short osal_get_unused_client(void)
         if (!osal_client_state[index]) return index;
     }
     return OSAL_ALL_USED;
+#endif
+    return 0;
 }
 
 
@@ -1130,6 +1161,7 @@ static os_short osal_get_unused_client(void)
 */
 static os_short osal_get_unused_server(void)
 {
+#if 0
     os_short index;
 
     for (index = 0; index < OSAL_MAX_SERVER_SOCKETS; index++)
@@ -1137,6 +1169,8 @@ static os_short osal_get_unused_server(void)
         if (!osal_server_state[index]) return index;
     }
     return OSAL_ALL_USED;
+#endif
+    return 0;
 }
 
 
@@ -1232,6 +1266,7 @@ void osal_socket_initialize(
     osalWifiNetwork *wifi,
     os_int n_wifi)
 {
+#if 0
     if (nic == OS_NULL && n_nics < 1)
     {
         osal_debug_error("osal_socket_initialize(): No NIC configuration");
@@ -1257,6 +1292,7 @@ void osal_socket_initialize(
     /* Set socket library initialized flag.
      */
     osal_sockets_initialized = OS_TRUE;
+#endif
 }
 
 
@@ -1275,6 +1311,7 @@ void osal_socket_initialize(
 */
 static void osal_socket_start_wifi_init(void)
 {
+#if 0
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
@@ -1289,6 +1326,7 @@ static void osal_socket_start_wifi_init(void)
     /* Call wifi init once to move once to start it.
      */
     osal_are_sockets_initialized();
+#endif
 }
 
 
@@ -1311,6 +1349,7 @@ static void osal_socket_start_wifi_init(void)
 osalStatus osal_are_sockets_initialized(
     void)
 {
+#if 0
     osalStatus s;
 
     if (!osal_sockets_initialized) return OSAL_STATUS_FAILED;
@@ -1437,6 +1476,8 @@ osalStatus osal_are_sockets_initialized(
     }
 
     return s;
+        #endif
+    return 0;
 }
 
 
@@ -1454,6 +1495,7 @@ osalStatus osal_are_sockets_initialized(
 void osal_socket_on_wifi_connect(
     void)
 {
+        #if 0
     osalSocket *mysocket;
     os_int i, ix;
 
@@ -1490,6 +1532,7 @@ void osal_socket_on_wifi_connect(
                 break;
         }
     }
+        #endif
 }
 
 
@@ -1507,6 +1550,7 @@ void osal_socket_on_wifi_connect(
 void osal_socket_on_wifi_disconnect(
     void)
 {
+        #if 0
     osalSocket *mysocket;
     os_int i, ix;
 
@@ -1535,6 +1579,7 @@ void osal_socket_on_wifi_disconnect(
                 break;
         }
     }
+        #endif
 }
 
 
@@ -1553,11 +1598,13 @@ void osal_socket_on_wifi_disconnect(
 void osal_socket_shutdown(
     void)
 {
+        #if 0
     if (osal_sockets_initialized)
     {
         WiFi.disconnect();
         osal_sockets_initialized = OS_FALSE;
     }
+        #endif
 }
 
 

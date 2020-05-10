@@ -39,16 +39,12 @@
 #define OSAL_SUPPORT_WIFI_MULTI 0
 
 #include <Arduino.h>
-#include <WiFi.h>
+#include <WiFi101.h>
 
 #if OSAL_SUPPORT_WIFI_MULTI
 #include <WiFiMulti.h>
 WiFiMulti wifiMulti;
 #endif
-
-#include <esp_pm.h>
-#include <esp_wifi.h>
-#include <esp_wifi_types.h>
 
 /* Global network adapter and wifi info
  */
@@ -125,6 +121,7 @@ static void osal_arduino_ip_from_str(
     IPAddress& ip,
     const os_char *str)
 {
+#if 0
     os_uchar buf[4];
     os_short i;
 
@@ -132,6 +129,7 @@ static void osal_arduino_ip_from_str(
     {
         for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
     }
+#endif
 }
 
 
@@ -173,6 +171,7 @@ void osal_socket_initialize(
     osalWifiNetwork *wifi,
     os_int n_wifi)
 {
+#if 0
     os_int i;
 
     if (nic == OS_NULL && n_nics < 1)
@@ -243,6 +242,7 @@ void osal_socket_initialize(
     /* Call wifi init once to move once to start it.
      */
     osal_are_sockets_initialized();
+#endif
 }
 
 
@@ -265,6 +265,7 @@ void osal_socket_initialize(
 osalStatus osal_are_sockets_initialized(
     void)
 {
+#if 0
     osalStatus s;
     os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
     os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
@@ -444,6 +445,8 @@ osal_debug_error("HERE 2");
     }
 
     return s;
+#endif
+    return 0;
 }
 
 

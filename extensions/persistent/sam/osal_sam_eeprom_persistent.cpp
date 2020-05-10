@@ -96,6 +96,7 @@ static void os_persistent_move(
 void os_persistent_initialze(
     osPersistentParams *prm)
 {
+#if 0
     os_ushort checksum;
     os_char buf[OSAL_NBUF_SZ];
     os_memsz min_eeprom_sz = MY_EEPROM_MIN_SIZE;
@@ -137,6 +138,7 @@ void os_persistent_initialze(
     if (checksum == hdr.checksum && hdr.initialized == MY_HEADER_INITIALIZED) return;
 
     os_memclear(&hdr, sizeof(hdr));
+#endif
 }
 
 
@@ -185,6 +187,7 @@ osalStatus os_persistent_get_ptr(
     os_memsz *block_sz,
     os_int flags)
 {
+#if 0
 #if EOSAL_RELAX_SECURITY == 0
     /* Reading or writing seacred block requires secret flag. When this function
        is called for data transfer, there is no secure flag and thus secret block
@@ -197,6 +200,7 @@ osalStatus os_persistent_get_ptr(
     }
 #endif
 
+#endif
     return OSAL_STATUS_NOT_SUPPORTED;
 }
 
@@ -222,6 +226,7 @@ osPersistentHandle *os_persistent_open(
     os_memsz *block_sz,
     os_int flags)
 {
+#if 0
     myEEPROMBlock *block;
     os_ushort first_free, pos, cscalc, n, nnow, p;
     os_char tmp[64];
@@ -313,6 +318,8 @@ osPersistentHandle *os_persistent_open(
     }
 
     return (osPersistentHandle*)block;
+   #endif
+    return 0;
 }
 
 
@@ -334,6 +341,7 @@ void os_persistent_close(
     osPersistentHandle *handle,
     os_int flags)
 {
+#if 0
     myEEPROMBlock *block;
     block = (myEEPROMBlock*)handle;
 
@@ -341,6 +349,7 @@ void os_persistent_close(
     {
         os_persistent_commit();
     }
+#endif
 }
 
 
@@ -366,6 +375,7 @@ os_memsz os_persistent_read(
     os_char *buf,
     os_memsz buf_sz)
 {
+#if 0
     os_ushort n;
     myEEPROMBlock *block;
     block = (myEEPROMBlock*)handle;
@@ -380,6 +390,7 @@ os_memsz os_persistent_read(
         return n;
     }
 
+#endif
     return -1;
 }
 
@@ -405,6 +416,7 @@ osalStatus os_persistent_write(
     const os_char *buf,
     os_memsz buf_sz)
 {
+#if 0
     myEEPROMBlock *block;
     block = (myEEPROMBlock*)handle;
 
@@ -419,6 +431,7 @@ osalStatus os_persistent_write(
         return OSAL_SUCCESS;
     }
 
+#endif
     return OSAL_STATUS_FAILED;
 }
 
@@ -440,6 +453,7 @@ osalStatus os_persistent_write(
 static osalStatus os_persistent_commit(
     void)
 {
+#if 0
     if (!hdr.touched || !os_persistent_lib_initialized) return OSAL_SUCCESS;
     hdr.checksum = os_checksum((os_char*)hdr.blk, OS_N_PBNR * sizeof(myEEPROMBlock), OS_NULL);
     hdr.initialized = MY_HEADER_INITIALIZED;
@@ -450,6 +464,8 @@ static osalStatus os_persistent_commit(
     EEPROM.commit();
 
     osal_control_interrupts(OS_TRUE);
+
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -471,6 +487,7 @@ static osalStatus os_persistent_commit(
 static osalStatus os_persistent_delete_block(
     osPersistentBlockNr block_nr)
 {
+#if 0
     os_ushort saved_pos, saved_sz, sz, pos, utmp;
     os_ushort bpos[OS_N_PBNR], bsz[OS_N_PBNR], bnr[OS_N_PBNR];
     int i, j, n;
@@ -533,6 +550,8 @@ static osalStatus os_persistent_delete_block(
      */
     os_memclear(hdr.blk + block_nr, sizeof(myEEPROMBlock));
     hdr.touched = 1;
+
+#endif
     return OSAL_SUCCESS;
 }
 
@@ -558,6 +577,7 @@ static void os_persistent_read_internal(
     os_ushort addr,
     os_ushort n)
 {
+#if 0
     while (n--)
     {
         if (addr >= eeprom_sz)
@@ -568,6 +588,7 @@ static void os_persistent_read_internal(
 
         *(buf++) = EEPROM.read(addr++);
     }
+#endif
 }
 
 
@@ -591,6 +612,7 @@ static void os_persistent_write_internal(
     os_ushort addr,
     os_ushort n)
 {
+#if 0
     while (n--)
     {
         if (addr >= eeprom_sz)
@@ -601,6 +623,7 @@ static void os_persistent_write_internal(
 
         EEPROM.write(addr++, *(buf++));
     }
+#endif
 }
 
 
@@ -624,6 +647,7 @@ static void os_persistent_move(
     os_ushort srcaddr,
     os_ushort n)
 {
+#if 0
     os_uchar c;
 
     osal_control_interrupts(OS_FALSE);
@@ -635,6 +659,7 @@ static void os_persistent_move(
     }
 
     osal_control_interrupts(OS_TRUE);
+#endif
 }
 
 #endif
