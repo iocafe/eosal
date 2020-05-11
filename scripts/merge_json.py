@@ -4,14 +4,37 @@ import json
 import os
 import sys
 
-def merge(merged, dict):
-    for item in dict.items():
+def merge(merged, di):
+    for item in di.items():
         key = item[0]
         value = item[1]
         mitem = merged.get(key, None)
         if mitem == None:
             if value != None:
                 merged[key] = value
+
+
+        else:
+            if isinstance(mitem, list): 
+                for item in value:
+                    mergelist(mitem, item)
+
+            elif isinstance(mitem, dict):
+                merge(mitem, value)                    
+
+def mergelist(mlist, item):
+    name = item.get('name', None)
+    if name == None:
+        print('List item without name?')
+        return
+
+    for m in mlist:
+        mname = m.get('name', None)
+        if mname == name:
+            merge(m, item)
+            return
+
+    mlist.append(item)
 
 def process_source_file(merged, path):
     read_file = open(path, "r")
@@ -22,7 +45,6 @@ def process_source_file(merged, path):
         print ("Opening file " + path + " failed")
 
 def mymain():
-    # Get command line arguments
     n = len(sys.argv)
     sourcefiles = []
     outpath = None
@@ -40,14 +62,27 @@ def mymain():
 
     if len(sourcefiles) < 1:
         print("No source files")
-#        exit()
+        exit()
 
-    sourcefiles.append('/coderoot/iocom/examples/candy/config/parameters/parameters.json')
-    sourcefiles.append('/coderoot/iocom/config/parameters/wifi-dhcp-device-network-paameters.json')
+#        sourcefiles.append('/coderoot/iocom/examples/candy/config/parameters/parameters.json')
+#        sourcefiles.append('/coderoot/iocom/config/parameters/wifi-dhcp-device-network-paameters.json')
 
+#        sourcefiles.append('/coderoot/iocom/examples/candy/config/signals/signals.json')
+#        sourcefiles.append('/coderoot/iocom/config/signals/device-conf-signals.json')
+#        sourcefiles.append('/coderoot/iocom/config/signals/camera-buf8k-signals.json')
+
+    # If output path is not given as argument. 
     if outpath is None:
-        filename, file_extension = os.path.splitext(sourcefiles[0])
-        outpath = filename + '-merged' + file_extension
+        path, file_extension = os.path.splitext(sourcefiles[0])
+        dir_path, file_name =  os.path.split(path)
+        outpath = dir_path + '/intermediate/' + file_name + '-merged' + file_extension
+
+    # Make sure that "intermediate" directory exists. 
+    dir_path, file_name =  os.path.split(outpath)
+    try:
+        os.makedirs(dir_path)
+    except FileExistsError:
+        pass        
 
     print("Writing file " + outpath)
 
@@ -56,7 +91,6 @@ def mymain():
         process_source_file(merged, path)
 
     with open(outpath, "w") as outfile: 
-        json.dump(merged, outfile) 
-
+        json.dump(merged, outfile, indent=4) 
 
 mymain()
