@@ -1,4 +1,4 @@
-# bin-to-c.py 8.1.2020/pekka
+# bin_to_c.py 8.1.2020/pekka
 # Converts a binary file to C character array.
 import json
 import os
@@ -8,8 +8,8 @@ def start_c_files():
     global cfile, hfile, cfilepath, hfilepath
     cfile = open(cfilepath, "w")
     hfile = open(hfilepath, "w")
-    cfile.write('/* This file is gerated by bin-to-c.py script, do not modify. */\n')
-    hfile.write('/* This file is gerated by bin-to-c.py script, do not modify. */\n')
+    cfile.write('/* This file is gerated by bin_to_c.py script, do not modify. */\n')
+    hfile.write('/* This file is gerated by bin_to_c.py script, do not modify. */\n')
     hfile.write('OSAL_C_HEADER_BEGINS\n\n')
 
 def finish_c_files():
@@ -26,8 +26,8 @@ def process_source_file(path, variablename):
 
         l = len(file_content)
 
-        cfile.write('const os_char ' + variablename + '[' + str(l) + '] = {\n')
-        hfile.write('extern const os_char ' + variablename + '[' + str(l) + '];\n')
+        cfile.write('OS_FLASH_MEM os_char ' + variablename + '[' + str(l) + '] = {\n')
+        hfile.write('extern OS_FLASH_MEM_H os_char ' + variablename + '[' + str(l) + '];\n')
 
         columns = 0
         for x in range(0, l):
@@ -41,7 +41,7 @@ def process_source_file(path, variablename):
             columns = columns + 1
 
         cfile.write('};\n')
-            
+
 def mymain():
     global cfilepath, hfilepath
 
@@ -52,26 +52,23 @@ def mymain():
     variablename = "noame"
     expectpath = True
     for i in range(1, n):
-        if sys.argv[i][0] is "-":
-            if sys.argv[i][1] is "o":
+        if sys.argv[i][0] == "-":
+            if sys.argv[i][1] == "o":
                 outpath = sys.argv[i+1]
                 expectpath = False
 
-            if sys.argv[i][1] is "v":
+            if sys.argv[i][1] == "v":
                 variablename = sys.argv[i+1]
                 expectpath = False
 
         else:
             if expectpath:
                 sourcefiles.append(sys.argv[i])
-            expectpath = True    
+            expectpath = True
 
     if len(sourcefiles) < 1:
         print("No source files")
         exit()
-
-#    sourcefiles.append('/coderoot/retiredcode/ioc_memory_block.hold')
-#    outpath = '/tmp/aaaa.c'
 
     if outpath is None:
         outpath = sourcefiles[0]

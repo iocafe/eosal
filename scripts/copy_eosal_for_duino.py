@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# copy-eosal-for-duino.py 21.4.2020/pekka
+# copy_eosal_for_duino.py 21.4.2020/pekka
 # Copies eosal library files needed for PlatformIO Arduino build
-# into /coderoot/lib/arduino-platformio/eosal directory. 
+# into /coderoot/lib/arduino-platformio/eosal directory.
 # To make this look like Arduino library all .c and .cpp
 # files are copied to target root folder, and all header
 # files info subfolders.
@@ -35,7 +35,7 @@ def copy_level_3(sourcedir,roottargetdir,targetdir, platforms):
     for f in files:
         p = join(sourcedir, f)
         if isdir(p):
-            if f in platforms:                
+            if f in platforms:
                 copy_level_4(sourcedir + '/' + f, roottargetdir, targetdir + '/' + f)
 
 def copy_level_2(sourcedir,roottargetdir,targetdir, platforms):
@@ -91,9 +91,9 @@ def mymain():
             else:
                 outdir = sys.argv[i];
 
-            expectplatform = True    
+            expectplatform = True
 
     copy_level_1("/coderoot/eosal", outdir, platforms)
 
-# Usage copy-eosal-for-duino.py esp32 -o /coderoot/lib/esp32/eosal
+# Usage copy_eosal_for_duino.py esp32 -o /coderoot/lib/esp32/eosal
 mymain()
