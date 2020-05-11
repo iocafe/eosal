@@ -3,7 +3,6 @@
 import json
 import os
 import sys
-# import re
 
 def merge(merged, dict):
     for item in dict.items():
