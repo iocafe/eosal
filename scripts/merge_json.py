@@ -12,8 +12,6 @@ def merge(merged, di):
         if mitem == None:
             if value != None:
                 merged[key] = value
-
-
         else:
             if isinstance(mitem, list): 
                 for item in value:
