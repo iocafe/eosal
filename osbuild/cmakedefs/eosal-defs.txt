@@ -1,5 +1,5 @@
 # eosal-defs.txt - Set cmake build environment variables common to all projects.
-# 8.1.2020/pekka
+# 12.5.2020/pekka
 
 # ESP32 esp-idf build
 set(SUPPORTED_TARGETS esp32)
@@ -130,7 +130,7 @@ endif()
 # Include paths.
 include_directories("$ENV{E_ROOT}/eosal")
 include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
-include_directories("$ENV{E_ROOT}/${E_PROJECT}")
+# include_directories("$ENV{E_ROOT}/${E_PROJECT}")
 
 # Library path.
 set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_COMPILER}")
