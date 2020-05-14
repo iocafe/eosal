@@ -1622,7 +1622,7 @@ void osal_socket_initialize(
 
     os_memclear(&opt, sizeof(opt));
     opt.thread_name = "lwip_thread";
-    opt.stack_size = 8000;
+    opt.stack_size = OSAL_THREAD_NORMAL_STACK;
     opt.pin_to_core = OS_TRUE;
     opt.pin_to_core_nr = 0;
 

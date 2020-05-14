@@ -19,9 +19,9 @@
   os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
   function.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -91,7 +91,7 @@ static void osal_thread_intermediate_func(
   function call, or by returning from entry point function which will result osal_exit_thread()
   call. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
   entry point function can call osal_thread_set_priority() to set it's own priority.
-  
+
   @param   func Pointer to thread entry point function. See osal_thread_func() for entry point
            function type.
   @param   prm Pointer to parameters (typically pointer to used defined structure) to pass to
@@ -103,22 +103,22 @@ static void osal_thread_intermediate_func(
   @param   opt Pointer to thread options structure, like thread name, stack size, etc.  Can
            be set to OS_NULL to use defaults.
   @param   Flags OSAL_THREAD_ATTACHED or OSAL_THREAD_DETACHED given to osal_thread_create sets is
-		   the newly created thread is to be attached to the thread which created this one.
-		   If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
-		   and must eventually be joined back to it by osal_thread_join() function. In this case
-		   the osal_thread_create() returns thread handle which is used as argument to join and
-		   can be used to to request worker thread to exit by osal_thread_request_exit() call.
-		   If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
-		   created it. The osal_thread_create() returns OS_NULL and join or request exit functions
-		   are not available.
+           the newly created thread is to be attached to the thread which created this one.
+           If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
+           and must eventually be joined back to it by osal_thread_join() function. In this case
+           the osal_thread_create() returns thread handle which is used as argument to join and
+           can be used to to request worker thread to exit by osal_thread_request_exit() call.
+           If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
+           created it. The osal_thread_create() returns OS_NULL and join or request exit functions
+           are not available.
 
   @return  Pointer to thread handle if OSAL_THREAD_ATTACHED flags is given, or OS_NULL otherwise.
 
 ****************************************************************************************************
 */
 osalThread *osal_thread_create(
-	osal_thread_func *func,
-	void *prm,
+    osal_thread_func *func,
+    void *prm,
     osalThreadOptParams *opt,
     os_int flags)
 {
@@ -126,7 +126,7 @@ osalThread *osal_thread_create(
     TaskHandle_t th = OS_NULL;
     osalArduinoThreadHandle *handle = OS_NULL;
     osalThreadPriority priority = OSAL_THREAD_PRIORITY_NORMAL;
-    os_memsz stack_size = 4000;
+    os_memsz stack_size = OSAL_THREAD_NORMAL_STACK;
     os_boolean pin_to_core = OS_FALSE;
     os_short pin_to_core_nr = 0;
     const os_char *thread_name = "osal";
@@ -285,7 +285,7 @@ osal_trace("thread exit");
 ****************************************************************************************************
 */
 void osal_thread_join(
-	osalThread *handle)
+    osalThread *handle)
 {
     osalArduinoThreadHandle *ahandle;
 
