@@ -10,11 +10,17 @@ def start_c_files():
     hfile = open(hfilepath, "w")
     cfile.write('/* This file is gerated by bin_to_c.py script, do not modify. */\n')
     hfile.write('/* This file is gerated by bin_to_c.py script, do not modify. */\n')
+    path, fname = os.path.split(hfilepath)
+    fname, ext = os.path.splitext(fname)
+    macroname = 'IOC_' + fname.upper() + '_INCLUDED'
+    hfile.write('#ifndef ' + macroname + '\n')
+    hfile.write('#define ' + macroname + '\n')
     hfile.write('OSAL_C_HEADER_BEGINS\n\n')
 
 def finish_c_files():
     global cfile, hfile
     hfile.write('\nOSAL_C_HEADER_ENDS\n')
+    hfile.write('#endif\n')
     cfile.close()
     hfile.close()
 
