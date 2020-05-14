@@ -11,10 +11,10 @@
   - Block in select, print asterix '*' when select is unblocked.
   - Print characters received from the socket to console.
   - Write to socket at key press (trough custom event).
-  
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -63,7 +63,7 @@ MyThreadParams;
   The worker thread function sents custom event to allow blocked osal_stream_select() to continue.
 
   @param   prm Pointer to worker thread parameter structure.
-  @param   done Event to set when worker thread has started. Often used to indicate that 
+  @param   done Event to set when worker thread has started. Often used to indicate that
            worker thread has made a local copy of parameters.
 
   @return  None.
@@ -71,7 +71,7 @@ MyThreadParams;
 ****************************************************************************************************
 */
 static void mythread_func(
-	void *prm,
+    void *prm,
     osalEvent done)
 {
     MyThreadParams *mythreadprm;
@@ -79,8 +79,7 @@ static void mythread_func(
     osalStatus status;
     osalSelectData selectdata;
     os_char buf[64];
-    os_memsz n_read, n_written;
-    const char keypressedtext[] = "<client-key>";
+    os_memsz n_read;
 
     mythreadprm = (MyThreadParams*)prm;
     osal_event_set(done);
@@ -118,56 +117,20 @@ static void mythread_func(
             }
         }
 
-        /* Block here until something needs attention. 
+        /* Block here until something needs attention.
          */
         status = osal_stream_select(&handle, 1, mythreadprm->myevent,
             &selectdata, 0, OSAL_STREAM_DEFAULT);
 
         if (status)
         {
-	        osal_debug_error("osal_stream_select failed\n");
+            osal_debug_error("osal_stream_select failed\n");
+            break;
         }
 
         /* So asterix to indicate that the thread was unblocked.
          */
         osal_console_write("*");
-
-        /* Handle custom event set by the key press.
-         */
-        if (selectdata.eventflags & OSAL_STREAM_CUSTOM_EVENT)
-        {
-            osal_trace("custom event");
-
-            if (osal_stream_write(handle, keypressedtext,
-                os_strlen(keypressedtext)-1, &n_written, OSAL_STREAM_DEFAULT))
-            {
-                osal_debug_error("write: connection broken");
-                osal_stream_close(handle, OSAL_STREAM_DEFAULT);
-                handle = OS_NULL;
-            }
-        }
-
-        /* Handle close event. This should not be really necessary. If socket is broken
-           the osal_stream_read() will return an error.
-         */
-        if (selectdata.eventflags & OSAL_STREAM_CLOSE_EVENT)
-        {
-            osal_trace("close event");
-            break;
-        }
-
-        /* Handle the connect event. Also strictly not necessary. If the socket is still
-           connecting, osal_stream_write() should return with nwritten = 0.
-         */
-        if (selectdata.eventflags & OSAL_STREAM_CONNECT_EVENT)
-        {
-            osal_trace("connect event");
-
-            if (selectdata.errorcode)
-            {
-                osal_debug_error("connect failed\n");
-            }
-        }
 
         /* Print data received from the stream to console.
          */
@@ -183,7 +146,7 @@ static void mythread_func(
             osal_console_write(buf);
         }
 
-        /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
+        /* Call flush to move data. This is necessary even nothing was written just now. Some stream
            implementetios buffers data internally and this moves buffered data.
          */
         if (osal_stream_flush(handle, OSAL_STREAM_DEFAULT))
