@@ -13,12 +13,12 @@ def merge(merged, di):
             if value != None:
                 merged[key] = value
         else:
-            if isinstance(mitem, list): 
+            if isinstance(mitem, list):
                 for item in value:
                     mergelist(mitem, item)
 
             elif isinstance(mitem, dict):
-                merge(mitem, value)                    
+                merge(mitem, value)
 
 def mergelist(mlist, item):
     name = item.get('name', None)
@@ -63,24 +63,24 @@ def mymain():
         exit()
 
 #        sourcefiles.append('/coderoot/iocom/examples/candy/config/parameters/parameters.json')
-#        sourcefiles.append('/coderoot/iocom/config/parameters/wifi-dhcp-device-network-paameters.json')
+#        sourcefiles.append('/coderoot/iocom/config/parameters/wifi_dhcp_device_network_parameters.json')
 
 #        sourcefiles.append('/coderoot/iocom/examples/candy/config/signals/signals.json')
-#        sourcefiles.append('/coderoot/iocom/config/signals/device-conf-signals.json')
-#        sourcefiles.append('/coderoot/iocom/config/signals/camera-buf8k-signals.json')
+#        sourcefiles.append('/coderoot/iocom/config/signals/device_conf_signals.json')
+#        sourcefiles.append('/coderoot/iocom/config/signals/camera_buf8k_signals.json')
 
-    # If output path is not given as argument. 
+    # If output path is not given as argument.
     if outpath is None:
         path, file_extension = os.path.splitext(sourcefiles[0])
         dir_path, file_name =  os.path.split(path)
         outpath = dir_path + '/intermediate/' + file_name + '-merged' + file_extension
 
-    # Make sure that "intermediate" directory exists. 
+    # Make sure that "intermediate" directory exists.
     dir_path, file_name =  os.path.split(outpath)
     try:
         os.makedirs(dir_path)
     except FileExistsError:
-        pass        
+        pass
 
     print("Writing file " + outpath)
 
@@ -88,7 +88,7 @@ def mymain():
     for path in sourcefiles:
         process_source_file(merged, path)
 
-    with open(outpath, "w") as outfile: 
-        json.dump(merged, outfile, indent=4) 
+    with open(outpath, "w") as outfile:
+        json.dump(merged, outfile, indent=4)
 
 mymain()
