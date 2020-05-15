@@ -1035,11 +1035,6 @@ osalStream osal_socket_accept(
                 goto getout;
             }
         }
-        osal_socket_blocking_mode(new_handle, OS_FALSE);
-        if (flags & OSAL_STREAM_TCP_NODELAY) {
-            osal_socket_set_nodelay(new_handle, OS_TRUE);
-            osal_socket_setup_ring_buffer(newsocket);
-        }
 
         /* Allocate and clear socket structure.
          */
@@ -1051,6 +1046,12 @@ osalStream osal_socket_accept(
             return OS_NULL;
         }
         os_memclear(newsocket, sizeof(osalSocket));
+
+        osal_socket_blocking_mode(new_handle, OS_FALSE);
+        if (flags & OSAL_STREAM_TCP_NODELAY) {
+            osal_socket_set_nodelay(new_handle, OS_TRUE);
+            osal_socket_setup_ring_buffer(newsocket);
+        }
 
         /* Save socket handle and open flags.
          */
