@@ -139,15 +139,3 @@ osalBitmapFormat;
  */
 #define OSAL_BGR_COLORS 0
 
-/** Default task stack sizes in bytes. These can be overridden for operating system or for
-    a spacific build.
- */
-#ifndef OSAL_THREAD_SMALL_STACK
-#define OSAL_THREAD_SMALL_STACK 4096
-#endif
-#ifndef OSAL_THREAD_NORMAL_STACK
-#define OSAL_THREAD_NORMAL_STACK 8192
-#endif
-#ifndef OSAL_THREAD_LARGE_STACK
-#define OSAL_THREAD_LARGE_STACK 16384
-#endif
