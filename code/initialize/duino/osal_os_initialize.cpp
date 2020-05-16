@@ -92,8 +92,9 @@ void osal_reboot(
 {
 #if OSAL_INTERRUPT_LIST_SUPPORT
     osal_control_interrupts(OS_FALSE);
-#endif
     os_sleep(200);
+#endif
+
 
 #ifdef OSAL_NVIC_RESET
     NVIC_SystemReset();
