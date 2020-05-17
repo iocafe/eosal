@@ -1011,9 +1011,7 @@ static osalStatus osal_report_load_error(
 {
     os_char text[128], nbuf[OSAL_NBUF_SZ];
 
-    os_strncpy(text, s == OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE
-        ? "loading certificate or key "
-        : "parsing certificate or key ", sizeof(text));
+    os_strncpy(text, "certificate or key ", sizeof(text));
 
     if (block_nr)
     {
@@ -1026,13 +1024,13 @@ static osalStatus osal_report_load_error(
         os_strncat(text, "from file ", sizeof(text));
         os_strncat(text, file_name, sizeof(text));
     }
-    os_strncat(text, " failed.", sizeof(text));
-
     /* If file_name is NULL pointer, this is not even in configuration:
        Ignore load errors quietly.
      */
     if (s != OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE || file_name != OS_NULL)
     {
+        os_strncpy(text, s == OSAL_STATUS_CERT_OR_KEY_NOT_AVAILABLE
+          ? ": reading failed" : ": parsing failed", sizeof(text));
         osal_error(OSAL_WARNING, eosal_mod, s, text);
         osal_set_network_state_int(OSAL_NS_SECURITY_CONF_ERROR, 0, s);
     }
@@ -1040,7 +1038,8 @@ static osalStatus osal_report_load_error(
     /* If we are tracing, still generate trace mark */
     else
     {
-        osal_trace2_str("quietly ignored: ", text);
+        os_strncat(text, " not loaded.", sizeof(text));
+        osal_info(eosal_mod, s, text);
     }
 #endif
 
