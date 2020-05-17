@@ -36,7 +36,7 @@
 
 /** Do we include code to automatically select one from known access points. Define 1 or 0.
  */
-#define OSAL_SUPPORT_WIFI_MULTI 0
+#define OSAL_SUPPORT_WIFI_MULTI 1
 
 #include <Arduino.h>
 #include <WiFi.h>
