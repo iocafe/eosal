@@ -1,0 +1,101 @@
+{
+  "table": [
+  {
+    "name": "history",
+    "use": "timebase",
+    "title": "My measurements over time",
+    "subtitle": "candy5",
+    "align" : "right",
+    "digs" : 1,
+    "select": [
+        {
+          "name": "timestamp", 
+          "min" : 121000,
+          "max" : 173000,
+          "extra" : 0
+        },
+        {
+          "name": "input", 
+          "isoneof": [1,4,55]
+        }
+    ],
+    "page" : "day",
+    "average" : "none",
+    
+    "columns": [
+        {
+          "name": "timestamp", 
+          "group": "columnhdr",
+          "type" : "time",
+          "align" : "left",
+          "attr": "char",
+          "width" : 10
+        },
+        {
+          "name": "input", 
+          "type" : "int",
+          "attr": "char",
+          "width" : 3
+        },
+        {
+          "name": "temperature", 
+          "status" : "ok",
+          "type" : "time",
+          "digs" : 3,
+          "align" : "left",
+          "attr": "char",
+          "width" : 6
+        },
+        {
+          "name": "humidity", 
+          "status" : "ok",
+          "type" : "time",
+          "align" : "left",
+          "attr": "char",
+          "group": "Watery Stuff"
+        },
+        {
+          "name": "water", 
+          "unit": "mg/m3", 
+          "attr": "char",
+          "group": "Watery Stuff"
+        }
+    ],
+    
+    "rows": [
+      {
+        "status" : "warning",
+        "columns": [
+          {
+            "name": "timestamp", 
+            "value" : 131000
+          },
+          {
+            "name": "humidity", 
+            "value" : 33,
+            "status" : "error"
+          }
+        ]
+      },
+      {
+        "status" : "warning",
+        "columns": [
+          {
+            "name": "timestamp", 
+            "value" : 132000
+          },
+          {
+            "name": "humidity", 
+            "value" : 53
+          },
+          {
+            "name": "water", 
+            "value" : 12.1
+          }
+        ]
+      }
+    ]
+  }
+  ]
+}
+
