@@ -1337,8 +1337,7 @@ static void osal_socket_start_wifi_init(void)
   @anchor osal_are_sockets_initialized
 
   Called to check if WiFi initialization has been completed and if so, the function initializes
-  has been initialized and connected. Once connection is detected,
-  the LWIP library is initialized.
+  has been initialized and connected.
 
   @return  OSAL_SUCCESS if we are connected to a wifi network.
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
@@ -1349,7 +1348,6 @@ static void osal_socket_start_wifi_init(void)
 osalStatus osal_are_sockets_initialized(
     void)
 {
-#if 0
     osalStatus s;
 
     if (!osal_sockets_initialized) return OSAL_STATUS_FAILED;
@@ -1370,7 +1368,6 @@ osalStatus osal_are_sockets_initialized(
             osal_wifi_boot_timer = osal_wifi_step_timer;
             osal_wifi_init_step = OSAL_WIFI_INIT_STEP2;
 
-            esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
             break;
 
         case OSAL_WIFI_INIT_STEP2:
@@ -1391,11 +1388,8 @@ osalStatus osal_are_sockets_initialized(
 
                         osal_arduino_ip_from_str(ip_address, osal_wifi_nic.ip_address);
 
-                        if (!WiFi.config(ip_address, osal_wifi_nic.dns_address,
-                            osal_wifi_nic.gateway_address, osal_wifi_nic.subnet_mask)
-                        {
-                            osal_debug_error("Static IP configuration failed");
-                        }
+                        WiFi.config(ip_address, osal_wifi_nic.dns_address,
+                            osal_wifi_nic.gateway_address, osal_wifi_nic.subnet_mask);
                     }
 
                     WiFi.begin(osal_wifi_nic.wifi_net_name, osal_wifi_nic.wifi_net_password);
@@ -1452,7 +1446,7 @@ osalStatus osal_are_sockets_initialized(
             if (osal_wifi_connected)
             {
                 s = OSAL_SUCCESS;
-                osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
+                osal_trace("Wifi network connected");
                 osal_socket_on_wifi_connect();
 
 #if OSAL_TRACE
@@ -1476,8 +1470,6 @@ osalStatus osal_are_sockets_initialized(
     }
 
     return s;
-        #endif
-    return 0;
 }
 
 
