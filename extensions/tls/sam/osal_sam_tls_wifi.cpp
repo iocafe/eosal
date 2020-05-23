@@ -21,6 +21,7 @@
 
 #include <Arduino.h>
 #include "WiFi101.h"
+#include <WiFiSSLClient.h>
 /*#include <WiFiClientSecure.h>
 */
 
@@ -214,6 +215,7 @@ class osalSocket
      */
 /*    WiFiClientSecure client;
 */
+    WiFiSSLClient client;
 
     /** Nonzero if socket is used.
      */
@@ -282,7 +284,6 @@ osalStream osal_tls_open(
     osalStatus *status,
     os_int flags)
 {
-#if 0
     os_int port_nr, i;
     os_char host[OSAL_HOST_BUF_SZ];
     os_char addr[16], nbuf[OSAL_NBUF_SZ];
@@ -369,7 +370,6 @@ getout:
      */
     if (status) *status = rval;
 
-#endif
     return OS_NULL;
 }
 
@@ -394,7 +394,7 @@ void osal_tls_close(
     osalStream stream,
     os_int flags)
 {
-#if 0
+//#if 0
     osalSocket *w;
 
     if (stream == OS_NULL) return;
@@ -407,7 +407,7 @@ void osal_tls_close(
 
     w->client.stop();
     w->used = OS_FALSE;
-#endif
+//#endif
 }
 
 
@@ -501,7 +501,7 @@ osalStatus osal_tls_write(
     os_memsz *n_written,
     os_int flags)
 {
-#if 0
+//#if 0
     osalSocket *w;
     os_int bytes;
 
@@ -530,7 +530,7 @@ osalStatus osal_tls_write(
     if (bytes > 0) osal_trace("Data written to socket");
 #endif
 
-#endif
+//#endif
     return OSAL_SUCCESS;
 }
 
@@ -564,7 +564,7 @@ osalStatus osal_tls_read(
     os_memsz *n_read,
     os_int flags)
 {
-#if 0
+//#if 0
     osalSocket *w;
     os_int bytes;
 
@@ -602,7 +602,7 @@ osalStatus osal_tls_read(
 
     *n_read = bytes;
 
-#endif
+//#endif
     return OSAL_SUCCESS;
 }
 
@@ -712,7 +712,7 @@ void osal_tls_initialize(
     os_int n_wifi,
     osalSecurityConfig *prm)
 {
-#if 0
+//#if 0
     os_int i;
 
     /* Clear Get parameters. Use defaults if not set.
@@ -722,7 +722,7 @@ void osal_tls_initialize(
         osal_tls[i].used = OS_FALSE;
     }
 
-    osal_socket_initialize(nic, n_nics);
+    osal_socket_initialize(nic, n_nics, wifi, n_wifi);
 
 
     osal_tls_initialized = OS_TRUE;
@@ -731,7 +731,7 @@ void osal_tls_initialize(
      * the code here to allow IO sequence, etc to proceed even without wifi.
      */
     osal_tls_initialized = OS_TRUE;
-#endif
+//#endif
 }
 
 
@@ -750,13 +750,13 @@ void osal_tls_initialize(
 void osal_tls_shutdown(
     void)
 {
-#if 0
+//#if 0
     if (osal_tls_initialized)
     {
         osal_socket_shutdown();
         osal_tls_initialized = OS_FALSE;
     }
-#endif
+//#endif
 }
 
 

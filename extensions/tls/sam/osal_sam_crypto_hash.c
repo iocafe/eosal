@@ -22,7 +22,7 @@
 #if OSAL_TLS_SUPPORT==OSAL_TLS_SAM_WRAPPER
 
 /*#include <openssl/sha.h>
-  #include <openssl/crypto.h>
+#include <openssl/crypto.h>
 */
 
 /**
