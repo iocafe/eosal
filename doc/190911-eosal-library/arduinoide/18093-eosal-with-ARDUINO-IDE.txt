@@ -1,9 +1,0 @@
-Compiling and linking with eosal and iocom from arduino ide
-notes 13.9.2018/pekka
-
-Include paths (Teensy)
-I modified /home/pekka/arduino-1.8.5/hardware/teensy/avr/boards.txt by adding "/coderoot" to gcc include path and E_OS_arduino define, modified lines below:
-
-teensy36.build.flags.cpp=-fno-exceptions -felide-constructors -std=gnu++14 -Wno-error=narrowing -fno-rtti -I/coderoot -DE_OS_arduino
-teensy36.build.flags.c=-I/coderoot -DE_OS_arduino
-
