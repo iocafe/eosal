@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <eosalx.h>
+#if OSAL_MULTITHREAD_SUPPORT
 #include <FreeRTOS.h>
+#endif
 
 /*
   ecollection_platformio.ino

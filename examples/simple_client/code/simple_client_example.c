@@ -33,7 +33,7 @@
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
    One of EXAMPLE_USE_TCP_SOCKET, EXAMPLE_USE_TLS_SOCKET or EXAMPLE_USE_SERIAL_PORT.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
 
 /* Modify connection parameters here: These apply to different communication types
    EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET sets TCP/IP address to connect to.

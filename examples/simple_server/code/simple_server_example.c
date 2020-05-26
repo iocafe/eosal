@@ -33,7 +33,7 @@
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
  * EXAMPLE_USE_TCP_SOCKET, EXAMPLE_USE_TLS_SOCKET or EXAMPLE_USE_SERIAL_PORT
  */
-#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
 
 /* EXAMPLE_USE_SERIAL_PORT, define EXAMPLE_SERIAL_PORT: Serial port can be selected using Windows
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific 
