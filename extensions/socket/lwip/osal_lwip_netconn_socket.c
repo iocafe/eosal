@@ -859,7 +859,7 @@ static void osal_socket_lwip_thread(
 
 
   Failed socket close: The osal_lwip_close_socket() function can fail if we are out of memory.
-  In this case we will try to close it repeatedly again until successfull. To do this we
+  In this case we will try to close it repeatedly again until successful. To do this we
   leave close command active and retrigger the lwip thread event.
 
   @param   w Socket structure pointer.
@@ -953,7 +953,7 @@ static osalStatus osal_lwip_connect_socket(
     }
     tcp_arg(tpcb, w);
 
-    /* Initiate connecting socket, sets callback for successfull connect.
+    /* Initiate connecting socket, sets callback for successful connect.
      */
     err = tcp_connect(tpcb, &ip4, (u16_t)w->port_nr, osal_lwip_connect_callback);
     if (err != ERR_OK)
@@ -1055,7 +1055,7 @@ static void osal_lwip_error_callback(
 
   @param   w Socket structure pointer.
   @return  OSAL_SUCCESS if connecti was successfully closed. Other return values indicate that
-           closing socket failed and needs to be retried until successfull.
+           closing socket failed and needs to be retried until successful.
 
 ****************************************************************************************************
 */

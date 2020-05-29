@@ -61,7 +61,7 @@ static void osal_jpeg_disaster_exit(
            stream.
   @param   dst_buf_sz Destination buffer size, if using allocated buffer. Ignored if
            compressing to a stream.
-  @param   dst_nbytes Pointer where to store resulting JPEG size upon successfull compression.
+  @param   dst_nbytes Pointer where to store resulting JPEG size upon successful compression.
   @param   flags Bit fields, set OSAL_JPEG_DEFAULT (0) for default operation. Set
            OSAL_JPEG_SELECT_ALPHA_CHANNEL bit to save alpha channel of RGGB132
            bitmap (not yet implemented).

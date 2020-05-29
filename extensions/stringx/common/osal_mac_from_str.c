@@ -27,7 +27,7 @@
 
   @param   mac Pointer to byte array into which to store the MAC, 6 bytes.
   @param   str Input, MAC address as string.
-  @return  OSAL_SUCCESS if successfull, other return values indicate that the MAC address
+  @return  OSAL_SUCCESS if successful, other return values indicate that the MAC address
            string count not be interprented.
 
 ****************************************************************************************************

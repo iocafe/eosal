@@ -177,7 +177,7 @@ void os_persistent_shutdown(
   @param   block_sz Block size in bytes.
   @param   flags OSAL_PERSISTENT_SECRET flag enables accessing the secret. It must be only
            given in safe context.
-  @return  OSAL_SUCCESS of successfull. Value OSAL_STATUS_NOT_SUPPORTED indicates that
+  @return  OSAL_SUCCESS of successful. Value OSAL_STATUS_NOT_SUPPORTED indicates that
            pointer cannot be aquired on this platform and os_persistent_load() must be
            called instead. Other values indicate an error.
 

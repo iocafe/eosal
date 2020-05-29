@@ -25,7 +25,7 @@
 
   @param  path Path to file or directory.
   @param  filestat Strucure to fill in with file stat information.
-  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
+  @return If successful, the function returns OSAL_SUCCESS(0). Other return values
           indicate an error.
 
 ****************************************************************************************************

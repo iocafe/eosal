@@ -85,7 +85,7 @@ const os_char *osal_str_get_next(
   @param   list_str Pointer to list string to search. If the str is OS_NULL the function
            will return pointer to null character.
 
-  @return  OSAL_SUCCESS if successfull. OSAL_STATUS_FAILED if there are no more items in list.
+  @return  OSAL_SUCCESS if successful. OSAL_STATUS_FAILED if there are no more items in list.
 
 ****************************************************************************************************
 */

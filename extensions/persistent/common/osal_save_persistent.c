@@ -27,7 +27,7 @@
   @param   block Pointer to block (structure) to save.
   @param   block_sz Block size in bytes.
   @param   delete_block OS_TRUE to write a block with empty content.
-  @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
+  @return  If successful, the function return OSAL_SUCCESS. Other values indicate an error.
 
 ****************************************************************************************************
 */

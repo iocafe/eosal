@@ -1436,7 +1436,7 @@ getout:
            it should not be relied on.
   @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used (infinite).
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
-  @return  If successfull, the function returns OSAL_SUCCESS (0) and the selectdata tells which
+  @return  If successful, the function returns OSAL_SUCCESS (0) and the selectdata tells which
            socket or event triggered the thread to continue. Other return values indicate an error.
            See @ref osalStatus "OSAL function return codes" for full list.
 

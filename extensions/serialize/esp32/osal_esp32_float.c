@@ -30,7 +30,7 @@
   @param  m Mantissa.
   @param  e Exponent.
 
-  @return OS_TRUE if successfull, OS_FALSE if overflow or another conversion error.
+  @return OS_TRUE if successful, OS_FALSE if overflow or another conversion error.
 
 ****************************************************************************************************
 */
@@ -189,7 +189,7 @@ void osal_double2ints(
   @param  m Mantissa.
   @param  e Exponent.
 
-  @return OS_TRUE if successfull, OS_FALSE if overflow or another conversion error.
+  @return OS_TRUE if successful, OS_FALSE if overflow or another conversion error.
 
 ****************************************************************************************************
 */

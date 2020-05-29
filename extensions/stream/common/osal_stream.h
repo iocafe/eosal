@@ -143,7 +143,7 @@ typedef struct osalStreamHeader *osalStream;
 #define OSAL_STREAM_INTERRUPT 0x10000
 
 /** In special case (streaming over iocom memory block) this value fill tell
-    stream that transfer is written completed successfull and final handshake
+    stream that transfer is written completed successful and final handshake
     needs to take place.
  */
 #define OSAL_STREAM_FINAL_HANDSHAKE 0x20000

@@ -50,7 +50,7 @@ static void osal_jpeg_disaster_exit(
 
   @param   src_buf Pointer to source JPEG data.
   @param   src_nbytes Size of JPEG data in bytes.
-  @param   dst_nbytes Pointer where to store resulting JPEG size upon successfull compression.
+  @param   dst_nbytes Pointer where to store resulting JPEG size upon successful compression.
   @param   alloc_func Pointer to function to allocate buffer within allocation context. Can
            be OS_NULL if begger is pre allocated (buf and buf_sz set), or to allocate
            buffer by os_malloc(). In latter case buffer must be release by application.

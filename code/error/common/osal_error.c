@@ -164,7 +164,7 @@ void osal_clear_error(
   @param   flags Bits: OSAL_REPLACE_ERROR_HANDLER (0) or OSAL_ADD_ERROR_HANDLER (1),
            OSAL_APP_ERROR_HANDLER (0) or OSAL_SYSTEM_ERROR_HANDLER (2).
 
-  @return  If successfull, the function returns OSAL_SUCCESS. If there are already
+  @return  If successful, the function returns OSAL_SUCCESS. If there are already
            maximum number of error handlers (OSAL_MAX_ERROR_HANDLERS), the function
            returns OSAL_STATUS_FAILED.
 

@@ -293,7 +293,7 @@ osalStatus os_write_file(
   @param  path Path to directory.
   @param  wildcard Wildcard to match in directory fiven as argument.
   @param  flags Reserved for future, set zero for now.
-  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
+  @return If successful, the function returns OSAL_SUCCESS(0). Other return values
           indicate an error.
 
 ****************************************************************************************************

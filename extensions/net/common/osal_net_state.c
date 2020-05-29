@@ -166,7 +166,7 @@ static void osal_call_network_state_notification_handlers(
            is called.
   @param   reserved Reserver for future, set 0.
 
-  @return  If successfull, the function returns OSAL_SUCCESS. If there are already maximum
+  @return  If successful, the function returns OSAL_SUCCESS. If there are already maximum
            number of notification handlers (OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS), the
            function returns OSAL_STATUS_FAILED.
 

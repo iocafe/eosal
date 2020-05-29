@@ -890,7 +890,7 @@ static osalSocket *osal_get_unused_socket(void)
   @param   str Input, MAC or IP address as string.
   @param   c Separator character.
   @param   b 10 for decimal numbers (IP address) or 16 for hexadecimal numbers (MAC).
-  @return  OS_TRUE if successfull.
+  @return  OS_TRUE if successful.
 
 ****************************************************************************************************
 */

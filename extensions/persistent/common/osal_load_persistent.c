@@ -35,7 +35,7 @@
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   pblock Block pointer to set.
   @param   pblock_sz Pointer to integer where to store block size.
-  @return  If successfull, the function return OSAL_SUCCESS or OSAL_MEMORY_ALLOCATED.
+  @return  If successful, the function return OSAL_SUCCESS or OSAL_MEMORY_ALLOCATED.
            If the function returns OSAL_MEMORY_ALLOCATED, memory for the block
            oas been allocated by os_malloc and has to be freed by os_free().
 
@@ -110,7 +110,7 @@ osalStatus os_load_persistent_malloc(
   @brief Load known persistent block of known size into buffer.
 
   The os_load_persistent function floats known size persistent block into buffer given as argument.
-  @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
+  @return  If successful, the function return OSAL_SUCCESS. Other values indicate an error.
 
 ****************************************************************************************************
 */

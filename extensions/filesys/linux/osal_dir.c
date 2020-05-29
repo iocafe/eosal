@@ -37,7 +37,7 @@
           needs to be released by calling osal_free_dirlist().
   @param  flags Set OSAL_DIR_DEFAULT (0) for simple operation. OSAL_DIR_FILESTAT to get
           also file size, isdir type and time stamp.
-  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
+  @return If successful, the function returns OSAL_SUCCESS(0). Other return values
           indicate an error.
 
 ****************************************************************************************************
@@ -177,7 +177,7 @@ void osal_free_dirlist(
 
   @param  path Path to directory.
   @param  flags Reserved for future, set zero for now.
-  @return If successfull, the function returns OSAL_SUCCESS (0). Other return values
+  @return If successful, the function returns OSAL_SUCCESS (0). Other return values
           indicate an error.
 
 ****************************************************************************************************
@@ -223,7 +223,7 @@ osalStatus osal_mkdir(
 
   @param  path Path to directory.
   @param  flags Reserved for future, set zero for now.
-  @return If successfull, the function returns OSAL_SUCCESS(0). Other return values
+  @return If successful, the function returns OSAL_SUCCESS(0). Other return values
           indicate an error, specifically OSAL_STATUS_DIR_NOT_EMPTY means that directory is not empty.
 
 ****************************************************************************************************

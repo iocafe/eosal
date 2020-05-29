@@ -225,7 +225,7 @@ osalStatus osal_jpeg_setup_destination(
   was allocated by osal_jpeg_setup_destination.
 
   @param   cprm Pointer JPEG library compression structure to set up.
-  @param   dst_nbytes Pointer where to store resulting JPEG size upon successfull compression.
+  @param   dst_nbytes Pointer where to store resulting JPEG size upon successful compression.
   @return  OSAL_SUCCESS if all is fine. Other return values indicate an error.
 
 ****************************************************************************************************

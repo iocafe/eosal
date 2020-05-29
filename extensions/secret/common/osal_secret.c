@@ -309,7 +309,7 @@ void osal_initialize_secret(void)
   @brief Load secret from persistent storage.
 
   The ioc_load_secret function...
-  @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
+  @return  If successful, the function return OSAL_SUCCESS. Other values indicate an error.
 
 ****************************************************************************************************
 */
@@ -327,7 +327,7 @@ static osalStatus ioc_load_secret(void)
   The ioc_save_secret function writes 256 bit (32 bytes) seacret to persistent block OS_PBNR_SECRET.
 
   @param   delete_secret OS_TRUE to write a seacret with empty content.
-  @return  If successfull, the function return OSAL_SUCCESS. Other values indicate an error.
+  @return  If successful, the function return OSAL_SUCCESS. Other values indicate an error.
 
 ****************************************************************************************************
 */
