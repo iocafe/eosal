@@ -34,6 +34,7 @@ if("${TARGET}" STREQUAL "esp32")
   # For example "vs2015", "mingw", "gcc", "gccarm9"...
   if (NOT DEFINED ENV{E_COMPILER})
     set(ENV{E_COMPILER} "gcc")
+    # set(ENV{E_COMPILER} "g++")
   endif()
 
   # Root path for build.
