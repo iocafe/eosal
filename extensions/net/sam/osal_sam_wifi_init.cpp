@@ -163,11 +163,16 @@ void osal_socket_initialize(
     os_int n_wifi)
 {
 //#if 0
+
+    osalNetworkInterface defaultnic;
     os_int i;
 
     if (nic == OS_NULL && n_nics < 1)
     {
         osal_debug_error("osal_socket_initialize(): No NIC configuration");
+        os_memclear(&defaultnic,sizeof(defaultnic));
+        nic = &defaultnic;
+        n_nics = 1;
     }
 
     /* If socket library is already initialized, do nothing.

@@ -8,8 +8,8 @@
             "includePath": [
                 "/coderoot/lib/esp32/eosal",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
-                "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
                 "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "/coderoot/lib/esp32/devicedir",
@@ -114,8 +114,8 @@
                 "path": [
                     "/coderoot/lib/esp32/eosal",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
-                    "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src",
                     "/home/john/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "/coderoot/lib/esp32/devicedir",

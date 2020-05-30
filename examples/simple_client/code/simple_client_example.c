@@ -19,6 +19,7 @@
 
 /* Force tracing on for this source file.
  */
+#include "/coderoot/mypasswords.h"
 #undef OSAL_TRACE
 #define OSAL_TRACE 3
 
@@ -43,7 +44,9 @@
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific 
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
-#define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"
+/*#define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"*/
+#define EXAMPLE_TCP_SOCKET "192.168.1.101:6368"
+
 #define EXAMPLE_TLS_SOCKET "127.0.0.1:6369"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
@@ -68,10 +71,21 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
+    osalWifiNetwork wifi;
+
+    delay(7000);
+
+    os_memclear(&wifi, sizeof(wifi));
+
+    wifi.wifi_net_name = MYNETNAME;
+    wifi.wifi_net_password = MYPASSWORD;
+    osal_initialize_net_state();
+
     /* Initialize underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-        osal_socket_initialize(OS_NULL, 0, OS_NULL, 0);
+    osal_trace("HERE 103");
+        osal_socket_initialize(OS_NULL, 0, &wifi, 1);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
         osalSecurityConfig security_prm;
