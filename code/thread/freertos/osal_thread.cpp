@@ -1,12 +1,12 @@
 /**
 
-  @file    thread/arduino/osal_thread.c
+  @file    thread/freertos/osal_thread.c
   @brief   Creating, terminating, scheduling and identifying threads.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
 
-  Thread functions for Arduino/FreeRTOS.
+  Thread functions for FreeRTOS.
   A process can run multiple tasks concurrently, and these concurrently running tasks are called
   threads of execution. The treads of the same process and share memory and other processe's
   resources. Typically access to shared resources must be synchronized, see mutexes.
