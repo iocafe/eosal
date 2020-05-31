@@ -15,13 +15,12 @@
   at the same time. On a multiprocessor or multi-core system, the threads or tasks will generally
   run at the same time, with each processor or core running a particular thread or task.
   A new thread is created by osal_thread_create() function call
-  Thread priorizing and sleep are handled by osal_thread_set_priority() and
-  os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
-  function.
+  Thread priorizing is handled by osal_thread_set_priority() function. Current thread
+  can be identified by osal_thread_get_id() function.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -56,23 +55,18 @@ osalWindowsThreadPrms;
 */
 typedef struct
 {
-	/* Windows thread handle.
-	*/
-	HANDLE thread_handle;
+    /* Windows thread handle.
+    */
+    HANDLE thread_handle;
 }
 osalWindowsThreadHandle;
-#endif
 
 /* Forward referred static functions.
  */
-#if OSAL_MULTITHREAD_SUPPORT
 static DWORD WINAPI osal_thread_intermediate_func(
-  LPVOID lpParameter);
-
-#endif
+    LPVOID lpParameter);
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -90,7 +84,7 @@ static DWORD WINAPI osal_thread_intermediate_func(
   function call, or by returning from entry point function which will result osal_exit_thread()
   call. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
   entry point function can call osal_thread_set_priority() to set it's own priority.
-  
+
   @param   func Pointer to thread entry point function. See osal_thread_func() for entry point
            function type.
   @param   prm Pointer to parameters (typically pointer to used defined structure) to pass to
@@ -102,27 +96,27 @@ static DWORD WINAPI osal_thread_intermediate_func(
   @param   opt Pointer to thread options structure, like thread name, stack size, etc.  Can
            be set to OS_NULL to used defaults.
   @param   Flags OSAL_THREAD_ATTACHED or OSAL_THREAD_DETACHED given to osal_thread_create sets is
-		   the newly created thread is to be attached to the thread which created this one.
-		   If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
-		   and must eventually be joined back to it by osal_thread_join() function. In this case
-		   the osal_thread_create() returns thread handle which is used as argument to join and
-		   can be used to to request worker thread to exit by osal_thread_request_exit() call.
-		   If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
-		   created it. The osal_thread_create() returns OS_NULL and join or request exit functions
-		   are not available.
+           the newly created thread is to be attached to the thread which created this one.
+           If flag OSAL_THREAD_ATTACHED is given, the new thread is attached to calling thread
+           and must eventually be joined back to it by osal_thread_join() function. In this case
+           the osal_thread_create() returns thread handle which is used as argument to join and
+           can be used to to request worker thread to exit by osal_thread_request_exit() call.
+           If OSAL_THREAD_DETACHED is given, newly created thread is detached from thread which
+           created it. The osal_thread_create() returns OS_NULL and join or request exit functions
+           are not available.
 
   @return  Pointer to thread handle if OSAL_THREAD_ATTACHED flags is given, or OS_NULL otherwise.
 
 ****************************************************************************************************
 */
 osalThread *osal_thread_create(
-	osal_thread_func *func,
-	void *prm,
+    osal_thread_func *func,
+    void *prm,
     osalThreadOptParams *opt,
     os_int flags)
 {
-    HANDLE 
-		thread_handle;
+    HANDLE
+        thread_handle;
 
     DWORD
         thread_id;
@@ -130,8 +124,8 @@ osalThread *osal_thread_create(
     osalWindowsThreadPrms
         winprm;
 
-	osalWindowsThreadHandle
-		*handle;
+    osalWindowsThreadHandle
+        *handle;
 
     SIZE_T
          stack_size = 0; /* 0 = use Windows default for .exe */
@@ -139,7 +133,7 @@ osalThread *osal_thread_create(
     /* Save pointers to thread entry point function and to parameters into
        thread creation parameter structure.
      */
-	os_memclear(&winprm, sizeof(osalWindowsThreadPrms));
+    os_memclear(&winprm, sizeof(osalWindowsThreadPrms));
     winprm.func = func;
     winprm.prm = prm;
 
@@ -149,19 +143,19 @@ osalThread *osal_thread_create(
     winprm.done = osal_event_create();
     if (winprm.done == OS_NULL)
     {
-		osal_debug_error("osal_thread,osal_event_create failed");
+        osal_debug_error("osal_thread,osal_event_create failed");
         return OS_NULL;
     }
 
-	if (flags & OSAL_THREAD_ATTACHED)
-	{
-		handle = (osalWindowsThreadHandle*)os_malloc(sizeof(osalWindowsThreadHandle), OS_NULL);
-		os_memclear(handle, sizeof(osalWindowsThreadHandle));
-	}
-	else
-	{
-		handle = OS_NULL;
-	}
+    if (flags & OSAL_THREAD_ATTACHED)
+    {
+        handle = (osalWindowsThreadHandle*)os_malloc(sizeof(osalWindowsThreadHandle), OS_NULL);
+        os_memclear(handle, sizeof(osalWindowsThreadHandle));
+    }
+    else
+    {
+        handle = OS_NULL;
+    }
 
     /* Process options, if any.
      */
@@ -181,9 +175,9 @@ osalThread *osal_thread_create(
      */
     if (thread_handle == NULL)
     {
-		osal_debug_error("osal_thread,CreateThread failed");
-		os_free(handle, sizeof(osalWindowsThreadHandle));
-		return OS_NULL;
+        osal_debug_error("osal_thread,CreateThread failed");
+        os_free(handle, sizeof(osalWindowsThreadHandle));
+        return OS_NULL;
     }
 
     /* Inform resource monitor that thread has been succesfully creted.
@@ -198,27 +192,25 @@ osalThread *osal_thread_create(
      */
     osal_event_delete(winprm.done);
 
-	/* If we attach the new thread, save windows thread handle. Otherwise close it.
-	 */
-	if (handle)
-	{
-		handle->thread_handle = thread_handle;
-	}
-	else
-	{
-		/* Close the Windows thread handle so that no zombie handles are left hanging around.
-		 */
-		CloseHandle(thread_handle);
-	}
+    /* If we attach the new thread, save windows thread handle. Otherwise close it.
+     */
+    if (handle)
+    {
+        handle->thread_handle = thread_handle;
+    }
+    else
+    {
+        /* Close the Windows thread handle so that no zombie handles are left hanging around.
+         */
+        CloseHandle(thread_handle);
+    }
 
     /* Success.
      */
     return (osalThread*)handle;
 }
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -252,18 +244,16 @@ static DWORD WINAPI osal_thread_intermediate_func(
      */
     winprm->func(winprm->prm, winprm->done);
 
-	/* Inform resource monitor that thread is terminated.
-	*/
-	osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
-	
+    /* Inform resource monitor that thread is terminated.
+    */
+    osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
+
     /* Return success.
      */
     return 1;
 }
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -282,83 +272,27 @@ static DWORD WINAPI osal_thread_intermediate_func(
 ****************************************************************************************************
 */
 void osal_thread_join(
-	osalThread *handle)
+    osalThread *handle)
 {
-	/* Check for programming errors.
-	 */
-	if (handle == OS_NULL)
-	{
-		osal_debug_error("osal_thread,osal_thread_join: NULL handle");
-		return;
-	}
-
-	/* Join the thread.
-	 */
-	WaitForSingleObject(((osalWindowsThreadHandle*)handle)->thread_handle, INFINITE);
-
-	/* Delete the handle structure.
-	 */
-	CloseHandle(((osalWindowsThreadHandle*)handle)->thread_handle);
-	os_free(handle, sizeof(osalWindowsThreadHandle));
-}
-#endif
-
-
-/**
-****************************************************************************************************
-
-  @brief Suspend thread execution for a specific time, milliseconds.
-  @anchor os_sleep
-
-  The os_sleep() function suspends the execution of the current thread for a specified
-  interval. The function is used for both to create timed delays and to force scheduler to give
-  processor time to lower priority threads. If time_ms is zero the function suspends execution
-  of the thread until end of current processor time slice.
-
-  @param   time_ms Time to sleep, milliseconds. Value 0 sleeps until end of current processor
-           time slice.
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_sleep(
-    os_long time_ms)
-{
-    /* Call Windows to sleep.
+    /* Check for programming errors.
      */
-    Sleep((DWORD)time_ms);
-}
+    if (handle == OS_NULL)
+    {
+        osal_debug_error("osal_thread,osal_thread_join: NULL handle");
+        return;
+    }
 
-
-/**
-****************************************************************************************************
-
-  @brief Suspend thread execution for a specific time, microseconds.
-  @anchor os_microsleep
-
-  The os_microsleep() function suspends the execution of the current thread for a specified
-  interval. The function is used for both to create timed delays and to force scheduler to give
-  processor time to lower priority threads. If time_ms is zero the function suspends execution
-  of the thread until end of current processor time slice.
-
-  Windows specific: The function support only one millisecond precision. 
-
-  @param   time_us Time to sleep, microseconds. Value 0 sleeps until end of current processor
-           time slice.
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_microsleep(
-    os_long time_us)
-{
-    /* Call Windows to sleep.
+    /* Join the thread.
      */
-    Sleep((DWORD)((time_us + 999) / 1000));
+    WaitForSingleObject(((osalWindowsThreadHandle*)handle)->thread_handle, INFINITE);
+
+    /* Delete the handle structure.
+     */
+    CloseHandle(((osalWindowsThreadHandle*)handle)->thread_handle);
+    os_free(handle, sizeof(osalWindowsThreadHandle));
 }
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -377,4 +311,5 @@ void os_timeslice(void)
 {
     Sleep(2);
 }
+
 #endif

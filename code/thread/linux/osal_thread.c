@@ -4,7 +4,7 @@
   @brief   Creating, terminating, scheduling and identifying threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    30.5.2020
 
   Thread functions for Linux.
   A process can run multiple tasks concurrently, and these concurrently running tasks are called
@@ -15,9 +15,8 @@
   at the same time. On a multiprocessor or multi-core system, the threads or tasks will generally
   run at the same time, with each processor or core running a particular thread or task.
   A new thread is created by osal_thread_create() function call
-  Thread priorizing and sleep are handled by osal_thread_set_priority() and
-  os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
-  function.
+  Thread priorizing is handled by osal_thread_set_priority() function. Current thread
+  can be identified by osal_thread_get_id().
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -28,13 +27,11 @@
 */
 #include "eosal.h"
 
-#include <unistd.h>
 #if OSAL_MULTITHREAD_SUPPORT
-
+#include <unistd.h>
 #include <sched.h>
 #include <pthread.h>
 #include <limits.h>
-
 
 /** Intermediate parameter structure when creating a new Linux thread.
  */
@@ -67,17 +64,14 @@ typedef struct
     pthread_t threadh;
 }
 osalLinuxThreadHandle;
-#endif
+
 
 /* Forward referred static functions.
  */
-#if OSAL_MULTITHREAD_SUPPORT
 static void *osal_thread_intermediate_func(
   void *parameters);
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -217,10 +211,8 @@ osalThread *osal_thread_create(
      */
     return (osalThread*)handle;
 }
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -261,10 +253,8 @@ static void *osal_thread_intermediate_func(
      */
     return OS_NULL;
 }
-#endif
 
 
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -311,74 +301,8 @@ void osal_thread_join(
      */
     os_free(handle, sizeof(osalLinuxThreadHandle));
 }
-#endif
 
 
-/**
-****************************************************************************************************
-
-  @brief Suspend thread execution for a specific time, milliseconds.
-  @anchor os_sleep
-
-  The os_sleep() function suspends the execution of the current thread for a specified
-  interval. The function is used for both to create timed delays and to force scheduler to give
-  processor time to lower priority threads. If time_ms is zero the function suspends execution
-  of the thread until end of current processor time slice.
-
-  @param   time_ms Time to sleep, milliseconds. Value 0 sleeps until end of current processor
-           time slice.
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_sleep(
-    os_long time_ms)
-{
-    if (time_ms >= 1000000)
-    {
-        sleep(time_ms/1000);
-    }
-    else
-    {
-        usleep(time_ms*1000);
-    }
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Suspend thread execution for a specific time, microseconds.
-  @anchor os_microsleep
-
-  The os_microsleep() function suspends the execution of the current thread for a specified
-  interval. The function is used for both to create timed delays and to force scheduler to give
-  processor time to lower priority threads. If time_ms is zero the function suspends execution
-  of the thread until end of current processor time slice.
-
-  Windows specific: The function support only one millisecond precision.
-
-  @param   time_us Time to sleep, microseconds. Value 0 sleeps until end of current processor
-           time slice.
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_microsleep(
-    os_long time_us)
-{
-    if (time_us >= 1000000000)
-    {
-        os_sleep(time_us/1000);
-    }
-    else
-    {
-        usleep(time_us);
-    }
-}
-
-
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 

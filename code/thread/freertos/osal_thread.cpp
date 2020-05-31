@@ -1,10 +1,10 @@
 /**
 
-  @file    thread/freertos/osal_thread.c
+  @file    thread/freertos/osal_thread.cpp
   @brief   Creating, terminating, scheduling and identifying threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    31.5.2020
 
   Thread functions for FreeRTOS.
   A process can run multiple tasks concurrently, and these concurrently running tasks are called
@@ -15,9 +15,8 @@
   at the same time. On a multiprocessor or multi-core system, the threads or tasks will generally
   run at the same time, with each processor or core running a particular thread or task.
   A new thread is created by osal_thread_create() function call.
-  Thread priorizing and sleep are handled by osal_thread_set_priority() and
-  os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
-  function.
+  Thread priorizing is handled by osal_thread_set_priority() and function. Current thread
+  can be identified by osal_thread_get_id() function.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -71,7 +70,6 @@ osalArduinoThreadHandle;
  */
 static void osal_thread_intermediate_func(
   void *parameters);
-
 
 
 /**
@@ -305,70 +303,6 @@ void osal_thread_join(
 }
 
 
-#endif
-
-
-/**
-****************************************************************************************************
-
-  @brief Suspend thread execution for a specific time, milliseconds.
-  @anchor os_sleep
-
-  The os_sleep() function suspends the execution of the current thread for a specified
-  interval. The function is used for both to create timed delays and to force scheduler to give
-  processor time to lower priority threads. If time_ms is zero the function suspends execution
-  of the thread until end of current processor time slice.
-
-  @param   time_ms Time to sleep, milliseconds. Value 0 sleeps until end of current processor
-           time slice.
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_sleep(
-    os_long time_ms)
-{
-#if OSAL_MULTITHREAD_SUPPORT
-    time_ms /= portTICK_PERIOD_MS;
-    if (time_ms < 1) time_ms = 1;
-    vTaskDelay((TickType_t)time_ms);
-#else
-    delay(time_ms);
-#endif
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Suspend thread execution for a specific time, microseconds.
-  @anchor os_microsleep
-
-  The os_microsleep() function suspends the execution of the current thread for a specified
-  interval. The function is used for both to create timed delays and to force scheduler to give
-  processor time to lower priority threads. If time_ms is zero the function suspends execution
-  of the thread until end of current processor time slice.
-
-  Arduino specific: The function support only one millisecond precision.
-
-  @param   time_us Time to sleep, microseconds. Value 0 sleeps until end of current processor
-           time slice.
-  @return  None.
-
-****************************************************************************************************
-*/
-void os_microsleep(
-    os_long time_us)
-{
-#if OSAL_MULTITHREAD_SUPPORT
-    os_sleep(time_us / (portTICK_PERIOD_MS * 1000));
-#else
-    delay(time_us / 1000);
-#endif
-}
-
-
-#if OSAL_MULTITHREAD_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -385,8 +319,7 @@ void os_microsleep(
 */
 void os_timeslice(void)
 {
-#if OSAL_MULTITHREAD_SUPPORT
     vTaskDelay(1); /* 0 or vYieldTask will give no time to lower priottity */
-#endif
 }
+
 #endif
