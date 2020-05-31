@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\code\string\common\osal_strncpy.c" />
     <ClCompile Include="..\..\code\string\common\osal_strnicmp.c" />
     <ClCompile Include="..\..\code\string\common\osal_strstr.c" />
+    <ClCompile Include="..\..\code\thread\windows\osal_sleep.c" />
     <ClCompile Include="..\..\code\thread\windows\osal_thread.c" />
     <ClCompile Include="..\..\code\thread\windows\osal_thread_priority.c" />
     <ClCompile Include="..\..\code\timer\windows\osal_timer.c" />
