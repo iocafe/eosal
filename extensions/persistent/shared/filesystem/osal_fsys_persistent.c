@@ -23,7 +23,7 @@
    must be set.
  */
 #ifndef OSAL_PERSISTENT_ROOT
-#ifdef OSAL_WIN32
+#ifdef OSAL_WINDOWS
   #define OSAL_PERSISTENT_ROOT "c:\\coderoot\\config"
 #else
   #define OSAL_PERSISTENT_ROOT "/coderoot/config"
