@@ -113,7 +113,7 @@ os_ushort os_checksum(
 ****************************************************************************************************
 
   @brief Test the checksum code.
-  @anchor os_checksum
+  @anchor osal_test_checksum
 
   The osal_test_checksum() function calculates checksum for the test strings and checks that it
   is as expected. Tested against CRC-16 (Modbus) values at:
