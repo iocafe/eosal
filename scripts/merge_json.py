@@ -1,4 +1,4 @@
-# preprocess_json.py 8.5.2020/pekka
+# merge_json.py 8.5.2020/pekka
 # Include JSON files within JSON.
 import json
 import os
