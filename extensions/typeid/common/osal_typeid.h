@@ -123,5 +123,5 @@ const os_char *osal_typeid_to_name(
 
 /* Get type size in bytes.
  */
-os_memsz osal_typeid_size(
+os_memsz osal_type_size(
     osalTypeId type_id);
