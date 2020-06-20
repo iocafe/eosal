@@ -241,7 +241,10 @@ osPersistentHandle *os_persistent_open(
      */
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION
     handle = (osFsysPersistentHandle*)os_malloc(sizeof(osFsysPersistentHandle), OS_NULL);
-    if (handle == OS_NULL) goto getout;
+    if (handle == OS_NULL) {
+        osal_file_close(f, OSAL_STREAM_DEFAULT);
+        goto getout;
+    }
 #else
     handle = osal_persistent_handle;
     count = OS_N_PBNR;
