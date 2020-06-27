@@ -21,6 +21,13 @@
 #define LOG_LOCAL_LEVEL ESP_LOG_WARN
 #include "esp_log.h"
 #include "esp_system.h"
+#include "Arduino.h"
+
+/* Prototypes of forward referred static functions.
+ */
+static void osal_print_esp32_info(
+    const os_char *label,
+    os_long value);
 
 
 /**
@@ -53,6 +60,40 @@ void osal_init_os_specific(
     disableLoopWDT();
     disableCore0WDT();
     disableCore1WDT();
+
+    /* Print amount of heap and PS ram
+     */
+    osal_print_esp32_info("\nTotal heap: ", (os_long)ESP.getHeapSize());
+    osal_print_esp32_info("Free heap: ", (os_long)ESP.getFreeHeap());
+    osal_print_esp32_info("Total PSRAM:  ", (os_long)ESP.getPsramSize());
+    osal_print_esp32_info("Free PSRAM: ", (os_long)ESP.getFreePsram());
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Print ESP32 information to console.
+  @anchor osal_print_esp32_info
+
+  The osal_print_esp32_info() function just prints label and value to console.
+
+  @param  label Label text
+  @param  value Value to print.
+  @return  None.
+
+****************************************************************************************************
+*/
+static void osal_print_esp32_info(
+    const os_char *label,
+    os_long value)
+{
+    os_char nbuf[OSAL_NBUF_SZ];
+
+    osal_console_write(label);
+    osal_int_to_str(nbuf, sizeof(nbuf), value);
+    osal_console_write(nbuf);
+    osal_console_write("\n");
 }
 
 
