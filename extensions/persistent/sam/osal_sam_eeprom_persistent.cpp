@@ -227,7 +227,7 @@ osPersistentHandle *os_persistent_open(
     os_int flags)
 {
     myEEPROMBlock *block;
-    os_ushort first_free, pos, cscalc, n, nnow, p;
+    os_ushort first_free, pos, cscalc, n, nnow, p, sz;
     os_char tmp[64];
     int i;
 
@@ -274,6 +274,7 @@ osPersistentHandle *os_persistent_open(
          */
         if (first_free < block->pos && block->sz)
         {
+            sz = block->sz; /* save size */
             if (os_persistent_delete_block(block_nr))
             {
                 os_memclear(&hdr, sizeof(hdr));
@@ -283,7 +284,7 @@ osPersistentHandle *os_persistent_open(
             }
             else
             {
-                first_free -= block->sz;
+                first_free -= sz;
             }
         }
         block->pos = first_free;
@@ -559,9 +560,9 @@ static osalStatus os_persistent_delete_block(
 ****************************************************************************************************
 
   @brief Read data from EEPROM.
-  @anchor os_persistent_read
+  @anchor os_persistent_read_internal
 
-  The os_persistent_read() function reads n bytes from EEPROM starting from addr into buf.
+  The os_persistent_read_internal() function reads n bytes from EEPROM starting from addr into buf.
 
   @param   buf Buffer where to store the data.
   @param   addr First address to read.
@@ -593,9 +594,9 @@ static void os_persistent_read_internal(
 ****************************************************************************************************
 
   @brief Write data to EEPROM.
-  @anchor os_persistent_delete_block
+  @anchor os_persistent_write_internal
 
-  The os_persistent_write() function writes n bytes from buf to EEPROM starting from addr.
+  The os_persistent_write_internal() function writes n bytes from buf to EEPROM starting from addr.
 
   @param   buf Buffer from where to write the data.
   @param   addr First address to read.
@@ -656,7 +657,7 @@ static void os_persistent_delete_internal(
 ****************************************************************************************************
 
   @brief Move data in EEPROM to compress after deleting a block.
-  @anchor os_persistent_delete_block
+  @anchor os_persistent_move
 
   The os_persistent_move() function...
 

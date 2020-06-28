@@ -103,7 +103,7 @@ void os_persistent_initialze(
        initializing the secret.
      */
 #if OSAL_SECRET_SUPPORT
-    osal_initialize_secret();
+    osal_initialize_secret();  // THIS NEEDS TO BE MOVED, MAKES PERSISTENT DEPENDENT ON TLS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #endif
 }
 
