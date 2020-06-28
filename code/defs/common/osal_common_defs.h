@@ -55,6 +55,11 @@ typedef os_char os_boolean;
 #define OSAL_PATH_SZ 128
 #endif
 
+/** Macro to flag unused function argument so that compiler warning "unused parameter"
+    is not generated.
+ */
+#define OSAL_UNUSED(x) (void)(x)
+
 /** C++ compilation: The OSAL_C_HEADER_BEGINS marks beginning of header file text,
     which is to be left undecorated. Undecorated code is used to call C from inside
     C++ code. If compiling a C file, the OSAL_C_HEADER_BEGINS does nothing.
