@@ -272,7 +272,7 @@ osPersistentHandle *os_persistent_open(
 
         /* If this is not the last block, delete it.
          */
-        if (first_free < block->pos && block->sz)
+        if (first_free > block->pos && block->sz)
         {
             sz = block->sz; /* save size */
             if (os_persistent_delete_block(block_nr))
