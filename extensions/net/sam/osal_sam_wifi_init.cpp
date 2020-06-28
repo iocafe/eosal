@@ -247,8 +247,6 @@ osalStatus osal_are_sockets_initialized(
     os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
     os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
 
-osal_debug_error("HERE 1")    ;
-
     if (osal_global->socket_global == OS_NULL) return OSAL_STATUS_FAILED;
 
 // SYNCHRONIZE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -261,8 +259,6 @@ osal_debug_error("HERE 1")    ;
         case OSAL_WIFI_INIT_STEP1:
             osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
             osal_set_network_state_int(OSAL_NS_NETWORK_USED, 0, OS_TRUE);
-
-osal_debug_error("HERE 2");
 
             ans.network_connected = ans.wifi_was_connected = OS_FALSE;
             ans.wifi_init_failed_now = OS_FALSE;

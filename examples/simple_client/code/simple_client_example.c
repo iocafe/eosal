@@ -84,7 +84,6 @@ osalStatus osal_main(
     /* Initialize underlying transport library.
      */
     #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-    osal_trace("HERE 103");
         osal_socket_initialize(OS_NULL, 0, &wifi, 1);
     #endif
     #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
