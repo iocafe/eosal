@@ -71,7 +71,8 @@ typedef enum
     OSAL_NS_LIGHTHOUSE_STATE,
     OSAL_NS_GAZERBEAM_CONNECTED,
     OSAL_NS_SECURITY_CONF_ERROR,
-    OSAL_NS_NO_CERT_CHAIN
+    OSAL_NS_NO_CERT_CHAIN,
+    OSAL_NS_DEVICE_INIT_INCOMPLETE
 }
 osalNetStateItem;
 
@@ -136,6 +137,10 @@ typedef struct osalNetworkState
     /** Gazerbeam connected.
      */
     os_char gazerbeam_connected;
+
+    /** Device initialization is icomplete (like camera doesn't start, etc.)
+     */
+    os_char device_init_incomplete;
 
     /** Counts, like number of connected sockets, number of listening sockets, etc.
      */

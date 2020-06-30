@@ -80,8 +80,9 @@ static void osal_net_state_handler(
 {
     osalNetworkState *ns;
     const osalStatToNetCountIx *sti;
-    int i;
+    os_short i;
     os_boolean changed;
+    OSAL_UNUSED(description);
 
     /* If not oesal/iocom generated, do nothing.
      */
@@ -90,7 +91,7 @@ static void osal_net_state_handler(
     ns = (osalNetworkState*)context;
     changed = OS_FALSE;
 
-    for (i = 0; i < N_STAT_TO_COUNT; i++)
+    for (i = 0; i < (os_short)N_STAT_TO_COUNT; i++)
     {
         sti = &stat_to_count_ix[i];
 
@@ -221,8 +222,8 @@ void osal_set_network_state_int(
 #if OSAL_SOCKET_SUPPORT
         case OSAL_NS_NIC_STATE:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) return;
-            if (ns->nic_code[index] == (os_boolean)value) return;
-            ns->nic_code[index] = (os_boolean)value;
+            if (ns->nic_code[index] == (osalStatus)value) return;
+            ns->nic_code[index] = (osalStatus)value;
             break;
 
         case OSAL_NS_NETWORK_USED: /* only one, not indexed */
@@ -253,6 +254,11 @@ void osal_set_network_state_int(
         case OSAL_NS_GAZERBEAM_CONNECTED:
             if (ns->gazerbeam_connected == value) return;
             ns->gazerbeam_connected = value;
+            break;
+
+        case OSAL_NS_DEVICE_INIT_INCOMPLETE:
+            if (ns->device_init_incomplete == value) return;
+            ns->device_init_incomplete = value;
             break;
 
         default:
@@ -306,6 +312,10 @@ os_int osal_get_network_state_int(
 #endif
         case OSAL_NS_GAZERBEAM_CONNECTED:
             rval = ns->gazerbeam_connected;
+            break;
+
+        case OSAL_NS_DEVICE_INIT_INCOMPLETE:
+            rval = ns->device_init_incomplete;
             break;
 
         default:
