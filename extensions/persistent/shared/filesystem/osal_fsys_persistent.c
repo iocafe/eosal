@@ -98,13 +98,6 @@ void os_persistent_initialze(
 
     osal_mkdir(rootpath, 0);
     initialized = OS_TRUE;
-
-    /* Initialize also secret for security. Mark persistent initialized before
-       initializing the secret.
-     */
-#if OSAL_SECRET_SUPPORT
-    osal_initialize_secret();  // THIS NEEDS TO BE MOVED, MAKES PERSISTENT DEPENDENT ON TLS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#endif
 }
 
 

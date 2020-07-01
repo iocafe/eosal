@@ -1,7 +1,7 @@
 /**
 
   @file    eosal/examples/ecollection/code/osal_intset_test.c
-  @brief   Test integer serilization.
+  @brief   Test integer serialization.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
@@ -42,6 +42,14 @@ osalStatus osal_rand_test(
     os_int argc,
     os_char *argv[])
 {
+    /* For ESP32 it is recommended to initialize WiFi or blue tooth to get hardware
+       random numbers. In practice I got random numbers even without this, maybe
+       the note relates to some older esp-idf version.
+     */
+#if OSAL_SOCKET_SUPPORT
+    osal_socket_initialize(OS_NULL, 0, OS_NULL, 0);
+#endif
+
     osal_rand_test_range(-1000, 1000, 100, OS_TRUE);
     osal_rand_test_range(-10000000000, 10000000000, 100, OS_TRUE);
     osal_rand_test_range(0, 0, 100, OS_TRUE);
@@ -66,7 +74,8 @@ static void osal_rand_test_range(
         x = osal_rand(min_value, max_value);
         if (min_value != max_value) if (x < min_value || x > max_value)
         {
-            printf ("\nRand failed ************************\n");
+            printf ("\nRand failed min=%ld max=%ld value=%ld ************************\n",
+                (long)min_value,(long) max_value, (long)x);
             return;
         }
 

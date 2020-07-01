@@ -39,12 +39,12 @@ osalStatus osal_main(
     os_char *argv[])
 {
     os_sleep(7000);
-    return osal_threads_example_main(argc, argv);
+    // return osal_threads_example_main(argc, argv);
     // return osal_threads_example_2_main(argc, argv);
     // return osal_int64_test(argc, argv);
     // return osal_intser_test(argc, argv);
     // return osal_json_compress_test(argc, argv);
-    // return osal_rand_test(argc, argv);
+    return osal_rand_test(argc, argv);
     // return osal_float_int_conv_test(argc, argv);
     // return osal_password_test(argc, argv);
     // return osal_persistent_test(argc, argv);
