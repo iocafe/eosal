@@ -78,14 +78,6 @@ static void os_persistent_move(
     os_ushort srcaddr,
     os_ushort n);
 
-/*
-static void diggy_dog_start(
-    void);
-
-static void diggy_dog_end(
-    void);
-*/
-
 
 /**
 ****************************************************************************************************

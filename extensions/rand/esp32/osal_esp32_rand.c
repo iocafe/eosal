@@ -1,10 +1,10 @@
 /**
 
-  @file    rand/arduino/osal_rand_arduino.c
-  @brief   Get random number.
+  @file    rand/arduino/osal_esp32_rand.c
+  @brief   Random numbers.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    1.7.2020
 
   ESP32 contains a hardware random number generator, values from it can be obtained
   using esp_random().

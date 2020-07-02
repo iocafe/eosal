@@ -95,6 +95,10 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/persistent/common/osal_persistent.h"
 #endif
 
+#if OSAL_DEVICE_PROGRAMMING_SUPPORT
+  #include "extensions/program/common/osal_program_device.h"
+#endif
+
 #include "extensions/checksum/common/osal_checksum.h"
 
 /* If C++ compilation, end the undecorated code.

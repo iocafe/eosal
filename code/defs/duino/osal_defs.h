@@ -406,6 +406,12 @@
 #endif
 #endif
 
+/** Do we have flash programming support?
+ */
+#ifndef OSAL_DEVICE_PROGRAMMING_SUPPORT
+#define OSAL_DEVICE_PROGRAMMING_SUPPORT 0
+#endif
+
 /** Having a console for testing makes sense in linux and windows PC environments,
     and may be used also in micro-controller systems trough serial port.
  */

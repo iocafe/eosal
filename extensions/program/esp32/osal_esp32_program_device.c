@@ -1,3 +1,60 @@
+/**
+
+  @file    eosal/extensions/program/linux/osal_esp32_program_device.c
+  @brief   Write IO device firmware to flash.
+  @author  Pekka Lehtikoski
+  @version 1.0
+  @date    1.7.2020
+
+  The ESP32 comes with ready software update API, called OTA. The OTA update mechanism allows
+  a device to update itself over IOCOM connection while the normal firmware is running.
+
+  OTA requires configuring the Partition Table of the device with at least two “OTA app slot”
+  partitions (ieota_0 and ota_1) and an “OTA Data Partition”. The OTA operation functions write
+  a new app firmware image to whichever OTA app slot is not currently being used for booting.
+  Once the image is verified, the OTA Data partition is updated to specify that this image
+  should be used for the next boot.
+
+  - https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/system/ota.html
+  - https://github.com/scottchiefbaker/ESP-WebOTA/tree/master/src
+
+  ESP-IDF: Copyright (C) 2015-2019 Espressif Systems. This source code is licensed under
+  the Apache License 2.0.
+
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
+  modified, and distributed under the terms of the project licensing. By continuing to use, modify,
+  or distribute this file you indicate that you have read the license and understand and accept
+  it fully.
+
+****************************************************************************************************
+*/
+#include "eosalx.h"
+#if OSAL_DEVICE_PROGRAMMING_SUPPORT
+
+void osal_start_device_programming(void)
+{
+}
+
+void osal_program_device(
+    os_char *buf,
+    os_memsz buf_sz)
+{
+}
+
+void osal_finish_device_programming(
+    os_uint checksum)
+{
+}
+
+void osal_cancel_device_programming(void)
+{
+}
+
+#endif
+
+
+
+
 #if 0
 /* OTA example
    This example code is in the Public Domain (or CC0 licensed, at your option.)
@@ -32,25 +89,10 @@ static const char *TAG = "native_ota_example";
 /*an ota data write buffer ready to write to the flash*/
 static char ota_write_data[BUFFSIZE + 1] = { 0 };
 extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
+
 extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
 
-#define OTA_URL_SIZE 256
-
-static void http_cleanup(esp_http_client_handle_t client)
-{
-    esp_http_client_close(client);
-    esp_http_client_cleanup(client);
-}
-
-static void __attribute__((noreturn)) task_fatal_error(void)
-{
-    ESP_LOGE(TAG, "Exiting task due to fatal error...");
-    (void)vTaskDelete(NULL);
-
-    while (1) {
-        ;
-    }
-}
+xxx
 
 static void print_sha256 (const uint8_t *image_hash, const char *label)
 {
@@ -60,16 +102,6 @@ static void print_sha256 (const uint8_t *image_hash, const char *label)
         sprintf(&hash_print[i * 2], "%02x", image_hash[i]);
     }
     ESP_LOGI(TAG, "%s: %s", label, hash_print);
-}
-
-static void infinite_loop(void)
-{
-    int i = 0;
-    ESP_LOGI(TAG, "When a new firmware is available on the server, press the reset button to download it");
-    while(1) {
-        ESP_LOGI(TAG, "Waiting for a new firmware ... %d", ++i);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }
 }
 
 static void ota_example_task(void *pvParameter)
