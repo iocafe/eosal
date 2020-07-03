@@ -6,6 +6,23 @@
   @version 1.0
   @date    1.7.2020
 
+  Linux installation packages are .deb files. When a program in linux based device receives
+  a .deb file trough IOCOM, it quietly installs it. The installation is done as root user.
+
+  File permissions, owner and group. All files in installation package are owned by root.
+  If binary needs to update software, set setuid bit for it needs to be set so it will
+  run as root. All files which are not to be modified by user should have 0755 permissions,
+  except 04755 for binary files capable of software updates. Data files which can be modified
+  by user should have 0664 or 0666. Using 0664 allows extra protection by user group, but
+  this requires some extra configuration.
+
+  The setuid attribute bit for binary files: To run application You don't need to do anything on
+  the C side. Just change the binary to be owned by the user you want to use (here root),
+  enable the setuid bit in the binary (chmod u+s), and you're all set. No need to call
+  setuid(0) from C
+
+  See "200702-linux-installation-packages.rst" in documentation.
+
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
@@ -107,9 +124,6 @@ static void osal_delete_tmp_file(void)
 
 // Switch user to root
 
-// You don't need to do anything on the C side. Just change the binary to be owned by the user you want to use, enable the setuid bit in the binary (chmod u+s), and you're all set!
-// (If you don't want any user to be able to run as your designated user willy-nilly, consider using sudo.)
-// no need to Call setuid(0) from C
-sudo dpkg -i iocomtempprog.deb
+// sudo dpkg -i --force-all iocomtempprog.deb
 
 #endif
