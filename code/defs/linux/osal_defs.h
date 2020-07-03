@@ -346,6 +346,12 @@
 #define OSAL_DEVICE_PROGRAMMING_SUPPORT OSAL_PERSISTENT_SUPPORT
 #endif
 
+/** Can we create new processes?
+ */
+#ifndef OSAL_PROCESS_SUPPORT
+#define OSAL_PROCESS_SUPPORT (OSAL_MICROCONTROLLER == 0)
+#endif
+
 /** Having a console for testing makes sense in linux and windows PC environments,
     and may be used also in micro-controller systems trough serial port.
  */
