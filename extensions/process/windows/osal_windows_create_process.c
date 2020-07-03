@@ -59,15 +59,13 @@ osalStatus osal_create_process(
     /* Make command line by merging args */
     cmdline == ...
 
-    /* Create child process. Notice that the first argument may look strange,
-     */
     rval = CreateProcessW(file,
         cmdline, NULL, NULL, FALSE,
         CREATE_NEW_CONSOLE|NORMAL_PRIORITY_CLASS,
         NULL, NULL, &si, &pi));
 
     if (!rval) {
-        rval = CreateProcessW(file,
+        rval = CreateProcessW(NULL,
             cmdline, NULL, NULL, FALSE,
             CREATE_NEW_CONSOLE|NORMAL_PRIORITY_CLASS,
             NULL, NULL, &si, &pi));
