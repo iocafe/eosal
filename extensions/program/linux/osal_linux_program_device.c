@@ -110,5 +110,6 @@ static void osal_delete_tmp_file(void)
 // You don't need to do anything on the C side. Just change the binary to be owned by the user you want to use, enable the setuid bit in the binary (chmod u+s), and you're all set!
 // (If you don't want any user to be able to run as your designated user willy-nilly, consider using sudo.)
 // no need to Call setuid(0) from C
+sudo dpkg -i iocomtempprog.deb
 
 #endif
