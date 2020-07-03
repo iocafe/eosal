@@ -31,17 +31,21 @@
 #include "eosalx.h"
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
-void osal_start_device_programming(void)
+void osal_initialize_programming(void)
 {
 }
 
-void osal_program_device(
+osalStatus osal_start_device_programming(void)
+{
+}
+
+osalStatus osal_program_device(
     os_char *buf,
     os_memsz buf_sz)
 {
 }
 
-void osal_finish_device_programming(
+osalStatus osal_finish_device_programming(
     os_uint checksum)
 {
 }

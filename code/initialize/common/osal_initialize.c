@@ -15,7 +15,7 @@
 
 ****************************************************************************************************
 */
-#include "eosal.h"
+#include "eosalx.h"
 
 
 /** Static allocation for global structure. This static allocation must never be referred
@@ -89,6 +89,11 @@ void osal_initialize(
 #if OSAL_CONSOLE
     osal_console_initialize();
 #endif
+
+    /* Initialize global flash programming state (macro, does nothing if flash
+       programming is not supported)
+     */
+    osal_initialize_programming();
 
     /* Mark that OSAL library is initialized
      */

@@ -16,30 +16,90 @@
 #include "eosalx.h"
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
-void osal_start_device_programming(void)
+
+static os_char deb_path[] = "/tmp/iocomtempprog.deb";
+static osalStream deb_stream = OS_NULL;
+
+/* Forward referred static functions.
+ */
+static void osal_close_tmp_file(void);
+static void osal_delete_tmp_file(void);
+
+
+void osal_initialize_programming(void)
 {
-    osal_debug_error("HERE start prog");
+    deb_stream = OS_NULL;
 }
 
-void osal_program_device(
+
+osalStatus osal_start_device_programming(void)
+{
+    osalStatus s;
+
+osal_debug_error("HERE start prog");
+
+    osal_close_tmp_file();
+
+    deb_stream = osal_file_open(deb_path, OS_NULL, &s, OSAL_STREAM_WRITE);
+    if (deb_stream == OS_NULL) return s;
+    return OSAL_SUCCESS;
+}
+
+
+osalStatus osal_program_device(
     os_char *buf,
     os_memsz buf_sz)
 {
-    osal_debug_error("HERE prog");
+    os_memsz n_written;
+    osalStatus s;
+
+osal_debug_error("HERE prog");
+
+    if (deb_stream == OS_NULL) {
+        return OSAL_STATUS_FAILED;
+    }
+    s = osal_file_write(deb_stream, buf, buf_sz, &n_written, OSAL_STREAM_DEFAULT);
+    if (s || n_written != buf_sz) {
+        osal_cancel_device_programming();
+        return s;
+    }
+
+    return OSAL_SUCCESS;
 }
 
-void osal_finish_device_programming(
+osalStatus osal_finish_device_programming(
     os_uint checksum)
 {
-    osal_debug_error("HERE finish prog");
+osal_debug_error("HERE finish prog");
 
+    if (deb_stream == OS_NULL) {
+        return OSAL_STATUS_FAILED;
+    }
+    osal_close_tmp_file();
 //        osal_reboot(0);
-
 }
 
 void osal_cancel_device_programming(void)
 {
-    osal_debug_error("HERE cancel prog");
+osal_debug_error("HERE cancel prog");
+
+    osal_close_tmp_file();
+    osal_delete_tmp_file();
+}
+
+
+static void osal_close_tmp_file(void)
+{
+    if (deb_stream)
+    {
+        osal_file_close(deb_stream, OSAL_STREAM_DEFAULT);
+        deb_stream = OS_NULL;
+    }
+}
+
+static void osal_delete_tmp_file(void)
+{
+    osal_remove(deb_path, 0);
 }
 
 #endif
