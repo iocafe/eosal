@@ -70,33 +70,33 @@ osalStatus osal_create_process(
     uid_t euid; /* Real, Effective, Saved user ID */
     gid_t egid; /* Real, Effective, Saved group ID */
 
+    static os_char *const envp[] = {"PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/coderoot/bin/linux", OS_NULL};
+
     if (flags & OSAL_PROCESS_ELEVATE)
     {
-        euid = geteuid();
-        egid = getegid();
+        euid = getuid();
+        egid = getgid();
 
          /* Switch to target user. setuid bit handles this, but doing it again does no harm. */
-         if (seteuid((uid_t)TARGET_UID) == -1) {
+         if (setuid((uid_t)TARGET_UID) == -1) {
              osal_debug_error("Insufficient user privileges.");
              return OSAL_STATUS_FAILED;
          }
 
          /* Switch to target group. setgid bit handles this, but doing it again does no harm.
           * If TARGET_UID == 0, we need no setgid bit, as root has the privilege. */
-         if (setegid((gid_t)TARGET_GID) == -1) {
+         if (setgid((gid_t)TARGET_GID) == -1) {
              osal_debug_error("Insufficient group privileges.");
              return OSAL_STATUS_FAILED;
          }
-osal_debug_error("ELEVATION SUCCESS");
+        osal_debug_error("ELEVATION SUCCESS");
     }
 
     posix_spawnattr_init(&spawnattr);
-    rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, NULL);
+    rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, envp);
     if (rval) {
-        rval = posix_spawnp(&pid, file, OS_NULL, &spawnattr, argv, NULL);
+        rval = posix_spawnp(&pid, file, OS_NULL, &spawnattr, argv, envp);
     }
-
-    // posix_spawn_file_actions_destroy(&child_fd_actions);
 
     if (rval == 0) {
         s = OSAL_SUCCESS;
@@ -119,10 +119,10 @@ osal_debug_error("ELEVATION SUCCESS");
     /* Drop privileges. */
     if (flags & OSAL_PROCESS_ELEVATE)
     {
-        if (seteuid(euid) == -1) {
+        if (setuid(euid) == -1) {
             osal_debug_error("Cannot drop user privileges");
         }
-        if (setegid(egid) == -1) {
+        if (setgid(egid) == -1) {
             osal_debug_error("Cannot drop group privileges");
         }
     }

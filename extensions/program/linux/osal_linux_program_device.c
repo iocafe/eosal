@@ -34,7 +34,6 @@
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
 static os_char deb_path[] = "/tmp/iocomtempprog.deb";
-static os_char lasterr_dst[] = ">/tmp/iocom-programming-output.txt";
 static osalStream deb_stream = OS_NULL;
 
 /* Forward referred static functions.
