@@ -47,6 +47,9 @@ static void osal_install_package(void);
 void osal_initialize_programming(void)
 {
     deb_stream = OS_NULL;
+
+osal_install_package();
+
 }
 
 
@@ -60,8 +63,6 @@ osal_debug_error("HERE start prog");
 
     deb_stream = osal_file_open(deb_path, OS_NULL, &s, OSAL_STREAM_WRITE);
     if (deb_stream == OS_NULL) return s;
-
-osal_install_package();
 
     return OSAL_SUCCESS;
 }
@@ -152,8 +153,8 @@ static void osal_installer_thread(
     osalEvent done)
 {
     osalStatus s;
-    // static os_char *const argv[] = {"dpkg", "-i", "--force-all", deb_path, OS_NULL};
-    static os_char *const argv[] = {"-la", deb_path, OS_NULL};
+    static os_char *const argv[] = {"dpkg", "-i", "--force-all", deb_path, ">pekka.txt", OS_NULL};
+    // static os_char *const argv[] = {"ls", "-la", deb_path, ">pekka.txt", OS_NULL};
     OSAL_UNUSED(prm);
 
     osal_trace("program device: installer thread created");
@@ -170,8 +171,8 @@ static void osal_installer_thread(
 
     // sudo dpkg -i --force-all iocomtempprog.deb
 
-    //s = osal_create_process("dpkg", argv, 0);
-    s = osal_create_process("ls", argv, 0);
+    s = osal_create_process("dpkg", argv, 0);
+    // s = osal_create_process("ls", argv, 0);
     if (s) {
         osal_debug_error("debian package installation failed");
     }
