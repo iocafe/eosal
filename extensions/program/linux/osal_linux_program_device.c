@@ -33,8 +33,8 @@
 #include "eosalx.h"
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
-
 static os_char deb_path[] = "/tmp/iocomtempprog.deb";
+static os_char lasterr_dst[] = ">/tmp/iocom-programming-output.txt";
 static osalStream deb_stream = OS_NULL;
 
 /* Forward referred static functions.
@@ -46,10 +46,8 @@ static void osal_install_package(void);
 
 void osal_initialize_programming(void)
 {
-    deb_stream = OS_NULL;
-
 osal_install_package();
-
+    deb_stream = OS_NULL;
 }
 
 
@@ -140,6 +138,8 @@ static void osal_delete_tmp_file(void)
   The osal_installer_thread() function call "dpkg" to to install the debian package, and once
   ready restarts the application.
 
+  dpkg -i --force-all iocomtempprog.deb
+
   @param   prm Pointer to parameters for new thread, pointer to end point object.
   @param   done Event to set when parameters have been copied to entry point
            functions own memory.
@@ -153,8 +153,7 @@ static void osal_installer_thread(
     osalEvent done)
 {
     osalStatus s;
-    static os_char *const argv[] = {"dpkg", "-i", "--force-all", deb_path, ">pekka.txt", OS_NULL};
-    // static os_char *const argv[] = {"ls", "-la", deb_path, ">pekka.txt", OS_NULL};
+    static os_char *const argv[] = {"dpkg", "-i", "--force-all", deb_path, OS_NULL};
     OSAL_UNUSED(prm);
 
     osal_trace("program device: installer thread created");
@@ -163,24 +162,12 @@ static void osal_installer_thread(
      */
     osal_event_set(done);
 
-
-    // dpkg -x iocomtempprog.deb /coderoot/production/
-
-
-    // Switch user to root
-
-    // sudo dpkg -i --force-all iocomtempprog.deb
-
-    s = osal_create_process("dpkg", argv, 0);
-    // s = osal_create_process("ls", argv, 0);
+    s = osal_create_process("dpkg", argv, OSAL_PROCESS_WAIT|OSAL_PROCESS_ELEVATE);
     if (s) {
         osal_debug_error("debian package installation failed");
     }
 
-    while (1)
-    {
-        os_sleep(1000);
-    }
+    os_sleep(10000);
 
     // osal_delete_tmp_file();
 }

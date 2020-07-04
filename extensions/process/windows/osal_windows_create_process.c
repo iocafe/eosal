@@ -32,7 +32,8 @@
 
   @param   file Name or path to file to execute.
   @param   argv Array of command line arguments. OS_NULL pointer terminates the array.
-  @param   flags Reserved for future, set zero for now.
+  @param   flags OSAL_PROCESS_DEFAULT just starts the process. OSAL_PROCESS_WAIT causes
+           the function to return only when started process has been terminated.
   @return  OSAL_SUCCESS if new process was started. Other return values indicate an error.
 
 ****************************************************************************************************

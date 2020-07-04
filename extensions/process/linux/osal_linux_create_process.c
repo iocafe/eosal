@@ -13,12 +13,30 @@
 
 ****************************************************************************************************
 */
+#define _GNU_SOURCE
 #include "eosalx.h"
 #if OSAL_PROCESS_SUPPORT
 
-#define _GNU_SOURCE
 #include <spawn.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <errno.h>
+
+#ifndef TARGET_UID
+#define TARGET_UID 0
+#endif
+
+#ifndef TARGET_GID
+#define TARGET_GID 0
+#endif
+
+#ifndef UID_MIN
+#define UID_MIN 500
+#endif
+
+#ifndef GID_MIN
+#define GID_MIN 500
+#endif
 
 /**
 ****************************************************************************************************
@@ -29,11 +47,13 @@
   The osal_create_process() function is used to create a new child process that executes a
   specified file.
 
-  - waitpid() is called to kill zombies.
+  - waitpid(-1, &rval, WNOHANG) is called to kill zombies.
 
   @param   file Name or path to file to execute.
   @param   argv Array of command line arguments. OS_NULL pointer terminates the array.
-  @param   flags Reserved for future, set zero for now.
+  @param   flags OSAL_PROCESS_DEFAULT just starts the process. OSAL_PROCESS_WAIT causes
+           the function to return only when started process has been terminated.
+
   @return  OSAL_SUCCESS if new process was started. Other return values indicate an error.
 
 ****************************************************************************************************
@@ -46,21 +66,65 @@ osalStatus osal_create_process(
     posix_spawnattr_t spawnattr;
     pid_t pid;
     osalStatus s;
-    int rval;
+    int rval, status;
+    uid_t euid; /* Real, Effective, Saved user ID */
+    gid_t egid; /* Real, Effective, Saved group ID */
 
-    posix_spawnattr_init(&spawnattr);
-    rval = posix_spawn(&pid, file, NULL, &spawnattr, argv, NULL);
-    if (rval) {
-        rval = posix_spawnp(&pid, file, NULL, &spawnattr, argv, NULL);
+    if (flags & OSAL_PROCESS_ELEVATE)
+    {
+        euid = geteuid();
+        egid = getegid();
+
+         /* Switch to target user. setuid bit handles this, but doing it again does no harm. */
+         if (seteuid((uid_t)TARGET_UID) == -1) {
+             osal_debug_error("Insufficient user privileges.");
+             return OSAL_STATUS_FAILED;
+         }
+
+         /* Switch to target group. setgid bit handles this, but doing it again does no harm.
+          * If TARGET_UID == 0, we need no setgid bit, as root has the privilege. */
+         if (setegid((gid_t)TARGET_GID) == -1) {
+             osal_debug_error("Insufficient group privileges.");
+             return OSAL_STATUS_FAILED;
+         }
+osal_debug_error("ELEVATION SUCCESS");
     }
 
+    posix_spawnattr_init(&spawnattr);
+    rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, NULL);
+    if (rval) {
+        rval = posix_spawnp(&pid, file, OS_NULL, &spawnattr, argv, NULL);
+    }
+
+    // posix_spawn_file_actions_destroy(&child_fd_actions);
+
     if (rval == 0) {
-        waitpid(-1, &rval, WNOHANG);
         s = OSAL_SUCCESS;
+        if (flags & OSAL_PROCESS_WAIT) {
+            if (waitpid(pid, &status, 0) != -1) {
+                osal_debug_error_int("child process exited with status ", status);
+            } else {
+                osal_debug_error("waiting for process exit failed");
+                s = OSAL_STATUS_FAILED;
+            }
+        }
+
+        waitpid(-1, &rval, WNOHANG);
     }
     else {
         osal_debug_error_str("Starting process failed: ", file);
         s = OSAL_STATUS_FAILED;
+    }
+
+    /* Drop privileges. */
+    if (flags & OSAL_PROCESS_ELEVATE)
+    {
+        if (seteuid(euid) == -1) {
+            osal_debug_error("Cannot drop user privileges");
+        }
+        if (setegid(egid) == -1) {
+            osal_debug_error("Cannot drop group privileges");
+        }
     }
 
     return s;

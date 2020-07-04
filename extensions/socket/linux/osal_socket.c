@@ -1971,6 +1971,7 @@ static os_int osal_socket_list_network_interfaces(
     os_int n_interfaces;
     char buf[OSAL_IPADDR_SZ], prev_ifa_name[64];
 
+    addrs = 0;
     getifaddrs(&addrs);
     a = addrs;
     n_interfaces = 0;

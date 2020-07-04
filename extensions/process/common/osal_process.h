@@ -15,6 +15,12 @@
 */
 #if OSAL_PROCESS_SUPPORT
 
+/* Flags for osal_create_process()
+ */
+#define OSAL_PROCESS_DEFAULT 0
+#define OSAL_PROCESS_WAIT 1
+#define OSAL_PROCESS_ELEVATE 2
+
 /* Start new process.
  */
 osalStatus osal_create_process(
