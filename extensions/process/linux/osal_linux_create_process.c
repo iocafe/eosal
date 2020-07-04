@@ -39,6 +39,7 @@
 #define TARGET_GID 0
 #endif
 
+
 /**
 ****************************************************************************************************
 
@@ -82,9 +83,11 @@ osalStatus osal_create_process(
         "/coderoot/bin/linux", OS_NULL};
 
     /* Switch to use root user and group. We need setuid bit for binary file set to make
-       this work. It would be use  effective user and group, we have those already set by
+       this work. It would be nice use effective user and group, we have those already set by
        setuid bit, but for dpkg we need to change real user. There could be a better way, maybe
        to tell spawn which used and group to use. But despite of reading, I did not find one.
+       The syscall() allow us to set user and group just for one thread, setuid/setgid modify
+       all threads of process and use signal to pass information.
      */
     if (flags & OSAL_PROCESS_ELEVATE)
     {
