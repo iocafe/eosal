@@ -17,25 +17,26 @@
 #include "eosalx.h"
 #if OSAL_PROCESS_SUPPORT
 
+/* This must be 1 for now. Without it program will crash in signal handling if
+   it has not root privilige (otherwise works with 0 also).
+ */
+#define OSAL_USE_SYSCALL_TO_ELEVATE 1
+
 #include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <errno.h>
 
+#if OSAL_USE_SYSCALL_TO_ELEVATE
+#include <syscall.h>
+#endif
+
+/* Root user and group ID is zero.
+ */
 #ifndef TARGET_UID
 #define TARGET_UID 0
 #endif
-
 #ifndef TARGET_GID
 #define TARGET_GID 0
-#endif
-
-#ifndef UID_MIN
-#define UID_MIN 500
-#endif
-
-#ifndef GID_MIN
-#define GID_MIN 500
 #endif
 
 /**
@@ -67,37 +68,65 @@ osalStatus osal_create_process(
     pid_t pid;
     osalStatus s;
     int rval, status;
-    uid_t euid; /* Real, Effective, Saved user ID */
-    gid_t egid; /* Real, Effective, Saved group ID */
+    uid_t uid;
+    gid_t gid;
 
-    static os_char *const envp[] = {"PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/coderoot/bin/linux", OS_NULL};
+    /* Set up PATH so that we can find system and iocom binaries.
+     */
+    static os_char *const envp[] = {
+        "PATH=/usr/local/sbin:"
+        "/usr/sbin:"
+        "/sbin:"
+        "/usr/local/bin:"
+        "/usr/bin:/bin:"
+        "/coderoot/bin/linux", OS_NULL};
 
+    /* Switch to use root user and group. We need setuid bit for binary file set to make
+       this work. It would be use  effective user and group, we have those already set by
+       setuid bit, but for dpkg we need to change real user. There could be a better way, maybe
+       to tell spawn which used and group to use. But despite of reading, I did not find one.
+     */
     if (flags & OSAL_PROCESS_ELEVATE)
     {
-        euid = getuid();
-        egid = getgid();
+        uid = getuid();
+        gid = getgid();
 
-         /* Switch to target user. setuid bit handles this, but doing it again does no harm. */
-         if (setuid((uid_t)TARGET_UID) == -1) {
-             osal_debug_error("Insufficient user privileges.");
-             return OSAL_STATUS_FAILED;
-         }
+#if OSAL_USE_SYSCALL_TO_ELEVATE
+        if (syscall(SYS_setresuid, (uid_t)TARGET_UID, -1, -1) != 0) {
+            osal_debug_error("insufficient user privileges.");
+            return OSAL_STATUS_FAILED;
+        }
 
-         /* Switch to target group. setgid bit handles this, but doing it again does no harm.
-          * If TARGET_UID == 0, we need no setgid bit, as root has the privilege. */
-         if (setgid((gid_t)TARGET_GID) == -1) {
-             osal_debug_error("Insufficient group privileges.");
-             return OSAL_STATUS_FAILED;
-         }
-        osal_debug_error("ELEVATION SUCCESS");
+        if (syscall(SYS_setresgid, (uid_t)TARGET_GID, -1, -1) != 0) {
+            osal_debug_error("insufficient group privileges.");
+            return OSAL_STATUS_FAILED;
+        }
+#else
+        if (setuid((uid_t)TARGET_UID) == -1) {
+            osal_debug_error("insufficient user privileges.");
+            return OSAL_STATUS_FAILED;
+        }
+
+        if (setgid((gid_t)TARGET_GID) == -1) {
+            osal_debug_error("insufficient group privileges.");
+            return OSAL_STATUS_FAILED;
+        }
+#endif
+        osal_trace("ELEVATION SUCCESS");
     }
 
+    /* Spawn the process. Try to look up first by file argument as given,
+       then by PATH environment variable.
+     */
     posix_spawnattr_init(&spawnattr);
     rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, envp);
     if (rval) {
         rval = posix_spawnp(&pid, file, OS_NULL, &spawnattr, argv, envp);
     }
 
+    /* If we succeeded, we need to wait for process to exit if OSAL_PROCESS_WAIT
+       flag is given. Call waitpid(-1, &rval, WNOHANG) in any case to kill zombies.
+     */
     if (rval == 0) {
         s = OSAL_SUCCESS;
         if (flags & OSAL_PROCESS_WAIT) {
@@ -112,19 +141,32 @@ osalStatus osal_create_process(
         waitpid(-1, &rval, WNOHANG);
     }
     else {
-        osal_debug_error_str("Starting process failed: ", file);
+        osal_debug_error_str("starting process failed: ", file);
         s = OSAL_STATUS_FAILED;
     }
 
-    /* Drop privileges. */
+    /* Drop privileges.
+     */
     if (flags & OSAL_PROCESS_ELEVATE)
     {
-        if (setuid(euid) == -1) {
-            osal_debug_error("Cannot drop user privileges");
+#if OSAL_USE_SYSCALL_TO_ELEVATE
+        if (syscall(SYS_setresuid, uid, -1, -1) != 0) {
+            osal_debug_error("cannot drop user privileges");
+            return OSAL_STATUS_FAILED;
         }
-        if (setgid(egid) == -1) {
-            osal_debug_error("Cannot drop group privileges");
+
+        if (syscall(SYS_setresgid, gid, -1, -1) != 0) {
+            osal_debug_error("cannot drop group privileges");
+            return OSAL_STATUS_FAILED;
         }
+#else
+        if (setuid(uid) == -1) {
+            osal_debug_error("cannot drop user privileges");
+        }
+        if (setgid(gid) == -1) {
+            osal_debug_error("cannot drop group privileges");
+        }
+#endif
     }
 
     return s;
