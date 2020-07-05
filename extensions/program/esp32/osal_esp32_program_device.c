@@ -40,6 +40,9 @@
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 
+/* SHA-256 digest length */
+#define HASH_LEN 32
+
 /* Installer state structure stores what the installer is "doing now".
  */
 typedef struct
@@ -47,17 +50,77 @@ typedef struct
     const esp_partition_t *configured;
     const esp_partition_t *running;
     const esp_partition_t *update_partition;
-
 }
 osalInstallerState;
 
 static osalInstallerState osal_istate;
 
 
+static void osal_print_sha256 (const uint8_t *image_hash, const char *label);
+
+
 void osal_initialize_programming(void)
 {
+    uint8_t sha_256[HASH_LEN] = { 0 };
+    const esp_partition_t *running;
+    esp_partition_t partition;
+    esp_err_t err;
+#if OSAL_ENABLE_ROLLBACK
+    esp_ota_img_states_t ota_state;
+#endif
+    bool diagnostic_is_ok;
+
     os_memclear(&osal_istate, sizeof(osal_istate));
+
+    // get sha256 digest for the partition table
+    partition.address   = ESP_PARTITION_TABLE_OFFSET;
+    partition.size      = ESP_PARTITION_TABLE_MAX_LEN;
+    partition.type      = ESP_PARTITION_TYPE_DATA;
+    esp_partition_get_sha256(&partition, sha_256);
+    osal_print_sha256(sha_256, "SHA-256 for the partition table: ");
+
+    // get sha256 digest for bootloader
+    partition.address   = ESP_BOOTLOADER_OFFSET;
+    partition.size      = ESP_PARTITION_TABLE_OFFSET;
+    partition.type      = ESP_PARTITION_TYPE_APP;
+    esp_partition_get_sha256(&partition, sha_256);
+    osal_print_sha256(sha_256, "SHA-256 for bootloader: ");
+
+    // get sha256 digest for running partition
+    esp_partition_get_sha256(esp_ota_get_running_partition(), sha_256);
+    osal_print_sha256(sha_256, "SHA-256 for current firmware: ");
+
+#if OSAL_ENABLE_ROLLBACK
+    running = esp_ota_get_running_partition();
+    if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
+        if (ota_state == ESP_OTA_IMG_PENDING_VERIFY)
+        {
+            diagnostic_is_ok = diagnostic();
+            if (diagnostic_is_ok) {
+                osal_trace("diagnostics completed successfully! continuing execution ...");
+                esp_ota_mark_app_valid_cancel_rollback();
+            }
+            else {
+                osal_trace("diagnostics failed! Start rollback to the previous version ...");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+            }
+        }
+    }
+#endif
+
+    // Initialize NVS.
+    err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        // OTA app partition table has a smaller NVS partition size than the non-OTA
+        // partition table. This size mismatch may cause NVS initialization to fail.
+        // If this happens, we erase NVS partition and initialize NVS again.
+        err = nvs_flash_erase();
+        osal_debug_assert(err == ESP_OK);
+        err = nvs_flash_init();
+    }
+    osal_debug_assert(err == ESP_OK);
 }
+
 
 osalStatus osal_start_device_programming(void)
 {
@@ -96,6 +159,18 @@ osalStatus osal_finish_device_programming(
 void osal_cancel_device_programming(void)
 {
 }
+
+
+static void osal_print_sha256 (const uint8_t *image_hash, const char *label)
+{
+/*    char hash_print[HASH_LEN * 2 + 1];
+    hash_print[HASH_LEN * 2] = 0;
+    for (int i = 0; i < HASH_LEN; ++i) {
+        sprintf(&hash_print[i * 2], "%02x", image_hash[i]);
+    }
+    ESP_LOGI(TAG, "%s: %s", label, hash_print); */
+}
+
 
 #endif
 
