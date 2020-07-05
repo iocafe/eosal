@@ -46,6 +46,7 @@ typedef struct
 {
     const esp_partition_t *configured;
     const esp_partition_t *running;
+    const esp_partition_t *update_partition;
 
 }
 osalInstallerState;
@@ -60,12 +61,12 @@ void osal_initialize_programming(void)
 
 osalStatus osal_start_device_programming(void)
 {
-    osal_trace(TAG, "Starting OTA example");
+    osal_trace("start programming");
 
     osal_istate.configured = esp_ota_get_boot_partition();
     osal_istate.running = esp_ota_get_running_partition();
 
-    if (configured != running) {
+    if (osal_istate.configured != osal_istate.running) {
         osal_trace_int("configured OTA boot partition at offset: ", osal_istate.configured->address);
         osal_trace_int("but running from offset (corrupted flas?): ", osal_istate.running->address);
     }
@@ -73,6 +74,11 @@ osalStatus osal_start_device_programming(void)
     osal_trace_int("running partition type: ", osal_istate.running->type);
     osal_trace_int("subtype: ", osal_istate.running->subtype);
     osal_trace_int("partition offset: ", osal_istate.running->address);
+
+    osal_istate.update_partition = esp_ota_get_next_update_partition(NULL);
+    osal_debug_assert(osal_istate.update_partition != NULL);
+    osal_trace_int("writing to partition subtype: ", osal_istate.update_partition->subtype);
+    osal_trace_int("at offset: ", osal_istate.update_partition->address);
 }
 
 
