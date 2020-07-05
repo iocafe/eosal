@@ -31,13 +31,50 @@
 #include "eosalx.h"
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
+#include "esp_system.h"
+#include "esp_event.h"
+#include "esp_ota_ops.h"
+#include "esp_flash_partitions.h"
+#include "esp_partition.h"
+#include "nvs.h"
+#include "nvs_flash.h"
+#include "driver/gpio.h"
+
+/* Installer state structure stores what the installer is "doing now".
+ */
+typedef struct
+{
+    const esp_partition_t *configured;
+    const esp_partition_t *running;
+
+}
+osalInstallerState;
+
+static osalInstallerState osal_istate;
+
+
 void osal_initialize_programming(void)
 {
+    os_memclear(&osal_istate, sizeof(osal_istate));
 }
 
 osalStatus osal_start_device_programming(void)
 {
+    osal_trace(TAG, "Starting OTA example");
+
+    osal_istate.configured = esp_ota_get_boot_partition();
+    osal_istate.running = esp_ota_get_running_partition();
+
+    if (configured != running) {
+        osal_trace_int("configured OTA boot partition at offset: ", osal_istate.configured->address);
+        osal_trace_int("but running from offset (corrupted flas?): ", osal_istate.running->address);
+    }
+
+    osal_trace_int("running partition type: ", osal_istate.running->type);
+    osal_trace_int("subtype: ", osal_istate.running->subtype);
+    osal_trace_int("partition offset: ", osal_istate.running->address);
 }
+
 
 osalStatus osal_program_device(
     os_char *buf,
