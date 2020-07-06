@@ -18,6 +18,14 @@
   - https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/system/ota.html
   - https://github.com/scottchiefbaker/ESP-WebOTA/tree/master/src
 
+  Note 3.7.2020: To enable rollback staging version of arduino-esp32.git needs to be installed.
+  This version has bug that it needs "SimpleBLE" listen in platformio.ini lib_deps.
+
+  platform_packages =
+    framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git
+
+  https://docs.platformio.org/en/latest/platforms/espressif32.html#using-arduino-framework-with-staging-version
+
   ESP-IDF: Copyright (C) 2015-2019 Espressif Systems. This source code is licensed under
   the Apache License 2.0.
 
@@ -40,6 +48,11 @@
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 
+/* Define enable rollback to enable software upgrade rollback. See notes in beginning of this file.
+ */
+#define OSAL_ENABLE_ROLLBACK 1
+#define OSAL_ENABLE_DIAGNOSTICS 0
+
 /* SHA-256 digest length */
 #define OSAL_PROG_HASH_LEN 32
 
@@ -49,17 +62,12 @@
 
 /* Total program header size.
  */
-/* #define OSAL_PROG_N_HDR_BYTES \
-    sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t) + sizeof(esp_app_desc_t) */
-#define OSAL_PROG_N_HDR_BYTES OSAL_PROG_BLOCK_SZ
-
-
-/* Header must fit into one programming block.
- */
-#if OSAL_PROG_BLOCK_SZ < OSAL_PROG_N_HDR_BYTES
-    #error "Buffer size mismatch: OSAL_PROG_BLOCK_SZ < OSAL_PROG_BLOCK_SZ"
+#if OSAL_ENABLE_ROLLBACK
+    #define OSAL_PROG_N_HDR_BYTES \
+        (sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t) + sizeof(esp_app_desc_t))
+#else
+    #define OSAL_PROG_N_HDR_BYTES OSAL_PROG_BLOCK_SZ
 #endif
-
 
 /* Installer state structure stores what the installer is "doing now".
  */
@@ -123,6 +131,11 @@ void osal_initialize_programming(void)
 
     os_memclear(&osal_istate, sizeof(osal_istate));
 
+    if (OSAL_PROG_N_HDR_BYTES > OSAL_PROG_BLOCK_SZ)
+    {
+        osal_debug_error("Buffer size mismatch: OSAL_PROG_BLOCK_SZ < OSAL_PROG_BLOCK_SZ");
+    }
+
     /* get sha256 digest for the partition table
      */
     partition.address   = ESP_PARTITION_TABLE_OFFSET;
@@ -149,7 +162,7 @@ void osal_initialize_programming(void)
     if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
         if (ota_state == ESP_OTA_IMG_PENDING_VERIFY)
         {
-            diagnostic_is_ok = diagnostic();
+            diagnostic_is_ok = osal_program_diagnostic();
             if (diagnostic_is_ok) {
                 osal_trace("diagnostics completed successfully! continuing execution ...");
                 esp_ota_mark_app_valid_cancel_rollback();
@@ -327,14 +340,14 @@ static osalStatus osal_program_verify_hdr(
     const esp_partition_t* last_invalid_app;
 
     // check current version with downloading
-    os_memcpy(&new_app_info, &ota_write_data[sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t)], sizeof(esp_app_desc_t));
+    os_memcpy(&new_app_info, &osal_istate.buf[sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t)], sizeof(esp_app_desc_t));
     osal_trace_str("new firmware version:", new_app_info.version);
 
-    if (esp_ota_get_partition_description(running, &running_app_info) == ESP_OK) {
+    if (esp_ota_get_partition_description(osal_istate.running, &running_app_info) == ESP_OK) {
         osal_trace_str("running firmware version: ", running_app_info.version);
     }
 
-     last_invalid_app = esp_ota_get_last_invalid_partition();
+    last_invalid_app = esp_ota_get_last_invalid_partition();
     if (esp_ota_get_partition_description(last_invalid_app, &invalid_app_info) == ESP_OK) {
         osal_trace_str("last invalid firmware version: ", invalid_app_info.version);
     }
@@ -342,7 +355,7 @@ static osalStatus osal_program_verify_hdr(
     /* Check current version with last invalid partition
      */
     if (last_invalid_app != NULL) {
-        if (memcmp(invalid_app_info.version, new_app_info.version, sizeof(new_app_info.version)) == 0) {
+        if (os_memcmp(invalid_app_info.version, new_app_info.version, sizeof(new_app_info.version)) == 0) {
             osal_debug_error_str("New version is the same as invalid version.\n"
                 "Previously, there was an attempt to launch the firmware with %s version, but it failed.", invalid_app_info.version);
 
@@ -356,6 +369,7 @@ static osalStatus osal_program_verify_hdr(
 #if OSAL_ENABLE_ROLLBACK
 static os_boolean osal_program_diagnostic(void)
 {
+#if OSAL_ENABLE_DIAGNOSTICS
     gpio_config_t io_conf;
     os_boolean diagnostic_is_ok;
 
@@ -373,6 +387,9 @@ static os_boolean osal_program_diagnostic(void)
 
     gpio_reset_pin(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
     return diagnostic_is_ok;
+#else
+    return OS_TRUE;
+#endif
 }
 #endif
 
