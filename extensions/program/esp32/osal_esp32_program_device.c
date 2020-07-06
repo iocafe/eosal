@@ -41,7 +41,25 @@
 #include "driver/gpio.h"
 
 /* SHA-256 digest length */
-#define HASH_LEN 32
+#define OSAL_PROG_HASH_LEN 32
+
+/* Number of bytes to write with one esp_ota_write() call
+ */
+#define OSAL_PROG_BLOCK_SZ 1024
+
+/* Total program header size.
+ */
+/* #define OSAL_PROG_N_HDR_BYTES \
+    sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t) + sizeof(esp_app_desc_t) */
+#define OSAL_PROG_N_HDR_BYTES OSAL_PROG_BLOCK_SZ
+
+
+/* Header must fit into one programming block.
+ */
+#if OSAL_PROG_BLOCK_SZ < OSAL_PROG_N_HDR_BYTES
+    #error "Buffer size mismatch: OSAL_PROG_BLOCK_SZ < OSAL_PROG_BLOCK_SZ"
+#endif
+
 
 /* Installer state structure stores what the installer is "doing now".
  */
@@ -50,43 +68,79 @@ typedef struct
     const esp_partition_t *configured;
     const esp_partition_t *running;
     const esp_partition_t *update_partition;
+    esp_ota_handle_t update_handle;
+    os_boolean hdr_verified;
+
+    uint8_t *buf;
+    os_memsz n;
 }
 osalInstallerState;
 
 static osalInstallerState osal_istate;
 
+/* Forward referred static functions.
+ */
+#if OSAL_ENABLE_ROLLBACK
+static osalStatus osal_program_verify_hdr(
+    void);
+#endif
 
-static void osal_print_sha256 (const uint8_t *image_hash, const char *label);
+static void osal_buffer_append(
+    os_char **buf,
+    os_memsz *buf_sz);
+
+static osalStatus osal_flush_programming_buffer(
+    void);
+
+
+#if OSAL_ENABLE_ROLLBACK
+static os_boolean osal_program_diagnostic(void);
+#endif
+
+/* Do we want to trace print SHA hashes
+ */
+#define OSAL_PROG_TRACE_SHA (OSAL_TRACE > 0)
+
+#if OSAL_PROG_TRACE_SHA
+    static void osal_print_sha256 (
+        const uint8_t *image_hash,
+        const os_char *label);
+#else
+    #define osal_print_sha256 (h,l)
+#endif
 
 
 void osal_initialize_programming(void)
 {
-    uint8_t sha_256[HASH_LEN] = { 0 };
-    const esp_partition_t *running;
+    uint8_t sha_256[OSAL_PROG_HASH_LEN] = { 0 };
     esp_partition_t partition;
     esp_err_t err;
 #if OSAL_ENABLE_ROLLBACK
+    const esp_partition_t *running;
     esp_ota_img_states_t ota_state;
-#endif
     bool diagnostic_is_ok;
+#endif
 
     os_memclear(&osal_istate, sizeof(osal_istate));
 
-    // get sha256 digest for the partition table
+    /* get sha256 digest for the partition table
+     */
     partition.address   = ESP_PARTITION_TABLE_OFFSET;
     partition.size      = ESP_PARTITION_TABLE_MAX_LEN;
     partition.type      = ESP_PARTITION_TYPE_DATA;
     esp_partition_get_sha256(&partition, sha_256);
     osal_print_sha256(sha_256, "SHA-256 for the partition table: ");
 
-    // get sha256 digest for bootloader
+    /* get sha256 digest for bootloader
+     */
     partition.address   = ESP_BOOTLOADER_OFFSET;
     partition.size      = ESP_PARTITION_TABLE_OFFSET;
     partition.type      = ESP_PARTITION_TYPE_APP;
     esp_partition_get_sha256(&partition, sha_256);
     osal_print_sha256(sha_256, "SHA-256 for bootloader: ");
 
-    // get sha256 digest for running partition
+    /* Get sha256 digest for running partition
+     */
     esp_partition_get_sha256(esp_ota_get_running_partition(), sha_256);
     osal_print_sha256(sha_256, "SHA-256 for current firmware: ");
 
@@ -108,12 +162,13 @@ void osal_initialize_programming(void)
     }
 #endif
 
-    // Initialize NVS.
+    /* Initialize NVS. */
     err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        // OTA app partition table has a smaller NVS partition size than the non-OTA
-        // partition table. This size mismatch may cause NVS initialization to fail.
-        // If this happens, we erase NVS partition and initialize NVS again.
+        /* OTA app partition table has a smaller NVS partition size than the non-OTA
+           partition table. This size mismatch may cause NVS initialization to fail.
+           If this happens, we erase NVS partition and initialize NVS again.
+         */
         err = nvs_flash_erase();
         osal_debug_assert(err == ESP_OK);
         err = nvs_flash_init();
@@ -124,6 +179,8 @@ void osal_initialize_programming(void)
 
 osalStatus osal_start_device_programming(void)
 {
+    osal_cancel_device_programming();
+
     osal_trace("start programming");
 
     osal_istate.configured = esp_ota_get_boot_partition();
@@ -142,6 +199,13 @@ osalStatus osal_start_device_programming(void)
     osal_debug_assert(osal_istate.update_partition != NULL);
     osal_trace_int("writing to partition subtype: ", osal_istate.update_partition->subtype);
     osal_trace_int("at offset: ", osal_istate.update_partition->address);
+
+    osal_istate.buf = (uint8_t*)os_malloc(OSAL_PROG_BLOCK_SZ, OS_NULL);
+    osal_istate.n = 0;
+    osal_istate.hdr_verified = OS_FALSE;
+    osal_istate.update_handle = 0;
+
+    return OSAL_SUCCESS;
 }
 
 
@@ -149,28 +213,221 @@ osalStatus osal_program_device(
     os_char *buf,
     os_memsz buf_sz)
 {
+    esp_err_t err;
+
+    if (osal_istate.buf == OS_NULL) {
+        return OSAL_STATUS_FAILED;
+    }
+
+    while (buf_sz > 0)
+    {
+        /* Append to buffer
+         */
+        osal_buffer_append(&buf, &buf_sz);
+
+        /* If the verification has not been done.
+         */
+        if (!osal_istate.hdr_verified) {
+            if (osal_istate.n < OSAL_PROG_N_HDR_BYTES) {
+                return OSAL_SUCCESS;
+            }
+
+#if OSAL_ENABLE_ROLLBACK
+            if (osal_program_verify_hdr()) {
+                goto getout;
+            }
+#endif
+
+            err = esp_ota_begin(osal_istate.update_partition, OTA_SIZE_UNKNOWN, &osal_istate.update_handle);
+            if (err != ESP_OK) {
+                osal_debug_error_str("esp_ota_begin failed: ", esp_err_to_name(err));
+                goto getout;
+            }
+            osal_trace("esp_ota_begin succeeded");
+
+            osal_istate.hdr_verified = OS_TRUE;
+        }
+
+        if (osal_istate.n == OSAL_PROG_BLOCK_SZ) {
+            if (osal_flush_programming_buffer()) {
+                goto getout;
+            }
+        }
+        else {
+            break;
+        }
+    }
+
+    /* Success if we got everything written or buffered.
+     */
+    if (buf_sz == 0) {
+        return OSAL_SUCCESS;
+    }
+
+getout:
+    osal_cancel_device_programming();
+    return OSAL_STATUS_FAILED;
 }
 
 osalStatus osal_finish_device_programming(
     os_uint checksum)
 {
+    esp_err_t err;
+
+    if (osal_istate.buf) {
+        if (osal_flush_programming_buffer())
+        {
+            osal_cancel_device_programming();
+            return OSAL_STATUS_FAILED;
+        }
+
+        err = esp_ota_end(osal_istate.update_handle);
+        if (err != ESP_OK) {
+            if (err == ESP_ERR_OTA_VALIDATE_FAILED) {
+                osal_debug_error("image validation failed, image is corrupted");
+            }
+            osal_debug_error_str("esp_ota_end failed: ", esp_err_to_name(err));
+            goto getout;
+        }
+
+        err = esp_ota_set_boot_partition(osal_istate.update_partition);
+        if (err != ESP_OK) {
+            osal_debug_error_str("esp_ota_set_boot_partition failed: ", esp_err_to_name(err));
+            goto getout;
+        }
+        osal_trace("prepare to restart system!");
+
+        osal_cancel_device_programming();
+        esp_restart();
+        return OSAL_SUCCESS;
+    }
+
+getout:
+    osal_cancel_device_programming();
+    return OSAL_STATUS_FAILED;
 }
 
 void osal_cancel_device_programming(void)
 {
-}
-
-
-static void osal_print_sha256 (const uint8_t *image_hash, const char *label)
-{
-/*    char hash_print[HASH_LEN * 2 + 1];
-    hash_print[HASH_LEN * 2] = 0;
-    for (int i = 0; i < HASH_LEN; ++i) {
-        sprintf(&hash_print[i * 2], "%02x", image_hash[i]);
+    if (osal_istate.buf) {
+        osal_trace("programming buffer released");
+        os_free(osal_istate.buf, OSAL_PROG_BLOCK_SZ);
+        osal_istate.buf = OS_NULL;
     }
-    ESP_LOGI(TAG, "%s: %s", label, hash_print); */
 }
 
+
+#if OSAL_ENABLE_ROLLBACK
+static osalStatus osal_program_verify_hdr(
+    void)
+{
+    esp_app_desc_t new_app_info;
+    esp_app_desc_t running_app_info;
+    esp_app_desc_t invalid_app_info;
+    const esp_partition_t* last_invalid_app;
+
+    // check current version with downloading
+    os_memcpy(&new_app_info, &ota_write_data[sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t)], sizeof(esp_app_desc_t));
+    osal_trace_str("new firmware version:", new_app_info.version);
+
+    if (esp_ota_get_partition_description(running, &running_app_info) == ESP_OK) {
+        osal_trace_str("running firmware version: ", running_app_info.version);
+    }
+
+     last_invalid_app = esp_ota_get_last_invalid_partition();
+    if (esp_ota_get_partition_description(last_invalid_app, &invalid_app_info) == ESP_OK) {
+        osal_trace_str("last invalid firmware version: ", invalid_app_info.version);
+    }
+
+    /* Check current version with last invalid partition
+     */
+    if (last_invalid_app != NULL) {
+        if (memcmp(invalid_app_info.version, new_app_info.version, sizeof(new_app_info.version)) == 0) {
+            osal_debug_error_str("New version is the same as invalid version.\n"
+                "Previously, there was an attempt to launch the firmware with %s version, but it failed.", invalid_app_info.version);
+
+            return OSAL_STATUS_FAILED;
+        }
+    }
+    return OSAL_SUCCESS;
+}
+#endif
+
+#if OSAL_ENABLE_ROLLBACK
+static os_boolean osal_program_diagnostic(void)
+{
+    gpio_config_t io_conf;
+    os_boolean diagnostic_is_ok;
+
+    io_conf.intr_type    = GPIO_PIN_INTR_DISABLE;
+    io_conf.mode         = GPIO_MODE_INPUT;
+    io_conf.pin_bit_mask = (1ULL << CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en   = GPIO_PULLUP_ENABLE;
+    gpio_config(&io_conf);
+
+    osal_trace("Diagnostics (5 sec)...");
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+    diagnostic_is_ok = gpio_get_level(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
+
+    gpio_reset_pin(CONFIG_EXAMPLE_GPIO_DIAGNOSTIC);
+    return diagnostic_is_ok;
+}
+#endif
+
+static void osal_buffer_append(
+    os_char **buf,
+    os_memsz *buf_sz)
+{
+    os_memsz n;
+
+    n = *buf_sz;
+    if (n > OSAL_PROG_BLOCK_SZ - osal_istate.n) {
+        n = OSAL_PROG_BLOCK_SZ - osal_istate.n;
+    }
+    os_memcpy(osal_istate.buf + osal_istate.n, *buf, n);
+    *buf += n;
+    *buf_sz -= n;
+    osal_istate.n += n;
+}
+
+static osalStatus osal_flush_programming_buffer(void)
+{
+    esp_err_t err;
+
+    if (osal_istate.n)
+    {
+        err = esp_ota_write(osal_istate.update_handle, osal_istate.buf, osal_istate.n);
+        osal_istate.n = 0;
+        return (err == ESP_OK) ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
+    }
+
+    return OSAL_SUCCESS;
+}
+
+
+#if OSAL_PROG_TRACE_SHA
+static void osal_print_sha256 (
+    const uint8_t *image_hash,
+    const os_char *label)
+{
+    os_char hash_print[OSAL_PROG_HASH_LEN * 2 + 1];
+    os_int i;
+    uint8_t c;
+
+    hash_print[OSAL_PROG_HASH_LEN * 2] = '\0';
+    for (i = 0; i < OSAL_PROG_HASH_LEN; ++i) {
+        c = (image_hash[i] >> 4);
+        c = c > 9 ? c + 'A' : c + '0';
+        hash_print[i * 2] = c;
+        c = (image_hash[i] & 0xF);
+        c = c > 9 ? c + 'A' : c + '0';
+        hash_print[i * 2+1] = c;
+    }
+    osal_trace_str(label, hash_print);
+}
+#endif
 
 #endif
 
