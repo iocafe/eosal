@@ -57,6 +57,7 @@
     <ClInclude Include="..\..\extensions\net\common\osal_net_state.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_shared_net_info.h" />
     <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
+    <ClInclude Include="..\..\extensions\process\common\osal_process.h" />
     <ClInclude Include="..\..\extensions\rand\common\osal_rand.h" />
     <ClInclude Include="..\..\extensions\secret\common\osal_secret.h" />
     <ClInclude Include="..\..\extensions\serialize\common\osal_compress_json.h" />
@@ -133,6 +134,7 @@
     <ClCompile Include="..\..\extensions\persistent\common\osal_load_persistent.c" />
     <ClCompile Include="..\..\extensions\persistent\common\osal_save_persistent.c" />
     <ClCompile Include="..\..\extensions\persistent\windows\osal_select_persistent.c" />
+    <ClCompile Include="..\..\extensions\process\windows\osal_windows_create_process.c" />
     <ClCompile Include="..\..\extensions\rand\common\osal_rand.c" />
     <ClCompile Include="..\..\extensions\secret\common\osal_secret.c" />
     <ClCompile Include="..\..\extensions\serialize\common\osal_compress_json.c" />

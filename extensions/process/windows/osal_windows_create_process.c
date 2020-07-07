@@ -45,7 +45,14 @@ osalStatus osal_create_process(
 {
     PROCESS_INFORMATION pi;
     STARTUPINFOW si;
+    const os_char *a;
+    os_char *cmdline;
+    osalStream cmdline_buf;
+    os_memsz n_written, cmdline_bytes;
+    os_ushort *file_utf16, *cmdline_utf16;
+    os_memsz file_utf16_sz, cmdline_utf16_sz;
     osalStatus s = OSAL_SUCCESS;
+    os_int pos;
     int rval;
 
     os_memclear(&si, sizeof(si));
@@ -54,22 +61,38 @@ osalStatus osal_create_process(
     si.dwXCountChars = 80;
     si.dwYCountChars = 25;
     si.dwFillAttribute = 17;
-    si.fwFlags = STARTF_USESHOWWINDOW;
+    si.dwFlags = STARTF_USESHOWWINDOW;
     si.wShowWindow = SW_MINIMIZE;
 
-    /* Make command line by merging args */
-    cmdline == ...
+    /* Make command line by merging the arguments.
+     */
+    cmdline_buf = osal_stream_buffer_open(OS_NULL, 0, OS_NULL, 0);
+    pos = 0;
+    while ((a = argv[pos++]))
+    {
+        if (a != argv[0]) {
+            osal_stream_print_str(cmdline_buf, "\n", OSAL_STREAM_DEFAULT);
+        }
+        osal_stream_print_str(cmdline_buf, a, OSAL_STREAM_DEFAULT);
+    }
+    osal_stream_buffer_write(cmdline_buf, "\0", 1, &n_written, OSAL_STREAM_DEFAULT);
+    cmdline = osal_stream_buffer_content(cmdline_buf, &cmdline_bytes);
 
-    rval = CreateProcessW(file,
-        cmdline, NULL, NULL, FALSE,
+    /* Convert to UTF16 for Windows API.
+     */
+    file_utf16 = osal_str_utf8_to_utf16_malloc(file, &file_utf16_sz);
+    cmdline_utf16 = osal_str_utf8_to_utf16_malloc(cmdline, &cmdline_utf16_sz);
+
+    rval = CreateProcessW(file_utf16,
+        cmdline_utf16, NULL, NULL, FALSE,
         CREATE_NEW_CONSOLE|NORMAL_PRIORITY_CLASS,
-        NULL, NULL, &si, &pi));
+        NULL, NULL, &si, &pi);
 
     if (!rval) {
         rval = CreateProcessW(NULL,
-            cmdline, NULL, NULL, FALSE,
+            cmdline_utf16, NULL, NULL, FALSE,
             CREATE_NEW_CONSOLE|NORMAL_PRIORITY_CLASS,
-            NULL, NULL, &si, &pi));
+            NULL, NULL, &si, &pi);
     }
 
     if (!rval) {
@@ -77,6 +100,11 @@ osalStatus osal_create_process(
         s = OSAL_STATUS_FAILED;
     }
 
+
+    os_free(file_utf16, file_utf16_sz);
+    os_free(cmdline_utf16, cmdline_utf16_sz);
+   
+    osal_stream_close(cmdline_buf, OSAL_STREAM_DEFAULT);
     return s;
 }
 
