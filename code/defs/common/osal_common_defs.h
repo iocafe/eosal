@@ -136,7 +136,7 @@ typedef enum osalBitmapFormat
     OSAL_GRAYSCALE8 = 8,
     OSAL_GRAYSCALE16 = 16,
     OSAL_RGB24 = 24 | OSAL_BITMAP_COLOR_FLAG,
-    OSAL_RGBA32 = 32  | OSAL_BITMAP_COLOR_FLAG | OSAL_BITMAP_ALPHA_CHANNEL_FLAG
+    OSAL_RGBA32 = 32 | OSAL_BITMAP_COLOR_FLAG | OSAL_BITMAP_ALPHA_CHANNEL_FLAG
 }
 osalBitmapFormat;
 
@@ -144,3 +144,19 @@ osalBitmapFormat;
  */
 #define OSAL_BGR_COLORS 0
 
+/* Get version (build date and time) and set X's if we do not have these
+ */
+#if defined __has_include
+#if __has_include ("eosal_version.h")
+#include "eosal_version.h"
+#endif
+#endif
+#ifndef OSAL_BUILD_DATE
+    #define OSAL_BUILD_DATE "XXXXXX"
+#endif
+#ifndef OSAL_BUILD_TIME
+    #define OSAL_BUILD_TIME "XXXX"
+#endif
+#ifndef OSAL_BUILD_DATETIME
+    #define OSAL_BUILD_DATETIME "XXXXXX-XXXX"
+#endif
