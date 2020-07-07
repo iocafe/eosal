@@ -17,6 +17,29 @@
 ****************************************************************************************************
 */
 
+/* EOSAL library version number.
+ */
+#ifndef EOSAL_VERSION
+#define EOSAL_VERSION "0.3"
+#endif
+
+/* Get version (build date and time) and set X's if we do not have these
+ */
+#if defined __has_include
+#if __has_include ("eosal_version.h")
+#include "eosal_version.h"
+#endif
+#endif
+#ifndef OSAL_BUILD_DATE
+    #define OSAL_BUILD_DATE "XXXXXX"
+#endif
+#ifndef OSAL_BUILD_TIME
+    #define OSAL_BUILD_TIME "XXXX"
+#endif
+#ifndef OSAL_BUILD_DATETIME
+    #define OSAL_BUILD_DATETIME "XXXXXX-XXXX"
+#endif
+
 /** Security and testing is difficult with security on, define to turn much of it off.
  */
 #ifndef EOSAL_RELAX_SECURITY
@@ -144,19 +167,3 @@ osalBitmapFormat;
  */
 #define OSAL_BGR_COLORS 0
 
-/* Get version (build date and time) and set X's if we do not have these
- */
-#if defined __has_include
-#if __has_include ("eosal_version.h")
-#include "eosal_version.h"
-#endif
-#endif
-#ifndef OSAL_BUILD_DATE
-    #define OSAL_BUILD_DATE "XXXXXX"
-#endif
-#ifndef OSAL_BUILD_TIME
-    #define OSAL_BUILD_TIME "XXXX"
-#endif
-#ifndef OSAL_BUILD_DATETIME
-    #define OSAL_BUILD_DATETIME "XXXXXX-XXXX"
-#endif
