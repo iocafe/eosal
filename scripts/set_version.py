@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 # set_version.py 6.7.2020/pekka
 # Change software version number (automatic date/time based versioning).
-# from time import gmtime, strftime
 import time
 
 def write_version_h():
