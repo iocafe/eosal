@@ -3,6 +3,7 @@
 eosal_windows_config.h
 eosal_linux_config.h
 eosal_esp32_config.h
+eosal_version.*
 
 # C++ objects and libs
 *.slo
