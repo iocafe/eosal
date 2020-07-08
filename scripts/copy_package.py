@@ -22,7 +22,7 @@ def mymakedir(path):
     except:
         pass
 
-def copy_package(sourcefile, appname, sysname, hw, organization):
+def copy_package(sourcefile, appname, sysname, arch, organization):
     if platform.system() == 'Windows':
         version_path = 'c:/coderoot/eosal'
         target_path = 'c:/coderoot/packages'
@@ -33,7 +33,7 @@ def copy_package(sourcefile, appname, sysname, hw, organization):
     version = read_version_txt(version_path)
 
     fname, ext = os.path.splitext(sourcefile)
-    dstname = organization + '-' + appname + '-' + version + '-' + sysname + '-' + hw + ext
+    dstname = organization + '-' + appname + '-' + version + '-' + sysname + '-' + arch + ext
     dstdir = target_path + '/' + sysname
     mymakedir(dstdir)
 
@@ -44,13 +44,15 @@ if __name__ == "__main__":
     # Get command line arguments
     appname = 'app'
     sysname = 'any'
-    hw = 'generic'
+    arch = 'generic'
     organization = 'iocafe'
     sourcefile = None
-#    sourcefile = '/tmp/candy_ioboard_tmp/esp32doit-devkit-v1/firmware.bin'
     expect = None
+    isfirst = True
     for a in sys.argv:
-        if a == "-?" or a == "-help" or a == "--help":
+        if isfirst:
+            isfirst = False
+        elif a == "-?" or a == "-help" or a == "--help":
             print ('python3 /coderoot/eosal/scripts/copy_package.py /tmp/.../firmware.bin -a candy -s esp32 -h espcam -o iocafe')
 
         elif a[0] == "-":
@@ -69,7 +71,7 @@ if __name__ == "__main__":
                 expect = None
 
             if expect == "h":
-                hw = a
+                arch = a
                 expect = None
 
             if expect == "o":
@@ -80,5 +82,4 @@ if __name__ == "__main__":
         print("No source file")
         exit()
 
-    # execute only if run as a script
-    copy_package(sourcefile, appname, sysname, hw, organization)
+    copy_package(sourcefile, appname, sysname, arch, organization)
