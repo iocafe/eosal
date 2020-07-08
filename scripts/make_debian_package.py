@@ -52,7 +52,9 @@ def make_debian_package(sourcepath, appname, description, sysname, arch, organiz
         coderoot = '/coderoot'
     packages_path = coderoot + '/packages' + '/' + sysname
     pack_name = sysname + '-' + arch
-    pack_path = sourcepath + '/pack/' + pack_name
+    # pack_root = sourcepath + '/pack'
+    pack_root = '/tmp/iocafe-pack'
+    pack_path = pack_root + '/' + pack_name
     DEBIAN_path = pack_path + '/DEBIAN'
     mymakedir(DEBIAN_path)
 
@@ -71,7 +73,6 @@ def make_debian_package(sourcepath, appname, description, sysname, arch, organiz
     source_file = src_bin + '/' + appname
 
     runcmd('sudo cp ' + source_file + ' ' + target_file)
-    # shutil.copy2(source_file, target_file) 
     print ('executable file ' + source_file + ' copied into package')
 
     runcmd('sudo chown --recursive root ' + pack_path + '/*')
@@ -79,12 +80,13 @@ def make_debian_package(sourcepath, appname, description, sysname, arch, organiz
     runcmd('sudo chmod --recursive 0755 ' + pack_path + '/*')
     runcmd('sudo chmod --recursive 04755 ' + target_bin + '/*')
 
-    os.chdir(sourcepath + '/pack')
+    os.chdir(pack_root)
     runcmd('dpkg-deb --build ' + pack_name)
 
     mymakedir(packages_path)
-    runcmd('mv ' + sourcepath + '/pack/' + pack_name + '.deb ' +  packages_path + '/' + organization + '-' + appname + '-' + version + '-' + sysname + '-' + arch + '.deb')
+    runcmd('mv ' + pack_root + '/' + pack_name + '.deb ' +  packages_path + '/' + organization + '-' + appname + '-' + version + '-' + sysname + '-' + arch + '.deb')
 
+    runcmd('sudo rm -Rf ' + pack_path)
 
 if __name__ == "__main__":
     # Get command line arguments
@@ -94,7 +96,6 @@ if __name__ == "__main__":
     arch = 'amd64'
     organization = 'iocafe'
     sourcepath = None
-    # sourcepath = '/coderoot/iocom/examples/candy'
     expect = None
     isfirst = True
     for a in sys.argv:
