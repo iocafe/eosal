@@ -119,6 +119,9 @@ else()
   if (NOT DEFINED ENV{E_ROOT})
     set(ENV{E_ROOT} "/coderoot")
   endif()
+
+  # DO not compile rpaths in. This allows installing to separate location
+  set(CMAKE_SKIP_RPATH TRUE)
 endif()
 
 # Postfix letter "d" for debug libraries and binaries.
