@@ -107,9 +107,9 @@ def make_debian_package(sourcepath, appname, description, sysname, arch, organiz
     write_control_file(DEBIAN_path, appname, description, arch, organization, version)
     finalcopyright = write_copyright_file(pack_path, appname, description, arch, organization, version)
 
-    target_bin = pack_path + '/coderoot/' + organization + '/bin/' + sysname
+    target_bin = pack_path + '/opt/' + organization + '/bin/' + sysname
     mymakedir(target_bin)
-    target_file = target_bin + '/' + organization + '-' + appname
+    target_file = target_bin + '/' + appname
 
     # Here /coderoot/bin/linux path doesn't include architecture. Perhaps it should, this
     # would be necessary for separating cross compilations to different architectures.
