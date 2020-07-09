@@ -1224,7 +1224,10 @@ static osalStatus osal_mbedtls_handshake(
     while (1)
     {
         ret = mbedtls_ssl_handshake(&so->ssl);
-        if (ret == 0) break;
+        if (ret == 0) {
+            osal_stream_flush(so->tcpsocket, 0);
+            break;
+        }
 
         if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
         {

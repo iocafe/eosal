@@ -40,12 +40,6 @@
 #include "code/defs/common/osal_minimalistic.h"
 #endif
 
-/** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
- */
-#ifndef OSAL_TRACE
-#define OSAL_TRACE 1
-#endif
-
 /** C compiler's debug build flag.
  */
 #ifndef OSAL_CC_DEBUG
@@ -60,6 +54,12 @@
  */
 #ifndef OSAL_DEBUG
 #define OSAL_DEBUG 1
+#endif
+
+/** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
+ */
+#ifndef OSAL_TRACE
+#define OSAL_TRACE 2
 #endif
 
 /** Define 1 is this is micro-controller environment. This is used to get sensible default
