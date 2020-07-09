@@ -73,14 +73,15 @@ osalStatus osal_create_process(
     gid_t gid;
 
     /* Set up PATH so that we can find system and iocom binaries.
+     * "/coderoot/bin/linux" ?
      */
     static os_char *const envp[] = {
         "PATH=/usr/local/sbin:"
         "/usr/sbin:"
         "/sbin:"
         "/usr/local/bin:"
-        "/usr/bin:/bin:"
-        "/coderoot/bin/linux", OS_NULL};
+        "/usr/bin:"
+        "/bin" , OS_NULL};
 
     /* Switch to use root user and group. We need setuid bit for binary file set to make
        this work. It would be nice use effective user and group, we have those already set by
@@ -97,22 +98,22 @@ osalStatus osal_create_process(
 #if OSAL_USE_SYSCALL_TO_ELEVATE
         if (syscall(SYS_setresuid, (uid_t)TARGET_UID, -1, -1) != 0) {
             osal_debug_error("insufficient user privileges.");
-            return OSAL_STATUS_FAILED;
+            return OSAL_STATUS_NO_ACCESS_RIGHT;
         }
 
         if (syscall(SYS_setresgid, (uid_t)TARGET_GID, -1, -1) != 0) {
             osal_debug_error("insufficient group privileges.");
-            return OSAL_STATUS_FAILED;
+            return OSAL_STATUS_NO_ACCESS_RIGHT;
         }
 #else
         if (setuid((uid_t)TARGET_UID) == -1) {
             osal_debug_error("insufficient user privileges.");
-            return OSAL_STATUS_FAILED;
+            return OSAL_STATUS_NO_ACCESS_RIGHT;
         }
 
         if (setgid((gid_t)TARGET_GID) == -1) {
             osal_debug_error("insufficient group privileges.");
-            return OSAL_STATUS_FAILED;
+            return OSAL_STATUS_NO_ACCESS_RIGHT;
         }
 #endif
         osal_trace("ELEVATION SUCCESS");
