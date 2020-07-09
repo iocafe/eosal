@@ -28,6 +28,7 @@
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 #include <iphlpapi.h>
+#include <malloc.h>
 
 #include "extensions/net/common/osal_shared_net_info.h"
 
@@ -1323,7 +1324,7 @@ osalStatus osal_socket_flush(
              */
             if (head < tail && head)
             {
-                tmpbuf = alloca(buf_sz);
+                tmpbuf = _alloca(buf_sz);
                 wrnow = buf_sz - tail;
                 os_memcpy(tmpbuf, buf + tail, wrnow);
                 os_memcpy(tmpbuf + wrnow, buf, head);
