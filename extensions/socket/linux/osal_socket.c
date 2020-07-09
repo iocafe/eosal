@@ -97,6 +97,7 @@ typedef struct osalSocket
     /** OS_TRUE if last write to socket has been blocked.
      */
     os_boolean write_blocked;
+    os_boolean write2_blocked;
 
     os_boolean wrset_enabled;
 
@@ -1410,7 +1411,12 @@ static osalStatus osal_socket_write2(
         rval = 0;
     }
 
-    mysocket->write_blocked = (os_boolean)!(rval == n);
+    if (rval == n) {
+        mysocket->write_blocked = mysocket->write2_blocked = OS_FALSE;
+    }
+    else {
+        mysocket->write2_blocked = OS_TRUE;
+    }
 
     *n_written = rval;
     return OSAL_SUCCESS;
@@ -1541,7 +1547,9 @@ osalStatus osal_socket_write(
             mysocket->head = head;
             mysocket->tail = tail;
             *n_written = count;
-            if (count) mysocket->write_blocked = OS_TRUE;
+            if (count < n) {
+                mysocket->write_blocked = OS_TRUE;
+            }
             return OSAL_SUCCESS;
         }
 
@@ -1723,7 +1731,7 @@ osalStatus osal_socket_select(
 
             FD_SET(handle, &rdset);
             mysocket->wrset_enabled = OS_FALSE;
-            if (mysocket->write_blocked || !mysocket->connected)
+            if (mysocket->write_blocked || mysocket->write2_blocked || !mysocket->connected)
             {
                 FD_SET(handle, &wrset);
                 mysocket->wrset_enabled = OS_TRUE;
