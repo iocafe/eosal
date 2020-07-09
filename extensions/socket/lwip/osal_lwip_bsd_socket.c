@@ -1138,7 +1138,8 @@ osalStatus osal_socket_flush(
     os_int flags)
 {
     osalSocket *mysocket;
-    os_short head, tail, wrnow;
+    os_char *buf;
+    os_short head, tail, wrnow, buf_sz;
     os_memsz nwr;
     osalStatus status;
 
@@ -1149,11 +1150,27 @@ osalStatus osal_socket_flush(
         tail = mysocket->tail;
         if (head != tail)
         {
+            buf = mysocket->buf;
+            buf_sz = mysocket->buf_sz;
+
+            /* Never split to two TCP packets.
+             */
+            if (head < tail && head)
+            {
+                os_char tmpbuf[buf_sz];
+                wrnow = buf_sz - tail;
+                os_memcpy(tmpbuf, buf + tail, wrnow);
+                os_memcpy(tmpbuf + wrnow, buf, head);
+                tail = 0;
+                head += wrnow;
+                os_memcpy(buf, tmpbuf, head);
+            }
+
             if (head < tail)
             {
-                wrnow = mysocket->buf_sz - tail;
+                wrnow = buf_sz - tail;
 
-                status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
+                status = osal_socket_write2(mysocket, buf + tail, wrnow, &nwr, flags);
                 if (status) goto getout;
                 if (nwr == wrnow) tail = 0;
                 else tail += (os_short)nwr;
@@ -1163,7 +1180,7 @@ osalStatus osal_socket_flush(
             {
                 wrnow = head - tail;
 
-                status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
+                status = osal_socket_write2(mysocket, buf + tail, wrnow, &nwr, flags);
                 if (status) goto getout;
                 tail += (os_short)nwr;
             }

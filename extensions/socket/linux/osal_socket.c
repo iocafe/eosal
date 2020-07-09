@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #include <net/if.h>
 #include <ifaddrs.h>
@@ -1210,6 +1211,76 @@ osalStatus osal_socket_flush(
     os_int flags)
 {
     osalSocket *mysocket;
+    os_char *buf, *tmpbuf;
+    os_memsz nwr;
+    os_short head, tail, wrnow, buf_sz;
+    osalStatus status;
+
+    if (stream)
+    {
+        mysocket = (osalSocket*)stream;
+        head = mysocket->head;
+        tail = mysocket->tail;
+
+        if (head != tail)
+        {
+            buf = mysocket->buf;
+            buf_sz = mysocket->buf_sz;
+
+            /* Never split to two TCP packets.
+             */
+            if (head < tail && head)
+            {
+                tmpbuf = alloca(buf_sz);
+                wrnow = buf_sz - tail;
+                os_memcpy(tmpbuf, buf + tail, wrnow);
+                os_memcpy(tmpbuf + wrnow, buf, head);
+                tail = 0;
+                head += wrnow;
+                os_memcpy(buf, tmpbuf, head);
+            }
+
+            if (head < tail)
+            {
+                wrnow = buf_sz - tail;
+
+                status = osal_socket_write2(mysocket, buf + tail, wrnow, &nwr, flags);
+                if (status) goto getout;
+                if (nwr == wrnow) tail = 0;
+                else tail += (os_short)nwr;
+            }
+
+            if (head > tail)
+            {
+                wrnow = head - tail;
+
+                status = osal_socket_write2(mysocket, buf + tail, wrnow, &nwr, flags);
+                if (status) goto getout;
+                tail += (os_short)nwr;
+            }
+
+            if (tail == head)
+            {
+                tail = head = 0;
+            }
+
+            mysocket->head = head;
+            mysocket->tail = tail;
+        }
+    }
+
+    return OSAL_SUCCESS;
+
+getout:
+    return status;
+}
+
+#if 0
+osalStatus osal_socket_flush(
+    osalStream stream,
+    os_int flags)
+{
+    osalSocket *mysocket;
     os_short head, tail, wrnow;
     os_memsz nwr;
     osalStatus status;
@@ -1255,7 +1326,7 @@ osalStatus osal_socket_flush(
 getout:
     return status;
 }
-
+#endif
 
 /**
 ****************************************************************************************************
@@ -1348,7 +1419,6 @@ getout:
     *n_written = 0;
     return status;
 }
-
 
 
 /**
