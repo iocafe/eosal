@@ -83,6 +83,8 @@ typedef struct
 
     uint8_t *buf;
     os_memsz n;
+
+    osalStatus status;
 }
 osalInstallerState;
 
@@ -339,11 +341,11 @@ getout:
   been transferred. The function closes the validates the file and if all good, marks it
   for boot.
 
-  @return  OSAL_SUCCESS if all is fine. Other values indicate an error.
+  @return  None.
 
 ****************************************************************************************************
 */
-osalStatus osal_finish_device_programming(
+void osal_finish_device_programming(
     os_uint checksum)
 {
     esp_err_t err;
@@ -351,34 +353,63 @@ osalStatus osal_finish_device_programming(
     if (osal_istate.buf) {
         if (osal_flush_programming_buffer())
         {
-            osal_cancel_device_programming();
-            return OSAL_STATUS_FAILED;
+            osal_istate.status = OSAL_STATUS_FAILED;
+            goto getout;
         }
 
         err = esp_ota_end(osal_istate.update_handle);
         if (err != ESP_OK) {
             if (err == ESP_ERR_OTA_VALIDATE_FAILED) {
+                osal_istate.status = OSAL_STATUS_CHECKSUM_ERROR;
                 osal_debug_error("image validation failed, image is corrupted");
             }
-            osal_debug_error_str("esp_ota_end failed: ", esp_err_to_name(err));
+            else {
+                osal_istate.status = OSAL_STATUS_FAILED;
+                osal_debug_error_str("esp_ota_end failed: ", esp_err_to_name(err));
+            }
             goto getout;
         }
 
         err = esp_ota_set_boot_partition(osal_istate.update_partition);
         if (err != ESP_OK) {
             osal_debug_error_str("esp_ota_set_boot_partition failed: ", esp_err_to_name(err));
+            osal_istate.status = OSAL_STATUS_FAILED;
             goto getout;
         }
-        osal_trace("prepare to restart system!");
+        osal_istate.status = OSAL_COMPLETED;
 
+        osal_trace("prepare to restart system!");
         osal_cancel_device_programming();
         esp_restart();
-        return OSAL_SUCCESS;
+        return;
     }
+
+    osal_istate.status = OSAL_STATUS_FAILED;
 
 getout:
     osal_cancel_device_programming();
-    return OSAL_STATUS_FAILED;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Check for errors in device programming.
+  @anchor get_device_programming_status
+
+  The get_device_programming_status() function can be called after osal_finish_device_programming()
+  to polll if programming has failed. Notice that success value OSAL_COMPLETED may never be
+  returned, if the IO device can reboots on successfull completion
+
+  @return  OSAL_PENDING Installer still running.
+           OSAL_COMPLETED Installation succesfully completed.
+           Other values indicate an device programming error.
+
+****************************************************************************************************
+*/
+osalStatus get_device_programming_status(void)
+{
+    return osal_istate.status;
 }
 
 

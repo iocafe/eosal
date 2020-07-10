@@ -94,16 +94,15 @@ typedef struct osalSocket
      */
     os_boolean is_ipv6;
 
-    /** OS_TRUE if last write to socket has been blocked.
+    /** OS_TRUE if last write to socket has been blocked (would block).
      */
-    os_boolean write_blocked;
     os_boolean write2_blocked;
 
     os_boolean wrset_enabled;
 
     /** OS_TRUE if connection has been reported by select.
      */
-    os_boolean connected;
+    /* os_boolean connected; */
 
     /** Ring buffer, OS_NULL if not used.
      */
@@ -1212,7 +1211,7 @@ osalStatus osal_socket_flush(
     os_int flags)
 {
     osalSocket *mysocket;
-    os_char *buf, *tmpbuf;
+    os_char *buf;
     os_memsz nwr;
     os_short head, tail, wrnow, buf_sz;
     osalStatus status;
@@ -1232,7 +1231,8 @@ osalStatus osal_socket_flush(
              */
             if (head < tail && head)
             {
-                tmpbuf = alloca(buf_sz);
+                /* tmpbuf = alloca(buf_sz); */
+                os_char tmpbuf[buf_sz];
                 wrnow = buf_sz - tail;
                 os_memcpy(tmpbuf, buf + tail, wrnow);
                 os_memcpy(tmpbuf + wrnow, buf, head);
@@ -1276,58 +1276,6 @@ getout:
     return status;
 }
 
-#if 0
-osalStatus osal_socket_flush(
-    osalStream stream,
-    os_int flags)
-{
-    osalSocket *mysocket;
-    os_short head, tail, wrnow;
-    os_memsz nwr;
-    osalStatus status;
-
-    if (stream)
-    {
-        mysocket = (osalSocket*)stream;
-        head = mysocket->head;
-        tail = mysocket->tail;
-        if (head != tail)
-        {
-            if (head < tail)
-            {
-                wrnow = mysocket->buf_sz - tail;
-
-                status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
-                if (status) goto getout;
-                if (nwr == wrnow) tail = 0;
-                else tail += (os_short)nwr;
-            }
-
-            if (head > tail)
-            {
-                wrnow = head - tail;
-
-                status = osal_socket_write2(mysocket, mysocket->buf + tail, wrnow, &nwr, flags);
-                if (status) goto getout;
-                tail += (os_short)nwr;
-            }
-
-            if (tail == head)
-            {
-                tail = head = 0;
-            }
-
-            mysocket->head = head;
-            mysocket->tail = tail;
-        }
-    }
-
-    return OSAL_SUCCESS;
-
-getout:
-    return status;
-}
-#endif
 
 /**
 ****************************************************************************************************
@@ -1411,12 +1359,7 @@ static osalStatus osal_socket_write2(
         rval = 0;
     }
 
-    if (rval == n) {
-        mysocket->write_blocked = mysocket->write2_blocked = OS_FALSE;
-    }
-    else {
-        mysocket->write2_blocked = OS_TRUE;
-    }
+    mysocket->write2_blocked = (os_boolean)(rval != n);
 
     *n_written = rval;
     return OSAL_SUCCESS;
@@ -1513,6 +1456,19 @@ osalStatus osal_socket_write(
                     break;
                 }
 
+                /* Never split to two TCP packets.
+                 */
+                if (head < tail && head)
+                {
+                    os_char tmpbuf[buf_sz];
+                    wrnow = buf_sz - tail;
+                    os_memcpy(tmpbuf, rbuf + tail, wrnow);
+                    os_memcpy(tmpbuf + wrnow, rbuf, head);
+                    tail = 0;
+                    head += wrnow;
+                    os_memcpy(rbuf, tmpbuf, head);
+                }
+
                 if (head < tail)
                 {
                     wrnow = buf_sz - tail;
@@ -1547,9 +1503,6 @@ osalStatus osal_socket_write(
             mysocket->head = head;
             mysocket->tail = tail;
             *n_written = count;
-            if (count < n) {
-                mysocket->write_blocked = OS_TRUE;
-            }
             return OSAL_SUCCESS;
         }
 
@@ -1731,7 +1684,7 @@ osalStatus osal_socket_select(
 
             FD_SET(handle, &rdset);
             mysocket->wrset_enabled = OS_FALSE;
-            if (mysocket->write_blocked || mysocket->write2_blocked || !mysocket->connected)
+            if (mysocket->write2_blocked /* || !mysocket->connected */)
             {
                 FD_SET(handle, &wrset);
                 mysocket->wrset_enabled = OS_TRUE;
@@ -1775,6 +1728,8 @@ osalStatus osal_socket_select(
         return OSAL_SUCCESS;
     }
 
+    /* Find out socket number
+     */
     for (socket_nr = 0; socket_nr < nstreams; socket_nr++)
     {
         mysocket = (osalSocket*)streams[socket_nr];
@@ -1792,10 +1747,6 @@ osalStatus osal_socket_select(
 
             if (mysocket->wrset_enabled) {
                 if (FD_ISSET (handle, &wrset)) {
-                    if (!mysocket->connected)
-                    {
-                        mysocket->connected = OS_TRUE;
-                    }
                     break;
                 }
             }

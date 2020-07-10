@@ -41,6 +41,7 @@ typedef struct
 {
     osalStream deb_stream;
     os_boolean installer_thread_running;
+    osalStatus status;
 }
 osalInstallerState;
 
@@ -151,25 +152,48 @@ osalStatus osal_program_device(
   been transferred. The function closes the temporary deian file, installs the debian package
   and deletes the temporary file.
 
-  @return  OSAL_SUCCESS if all is fine. Other values indicate an error.
+  @return  None.
 
 ****************************************************************************************************
 */
-osalStatus osal_finish_device_programming(
+void osal_finish_device_programming(
     os_uint checksum)
 {
     OSAL_UNUSED(checksum);
 
     osal_trace2("finish programming");
     if (osal_istate.deb_stream == OS_NULL) {
-        return OSAL_STATUS_FAILED;
+        osal_istate.status = OSAL_STATUS_FAILED;
+        return;
     }
+    osal_istate.status = OSAL_PENDING;
+
     osal_close_tmp_file();
     osal_install_package();
 
     /* osal_reboot(0); */
+}
 
-    return OSAL_SUCCESS;
+
+/**
+****************************************************************************************************
+
+  @brief Check for errors in device programming.
+  @anchor get_device_programming_status
+
+  The get_device_programming_status() function can be called after osal_finish_device_programming()
+  to polll if programming has failed. Notice that success value OSAL_COMPLETED may never be
+  returned, if the IO device can reboots on successfull completion
+
+  @return  OSAL_PENDING Installer still running.
+           OSAL_COMPLETED Installation succesfully completed.
+           Other values indicate an device programming error.
+
+****************************************************************************************************
+*/
+osalStatus get_device_programming_status(void)
+{
+    return osal_istate.status;
 }
 
 
@@ -270,7 +294,12 @@ static void osal_installer_thread(
     s = osal_create_process("dpkg", argv, OSAL_PROCESS_WAIT|OSAL_PROCESS_ELEVATE);
     if (s) {
         osal_debug_error("debian package installation failed");
+        osal_istate.status = s;
     }
+    else {
+        osal_istate.status = OSAL_COMPLETED;
+    }
+
 
     osal_delete_tmp_file();
     osal_istate.installer_thread_running = OS_FALSE;
@@ -302,6 +331,7 @@ static osalStatus osal_install_package(void)
     opt.thread_name = "installer";
 
     if (osal_istate.installer_thread_running) {
+        osal_istate.status = OSAL_STATUS_FAILED;
         return OSAL_STATUS_FAILED;
     }
 
@@ -310,5 +340,6 @@ static osalStatus osal_install_package(void)
 
     return OSAL_SUCCESS;
 }
+
 
 #endif

@@ -1527,6 +1527,19 @@ osalStatus osal_socket_write(
                     break;
                 }
 
+                /* Never split to two TCP packets.
+                 */
+                if (head < tail && head)
+                {
+                    os_char tmpbuf[buf_sz];
+                    wrnow = buf_sz - tail;
+                    os_memcpy(tmpbuf, rbuf + tail, wrnow);
+                    os_memcpy(tmpbuf + wrnow, rbuf, head);
+                    tail = 0;
+                    head += wrnow;
+                    os_memcpy(rbuf, tmpbuf, head);
+                }
+
                 if (head < tail)
                 {
                     wrnow = buf_sz - tail;

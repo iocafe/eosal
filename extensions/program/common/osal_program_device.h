@@ -25,8 +25,13 @@ osalStatus osal_program_device(
     os_char *buf,
     os_memsz buf_sz);
 
-osalStatus osal_finish_device_programming(
+void osal_finish_device_programming(
     os_uint checksum);
+
+/* Check for errors in device programming.
+ */
+osalStatus get_device_programming_status(
+    void);
 
 void osal_cancel_device_programming(
     void);
@@ -36,9 +41,10 @@ void osal_cancel_device_programming(
 /* Empty macros to allow build without programming support.
  */
 #define osal_initialize_programming()
-#define osal_start_device_programming() OSAL_STATUS_FAILED
-#define osal_program_device(b,s) OSAL_STATUS_FAILED
-#define osal_finish_device_programming(cs) OSAL_STATUS_FAILED
+#define osal_start_device_programming() OSAL_STATUS_NOT_SUPPORTED
+#define osal_program_device(b,s) OSAL_STATUS_NOT_SUPPORTED
+#define osal_finish_device_programming(cs)
+#define get_device_programming_status() OSAL_STATUS_NOT_SUPPORTED
 #define osal_cancel_device_programming()
 
 #endif
