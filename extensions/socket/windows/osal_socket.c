@@ -859,7 +859,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                 else
                 {
                     if (nic_is_ipv6) continue;
-                    os_memcpy(mysocket->send_mcast_ifaces + ni * OSAL_IPV4_BIN_ADDR_SZ,
+                    os_memcpy(mysocket->send_mcast_ifaces + ni * (size_t)OSAL_IPV4_BIN_ADDR_SZ,
                         nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                 }
                 ni++;
@@ -903,7 +903,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
                         if (inet_pton(AF_INET, ipbuf, nic_addr) != 1) {
                             osal_debug_error_str("osal_socket_open: inet_pton() failed:", ipbuf);
                         }
-                        os_memcpy(mysocket->send_mcast_ifaces + ni * OSAL_IPV4_BIN_ADDR_SZ,
+                        os_memcpy(mysocket->send_mcast_ifaces + ni * (size_t)OSAL_IPV4_BIN_ADDR_SZ,
                             nic_addr, OSAL_IPV4_BIN_ADDR_SZ);
                     }
                     ni++;
@@ -1472,7 +1472,7 @@ osalStatus osal_socket_write(
     os_int count, wrnow;
     osalSocket *mysocket;
     osalStatus status;
-    os_uchar *rbuf;
+    os_char *rbuf, *tmpbuf;
     os_short head, tail, buf_sz, nexthead;
     os_memsz nwr;
     os_boolean all_not_flushed;
@@ -1508,6 +1508,7 @@ osalStatus osal_socket_write(
             tail = mysocket->tail;
             all_not_flushed = OS_FALSE;
             count = 0;
+            tmpbuf = _alloca(buf_sz);
 
             while (osal_go())
             {
@@ -1531,7 +1532,6 @@ osalStatus osal_socket_write(
                  */
                 if (head < tail && head)
                 {
-                    os_char tmpbuf[buf_sz];
                     wrnow = buf_sz - tail;
                     os_memcpy(tmpbuf, rbuf + tail, wrnow);
                     os_memcpy(tmpbuf + wrnow, rbuf, head);

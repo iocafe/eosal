@@ -83,6 +83,7 @@ osalStatus osal_create_process(
     file_utf16 = osal_str_utf8_to_utf16_malloc(file, &file_utf16_sz);
     cmdline_utf16 = osal_str_utf8_to_utf16_malloc(cmdline, &cmdline_utf16_sz);
 
+    os_memclear(&pi, sizeof(pi));
     rval = CreateProcessW(file_utf16,
         cmdline_utf16, NULL, NULL, FALSE,
         CREATE_NEW_CONSOLE|NORMAL_PRIORITY_CLASS,
@@ -98,6 +99,10 @@ osalStatus osal_create_process(
     if (!rval) {
         osal_debug_error_str("Starting process failed: ", file);
         s = OSAL_STATUS_FAILED;
+    }
+    else {
+        CloseHandle( pi.hProcess ); //  WE DO NOT WAIT FOR WaitForSingleObject( pi.hProcess, INFINITE );
+        CloseHandle( pi.hThread );
     }
 
 
