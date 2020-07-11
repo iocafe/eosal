@@ -282,6 +282,7 @@ static void osal_installer_thread(
 {
     osalStatus s;
     static os_char *const argv[] = {"dpkg", "-i", "--force-all", deb_path, OS_NULL};
+    os_int exit_status;
     OSAL_UNUSED(prm);
 
     osal_trace("program device: installer thread created");
@@ -291,14 +292,29 @@ static void osal_installer_thread(
     osal_istate.installer_thread_running = OS_TRUE;
     osal_event_set(done);
 
-    s = osal_create_process("dpkg", argv, OSAL_PROCESS_WAIT|OSAL_PROCESS_ELEVATE);
+    s = osal_create_process("dpkg", argv, &exit_status, OSAL_PROCESS_WAIT|OSAL_PROCESS_ELEVATE);
     if (s) {
         osal_debug_error("debian package installation failed");
         osal_istate.status = s;
     }
     else {
-        osal_istate.status = OSAL_COMPLETED;
+        if (exit_status)
+        {
+            osal_debug_error("debian package installation failed");
+            osal_istate.status = OSAL_STATUS_PROGRAM_INSTALLATION_FAILED;
+        }
+        else
+        {
+            osal_istate.status = OSAL_COMPLETED;
+        }
     }
+
+    /*
+    dpkg exit status:
+    - 0 The requested action was successfully performed. Or a check or assertion command returned true.
+    - 1 A check or assertion command returned false.
+    - 2 Fatal or unrecoverable error due to invalid command-line usage, or interactions with the system, such as accesses to the database, memory allocations, etc.
+    */
 
     osal_delete_tmp_file();
     osal_istate.installer_thread_running = OS_FALSE;

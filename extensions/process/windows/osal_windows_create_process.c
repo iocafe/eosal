@@ -32,6 +32,8 @@
 
   @param   file Name or path to file to execute.
   @param   argv Array of command line arguments. OS_NULL pointer terminates the array.
+  @param   exit_status Pointer where to store exit status of process if OSAL_PROCESS_WAIT
+           was given. OS_NULL if not needed.
   @param   flags OSAL_PROCESS_DEFAULT just starts the process. OSAL_PROCESS_WAIT causes
            the function to return only when started process has been terminated.
   @return  OSAL_SUCCESS if new process was started. Other return values indicate an error.
@@ -41,6 +43,7 @@
 osalStatus osal_create_process(
     const os_char *file,
     os_char *const argv[],
+    os_int *exit_status,
     os_int flags)
 {
     PROCESS_INFORMATION pi;
@@ -54,6 +57,12 @@ osalStatus osal_create_process(
     osalStatus s = OSAL_SUCCESS;
     os_int pos;
     int rval;
+
+    /* Set zero exit status by default.
+     */
+    if (exit_status) {
+        *exit_status = 0;
+    }
 
     os_memclear(&si, sizeof(si));
     si.dwXSize = 800;
@@ -98,13 +107,14 @@ osalStatus osal_create_process(
 
     if (!rval) {
         osal_debug_error_str("Starting process failed: ", file);
-        s = OSAL_STATUS_FAILED;
+        s = OSAL_STATUS_CREATE_PROCESS_FAILED;
     }
     else {
-        CloseHandle( pi.hProcess ); //  WE DO NOT WAIT FOR WaitForSingleObject( pi.hProcess, INFINITE );
+        //  WE DO NOT WAIT FOR WaitForSingleObject( pi.hProcess, INFINITE );
+        // Getting exit status missing
+        CloseHandle( pi.hProcess );
         CloseHandle( pi.hThread );
     }
-
 
     os_free(file_utf16, file_utf16_sz);
     os_free(cmdline_utf16, cmdline_utf16_sz);

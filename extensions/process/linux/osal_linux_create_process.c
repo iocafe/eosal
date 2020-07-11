@@ -53,6 +53,8 @@
 
   @param   file Name or path to file to execute.
   @param   argv Array of command line arguments. OS_NULL pointer terminates the array.
+  @param   exit_status Pointer where to store exit status of process if OSAL_PROCESS_WAIT
+           was given. OS_NULL if not needed.
   @param   flags OSAL_PROCESS_DEFAULT just starts the process. OSAL_PROCESS_WAIT causes
            the function to return only when started process has been terminated.
 
@@ -63,6 +65,7 @@
 osalStatus osal_create_process(
     const os_char *file,
     os_char *const argv[],
+    os_int *exit_status,
     os_int flags)
 {
     posix_spawnattr_t spawnattr;
@@ -82,6 +85,12 @@ osalStatus osal_create_process(
         "/usr/local/bin:"
         "/usr/bin:"
         "/bin" , OS_NULL};
+
+    /* Set zero exit status by default.
+     */
+    if (exit_status) {
+        *exit_status = 0;
+    }
 
     /* Switch to use root user and group. We need setuid bit for binary file set to make
        this work. It would be nice use effective user and group, we have those already set by
@@ -136,6 +145,9 @@ osalStatus osal_create_process(
         if (flags & OSAL_PROCESS_WAIT) {
             if (waitpid(pid, &status, 0) != -1) {
                 osal_debug_error_int("child process exited with status ", status);
+                if (exit_status) {
+                    *exit_status = status;
+                }
             } else {
                 osal_debug_error("waiting for process exit failed");
                 s = OSAL_STATUS_FAILED;
@@ -146,7 +158,7 @@ osalStatus osal_create_process(
     }
     else {
         osal_debug_error_str("starting process failed: ", file);
-        s = OSAL_STATUS_FAILED;
+        s = OSAL_STATUS_CREATE_PROCESS_FAILED;
     }
 
     /* Drop privileges.

@@ -26,6 +26,7 @@
 osalStatus osal_create_process(
     const os_char *file,
     os_char *const argv[],
+    os_int *exit_status,
     os_int flags);
 
 #endif

@@ -203,6 +203,14 @@ typedef enum
      */
     OSAL_STATUS_NO_ACCESS_RIGHT = 186,
 
+    /** Creating new process has failed.
+     */
+    OSAL_STATUS_CREATE_PROCESS_FAILED = 188,
+
+    /** Program installation has failed.
+     */
+    OSAL_STATUS_PROGRAM_INSTALLATION_FAILED = 189,
+
     /** Socket or other stream has been closed.
      */
     OSAL_STATUS_STREAM_CLOSED = 190,
