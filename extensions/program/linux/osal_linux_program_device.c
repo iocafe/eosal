@@ -300,7 +300,6 @@ static void osal_installer_thread(
         osal_istate.status = OSAL_COMPLETED;
     }
 
-
     osal_delete_tmp_file();
     osal_istate.installer_thread_running = OS_FALSE;
 }
