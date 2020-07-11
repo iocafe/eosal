@@ -153,6 +153,14 @@ typedef enum
      */
     OSAL_STATUS_MEMORY_ALLOCATION_FAILED = 138,
 
+    /** Unable to read file, persisten block, etc.
+     */
+    OSAL_STATUS_READING_FILE_FAILED = 140,
+
+    /** Unable to write file, persisten block, etc.
+     */
+    OSAL_STATUS_WRITING_FILE_FAILED = 142,
+
     /** Setting computer's clock failed.
      */
     OSAL_STATUS_CLOCK_SET_FAILED = 150,
