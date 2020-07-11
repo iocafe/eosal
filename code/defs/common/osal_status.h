@@ -163,6 +163,14 @@ typedef enum
 	 */
     OSAL_STATUS_STREAM_WOULD_BLOCK = 160,
 
+    /** Writing program to device has failed.
+     */
+    OSAL_DEVICE_PROGRAMMING_FAILED = 166,
+
+    /** Program installation has failed.
+     */
+    OSAL_STATUS_PROGRAM_INSTALLATION_FAILED = 168,
+
     /** Not connected to a WiFi network.
      */
     OSAL_STATUS_NO_WIFI = 170,
@@ -206,10 +214,6 @@ typedef enum
     /** Creating new process has failed.
      */
     OSAL_STATUS_CREATE_PROCESS_FAILED = 188,
-
-    /** Program installation has failed.
-     */
-    OSAL_STATUS_PROGRAM_INSTALLATION_FAILED = 189,
 
     /** Socket or other stream has been closed.
      */

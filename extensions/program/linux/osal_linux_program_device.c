@@ -118,6 +118,7 @@ osalStatus osal_start_device_programming(void)
   to temporary file to hold the debian package.
 
   @return  OSAL_SUCCESS if all is fine. Other values indicate an error.
+           OSAL_DEVICE_PROGRAMMING_FAILED to indicate failed programming.
 
 ****************************************************************************************************
 */
@@ -135,7 +136,7 @@ osalStatus osal_program_device(
     s = osal_file_write(osal_istate.deb_stream, buf, buf_sz, &n_written, OSAL_STREAM_DEFAULT);
     if (s || n_written != buf_sz) {
         osal_cancel_device_programming();
-        return s;
+        return OSAL_DEVICE_PROGRAMMING_FAILED;
     }
 
     return OSAL_SUCCESS;

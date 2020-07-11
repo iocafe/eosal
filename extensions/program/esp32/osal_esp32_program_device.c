@@ -267,6 +267,7 @@ osalStatus osal_start_device_programming(void)
   header is verified.
 
   @return  OSAL_SUCCESS if all is fine. Other values indicate an error.
+           OSAL_DEVICE_PROGRAMMING_FAILED to indicate failed programming.
 
 ****************************************************************************************************
 */
@@ -327,7 +328,7 @@ osalStatus osal_program_device(
 
 getout:
     osal_cancel_device_programming();
-    return OSAL_STATUS_FAILED;
+    return OSAL_DEVICE_PROGRAMMING_FAILED;
 }
 
 
