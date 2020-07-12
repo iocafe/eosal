@@ -230,6 +230,8 @@ osalStatus osal_start_device_programming(void)
 
     osal_trace("start programming");
 
+    osal_control_interrupts(OS_FALSE);
+
     osal_istate.configured = esp_ota_get_boot_partition();
     osal_istate.running = esp_ota_get_running_partition();
 
@@ -248,6 +250,10 @@ osalStatus osal_start_device_programming(void)
     osal_trace_int("at offset: ", osal_istate.update_partition->address);
 
     osal_istate.buf = (uint8_t*)os_malloc(OSAL_PROG_BLOCK_SZ, OS_NULL);
+    if (osal_istate.buf == OS_NULL) {
+        osal_control_interrupts(OS_TRUE);
+        return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+    }
     osal_istate.n = 0;
     osal_istate.hdr_verified = OS_FALSE;
     osal_istate.update_handle = 0;
@@ -432,6 +438,7 @@ void osal_cancel_device_programming(void)
         osal_trace("programming buffer released");
         os_free(osal_istate.buf, OSAL_PROG_BLOCK_SZ);
         osal_istate.buf = OS_NULL;
+        osal_control_interrupts(OS_TRUE);
     }
 }
 
