@@ -76,7 +76,7 @@ static OS_FLASH_MEM os_ushort crc_table[] = {
   if (checksum == os_checksum(data, 6, OS_NULL)) calculated in parts equal to calculated at once...
 
   @param   buf Pointer to the buffer.
-  @param   n Number of bytes in buffer.
+  @param   n Number of bytes in buffer. Negative values are same as zero.
   @param   append_to_checksum Set OS_NULL to calculate checksum from buffer. If nonzero, on
            entry this contains previous checksum, and on exit updated checksum.
   @return  Checksum.
@@ -95,7 +95,7 @@ os_ushort os_checksum(
     if (append_to_checksum) w = *append_to_checksum;
 
     count = (os_int)n;
-    while (count--)
+    while (count-- > 0)
     {
         tmp = (os_uchar)(*buf++) ^ w;
         w >>= 8;

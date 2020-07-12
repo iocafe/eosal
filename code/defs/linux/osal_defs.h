@@ -55,6 +55,7 @@
 #endif
 
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG is required to trace.
+ *  TRACE MODE 3 TIMING IS NOT USEFUL, FIX BEFORE USING
  */
 #ifndef OSAL_TRACE
 #define OSAL_TRACE 2
