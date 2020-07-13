@@ -20,7 +20,7 @@
 /* EOSAL library version number.
  */
 #ifndef EOSAL_VERSION
-#define EOSAL_VERSION "0.3"
+#define EOSAL_VERSION "200712"
 #endif
 
 /* Get version (build date and time) and set X's if we do not have these
