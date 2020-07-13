@@ -153,6 +153,9 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_USE_GLOBAL_SETTINGS 0x40000
 
+/** Disable checksum calculation on the stream (iocom streamer only).
+ */
+#define OSAL_STREAM_DISABLE_CHECKSUM 0x80000
 
 /**
 ****************************************************************************************************
