@@ -91,10 +91,6 @@ typedef enum
    */
   OSAL_RMON_SOCKET_COUNT = 6,
 
-  /** Number of open serial ports.
-   */
-  OSAL_RMON_SERIAL_PORT_COUNT = 7,
-
   /** Resource monitor table size
    */
   OSAL_RMON_COUNTERS_SZ

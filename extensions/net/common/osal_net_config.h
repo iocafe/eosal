@@ -18,7 +18,9 @@
 
 /** Default buffer size for host (computer) name and port, etc.
  */
+#ifndef OSAL_HOST_BUF_SZ
 #define OSAL_HOST_BUF_SZ 64
+#endif
 
 /** Default buffer size for IP address. 46 is typical default, we use 48 since we use angle
     brackets to mark IPv6 addressess.

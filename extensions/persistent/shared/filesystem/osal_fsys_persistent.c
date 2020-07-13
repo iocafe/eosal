@@ -24,9 +24,9 @@
  */
 #ifndef OSAL_PERSISTENT_ROOT
 #ifdef OSAL_WINDOWS
-  #define OSAL_PERSISTENT_ROOT "c:\\coderoot\\config"
+  #define OSAL_PERSISTENT_ROOT "c:\\coderoot\\data"
 #else
-  #define OSAL_PERSISTENT_ROOT "/coderoot/config"
+  #define OSAL_PERSISTENT_ROOT "/coderoot/data"
 #endif
 #endif
 
