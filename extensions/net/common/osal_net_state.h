@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/common/osal_net_state.h
+  @file    net/common/osal_net_state.h
   @brief   OSAL stream API for sockets.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -36,7 +36,7 @@ osalNetStateNotificationHandler;
 /** Maximum number of notification handlers.
  */
 #ifndef OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS
-#define OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS 2
+#define OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS 3
 #endif
 
 /** Gazerbeam connection flags.
@@ -48,6 +48,17 @@ typedef enum
     OSAL_NS_GAZERBEAM_CONFIGURATION_MATCH = 2
 }
 osalGazerbeamConnectionState;
+
+/** Enumeration of network state items (other than counts).
+ */
+typedef enum
+{
+    OSAL_LIGHTHOUSE_NOT_USED = 0,
+    OSAL_LIGHTHOUSE_OK = 1,
+    OSAL_LIGHTHOUSE_NOT_VISIBLE = 2,
+    OSAL_NO_LIGHTHOUSE_FOR_THIS_IO_NETWORK = 3
+}
+osaLightHouseClientState;
 
 /** Enumeration of network state items (other than counts).
  */
@@ -76,17 +87,6 @@ typedef enum
 }
 osalNetStateItem;
 
-
-/** Enumeration of network state items (other than counts).
- */
-typedef enum
-{
-    OSAL_LIGHTHOUSE_NOT_USED = 0,
-    OSAL_LIGHTHOUSE_OK = 1,
-    OSAL_LIGHTHOUSE_NOT_VISIBLE = 2,
-    OSAL_NO_LIGHTHOUSE_FOR_THIS_IO_NETWORK = 3
-}
-osaLightHouseClientState;
 
 /** Network state information structure.
  */

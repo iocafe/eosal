@@ -62,6 +62,7 @@ OSAL_C_HEADER_BEGINS
 #include "extensions/net/common/osal_dns.h"
 #include "extensions/net/common/osal_net_config.h"
 #include "extensions/net/common/osal_net_state.h"
+#include "extensions/net/common/osal_net_morse_code.h"
 #include "extensions/socket/common/osal_socket.h"
 #include "extensions/socket/common/osal_socket_util.h"
 #include "extensions/tls/common/osal_tls.h"

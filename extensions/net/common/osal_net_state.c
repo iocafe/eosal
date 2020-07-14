@@ -198,8 +198,9 @@ osalStatus osal_add_network_state_notification_handler(
         }
     }
 
-    /* Too many error handlers.
+    /* Too many notification handlers!
      */
+    osal_debug_error("Limit OSAL_MAX_NET_STATE_NOTIFICATION_HANDLERS exceeded");
     return OSAL_STATUS_FAILED;
 }
 
