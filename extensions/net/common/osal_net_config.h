@@ -4,9 +4,10 @@
   @brief   OSAL stream API for sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    9.2.2020
+  @date    14.7.2020
 
-  Network configuration structures and defines.
+  Network configuration structures and defines. These defines and structures are shares across
+  base eosal, iocom, and extension libraries.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -174,7 +175,7 @@ osalNetworkInterface;
 
 /** Flat structure to for save into persistWifi network name and password.
  */
-typedef struct osalWifiNetworkBuf
+typedef struct osalFlatWifiNetworkConf
 {
     /** WiFi network name, same as SSID.
      */
@@ -184,14 +185,14 @@ typedef struct osalWifiNetworkBuf
      */
     os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
 }
-osalWifiNetworkBuf;
+osalFlatWifiNetworkConf;
 
 /** Structure to save Wifi and other basic network configuration as persistent
-    block numer OS_PBNR_WIFI. If set, these override
+    block numer OS_PBNR_NODE_CONF. If set, these override
  */
-typedef struct osalWifiPersistent
+typedef struct osalNodeConfOverrides
 {
-    osalWifiNetworkBuf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
+    osalFlatWifiNetworkConf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
 
     /* If set, these will override settings elsewhere.
      */
@@ -199,11 +200,11 @@ typedef struct osalWifiPersistent
     os_char device_nr_override[OSAL_DEVICE_NR_STR_SZ];
     os_char connect_to_override[OSAL_HOST_BUF_SZ];
 }
-osalWifiPersistent;
+osalNodeConfOverrides;
 
-/** Information anout one light house end point.
+/** Information about a light house end point.
  */
-typedef struct iocLighthouseEndPointInfo
+typedef struct osalLighthouseEndPointInfo
 {
     /** Transport, IOC_DEFAULT_TRANSPORT (0) if not initialize, otherwise either
         IOC_TCP_SOCKET (1) or IOC_TLS_SOCKET (2).
@@ -218,22 +219,22 @@ typedef struct iocLighthouseEndPointInfo
      */
     os_boolean is_ipv6;
 }
-iocLighthouseEndPointInfo;
+osalLighthouseEndPointInfo;
 
 /** Maximum number of end points to store into info
  */
-#define IOC_LIGHTHOUSE_INFO_MAX_END_POINTS 4
+#define OSAL_LIGHTHOUSE_INFO_MAX_END_POINTS 4
 
 /** Information for light house (multicast device discovery) from node configuration.
  */
-typedef struct iocLighthouseInfo
+typedef struct osalLighthouseInfo
 {
     /** End point array
      */
-    iocLighthouseEndPointInfo epoint[IOC_LIGHTHOUSE_INFO_MAX_END_POINTS];
+    osalLighthouseEndPointInfo epoint[OSAL_LIGHTHOUSE_INFO_MAX_END_POINTS];
 
     /** Number of end points in array.
      */
     os_int n_epoints;
 }
-iocLighthouseInfo;
+osalLighthouseInfo;
