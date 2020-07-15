@@ -134,7 +134,6 @@ endif()
 # Include paths.
 include_directories("$ENV{E_ROOT}/eosal")
 include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
-# include_directories("$ENV{E_ROOT}/${E_PROJECT}")
 
 # Library path.
 set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_COMPILER}")

@@ -367,6 +367,12 @@ void osal_set_network_state_str(
             if (!os_strcmp(str, ns->io_network_name)) return;
             os_strncpy(ns->io_network_name, str, OSAL_NETWORK_NAME_SZ);
             break;
+
+        case OSAL_NS_LIGHTHOUSE_CONNECT_TO:
+            if (!os_strcmp(str, ns->lighthouse_connect_to)) return;
+            os_strncpy(ns->lighthouse_connect_to, str, OSAL_NETWORK_NAME_SZ);
+            break;
+
 #endif
         default:
             return;
@@ -409,6 +415,10 @@ void osal_get_network_state_str(
 
         case OSAL_NS_IO_NETWORK_NAME:
             os_strncpy(str, ns->io_network_name, str_sz);
+            break;
+
+        case OSAL_NS_LIGHTHOUSE_CONNECT_TO:
+            os_strncpy(str, ns->lighthouse_connect_to, str_sz);
             break;
 #endif
         default:

@@ -80,6 +80,7 @@ typedef enum
     OSAL_NS_WIFI_NETWORK_NAME,
     OSAL_NS_WIFI_PASSWORD,
     OSAL_NS_IO_NETWORK_NAME,
+    OSAL_NS_LIGHTHOUSE_CONNECT_TO,
     OSAL_NS_LIGHTHOUSE_STATE,
     OSAL_NS_GAZERBEAM_CONNECTED,
     OSAL_NS_SECURITY_CONF_ERROR,
@@ -138,6 +139,10 @@ typedef struct osalNetworkState
     /** Light house client state.
      */
     osaLightHouseClientState lighthouse_state;
+
+    /** Connect to string determined by light house.
+     */
+    os_char lighthouse_connect_to[OSAL_IPADDR_AND_PORT_SZ];
 
     /** IO device network name.
      */
