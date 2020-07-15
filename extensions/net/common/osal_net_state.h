@@ -79,6 +79,7 @@ typedef enum
     OSAL_NS_NETWORK_CONNECTED,
     OSAL_NS_WIFI_NETWORK_NAME,
     OSAL_NS_WIFI_PASSWORD,
+    OSAL_NS_IO_NETWORK_NAME,
     OSAL_NS_LIGHTHOUSE_STATE,
     OSAL_NS_GAZERBEAM_CONNECTED,
     OSAL_NS_SECURITY_CONF_ERROR,
@@ -87,6 +88,11 @@ typedef enum
 }
 osalNetStateItem;
 
+
+/** Maximum network name string length. This should match IOC_NETWORK_NAME_SZ,
+    but used for info only so non critical.
+ */
+#define OSAL_NETWORK_NAME_SZ 24
 
 /** Network state information structure.
  */
@@ -132,6 +138,11 @@ typedef struct osalNetworkState
     /** Light house client state.
      */
     osaLightHouseClientState lighthouse_state;
+
+    /** IO device network name.
+     */
+    os_char io_network_name[OSAL_NETWORK_NAME_SZ];
+
 #endif
 
     /** Gazerbeam connected.

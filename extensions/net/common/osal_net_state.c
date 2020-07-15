@@ -362,6 +362,11 @@ void osal_set_network_state_str(
             if (!os_strcmp(str, ns->wifi_network_password[index])) return;
             os_strncpy(ns->wifi_network_password[index], str, OSAL_WIFI_PRM_SZ);
             break;
+
+        case OSAL_NS_IO_NETWORK_NAME:
+            if (!os_strcmp(str, ns->io_network_name)) return;
+            os_strncpy(ns->io_network_name, str, OSAL_NETWORK_NAME_SZ);
+            break;
 #endif
         default:
             return;
@@ -400,6 +405,10 @@ void osal_get_network_state_str(
         case OSAL_NS_WIFI_PASSWORD:
             if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
             os_strncpy(str, ns->wifi_network_password[index], str_sz);
+            break;
+
+        case OSAL_NS_IO_NETWORK_NAME:
+            os_strncpy(str, ns->io_network_name, str_sz);
             break;
 #endif
         default:
