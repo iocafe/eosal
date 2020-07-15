@@ -180,6 +180,7 @@ osalStatus osal_add_network_state_notification_handler(
 {
     osalNetStateNotificationHandler *handler;
     int i;
+    OSAL_UNUSED(reserved);
 
     /* Make sure that network state is initialized.
      */
@@ -352,13 +353,13 @@ void osal_set_network_state_str(
             break;
 
         case OSAL_NS_WIFI_NETWORK_NAME:
-            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) return;
             if (!os_strcmp(str, ns->wifi_network_name[index])) return;
             os_strncpy(ns->wifi_network_name[index], str, OSAL_WIFI_PRM_SZ);
             break;
 
         case OSAL_NS_WIFI_PASSWORD:
-            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) break;
+            if (index < 0 || index >= OSAL_MAX_NRO_WIFI_NETWORKS) return;
             if (!os_strcmp(str, ns->wifi_network_password[index])) return;
             os_strncpy(ns->wifi_network_password[index], str, OSAL_WIFI_PRM_SZ);
             break;
@@ -369,8 +370,9 @@ void osal_set_network_state_str(
             break;
 
         case OSAL_NS_LIGHTHOUSE_CONNECT_TO:
-            if (!os_strcmp(str, ns->lighthouse_connect_to)) return;
-            os_strncpy(ns->lighthouse_connect_to, str, OSAL_NETWORK_NAME_SZ);
+            if (index < 0 || index >= OSAL_NSTATE_MAX_CONNECTIONS) return;
+            if (!os_strcmp(str, ns->lighthouse_connect_to[index])) return;
+            os_strncpy(ns->lighthouse_connect_to[index], str, OSAL_NETWORK_NAME_SZ);
             break;
 
 #endif
@@ -418,7 +420,8 @@ void osal_get_network_state_str(
             break;
 
         case OSAL_NS_LIGHTHOUSE_CONNECT_TO:
-            os_strncpy(str, ns->lighthouse_connect_to, str_sz);
+        if (index < 0 || index >= OSAL_NSTATE_MAX_CONNECTIONS) break;
+            os_strncpy(str, ns->lighthouse_connect_to[index], str_sz);
             break;
 #endif
         default:

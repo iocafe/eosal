@@ -68,7 +68,7 @@
 #define OSAL_MAX_NRO_WIFI_NETWORKS 2
 #endif
 
-/** Maximum network name string length.
+/** Maximum network name string length. This should match IOC_NETWORK_NAME_SZ.
  */
 #define OSAL_NETWORK_NAME_SZ 24
 

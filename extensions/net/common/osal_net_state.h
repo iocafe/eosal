@@ -90,10 +90,13 @@ typedef enum
 osalNetStateItem;
 
 
-/** Maximum network name string length. This should match IOC_NETWORK_NAME_SZ,
-    but used for info only so non critical.
+
+/** Maximum number of connections about which to store information into network state.
  */
-#define OSAL_NETWORK_NAME_SZ 24
+#ifndef OSAL_NSTATE_MAX_CONNECTIONS
+#define OSAL_NSTATE_MAX_CONNECTIONS 2
+#endif
+
 
 /** Network state information structure.
  */
@@ -142,12 +145,11 @@ typedef struct osalNetworkState
 
     /** Connect to string determined by light house.
      */
-    os_char lighthouse_connect_to[OSAL_IPADDR_AND_PORT_SZ];
+    os_char lighthouse_connect_to[OSAL_NSTATE_MAX_CONNECTIONS][OSAL_IPADDR_AND_PORT_SZ];
 
     /** IO device network name.
      */
     os_char io_network_name[OSAL_NETWORK_NAME_SZ];
-
 #endif
 
     /** Gazerbeam connected.
