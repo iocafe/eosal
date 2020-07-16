@@ -68,6 +68,12 @@
 #define OSAL_MAX_NRO_WIFI_NETWORKS 2
 #endif
 
+/** Maximum number of connections about which to store information into network state.
+ */
+#ifndef OSAL_NSTATE_MAX_CONNECTIONS
+#define OSAL_NSTATE_MAX_CONNECTIONS 2
+#endif
+
 /** Maximum network name string length. This should match IOC_NETWORK_NAME_SZ.
  */
 #define OSAL_NETWORK_NAME_SZ 24
@@ -193,13 +199,20 @@ typedef struct osalFlatNetworkInterface
     const os_char dns_address_2[OSAL_IPADDR_SZ];
     os_boolean no_dhcp;
     os_boolean send_udp_multicasts;
-    os_boolean receive_udp_multicasts;
 #endif
 #if OSAL_SUPPORT_MAC_CONF
     const os_char mac[OSAL_MAC_SZ];
 #endif
 }
 osalFlatNetworkInterface;
+
+/** Flat structure to for connection overdrives.
+ */
+typedef struct osalFlatConnectionOverride
+{
+    os_char parameters[OSAL_HOST_BUF_SZ];
+}
+osalFlatConnectionOverride;
 
 
 /** Structure to save Wifi and other basic network configuration as persistent
@@ -211,7 +224,8 @@ typedef struct osalNodeConfOverrides
      */
     os_char network_name_override[OSAL_NETWORK_NAME_SZ];
     os_char device_nr_override[OSAL_DEVICE_NR_STR_SZ];
-    os_char connect_to_override[OSAL_HOST_BUF_SZ];
+    // os_char connect_to_override[OSAL_HOST_BUF_SZ];
+    osalFlatConnectionOverride connect_to_override[OSAL_NSTATE_MAX_CONNECTIONS];
 
 #if OSAL_SUPPORT_WIFI_NETWORK_CONF
     osalFlatWifiNetworkConf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];

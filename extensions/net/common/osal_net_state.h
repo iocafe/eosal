@@ -90,14 +90,6 @@ typedef enum
 osalNetStateItem;
 
 
-
-/** Maximum number of connections about which to store information into network state.
- */
-#ifndef OSAL_NSTATE_MAX_CONNECTIONS
-#define OSAL_NSTATE_MAX_CONNECTIONS 2
-#endif
-
-
 /** Network state information structure.
  */
 typedef struct osalNetworkState
