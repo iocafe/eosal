@@ -54,6 +54,7 @@
     <ClInclude Include="..\..\extensions\math\common\osal_round.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_dns.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_net_config.h" />
+    <ClInclude Include="..\..\extensions\net\common\osal_net_morse_code.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_net_state.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_shared_net_info.h" />
     <ClInclude Include="..\..\extensions\persistent\common\osal_persistent.h" />
@@ -128,6 +129,7 @@
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_multiply.c" />
     <ClCompile Include="..\..\extensions\main\common\osal_simloop.c" />
     <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
+    <ClCompile Include="..\..\extensions\net\common\osal_net_morse_code.c" />
     <ClCompile Include="..\..\extensions\net\common\osal_net_state.c" />
     <ClCompile Include="..\..\extensions\net\windows\osal_dns.c" />
     <ClCompile Include="..\..\extensions\net\windows\osal_windows_ethernet_init.c" />

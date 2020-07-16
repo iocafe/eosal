@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\coderoot\eosal;C:\coderoot\eosal\dependencies\eosal_jpeg;c:\coderoot\iocom;c:\coderoot\pins;C:\coderoot\iocom\extensions\ioserver;C:\coderoot\iocom\extensions\gazerbeam;C:\coderoot\iocom\extensions\selectwifi;C:\coderoot\iocom\extensions\nodeconf;C:\coderoot\iocom\extensions\lighthouse;C:\coderoot\iocom\extensions\devicedir;$(ProjectDir)..\..</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>c:\coderoot\eosal;C:\coderoot\eosal\dependencies\eosal_jpeg;c:\coderoot\iocom;c:\coderoot\pins;C:\coderoot\iocom\extensions\ioserver;C:\coderoot\iocom\extensions\gazerbeam;C:\coderoot\iocom\extensions\selectwifi;C:\coderoot\iocom\extensions\nodeconf;C:\coderoot\iocom\extensions\lighthouse;C:\coderoot\iocom\extensions\deviceinfo;C:\coderoot\iocom\extensions\devicedir;$(ProjectDir)..\..</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>c:\coderoot\lib\win64_vs2019;C:\coderoot\eosal\dependencies\windows\win64_vs2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
