@@ -206,12 +206,6 @@
 #define OSAL_MULTITHREAD_SUPPORT 0
 #endif
 
-/** If sockets are supported for the platform, define 1.
- */
-#ifndef OSAL_SOCKET_SUPPORT
-#define OSAL_SOCKET_SUPPORT 1
-#endif
-
 /** Socket options for the platform
  */
 #define OSAL_SOCKET_SELECT_SUPPORT 0
@@ -244,6 +238,24 @@
   #ifdef STM32F4xx
     #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP
   #endif
+#endif
+
+/** Include code for static IP configuration?
+ */
+#ifndef OSAL_SUPPORT_STATIC_NETWORK_CONF
+#define OSAL_SUPPORT_STATIC_NETWORK_CONF OSAL_SOCKET_SUPPORT
+#endif
+
+/** Include code for MAC address configuration ?
+ */
+#ifndef OSAL_SUPPORT_MAC_CONF
+#define OSAL_SUPPORT_MAC_CONF 0
+#endif
+
+/** Include code for WiFI network onfiguration?
+ */
+#ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
+#define OSAL_SUPPORT_WIFI_NETWORK_CONF 0
 #endif
 
 /* Unknown micro controller build, default to WizNET chip.

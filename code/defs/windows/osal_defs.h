@@ -239,6 +239,24 @@
 #define OSAL_SOCKET_SUPPORT (OSAL_OS_SOCKETS + OSAL_OS_ETHERNET_INIT)
 #endif
 
+/** Include code for static IP configuration?
+ */
+#ifndef OSAL_SUPPORT_STATIC_NETWORK_CONF
+#define OSAL_SUPPORT_STATIC_NETWORK_CONF 0
+#endif
+
+/** Include code for MAC address configuration ?
+ */
+#ifndef OSAL_SUPPORT_MAC_CONF
+#define OSAL_SUPPORT_MAC_CONF 0
+#endif
+
+/** Include code for WiFI network onfiguration?
+ */
+#ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
+#define OSAL_SUPPORT_WIFI_NETWORK_CONF 0
+#endif
+
 /** Socket options for the platform
  */
 #define OSAL_SOCKET_SELECT_SUPPORT 1

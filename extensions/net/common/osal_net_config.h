@@ -86,6 +86,15 @@ typedef struct osalWifiNetwork
 }
 osalWifiNetwork;
 
+/** Flat structure to for save into persistent storage.
+ */
+typedef struct osalFlatWifiNetworkConf
+{
+    os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
+    os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
+}
+osalFlatWifiNetworkConf;
+
 
 /** Network interface configuration structure. Most of network configuration
  *  parameters are used only for microcontrollers, while in Windows, Linux, etc.
@@ -98,8 +107,6 @@ osalWifiNetwork;
  */
 typedef struct osalNetworkInterface
 {
-    /*  const os_char *host_name;  to be implemented */
-
     /** Network address, like "192.168.1.220". Ignored if no_dhcp is OS_FALSE (0).
         Set by "ip":"192.168.1.217" in JSON configuration.
      */
@@ -173,32 +180,46 @@ typedef struct osalNetworkInterface
 }
 osalNetworkInterface;
 
-/** Flat structure to for save into persistWifi network name and password.
- */
-typedef struct osalFlatWifiNetworkConf
-{
-    /** WiFi network name, same as SSID.
-     */
-    os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
 
-    /** WiFi network password, pre shared key.
-     */
-    os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
+/** Flat structure to for save into persistent storage.
+ */
+typedef struct osalFlatNetworkInterface
+{
+#if OSAL_SUPPORT_STATIC_NETWORK_CONF
+    const os_char ip_address[OSAL_IPADDR_SZ];
+    const os_char subnet_mask[OSAL_IPADDR_SZ];
+    const os_char gateway_address[OSAL_IPADDR_SZ];
+    const os_char dns_address[OSAL_IPADDR_SZ];
+    const os_char dns_address_2[OSAL_IPADDR_SZ];
+    os_boolean no_dhcp;
+    os_boolean send_udp_multicasts;
+    os_boolean receive_udp_multicasts;
+#endif
+#if OSAL_SUPPORT_MAC_CONF
+    const os_char mac[OSAL_MAC_SZ];
+#endif
 }
-osalFlatWifiNetworkConf;
+osalFlatNetworkInterface;
+
 
 /** Structure to save Wifi and other basic network configuration as persistent
     block numer OS_PBNR_NODE_CONF. If set, these override
  */
 typedef struct osalNodeConfOverrides
 {
-    osalFlatWifiNetworkConf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
-
     /* If set, these will override settings elsewhere.
      */
     os_char network_name_override[OSAL_NETWORK_NAME_SZ];
     os_char device_nr_override[OSAL_DEVICE_NR_STR_SZ];
     os_char connect_to_override[OSAL_HOST_BUF_SZ];
+
+#if OSAL_SUPPORT_WIFI_NETWORK_CONF
+    osalFlatWifiNetworkConf wifi[OSAL_MAX_NRO_WIFI_NETWORKS];
+#endif
+
+#if OSAL_SUPPORT_STATIC_NETWORK_CONF || OSAL_SUPPORT_MAC_CONF
+    osalFlatNetworkInterface nics[OSAL_MAX_NRO_NICS];
+#endif
 }
 osalNodeConfOverrides;
 
