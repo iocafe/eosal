@@ -78,6 +78,10 @@
  */
 #define OSAL_NETWORK_NAME_SZ 24
 
+/** Number of bytes to store a boolean as sting.
+ */
+#define OSAL_BOOL_STR_SZ 2
+
 /** Wifi network name and password.
  */
 typedef struct osalWifiNetwork
@@ -197,8 +201,8 @@ typedef struct osalFlatNetworkInterface
     os_char gateway_address[OSAL_IPADDR_SZ];
     os_char dns_address[OSAL_IPADDR_SZ];
     os_char dns_address_2[OSAL_IPADDR_SZ];
-    os_boolean no_dhcp;
-    os_boolean send_udp_multicasts;
+    os_char dhcp[OSAL_BOOL_STR_SZ];
+    os_char send_udp_multicasts[OSAL_BOOL_STR_SZ];
 #endif
 #if OSAL_SUPPORT_MAC_CONF
     os_char mac[OSAL_MAC_SZ];
