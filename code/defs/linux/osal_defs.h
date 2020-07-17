@@ -150,6 +150,30 @@
 #define OSAL_BIN_NAME "linux"
 #endif
 
+/** Specify processor architecture.
+    https://sourceforge.net/p/predef/wiki/Architectures/
+ */
+#ifndef OSAL_ARCH_NAME
+#ifdef __amd64__
+#define OSAL_ARCH_NAME "amd64"
+#endif
+#endif
+#ifndef OSAL_ARCH_NAME
+#ifdef __i386__
+#define OSAL_ARCH_NAME "x86"
+#endif
+#endif
+#ifndef OSAL_ARCH_NAME
+#ifdef __aarch64__
+#define OSAL_ARCH_NAME "arm64"
+#endif
+#endif
+#ifndef OSAL_ARCH_NAME
+#ifdef __arm__
+#define OSAL_ARCH_NAME "arm"
+#endif
+#endif
+
 /** Default file system root. This is path to default root of the file system.
  */
 #ifndef OSAL_FS_ROOT

@@ -117,6 +117,19 @@ typedef os_char os_boolean;
 #define OSAL_PC_DEBUG OSAL_DEBUG
 #endif
 
+/** If operating system name is unspecified, default to bin directory name.
+    (often same as operating system name)
+ */
+#ifndef OSAL_OS_NAME
+#define OSAL_OS_NAME OSAL_BIN_NAME
+#endif
+
+/** If architecture is not specified, default to "generic".
+ */
+#ifndef OSAL_ARCH_NAME
+#define OSAL_ARCH_NAME "generic"
+#endif
+
 /** If we have no interrupt handler function type for this operating system,
     define empty OS_ISR_FUNC_ATTR. Define OS_FLASH_MEM is used to force data
     to flash.
