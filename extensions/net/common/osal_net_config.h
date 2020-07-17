@@ -192,16 +192,16 @@ osalNetworkInterface;
 typedef struct osalFlatNetworkInterface
 {
 #if OSAL_SUPPORT_STATIC_NETWORK_CONF
-    const os_char ip_address[OSAL_IPADDR_SZ];
-    const os_char subnet_mask[OSAL_IPADDR_SZ];
-    const os_char gateway_address[OSAL_IPADDR_SZ];
-    const os_char dns_address[OSAL_IPADDR_SZ];
-    const os_char dns_address_2[OSAL_IPADDR_SZ];
+    os_char ip_address[OSAL_IPADDR_SZ];
+    os_char subnet_mask[OSAL_IPADDR_SZ];
+    os_char gateway_address[OSAL_IPADDR_SZ];
+    os_char dns_address[OSAL_IPADDR_SZ];
+    os_char dns_address_2[OSAL_IPADDR_SZ];
     os_boolean no_dhcp;
     os_boolean send_udp_multicasts;
 #endif
 #if OSAL_SUPPORT_MAC_CONF
-    const os_char mac[OSAL_MAC_SZ];
+    os_char mac[OSAL_MAC_SZ];
 #endif
 }
 osalFlatNetworkInterface;
