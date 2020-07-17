@@ -276,6 +276,7 @@ osalStream osal_socket_open(
         mysocket->use = OSAL_SOCKET_CLIENT;
         mysocket->index = ix;
         mysocket->sockindex = osal_client[ix].getSocketNumber();
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
 
         osal_trace2("Connecting socket");
         osal_trace2(host);
@@ -285,6 +286,7 @@ osalStream osal_socket_open(
        casted to stream pointer.
      */
     if (status) *status = OSAL_SUCCESS;
+    osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     return (osalStream)mysocket;
 
 getout:
@@ -339,6 +341,7 @@ void osal_socket_close(
     }
 
     mysocket->use = OSAL_SOCKET_UNUSED;
+    osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
 }
 
 
@@ -440,6 +443,8 @@ osalStream osal_socket_accept(
 
         /* Return socket pointer.
          */
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
         return (osalStream)mysocket;
     }
     rval = OSAL_NO_NEW_CONNECTION;

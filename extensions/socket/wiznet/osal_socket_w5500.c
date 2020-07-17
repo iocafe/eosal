@@ -283,6 +283,7 @@ osalStream osal_socket_open(
      */
     osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;
+    osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     return (osalStream)mysocket;
 
 getout:
@@ -345,6 +346,7 @@ void osal_socket_close(
     }
 
     mysocket->use = OSAL_SOCKET_UNUSED;
+    osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
 }
 
 
@@ -437,6 +439,7 @@ osalStream osal_socket_accept(
     if (remote_ip_addr) *remote_ip_addr = '\0';
 
     if (status) *status = OSAL_SUCCESS;
+    osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     return (osalStream)newsocket;
 
 getout:

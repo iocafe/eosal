@@ -272,14 +272,21 @@ osalStream osal_socket_open(
     {
         s = osal_setup_tcp_socket(mysocket, iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
-        info_code = (flags & OSAL_STREAM_LISTEN)
-            ? OSAL_LISTENING_SOCKET_CONNECTED: OSAL_SOCKET_CONNECTED;
+
+        if (flags & OSAL_STREAM_LISTEN) {
+            info_code = OSAL_LISTENING_SOCKET_CONNECTED;
+        }
+        else {
+            info_code = OSAL_SOCKET_CONNECTED;
+            osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
+        }
     }
 
     /* Success, inform error handler, set status code and return stream pointer.
      */
     osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;
+    osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     return (osalStream)mysocket;
 
 getout:
@@ -948,6 +955,7 @@ void osal_socket_close(
      */
     os_free(mysocket->buf, mysocket->buf_sz);
     os_free(mysocket, sizeof(osalSocket));
+    osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
 }
 
 
@@ -1086,6 +1094,8 @@ osalStream osal_socket_accept(
          */
         osal_trace2("socket accepted");
         if (status) *status = OSAL_SUCCESS;
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
         return (osalStream)newsocket;
     }
 

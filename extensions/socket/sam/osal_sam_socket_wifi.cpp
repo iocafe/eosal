@@ -376,12 +376,14 @@ osalStream osal_socket_open(
                 goto getout;
             }
         }
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
     }
 
     /* Success. Set status code and return socket structure pointer
        casted to stream pointer.
      */
     if (status) *status = OSAL_SUCCESS;
+    osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     return (osalStream)mysocket;
 
 getout:
@@ -618,6 +620,7 @@ void osal_socket_close(
      */
     os_free(mysocket->buf, mysocket->buf_sz);
     os_memclear(mysocket, sizeof(osalSocket));
+    osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
 }
 
 
@@ -736,6 +739,8 @@ osalStream osal_socket_accept(
         /* Success, return socket pointer.
          */
         if (status) *status = OSAL_SUCCESS;
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
         return (osalStream)mysocket;
     }
     rval = OSAL_NO_NEW_CONNECTION;
