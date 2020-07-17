@@ -66,30 +66,46 @@ typedef enum
 
   /** System memory allocation. Total number of bytes allocated from operating system.
    */
-  OSAL_RMON_SYSTEM_MEMORY_ALLOCATION = 1,
+  OSAL_RMON_SYSTEM_MEMORY_ALLOCATION ,
+
+  /** System memory use. Number of bytes currently used trough eosal.
+   */
+  OSAL_RMON_SYSTEM_MEMORY_USE,
 
   /** Thread count. Number of threads created by osal_thread_create() function, but not
       terminated.
    */
-  OSAL_RMON_THREAD_COUNT = 2,
+  OSAL_RMON_THREAD_COUNT,
 
   /** Event count. Number of events created by osal_event_create() function, but not deleted by
       osal_event_delete() function.
    */
-  OSAL_RMON_EVENT_COUNT = 3,
+  OSAL_RMON_EVENT_COUNT,
 
   /** Event count. Number of events created by osal_event_create() function, but not deleted by
       osal_event_delete() function.
    */
-  OSAL_RMON_MUTEX_COUNT = 4,
+  OSAL_RMON_MUTEX_COUNT,
 
   /** File handle count. Number of currently open files.
    */
-  OSAL_RMON_FILE_HANDLE_COUNT = 5,
+  OSAL_RMON_FILE_HANDLE_COUNT,
 
   /** Number of open sockets.
    */
-  OSAL_RMON_SOCKET_COUNT = 6,
+  OSAL_RMON_SOCKET_COUNT,
+
+  /** Number of socet connection attempt.
+   */
+  OSAL_RMON_SOCKET_CONNECT_COUNT,
+
+  /** Number of bytes send trough communication.
+   */
+  OSAL_RMON_TRANSMITTED_BYTES,
+
+  /** Number of bytes received trough communication.
+   */
+  OSAL_RMON_RECEIVED_BYTES,
 
   /** Resource monitor table size
    */

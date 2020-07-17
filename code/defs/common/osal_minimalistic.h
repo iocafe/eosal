@@ -90,3 +90,6 @@
 #define IOC_AUTHENTICATION_CODE 0
 #endif
 
+#ifndef OSAL_RESOURCE_MONITOR
+#define OSAL_RESOURCE_MONITOR 0
+#endif

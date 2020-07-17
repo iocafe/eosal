@@ -110,11 +110,7 @@
     monitoring operating system resource use is included.
  */
 #ifndef OSAL_RESOURCE_MONITOR
-#if OSAL_DEBUG
 #define OSAL_RESOURCE_MONITOR 1
-#else
-#define OSAL_RESOURCE_MONITOR 0
-#endif
 #endif
 
 /** Include code to force os_lock() to switch to time critical priority
