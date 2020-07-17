@@ -197,5 +197,11 @@ os_long osal_resource_monitor_get_value(
 osalResourceIndex osal_resource_monitor_get_change(
 	void);
 
+#else
+
+#define osal_resource_monitor_update(ix,d)
+
 #endif
+
+
 /*@}*/

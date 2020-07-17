@@ -1266,6 +1266,7 @@ static osalStatus osal_socket_write2(
         rval = 0;
     }
 
+    osal_resource_monitor_update(OSAL_RMON_TRANSMITTED_BYTES, rval);
     *n_written = rval;
     return status;
 }
@@ -1502,6 +1503,7 @@ osalStatus osal_socket_read(
             rval = 0;
         }
 
+        osal_resource_monitor_update(OSAL_RMON_RECEIVED_BYTES, rval);
         *n_read = rval;
         return OSAL_SUCCESS;
     }

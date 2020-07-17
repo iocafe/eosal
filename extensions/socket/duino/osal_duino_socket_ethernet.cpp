@@ -538,6 +538,7 @@ osalStatus osal_socket_write(
     if (bytes > 0) osal_trace("Data written to socket");
 #endif
 
+    osal_resource_monitor_update(OSAL_RMON_TRANSMITTED_BYTES, bytes);
     return OSAL_SUCCESS;
 }
 
@@ -608,6 +609,7 @@ osalStatus osal_socket_read(
     if (bytes > 0) osal_trace("Data received from socket");
 #endif
 
+    osal_resource_monitor_update(OSAL_RMON_RECEIVED_BYTES, bytes);
     *n_read = bytes;
     return OSAL_SUCCESS;
 }

@@ -597,9 +597,7 @@ static osalStatus osal_allocate_chunk(
 
     /* Update resource monitor with amount of memory allocated from operating system
      */
-#if OSAL_RESOURCE_MONITOR
     osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, allocated_bytes);
-#endif
 
 #if OSAL_PROCESS_CLEANUP_SUPPORT
     /* Again if we need cleanup code, set up osalMemoryChunkHeader header structure and join
