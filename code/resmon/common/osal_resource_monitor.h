@@ -99,13 +99,29 @@ typedef enum
    */
   OSAL_RMON_SOCKET_CONNECT_COUNT,
 
-  /** Number of bytes send trough communication.
+  /** Number of bytes send trough TCP socket.
    */
-  OSAL_RMON_TRANSMITTED_BYTES,
+  OSAL_RMON_TX_TCP,
 
-  /** Number of bytes received trough communication.
+  /** Number of bytes received trough TCP socket.
    */
-  OSAL_RMON_RECEIVED_BYTES,
+  OSAL_RMON_RX_TCP,
+
+  /** Number of bytes send trough UDP socket.
+   */
+  OSAL_RMON_TX_UDP,
+
+  /** Number of bytes received trough UDP socket.
+   */
+  OSAL_RMON_RX_UDP,
+
+  /** Number of bytes send trough serial port.
+   */
+  OSAL_RMON_TX_SERIAL,
+
+  /** Number of bytes received trough serial port.
+   */
+  OSAL_RMON_RX_SERIAL,
 
   /** Resource monitor table size
    */
