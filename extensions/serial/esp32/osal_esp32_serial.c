@@ -314,12 +314,17 @@ osalStatus osal_serial_write(
 
     nwr = uart_tx_chars(uart_nr, buf, n);
 
+    if (nwr < 0)
+    {
+        *n_written = 0;
+        return OSAL_STATUS_FAILED;
+    }
+
     /* Return number of bytes written.
      */
     *n_written = nwr;
-    return nwr >= 0 ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
-
-    return OSAL_STATUS_FAILED;
+    osal_resource_monitor_update(OSAL_RMON_TX_SERIAL, nwr);
+    return OSAL_SUCCESS;
 }
 
 
@@ -371,6 +376,7 @@ osalStatus osal_serial_read(
     else {
         if (n > available) n = available;
         nrd = uart_read_bytes(uart_nr, (uint8_t*)buf, (uint32_t)n, 0);
+        osal_resource_monitor_update(OSAL_RMON_RX_SERIAL, nrd);
     }
 
     /* Return number of bytes written.

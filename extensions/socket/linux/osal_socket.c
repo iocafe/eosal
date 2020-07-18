@@ -1872,6 +1872,8 @@ osalStatus osal_socket_send_packet(
                         break;
                 }
             }
+
+            osal_resource_monitor_update(OSAL_RMON_TX_UDP, nbytes);
         }
     }
     else
@@ -1930,6 +1932,7 @@ osalStatus osal_socket_send_packet(
                         break;
                 }
             }
+            osal_resource_monitor_update(OSAL_RMON_TX_UDP, nbytes);
         }
     }
 
@@ -1937,6 +1940,7 @@ osalStatus osal_socket_send_packet(
     {
         osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
     }
+
 
     return s;
 }
@@ -2050,6 +2054,7 @@ osalStatus osal_socket_receive_packet(
     }
 
     if (n_read) *n_read = nbytes;
+    osal_resource_monitor_update(OSAL_RMON_RX_UDP, nbytes);
     return OSAL_SUCCESS;
 }
 

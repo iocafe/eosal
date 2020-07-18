@@ -1,17 +1,16 @@
 /**
 
-  @file    include/osal_resource_monitor.h
+  @file    osal_resource_monitor.h
   @brief   Monitor operating system resource use.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    17.7.2020
 
-  It is important to ensure that software doesn't have cumulative hidden programming errors
-  which do manifest only after time. Often these are caused by allocating resources which are
-  not released. Thus OSAL needs to keep track of allocated memory, handle counts, thread counts,
-  mutex counts, event counts...
-  Once software is tested and ready for final release this tracking code can be turned off
-  by setting OSAL_RESOURCE_MONITOR flag to zero.
+  We monitor use of operating system resources to ensure that that we will not have cumulative
+  programming errors (memory leaks, etc) and that we do not transfer unnecessary data over
+  communication.
+
+  This resorce tracking code can be excluded from build by defining OSAL_RESOURCE_MONITOR as 0.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -24,15 +23,13 @@
 /**
 ****************************************************************************************************
 
-  @name Resource Monitor Macros
+  @name Macros to increment or decrement resource use count
 
   Resource monitor macros are mapped to resource monitor functions when OSAL_RESOURCE_MONITOR
   flag is nonzero. If OSAL_RESOURCE_MONITOR flag is zero, these macros will not generate any code.
 
 ****************************************************************************************************
 */
-/*@{*/
-
 #if OSAL_RESOURCE_MONITOR
   /** Log a programming error.
    */
@@ -42,24 +39,17 @@
   #define osal_resource_monitor_increment(ix)
   #define osal_resource_monitor_decrement(ix)
 #endif
-/*@}*/
 
 
 /**
 ****************************************************************************************************
 
-  @name Enumeration of Resource Counters
+  @name Resource counter enumeration
 
-  Monitored operating system resource counters are indexed. The resource monitor functions and 
-  macros identify the specific resource using the resource indes.
+  Counters for monitored operating system resources are indexed.
 
 ****************************************************************************************************
 */
-/*@{*/
-
-/** Enumeration of resource counters. Specifies table index is specified for each resource which
-    is monitored by OSAL.
- */
 typedef enum
 {
   OSAL_RMON_NONE = 0,
@@ -71,6 +61,8 @@ typedef enum
   /** System memory use. Number of bytes currently used trough eosal.
    */
   OSAL_RMON_SYSTEM_MEMORY_USE,
+
+#if OSAL_MULTITHREAD_SUPPORT
 
   /** Thread count. Number of threads created by osal_thread_create() function, but not
       terminated.
@@ -87,9 +79,15 @@ typedef enum
    */
   OSAL_RMON_MUTEX_COUNT,
 
+#endif
+#if OSAL_FILESYS_SUPPORT
+
   /** File handle count. Number of currently open files.
    */
   OSAL_RMON_FILE_HANDLE_COUNT,
+
+#endif
+#if OSAL_SOCKET_SUPPORT
 
   /** Number of open sockets.
    */
@@ -115,6 +113,9 @@ typedef enum
    */
   OSAL_RMON_RX_UDP,
 
+#endif
+#if OSAL_SERIAL_SUPPORT
+
   /** Number of bytes send trough serial port.
    */
   OSAL_RMON_TX_SERIAL,
@@ -123,35 +124,14 @@ typedef enum
    */
   OSAL_RMON_RX_SERIAL,
 
+#endif
+
   /** Resource monitor table size
    */
   OSAL_RMON_COUNTERS_SZ
 }
 osalResourceIndex;
 
-/*@}*/
-
-
-/**
-****************************************************************************************************
-
-  @name Flags for Resource Counter Functions
-
-  Only the osal_resource_monitor_get() function has any flags.
-
-****************************************************************************************************
-*/
-/*@{*/
-
-/** Get current value of the resource counter.
- */
-#define OSAL_RMON_CURRENT 0
-
-/** Get peak value of the resource counter.
- */
-#define OSAL_RMON_PEAK 1
-
-/*@}*/
 
 /** 
 ****************************************************************************************************
@@ -168,10 +148,6 @@ typedef struct
 	 */
 	os_memsz current[OSAL_RMON_COUNTERS_SZ];
 
-	/** Peak resource counter values
-	 */
-	os_memsz peak[OSAL_RMON_COUNTERS_SZ];
-
 	/** Flag indicating the changed resource counter.
 	 */
 	os_boolean changed[OSAL_RMON_COUNTERS_SZ];
@@ -186,14 +162,13 @@ osalResourceMonitorState;
 /** 
 ****************************************************************************************************
 
-  @name Resource Monitor Functions
+  @name Resource Monitor Function
 
-  These functions exists only when compiling with nonzero OSAL_DEBUG flag. Thus these
-  functions are called through "debug macros".
+  These functions is generated only when compiling with nonzero OSAL_RESOURCE_MONITOR define.
+  Otherwise the empty macro is used and no code is generated.
 
 ****************************************************************************************************
  */
-/*@{*/
 #if OSAL_RESOURCE_MONITOR
 
 /* Update resource counter.
@@ -202,22 +177,9 @@ void osal_resource_monitor_update(
     osalResourceIndex ix,
     os_memsz delta);
 
-/* Get resource counter value.
- */
-os_long osal_resource_monitor_get_value(
-    osalResourceIndex ix,
-	os_int flags);
-
-/* Check for a changed resource index.
- */
-osalResourceIndex osal_resource_monitor_get_change(
-	void);
-
 #else
 
 #define osal_resource_monitor_update(ix,d)
 
 #endif
 
-
-/*@}*/

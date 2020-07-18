@@ -444,6 +444,7 @@ osalStatus osal_serial_write(
         /* Success, set number of bytes written.
          */
         *n_written = rval;
+        osal_resource_monitor_update(OSAL_RMON_TX_SERIAL, rval);
         return OSAL_SUCCESS;
     }
 
@@ -506,6 +507,7 @@ osalStatus osal_serial_read(
         /* Success, set number of bytes read.
          */
         *n_read = rval;
+        osal_resource_monitor_update(OSAL_RMON_RX_SERIAL, rval);
         return OSAL_SUCCESS;
     }
 
