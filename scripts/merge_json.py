@@ -49,11 +49,11 @@ def mymain():
     expect = None
     for i in range(1, n):
         if sys.argv[i][0] == "-":
-            if sys.argv[i][1] == "o":
-                expect = 'o'
+            expect = sys.argv[i][1]
         else:
-            if expect=='o':
-                outpath = sys.argv[i]
+            if expect != None:
+                if expect == 'o':
+                    outpath = sys.argv[i]
                 expect = None
             else:
                 sourcefiles.append(sys.argv[i])
