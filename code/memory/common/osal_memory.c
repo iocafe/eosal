@@ -237,10 +237,10 @@ os_char *osal_memory_allocate(
     os_char
         *memory_block;
 
-#if OSAL_MEMORY_DEBUG
 	os_memsz
 		my_block_sz;
 
+#if OSAL_MEMORY_DEBUG
     request_bytes += 4 * sizeof(os_short);
 #endif
 
@@ -262,20 +262,17 @@ os_char *osal_memory_allocate(
      */
     else
     {
-#if OSAL_MEMORY_DEBUG
-        memory_block = osal_global->sysmem_alloc_func(request_bytes, &my_block_sz);
-        if (allocated_bytes) *allocated_bytes = my_block_sz - 4 * sizeof(os_short);
-		ix = 0;
-#else
-        memory_block = osal_global->sysmem_alloc_func(request_bytes, allocated_bytes);
+        my_block_sz = request_bytes;
+        memory_block = osal_global->sysmem_alloc_func(request_bytes, OS_NULL);
 
-#endif
 		if (memory_block == OS_NULL)
         {
             osal_debug_error("Out of memory for large blocks");
 		    return OS_NULL;
         }
-		goto return_memory_block;
+        ix = -1;
+        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, my_block_sz);
+        goto return_memory_block;
     }
 
 	/* Lock system mutex.
@@ -312,10 +309,9 @@ os_char *osal_memory_allocate(
 	 */
 	os_unlock();
 
-#if OSAL_MEMORY_DEBUG
 	my_block_sz = osal_global->memstate.block_sz[ix];
-#endif
 
+return_memory_block:
     /* Return allocated block size if needed.
      */
     if (allocated_bytes)
@@ -323,13 +319,11 @@ os_char *osal_memory_allocate(
 #if OSAL_MEMORY_DEBUG
         *allocated_bytes = my_block_sz - 4*sizeof(os_short);
 #else
-        *allocated_bytes = osal_global->memstate.block_sz[ix];
+        *allocated_bytes = my_block_sz;
 #endif
     }
 
-
-return_memory_block:
-
+    osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_USE, my_block_sz);
 
 #if OSAL_MEMORY_DEBUG
 	/* Store debug information. This tags word just before memory block with application
@@ -409,6 +403,8 @@ void osal_memory_free(
     else
     {
         osal_global->sysmem_free_func(memory_block, bytes);
+        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_USE, -bytes);
+        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
         return;
     }
 
@@ -430,6 +426,8 @@ void osal_memory_free(
 		osal_debug_error("Memory corrupted 2");
 	}
 #endif
+
+    osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_USE, -osal_global->memstate.block_sz[ix]);
 
 	/* Synchronize.
 	 */

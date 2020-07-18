@@ -60,6 +60,10 @@ void osal_initialize(
      */
     os_memclear(osal_global, sizeof(osalGlobalStruct));
 
+#if OSAL_MULTITHREAD_SUPPORT
+    osal_resource_monitor_increment(OSAL_RMON_THREAD_COUNT);
+#endif
+
     /* Operating system specific initialization.
      */
     osal_init_os_specific(flags);
