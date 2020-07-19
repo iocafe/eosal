@@ -55,7 +55,7 @@ os_boolean os_has_elapsed_since(
 
 /* Get number of milliseconds elapsed from start_t until now_t.
  */
-os_int os_get_ms_elapsed(
+os_long os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t);
 

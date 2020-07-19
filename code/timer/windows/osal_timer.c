@@ -174,7 +174,7 @@ os_boolean os_has_elapsed_since(
 
 ****************************************************************************************************
 */
-os_int os_get_ms_elapsed(
+os_long os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t)
 {
@@ -186,7 +186,7 @@ os_int os_get_ms_elapsed(
     osal_int64_subtract(&tv, start_t);
 
     osal_int64_divide(&tv, &osal_int64_1000);
-    return (os_int)osal_int64_get_long(&tv);
+    return osal_int64_get_long(&tv);
 }
 
 /**

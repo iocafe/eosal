@@ -133,11 +133,11 @@ os_boolean OS_ISR_FUNC_ATTR os_has_elapsed_since(
 
 ****************************************************************************************************
 */
-os_int OS_ISR_FUNC_ATTR os_get_ms_elapsed(
+os_long OS_ISR_FUNC_ATTR os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t)
 {
-    return (os_int)((*now_t - *start_t) / 1000);
+    return (os_long)((*now_t - *start_t) / 1000);
 }
 
 
