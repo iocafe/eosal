@@ -56,7 +56,10 @@ os_char *osal_sysmem_alloc(
     mem = malloc(request_bytes);
     if (mem == NULL) {
         osal_error(OSAL_SYSTEM_ERROR, eosal_mod, OSAL_STATUS_MEMORY_ALLOCATION_FAILED, OS_NULL);
+        return NULL;
     }
+
+    osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, request_bytes);
     return mem;
 }
 
@@ -82,5 +85,8 @@ void osal_sysmem_free(
     void *memory_block,
     os_memsz bytes)
 {
-    free(memory_block);
+    if (memory_block) {
+        free(memory_block);
+        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
+    }
 }

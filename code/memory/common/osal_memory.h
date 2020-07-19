@@ -27,6 +27,9 @@
 #ifdef OSAL_LINUX
 #include <memory.h>
 #endif
+#ifdef OSAL_ESP32
+#include <string.h>
+#endif
 
 #if OSAL_MEMORY_MANAGER
 
@@ -296,6 +299,15 @@ void osal_memory_free_static_block(
   #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
   #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
 #endif
+
+#ifdef OSAL_ESP32
+  #define OSAL_MEMORY_OS_CLR_AND_CPY
+  #define os_memclear(d,c) memset((d),0,(size_t)(c))
+  #define os_memcpy(d,s,c) memcpy((d),(s),(size_t)(c))
+  #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
+  #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
+#endif
+
 
 #ifndef OSAL_MEMORY_OS_CLR_AND_CPY
 /* Clear memory.

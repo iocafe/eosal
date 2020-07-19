@@ -95,7 +95,7 @@
     operating system memory allocation is called directly.
  */
 #ifndef OSAL_MEMORY_MANAGER
-#define OSAL_MEMORY_MANAGER 0
+#define OSAL_MEMORY_MANAGER 1
 #endif
 
 /** Include resource monitor code. If OSAL_RESOURCE_MONITOR flags is nonzero, code for

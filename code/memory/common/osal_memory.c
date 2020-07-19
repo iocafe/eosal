@@ -271,7 +271,6 @@ os_char *osal_memory_allocate(
 		    return OS_NULL;
         }
         ix = -1;
-        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, my_block_sz);
         goto return_memory_block;
     }
 
@@ -404,7 +403,6 @@ void osal_memory_free(
     {
         osal_global->sysmem_free_func(memory_block, bytes);
         osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_USE, -bytes);
-        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
         return;
     }
 
@@ -592,10 +590,6 @@ static osalStatus osal_allocate_chunk(
      */
     chunk = osal_global->sysmem_alloc_func(request_bytes, &allocated_bytes);
     if (chunk == OS_NULL) return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
-
-    /* Update resource monitor with amount of memory allocated from operating system
-     */
-    osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, allocated_bytes);
 
 #if OSAL_PROCESS_CLEANUP_SUPPORT
     /* Again if we need cleanup code, set up osalMemoryChunkHeader header structure and join
