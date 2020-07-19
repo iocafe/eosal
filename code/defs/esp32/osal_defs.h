@@ -144,7 +144,14 @@
     files. If necessary, there there can be multiple names for same operating system.
  */
 #ifndef OSAL_BIN_NAME
-#define OSAL_BIN_NAME "arduino"
+#define OSAL_BIN_NAME "esp32"
+#endif
+
+/** Specify processor architecture.
+    https://sourceforge.net/p/predef/wiki/Architectures/
+ */
+#ifndef OSAL_ARCH_NAME
+#define OSAL_ARCH_NAME "xtensa"
 #endif
 
 /** Default file system root. This is path to default root of the file system.
