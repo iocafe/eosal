@@ -1168,7 +1168,7 @@ static int osal_net_send(
 #if OSAL_DEBUG
                 if (!warning_issued)
                 {
-                    osal_debug_error("MBEDTLS_ERR_SSL_WANT_WRITE blocked");
+                    osal_debug_error("Write delayed, network busy");
                     warning_issued = OS_TRUE;
                 }
 #endif
