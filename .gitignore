@@ -10,7 +10,9 @@ eosal_version.*
 *.lo
 *.o
 *.a
-!dependencies/linux/linux_gcc/*.a
+!dependencies/linux/linux_amd64_gcc/*.a
+!dependencies/linux/linux_x86_gcc/*.a
+!dependencies/linux/linux_arm_gcc/*.a
 *.la
 *.lai
 *.so
