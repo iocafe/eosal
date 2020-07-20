@@ -284,20 +284,8 @@ osalStatus osal_are_sockets_initialized(
                         IPAddress ip_address(192, 168, 1, 195);
                         osal_arduino_ip_from_str(ip_address, ans.ip_address);
 
-#ifdef ESP_PLATFORM
-                        /* Warning: ESP does not follow same argument order as arduino,
-                           one below is for ESP32.
-                         */
-                        if (!WiFi.config(ip_address, ans.gateway_address,
-                            ans.subnet_mask,
-                            ans.dns_address, ans.dns_address_2))
-                        {
-                            osal_debug_error("Static IP configuration failed");
-                        }
-#else
                         WiFi.config(ip_address, ans.dns_address,
                             ans.gateway_address, ans.subnet_mask);
-#endif
                     }
 
                     osal_get_network_state_str(OSAL_NS_WIFI_NETWORK_NAME, 0,
