@@ -290,13 +290,11 @@ osalStatus osal_are_sockets_initialized(
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
                become unnecessary at some point.
              */
-#ifdef ESP_PLATFORM
             WiFi.mode(WIFI_OFF);
             WiFi.mode(WIFI_STA);
             WiFi.disconnect();
             WiFi.getMode();
             WiFi.status();
-#endif
 
             ans.network_connected = ans.wifi_was_connected = OS_FALSE;
             ans.wifi_init_failed_now = OS_FALSE;
@@ -326,7 +324,6 @@ osalStatus osal_are_sockets_initialized(
                         IPAddress ip_address(192, 168, 1, 195);
                         osal_arduino_ip_from_str(ip_address, ans.ip_address);
 
-#ifdef ESP_PLATFORM
                         /* Warning: ESP does not follow same argument order as arduino,
                            one below is for ESP32.
                          */
@@ -336,13 +333,6 @@ osalStatus osal_are_sockets_initialized(
                         {
                             osal_debug_error("Static IP configuration failed");
                         }
-#else
-                        if (!WiFi.config(ip_address, ans.dns_address,
-                            ans.gateway_address, ans.subnet_mask))
-                        {
-                            osal_debug_error("Static IP configuration failed");
-                        }
-#endif
                     }
 
                     osal_get_network_state_str(OSAL_NS_WIFI_NETWORK_NAME, 0,
