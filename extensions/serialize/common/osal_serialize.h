@@ -44,11 +44,7 @@ os_int osal_intser_reader(
 
 /* Get number of bytes following first byte
  */
-inline os_int osal_intser_more_bytes(
-    os_char c)
-{
-    return (c >> 5);
-}
+#define osal_intser_more_bytes(c) ((os_int)(((os_uchar)(c)) >> 5))
 
 
 /*@}*/

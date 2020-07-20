@@ -21,7 +21,7 @@
 #if OSAL_RAND_SUPPORT == OSAL_RAND_PLATFORM
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 #endif
 
 #include <unistd.h>

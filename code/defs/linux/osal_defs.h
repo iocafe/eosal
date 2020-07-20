@@ -340,7 +340,11 @@
 #define OSAL_RAND_COMMON 1
 #define OSAL_RAND_PLATFORM 2
 #ifndef OSAL_RAND_SUPPORT
-#define OSAL_RAND_SUPPORT OSAL_RAND_PLATFORM
+#if __GLIBC__ > 2 || __GLIBC_MINOR__ > 24
+  #define OSAL_RAND_SUPPORT OSAL_RAND_PLATFORM
+#else
+  #define OSAL_RAND_SUPPORT OSAL_RAND_COMMON
+#endif
 #endif
 
 /** OSAL extensions: If extended string functions are supported
