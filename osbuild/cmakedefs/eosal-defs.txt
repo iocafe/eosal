@@ -103,6 +103,17 @@ else()
      endif()
   endif()
 
+  # Target architecture
+  if (NOT DEFINED ENV{E_ARCH_NAME})
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "(amd64)|(AMD64)")
+     set(ENV{E_ARCH_NAME} "amd64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)")
+     set(ENV{E_ARCH_NAME} "x86")
+  else()
+     set(ENV{E_ARCH_NAME} "arm")
+  endif()
+  endif()
+
   # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
   # Used as name for banary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
@@ -136,11 +147,11 @@ include_directories("$ENV{E_ROOT}/eosal")
 include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
 
 # Library path.
-set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_COMPILER}")
+set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_ARCH_NAME}_$ENV{E_COMPILER}")
 set(ENV{E_LIBOUT} "$ENV{E_LIB}")
 
 # Binary path.
-set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OSVER}")
+set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OS}")
 
 # Set path to operating system specific scripts by build environment.
 if (NOT DEFINED ENV{E_BUILD_BIN})
@@ -173,7 +184,7 @@ if($ENV{E_OS} MATCHES "windows")
 endif()
 if($ENV{E_OS} MATCHES "linux")
   include_directories("$ENV{E_ROOT}/eosal/dependencies/linux/include")
-  set(ENV{E_LIB} "$ENV{E_ROOT}/eosal/dependencies/linux/linux_gcc;$ENV{E_LIB}")
+  set(ENV{E_LIB} "$ENV{E_ROOT}/eosal/dependencies/linux/$ENV{E_OSVER}_$ENV{E_ARCH_NAME}_$ENV{E_COMPILER};$ENV{E_LIB}")
   set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};pthread")
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};mbedtls${E_POSTFIX};mbedx509${E_POSTFIX};mbedcrypto${E_POSTFIX}")
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl${E_POSTFIX};crypto${E_POSTFIX}")
