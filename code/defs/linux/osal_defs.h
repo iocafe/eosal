@@ -148,7 +148,7 @@
 
 /** Specify processor architecture.
     https://sourceforge.net/p/predef/wiki/Architectures/
- */
+    moved to cmake (eosal-defs.txt)
 #ifndef OSAL_ARCH_NAME
 #ifdef __amd64__
 #define OSAL_ARCH_NAME "amd64"
@@ -169,6 +169,7 @@
 #define OSAL_ARCH_NAME "arm"
 #endif
 #endif
+ */
 
 /** Default file system root. This is path to default root of the file system.
  */

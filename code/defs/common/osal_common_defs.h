@@ -127,7 +127,11 @@ typedef os_char os_boolean;
 /** If architecture is not specified, default to "generic".
  */
 #ifndef OSAL_ARCH_NAME
+#ifdef E_OSVER
+#define OSAL_ARCH_NAME E_OSVER
+#else
 #define OSAL_ARCH_NAME "generic"
+#endif
 #endif
 
 /** If we have no interrupt handler function type for this operating system,
