@@ -207,6 +207,9 @@ typedef struct osalFlatNetworkInterface
 #if OSAL_SUPPORT_MAC_CONF
     os_char mac[OSAL_MAC_SZ];
 #endif
+#if OSAL_SUPPORT_STATIC_NETWORK_CONF==0 && OSAL_SUPPORT_MAC_CONF==0
+    int structure_must_have_one_member;
+#endif
 }
 osalFlatNetworkInterface;
 
