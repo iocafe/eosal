@@ -85,47 +85,49 @@ else()
   endif()
 
   # Check for Android build
-  if (NOT DEFINED ENV{E_OSVER})
+  if (NOT DEFINED ENV{E_ARCH})
      if (DEFINED ANDROID_ABI)
        set(ENV{E_OSVER} "android")
        if (ANDROID_ABI MATCHES "armeabi-v7a")
-         set(ENV{E_OSVER} "android_v7a")
+         set(ENV{E_ARCH} "v7a")
        endif()
        if (ANDROID_ABI MATCHES "x86")
-         set(ENV{E_OSVER} "android_x86")
+         set(ENV{E_ARCH} "x86")
        endif()
        if (ANDROID_ABI MATCHES "x86_64")
-         set(ENV{E_OSVER} "android_x86_64")
+         set(ENV{E_ARCH} "x86_64")
        endif()
-       if (ANDROID_ABI MATCHES "armeabi-v7a")
-         set(ENV{E_OSVER} "android_v7a")
+       if (DEFINED E_ARCH)
+         set(ENV{E_ARCH} "unknown")
        endif()
-       set(ENV{E_ARCH_NAME} $ENV{E_OSVER})
      endif()
   endif()
 
   # Target architecture
   # https://sourceforge.net/p/predef/wiki/Architectures/
-  if (NOT DEFINED ENV{E_ARCH_NAME})
+  if (NOT DEFINED ENV{E_ARCH})
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "(amd64)|(AMD64)|(x86_64)|(X86_64)")
-     set(ENV{E_ARCH_NAME} "amd64")
+     set(ENV{E_ARCH} "amd64")
   elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)")
-     set(ENV{E_ARCH_NAME} "x86")
+     set(ENV{E_ARCH} "x86")
   else()
-     set(ENV{E_ARCH_NAME} "arm")
+     set(ENV{E_ARCH} "arm")
   endif()
   endif()
 
-  # message($ENV{E_ARCH_NAME})
+  # message($ENV{E_ARCH})
 
   # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
   # Used as name for banary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
-    set(ENV{E_OSVER} $ENV{E_ARCH_NAME})
+    if (E_ARCH MATCHES "arm")
+      set(ENV{E_OSVER} "pi")
+    else()
+      set(ENV{E_OSVER} "generic")
+    endif()
   endif()
 
   # Compiler name, used as part of library and temporary folder name.
-  # For example "vs2015", "mingw", "gcc", "gccarm9"...
   if (NOT DEFINED ENV{E_COMPILER})
     set(ENV{E_COMPILER} "gcc")
   endif()
@@ -169,7 +171,7 @@ if (NOT DEFINED ENV{E_BUILD_BIN})
 endif()
 
 # Temporary file path.
-set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
+set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_COMPILER}")
 
 # Commonly used libraries for eosal console application.
 set(ENV{OSAL_CONSOLE_APP_LIBS} "eosal${E_POSTFIX}")
@@ -188,7 +190,7 @@ if($ENV{E_OS} MATCHES "windows")
 endif()
 if($ENV{E_OS} MATCHES "linux")
   include_directories("$ENV{E_ROOT}/eosal/dependencies/linux/include")
-  set(ENV{E_LIB} "$ENV{E_ROOT}/eosal/dependencies/linux/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER};$ENV{E_LIB}")
+  set(ENV{E_LIB} "$ENV{E_ROOT}/eosal/dependencies/linux/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_COMPILER};$ENV{E_LIB}")
   set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};pthread")
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};mbedtls${E_POSTFIX};mbedx509${E_POSTFIX};mbedcrypto${E_POSTFIX}")
   # set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl${E_POSTFIX};crypto${E_POSTFIX}")
@@ -199,6 +201,7 @@ endif()
 # Add defines to indicate target operating system and target OS version (at level needed for build).
 add_definitions(-DE_OS_$ENV{E_OS})
 add_definitions(-DE_OSVER_$ENV{E_OSVER})
+add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
 # Add gcc compiler warnings and -fPIC (position independent code) flags.
 if($ENV{E_COMPILER} MATCHES "gcc")

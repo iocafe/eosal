@@ -9,7 +9,7 @@ project(${E_PROJECT})
 include(../../osbuild/cmakedefs/eosal-defs.txt)
 
 # Set path to where to keep libraries.
-set(E_DEPS_LIB "$ENV{E_ROOT}/eosal/dependencies/$ENV{E_OS}/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
+set(E_DEPS_LIB "$ENV{E_ROOT}/eosal/dependencies/$ENV{E_OS}/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_COMPILER}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${E_DEPS_LIB})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${E_DEPS_LIB})
 
