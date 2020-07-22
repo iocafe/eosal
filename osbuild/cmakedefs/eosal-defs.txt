@@ -115,12 +115,10 @@ else()
   endif()
   endif()
 
-  # message($ENV{E_ARCH})
-
   # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
   # Used as name for banary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
-    if (E_ARCH MATCHES "arm")
+    if ($ENV{E_ARCH} MATCHES "arm")
       set(ENV{E_OSVER} "pi")
     else()
       set(ENV{E_OSVER} "generic")
@@ -194,6 +192,10 @@ if($ENV{E_OS} MATCHES "linux")
   set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};pthread")
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};mbedtls${E_POSTFIX};mbedx509${E_POSTFIX};mbedcrypto${E_POSTFIX}")
   # set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl${E_POSTFIX};crypto${E_POSTFIX}")
+  if ($ENV{E_OSVER} MATCHES "pi")
+    set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};pigpio")
+  endif()
+
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};dl;pthread")
   set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};pthread")
 endif()
