@@ -124,14 +124,18 @@ typedef os_char os_boolean;
 #define OSAL_OS_NAME OSAL_BIN_NAME
 #endif
 
+
+/** If operating system name is unspecified, default to bin directory name.
+    (often same as operating system name)
+ */
+#ifndef OSAL_OSVER
+#define OSAL_OSVER "generic"
+#endif
+
 /** If architecture is not specified, default to "generic".
  */
-#ifndef OSAL_ARCH_NAME
-#ifdef E_OSVER
-#define OSAL_ARCH_NAME E_OSVER
-#else
-#define OSAL_ARCH_NAME "generic"
-#endif
+#ifndef OSAL_ARCH
+#define OSAL_ARCH "generic"
 #endif
 
 /** If we have no interrupt handler function type for this operating system,

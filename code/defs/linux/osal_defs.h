@@ -148,28 +148,32 @@
 
 /** Specify processor architecture.
     https://sourceforge.net/p/predef/wiki/Architectures/
-    moved to cmake (eosal-defs.txt)
-#ifndef OSAL_ARCH_NAME
-#ifdef __amd64__
-#define OSAL_ARCH_NAME "amd64"
-#endif
-#endif
-#ifndef OSAL_ARCH_NAME
-#ifdef __i386__
-#define OSAL_ARCH_NAME "x86"
-#endif
-#endif
-#ifndef OSAL_ARCH_NAME
-#ifdef __aarch64__
-#define OSAL_ARCH_NAME "arm64"
-#endif
-#endif
-#ifndef OSAL_ARCH_NAME
-#ifdef __arm__
-#define OSAL_ARCH_NAME "arm"
-#endif
-#endif
  */
+#ifndef OSAL_ARCH
+  #ifdef __amd64__
+    #define OSAL_ARCH "amd64"
+  #endif
+#endif
+#ifndef OSAL_ARCH
+  #ifdef __i386__
+    #define OSAL_ARCH "x86"
+  #endif
+#endif
+#ifndef OSAL_ARCH
+  #ifdef __aarch64__
+    #define OSAL_ARCH "arm64"
+  #endif
+#endif
+#ifndef OSAL_ARCH
+  #ifdef __arm__
+    #define OSAL_ARCH "arm"
+    #ifdef E_OSVER_pi
+      #define OSAL_OSVER "pi"
+    #else
+      #define OSAL_OSVER "android"
+    #endif
+  #endif
+#endif
 
 /** Default file system root. This is path to default root of the file system.
  */

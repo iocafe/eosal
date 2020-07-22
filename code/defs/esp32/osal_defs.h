@@ -150,8 +150,8 @@
 /** Specify processor architecture.
     https://sourceforge.net/p/predef/wiki/Architectures/
  */
-#ifndef OSAL_ARCH_NAME
-#define OSAL_ARCH_NAME "xtensa"
+#ifndef OSAL_ARCH
+#define OSAL_ARCH "xtensa"
 #endif
 
 /** Default file system root. This is path to default root of the file system.
