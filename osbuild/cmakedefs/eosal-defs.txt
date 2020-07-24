@@ -136,7 +136,9 @@ else()
   endif()
 
   # DO not compile rpaths in. This allows installing to separate location
-  set(CMAKE_SKIP_RPATH TRUE)
+  # if (NOT $ENV{E_OSVER} MATCHES "pi")
+    set(CMAKE_SKIP_RPATH TRUE)
+  # endif()
 endif()
 
 # Postfix letter "d" for debug libraries and binaries.
@@ -193,7 +195,7 @@ if($ENV{E_OS} MATCHES "linux")
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};mbedtls${E_POSTFIX};mbedx509${E_POSTFIX};mbedcrypto${E_POSTFIX}")
   # set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl${E_POSTFIX};crypto${E_POSTFIX}")
   if ($ENV{E_OSVER} MATCHES "pi")
-    set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};pigpio")
+    set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};pigpio;rt")
   endif()
 
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};dl;pthread")
