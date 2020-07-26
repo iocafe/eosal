@@ -72,8 +72,8 @@ osalStatus osal_create_process(
     pid_t pid;
     osalStatus s;
     int rval, status;
-    uid_t uid;
-    gid_t gid;
+    uid_t uid = 0;
+    gid_t gid = 0;
 
     /* Set up PATH so that we can find system and iocom binaries.
      * "/coderoot/bin/linux" ?
