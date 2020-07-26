@@ -79,6 +79,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_ERROR_H_
+#define OSAL_ERROR_H_
+#include "eosal.h"
 
 /** Error level, how serious an error?
  */
@@ -169,3 +173,5 @@ void osal_default_error_handler(
     os_int code,
     const os_char *description,
     void *context);
+
+#endif

@@ -46,6 +46,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_STATE_BITS_H_
+#define OSAL_STATE_BITS_H_
+#include "eosal.h"
 
 #define OSAL_STATE_YELLOW 8
 #define OSAL_STATE_ORANGE 4
@@ -54,3 +58,5 @@
 #define OSAL_STATE_UNCONNECTED 0
 #define OSAL_STATE_CONNECTED 2
 #define OSAL_STATE_BOOLEAN_VALUE 1
+
+#endif

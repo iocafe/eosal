@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_COMPRESS_JSON_H_
+#define OSAL_COMPRESS_JSON_H_
+#include "eosalx.h"
+
 #if OSAL_JSON_TEXT_SUPPORT
 
 /* Flags
@@ -29,4 +34,5 @@ osalStatus osal_compress_json(
     const os_char *skip_tags,
     os_int flags);
 
+#endif
 #endif

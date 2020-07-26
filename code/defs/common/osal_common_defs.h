@@ -16,6 +16,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_COMMON_DEFS_H_
+#define OSAL_COMMON_DEFS_H_
+#include "eosal.h"
 
 /* EOSAL library version number.
  */
@@ -188,3 +192,4 @@ osalBitmapFormat;
  */
 #define OSAL_BGR_COLORS 0
 
+#endif

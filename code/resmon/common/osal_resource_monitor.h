@@ -19,6 +19,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_RESOURCE_MONITOR_H_
+#define OSAL_RESOURCE_MONITOR_H_
+#include "eosal.h"
 
 /**
 ****************************************************************************************************
@@ -183,3 +187,4 @@ void osal_resource_monitor_update(
 
 #endif
 
+#endif

@@ -15,6 +15,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_NET_STATE_H_
+#define OSAL_NET_STATE_H_
+#include "eosalx.h"
 
 struct osalNetworkState;
 
@@ -203,3 +207,4 @@ void osal_get_network_state_str(
     os_char *str,
     os_memsz str_sz);
 
+#endif

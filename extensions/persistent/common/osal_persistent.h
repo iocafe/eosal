@@ -39,6 +39,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_PERSISTENT_H_
+#define OSAL_PERSISTENT_H_
+#include "eosalx.h"
+
 #if OSAL_PERSISTENT_SUPPORT
 
 /** Parameters structure for os_persistent_initialze() function.
@@ -212,4 +217,5 @@ osalStatus os_save_persistent(
 osalStatus os_persistent_delete(
     os_int flags);
 
+#endif
 #endif

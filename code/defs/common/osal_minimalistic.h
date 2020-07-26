@@ -13,6 +13,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_MINIMALISTIC_H_
+#define OSAL_MINIMALISTIC_H_
+
 
 #ifndef OSAL_SOCKET_SUPPORT
 #define OSAL_SOCKET_SUPPORT 0
@@ -92,4 +96,6 @@
 
 #ifndef OSAL_RESOURCE_MONITOR
 #define OSAL_RESOURCE_MONITOR 0
+#endif
+
 #endif

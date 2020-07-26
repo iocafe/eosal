@@ -13,6 +13,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_NET_MORSE_CODE_H_
+#define OSAL_NET_MORSE_CODE_H_
+#include "eosalx.h"
 
 struct osalNetworkState;
 
@@ -38,3 +42,5 @@ osalMorseCodeEnum;
  */
 osalMorseCodeEnum osal_network_state_to_morse_code(
     struct osalNetworkState *net_state);
+
+#endif

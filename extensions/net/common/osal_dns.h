@@ -17,6 +17,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_DNS_H_
+#define OSAL_DNS_H_
+#include "eosalx.h"
+
 #if OSAL_SOCKET_SUPPORT
 
 /* Get host's binary address by name or IP address string.
@@ -28,4 +33,5 @@ osalStatus osal_gethostbyname(
     os_boolean *is_ipv6,
     os_int default_use_flags);
 
+#endif
 #endif

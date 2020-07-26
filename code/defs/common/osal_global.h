@@ -15,6 +15,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_GLOBAL_H_
+#define OSAL_GLOBAL_H_
+#include "eosal.h"
 
 struct osalMutexStruct;
 struct osalNetworkState;
@@ -187,3 +191,5 @@ osalGlobalStruct;
  */
 os_boolean osal_quiet(
     os_boolean enable);
+
+#endif

@@ -17,6 +17,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SYSCONSOLE_H_
+#define OSAL_SYSCONSOLE_H_
+#include "eosal.h"
+
 #if OSAL_CONSOLE
 
 /**
@@ -45,5 +50,5 @@ os_uint osal_sysconsole_read(
 
 /*@}*/
 
-
+#endif
 #endif

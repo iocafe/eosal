@@ -15,6 +15,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_TYPES_H_
+#define OSAL_TYPES_H_
+#include "eosal.h"
 
 /** 
    @name Operating System Independent Types
@@ -28,7 +32,6 @@
     to show whole string, not just the first character.
  */
 #define os_char char
-/* WAS: typedef char os_char; */
 
 /** 8 bit signed character. This is forced to be always signed. Use this for type conversions
     instead of os_char.
@@ -113,3 +116,4 @@ typedef void *os_pointer;
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
 /*@}*/
 
+#endif

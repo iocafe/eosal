@@ -16,8 +16,9 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_BASE_INCLUDED
-#define OSAL_BASE_INCLUDED
+#pragma once
+#ifndef EOSAL_H_
+#define EOSAL_H_
 
 /* Include target operating system specific defines.
  */

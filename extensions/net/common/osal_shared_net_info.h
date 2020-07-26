@@ -18,6 +18,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SHARED_NET_INFO_H_
+#define OSAL_SHARED_NET_INFO_H_
+#include "eosalx.h"
+
 typedef struct osalSocketNicInfo
 {
     /** Network address, like "192.168.1.220".
@@ -43,4 +48,4 @@ typedef struct osalSocketGlobal
 }
 osalSocketGlobal;
 
-
+#endif

@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_PROCESS_H_
+#define OSAL_PROCESS_H_
+#include "eosalx.h"
+
 #if OSAL_PROCESS_SUPPORT
 
 /* Flags for osal_create_process()
@@ -29,4 +34,5 @@ osalStatus osal_create_process(
     os_int *exit_status,
     os_int flags);
 
+#endif
 #endif

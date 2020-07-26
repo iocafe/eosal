@@ -17,6 +17,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_FILE_H_
+#define OSAL_FILE_H_
+#include "eosalx.h"
+
 #if OSAL_FILESYS_SUPPORT
 
 /** Stream interface structure for files.
@@ -85,4 +90,5 @@ osalStatus osal_file_read(
 
 /*@}*/
 
+#endif
 #endif

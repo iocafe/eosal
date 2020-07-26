@@ -21,6 +21,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_MEMORY_H_
+#define OSAL_MEMORY_H_
+#include "eosal.h"
+
 #ifdef OSAL_WINDOWS
 #include <memory.h>
 #endif
@@ -340,3 +345,5 @@ void os_memmove(
 #endif
 
 /*@}*/
+
+#endif

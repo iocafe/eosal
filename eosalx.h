@@ -16,9 +16,9 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_EXTENDED_INCLUDED
-#define OSAL_EXTENDED_INCLUDED
-
+#pragma once
+#ifndef EOSALX_H_
+#define EOSALX_H_
 
 /* Include osal base.
  */

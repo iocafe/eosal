@@ -43,6 +43,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SECRET_H_
+#define OSAL_SECRET_H_
+#include "eosalx.h"
+
 #if OSAL_SECRET_SUPPORT
 
 
@@ -100,5 +105,5 @@ void osal_make_random_secret(void);
  */
 void osal_initialize_secret(void);
 
-
+#endif
 #endif

@@ -13,7 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_FILECTRL_H_
+#define OSAL_FILECTRL_H_
 #include "eosalx.h"
+
 #if OSAL_FILESYS_SUPPORT
 
 /** Delete a file.
@@ -22,4 +26,5 @@ osalStatus osal_remove(
     const os_char *path,
     os_int flags);
 
+#endif
 #endif

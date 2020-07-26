@@ -15,6 +15,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_DIR_H_
+#define OSAL_DIR_H_
+#include "eosalx.h"
+
 #if OSAL_FILESYS_SUPPORT
 
 /** Directory list item.
@@ -87,4 +92,5 @@ osalStatus osal_rmdir(
 
 /*@}*/
 
+#endif
 #endif

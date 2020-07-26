@@ -19,9 +19,9 @@
 
 ****************************************************************************************************
 */
-
-/* Make sure that base OSAL headers have been included.
- */
+#pragma once
+#ifndef OSAL_UTF16_H_
+#define OSAL_UTF16_H_
 #include "eosal.h"
 
 /* If we need UTF16 support (Windows), include conversions between UTF16 and UTF8 characters.
@@ -66,4 +66,5 @@ os_ushort *osal_str_utf8_to_utf16_malloc(
     const os_char *str8,
     os_memsz *sz_ptr);
 
+#endif
 #endif

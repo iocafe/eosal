@@ -15,6 +15,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SYSMEM_H_
+#define OSAL_SYSMEM_H_
+#include "eosal.h"
+
 #if OSAL_MEMORY_MANAGER
 
 /**
@@ -72,3 +77,5 @@ void osal_sysmem_free(
     os_memsz bytes);
 
 /*@}*/
+
+#endif

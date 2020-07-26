@@ -16,6 +16,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_BLUETOOTH_H_
+#define OSAL_BLUETOOTH_H_
+#include "eosalx.h"
+
 #if OSAL_BLUETOOTH_SUPPORT
 
 /** Stream interface structure for bluetooths.
@@ -55,4 +60,5 @@ void osal_bluetooth_shutdown(
  */
 #define OSAL_BLUETOOTH_IFACE OS_NULL
 
+#endif
 #endif

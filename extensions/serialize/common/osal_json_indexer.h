@@ -13,8 +13,12 @@
 
 ****************************************************************************************************
 */
-#if OSAL_SERIALIZE_SUPPORT
+#pragma once
+#ifndef OSAL_JSON_INDEXER_H_
+#define OSAL_JSON_INDEXER_H_
+#include "eosalx.h"
 
+#if OSAL_SERIALIZE_SUPPORT
 
 /** JSON index structure.
  */
@@ -95,4 +99,5 @@ osalStatus osal_get_json_item(
     osalJsonIndex *jindex,
     osalJsonItem *item);
 
+#endif
 #endif

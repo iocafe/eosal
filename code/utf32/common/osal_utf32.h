@@ -16,8 +16,10 @@
 
 ****************************************************************************************************
 */
-#ifndef OSAL_CHAR32_INCLUDED
-#define OSAL_CHAR32_INCLUDED
+#pragma once
+#ifndef OSAL_UTF32_H_
+#define OSAL_UTF32_H_
+#include "eosal.h"
 
 #if OSAL_UTF8
 /** 
@@ -48,7 +50,4 @@ os_uint osal_char_utf8_to_utf32(
 /*@}*/
 
 #endif
-
-
-
 #endif

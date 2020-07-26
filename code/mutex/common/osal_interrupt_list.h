@@ -20,6 +20,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_INTERRUPT_LIST_H_
+#define OSAL_INTERRUPT_LIST_H_
+#include "eosal.h"
+
 #if OSAL_INTERRUPT_LIST_SUPPORT
 
 /* Callback function type to enable or disable an interrupt.
@@ -52,4 +57,5 @@ void osal_remove_interrupt_to_list(
 void osal_control_interrupts(
     os_boolean enable);
 
+#endif
 #endif

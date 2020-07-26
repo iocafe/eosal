@@ -17,6 +17,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SERIAL_H_
+#define OSAL_SERIAL_H_
+#include "eosalx.h"
+
 #if OSAL_SERIAL_SUPPORT
 
 /** Stream interface structure for serials.
@@ -139,4 +144,5 @@ void osal_serial_shutdown(
  */
 #define OSAL_SERIAL_IFACE OS_NULL
 
+#endif
 #endif

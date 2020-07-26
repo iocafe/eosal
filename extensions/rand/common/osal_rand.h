@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_RAND_H_
+#define OSAL_RAND_H_
+#include "eosalx.h"
+
 #if OSAL_RAND_SUPPORT
 
 /** 
@@ -41,4 +46,5 @@ os_long osal_rand(
 
 /*@}*/
 
+#endif
 #endif

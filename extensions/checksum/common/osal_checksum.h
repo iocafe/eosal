@@ -17,6 +17,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_CHECKSUM_H_
+#define OSAL_CHECKSUM_H_
+#include "eosalx.h"
 
 /* Enable/disable checksum test code.
  */
@@ -38,4 +42,6 @@ os_ushort os_checksum(
  */
 int osal_test_checksum(
     void);
+#endif
+
 #endif

@@ -16,6 +16,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_NET_CONFIG_H_
+#define OSAL_NET_CONFIG_H_
+#include "eosalx.h"
 
 /** Default buffer size for host (computer) name and port, etc.
  */
@@ -280,3 +284,5 @@ typedef struct osalLighthouseInfo
     os_int n_epoints;
 }
 osalLighthouseInfo;
+
+#endif

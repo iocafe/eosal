@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_PROGRAM_DEVICE_H_
+#define OSAL_PROGRAM_DEVICE_H_
+#include "eosalx.h"
+
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
 void osal_initialize_programming(
@@ -47,4 +52,5 @@ void osal_cancel_device_programming(
 #define get_device_programming_status() OSAL_STATUS_NOT_SUPPORTED
 #define osal_cancel_device_programming()
 
+#endif
 #endif

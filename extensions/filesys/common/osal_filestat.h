@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_FILESTAT_H_
+#define OSAL_FILESTAT_H_
+#include "eosalx.h"
+
 #if OSAL_FILESYS_SUPPORT
 
 /** File status information.
@@ -53,4 +58,5 @@ osalStatus osal_filestat(
 
 /*@}*/
 
+#endif
 #endif

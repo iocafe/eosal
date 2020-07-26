@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_FILEUTIL_H_
+#define OSAL_FILEUTIL_H_
+#include "eosalx.h"
+
 /* Flags for file utility functions.
  */
 #define OS_FILE_DEFAULT 0
@@ -65,4 +70,5 @@ osalStatus osal_remove_recursive(
 
 /*@}*/
 
+#endif
 #endif
