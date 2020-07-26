@@ -17,6 +17,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_CRYPTO_HASH_H_
+#define OSAL_CRYPTO_HASH_H_
+#include "eosalx.h"
 
 /* Calculate SHA-256 cryptographic hash (as binary) of buffer given as argument
  */
@@ -25,3 +29,4 @@ void osal_sha256(
     os_memsz n,
     os_uchar *md);
 
+#endif

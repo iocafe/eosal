@@ -15,6 +15,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_STRINGXT_H_
+#define OSAL_STRINGXT_H_
+#include "eosalx.h"
+
 #if OSAL_STRINGX_SUPPORT
 
 /* Flags for osal_str_get_next() function.
@@ -157,4 +162,5 @@ os_boolean osal_pattern_match(
 
 /*@}*/
 
+#endif
 #endif

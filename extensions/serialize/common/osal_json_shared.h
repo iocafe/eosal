@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_JSON_SHARED_H_
+#define OSAL_JSON_SHARED_H_
+#include "eosalx.h"
+
 #if OSAL_SERIALIZE_SUPPORT
 
 /** Enumeration of JSON element codes.
@@ -101,4 +106,5 @@ osalStaticJsonDictionary osal_find_in_static_json_dict(
 const os_char *osal_get_static_json_dict_str(
     osalStaticJsonDictionary ix);
 
+#endif
 #endif

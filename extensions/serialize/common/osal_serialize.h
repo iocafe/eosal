@@ -13,6 +13,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SERIALIZE_H_
+#define OSAL_SERIALIZE_H_
+#include "eosalx.h"
+
 #if OSAL_SERIALIZE_SUPPORT
 
 /**
@@ -91,4 +96,5 @@ void osal_float2ints(
 
 /*@}*/
 
+#endif
 #endif

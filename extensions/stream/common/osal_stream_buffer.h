@@ -16,6 +16,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_STREAM_BUFFER_H_
+#define OSAL_STREAM_BUFFER_H_
+#include "eosalx.h"
 
 /** Stream interface structure for the stream buffer class.
  */
@@ -96,4 +100,6 @@ os_char *osal_stream_buffer_content(
  */
 #ifndef OSAL_STREAM_BUFFER_IFACE
     #define OSAL_STREAM_BUFFER_IFACE OS_NULL
+#endif
+
 #endif

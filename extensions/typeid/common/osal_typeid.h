@@ -18,6 +18,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_TYPEID_H_
+#define OSAL_TYPEID_H_
+#include "eosalx.h"
 
 /** Enumeration of type identifiers. Type identifiers are used to save and transfer data
     type information.
@@ -125,3 +129,5 @@ const os_char *osal_typeid_to_name(
  */
 os_memsz osal_type_size(
     osalTypeId type_id);
+
+#endif

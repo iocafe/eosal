@@ -13,6 +13,9 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_STREAM_SUPPLEMENT_H_
+#define OSAL_STREAM_SUPPLEMENT_H_
 #include "eosalx.h"
 
 #if OSAL_SERIALIZE_SUPPORT
@@ -29,3 +32,4 @@ osalStatus osal_stream_print_str(
     const os_char *str,
     os_int flags);
 
+#endif

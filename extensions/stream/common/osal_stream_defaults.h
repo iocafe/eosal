@@ -17,6 +17,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_STREAM_DEFAULTS_H_
+#define OSAL_STREAM_DEFAULTS_H_
+#include "eosalx.h"
 
 osalStream osal_stream_default_accept(
 	osalStream stream,
@@ -60,3 +64,5 @@ osalStatus osal_stream_default_select(
 	osalSelectData *selectdata,
     os_int timeout_ms,
 	os_int flags);
+
+#endif

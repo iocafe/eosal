@@ -18,6 +18,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_STREAM_H_
+#define OSAL_STREAM_H_
+#include "eosalx.h"
 
 /**
 ****************************************************************************************************
@@ -522,4 +526,4 @@ osalStatus osal_stream_receive_packet(
     os_memsz remote_addr_sz,
     os_int flags);
 
-
+#endif

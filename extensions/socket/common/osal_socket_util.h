@@ -15,6 +15,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SOCKET_UTIL_H_
+#define OSAL_SOCKET_UTIL_H_
+#include "eosalx.h"
 
 /* Get host and port from network address string (osal_socket_util.c).
  */
@@ -34,3 +38,5 @@ void osal_socket_embed_default_port(
     os_char *buf,
     os_memsz buf_sz,
     os_int default_port_nr);
+
+#endif

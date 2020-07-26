@@ -17,6 +17,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_SOCKET_H_
+#define OSAL_SOCKET_H_
+#include "eosalx.h"
 
 /** Stream interface structure for sockets.
  */
@@ -187,5 +191,7 @@ void osal_socket_maintain(void);
 /* No socket interface, allow build even if the define is used.
  */
 #define OSAL_SOCKET_IFACE OS_NULL
+
+#endif
 
 #endif

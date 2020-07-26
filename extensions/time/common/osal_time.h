@@ -15,6 +15,11 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_TIME_H_
+#define OSAL_TIME_H_
+#include "eosalx.h"
+
 #if OSAL_TIME_SUPPORT
 
 /** 
@@ -41,4 +46,5 @@ osalStatus os_settime(
 
 /*@}*/
 
+#endif
 #endif

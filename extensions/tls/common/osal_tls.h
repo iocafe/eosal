@@ -26,6 +26,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_TLS_H_
+#define OSAL_TLS_H_
+#include "eosalx.h"
 
 /** Security configuration, user name, password, trusted parties, certificates
  */
@@ -114,5 +118,7 @@ void osal_tls_shutdown(void);
 /* No TLS interface, allow build even if the define is used.
  */
 #define OSAL_TLS_IFACE OS_NULL
+
+#endif
 
 #endif
