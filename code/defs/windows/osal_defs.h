@@ -16,6 +16,9 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_DEFS_H_
+#define OSAL_DEFS_H_
 
 /* Include Windows main header. Specify Windows 7 as the oldest supported platform (WINVER
    / _WIN32_WINNT 0x0601 is Windows 7)
@@ -389,4 +392,6 @@
  */
 #ifndef OS_CONTROL_CONSOLE_SUPPORT
 #define OS_CONTROL_CONSOLE_SUPPORT 1
+#endif
+
 #endif
