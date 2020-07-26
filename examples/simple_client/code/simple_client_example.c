@@ -34,7 +34,7 @@
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
    One of EXAMPLE_USE_TCP_SOCKET, EXAMPLE_USE_TLS_SOCKET or EXAMPLE_USE_SERIAL_PORT.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
 /* Modify connection parameters here: These apply to different communication types
    EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET sets TCP/IP address to connect to.
@@ -47,7 +47,8 @@
 /*#define EXAMPLE_TCP_SOCKET "127.0.0.1:6368"*/
 #define EXAMPLE_TCP_SOCKET "192.168.1.101:6368"
 
-#define EXAMPLE_TLS_SOCKET "127.0.0.1:6369"
+/*#define EXAMPLE_TLS_SOCKET "127.0.0.1:6369" */
+#define EXAMPLE_TLS_SOCKET "192.168.1.101:6369"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 static osalStream stream;
