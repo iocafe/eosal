@@ -409,21 +409,30 @@ static void os_persistent_make_path(
 
   @brief Wipe persistent data.
 
-  The os_persistent_delete function wipes out all persistent data.
+  The os_persistent_delete function deletes a persistent block or wipes out all persistent data.
 
-  @param   flags Set OSAL_PERSISTENT_DELETE_ALL for now.
+  @param   block_nr Parameter block number.
+  @param   flags Set OSAL_PERSISTENT_DELETE_ALL to delete all blocks or OSAL_PERSISTENT_DEFAULT
+           to delete block number given as argument.
   @return  OSAL_SUCCESS if all good, other values indicate an error.
 
 ****************************************************************************************************
 */
 osalStatus os_persistent_delete(
+    osPersistentBlockNr block_nr,
     os_int flags)
 {
     osalStatus s;
-    s = osal_remove_recursive(rootpath, "*.dat", 0);
-    if (s) {
-        osal_debug_error_int("os_persistent_delete failed ", s);
+    if (flags & OSAL_PERSISTENT_DELETE_ALL) {
+        s = osal_remove_recursive(rootpath, "*.dat", 0);
+        if (s) {
+            osal_debug_error_int("os_persistent_delete failed ", s);
+        }
     }
+    else {
+        s = os_save_persistent(block_nr, OS_NULL, 0, OS_TRUE);
+    }
+
     return s;
 }
 

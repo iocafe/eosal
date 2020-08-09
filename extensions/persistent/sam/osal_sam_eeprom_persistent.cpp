@@ -695,26 +695,27 @@ static void os_persistent_move(
 
   @brief Wipe persistent data.
 
-  The os_persistent_delete function wipes out all persistent data.
+  The os_persistent_delete function deletes a persistent block or wipes out all persistent data.
 
-  @param   flags Set OSAL_PERSISTENT_DELETE_ALL for now.
+  @param   block_nr Parameter block number.
+  @param   flags Set OSAL_PERSISTENT_DELETE_ALL to delete all blocks or OSAL_PERSISTENT_DEFAULT
+           to delete block number given as argument.
   @return  OSAL_SUCCESS if all good, other values indicate an error.
 
 ****************************************************************************************************
 */
 osalStatus os_persistent_delete(
+    osPersistentBlockNr block_nr,
     os_int flags)
 {
-    os_memclear((os_char*)&hdr, sizeof(hdr));
-    /* N/A
-    osal_control_interrupts(OS_FALSE);
-    */
-    os_persistent_delete_internal(0, eeprom_sz);
-    EEPROM.commit();
-    /* N/A
-    osal_control_interrupts(OS_TRUE);
-    */
-    return OSAL_SUCCESS;
+    if (flags & OSAL_PERSISTENT_DELETE_ALL) {
+        os_memclear((os_char*)&hdr, sizeof(hdr));
+        os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
+        EEPROM.commit();
+        return OSAL_SUCCESS;
+    }
+    else {
+        return os_save_persistent(block_nr, OS_NULL, 0, OS_TRUE);
+    }
 }
-
 #endif

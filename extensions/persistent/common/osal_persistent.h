@@ -215,6 +215,7 @@ osalStatus os_save_persistent(
 /* Delete persistent data.
  */
 osalStatus os_persistent_delete(
+    osPersistentBlockNr block_nr,
     os_int flags);
 
 #endif
