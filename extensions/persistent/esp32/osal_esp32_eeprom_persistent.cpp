@@ -186,7 +186,7 @@ osalStatus os_persistent_get_ptr(
     os_memsz *block_sz,
     os_int flags)
 {
-#if EOSAL_RELAX_SECURITY == 0
+#if OSAL_RELAX_SECURITY == 0
     /* Reading or writing seacred block requires secret flag. When this function
        is called for data transfer, there is no secure flag and thus secret block
        cannot be accessed to break security.
@@ -235,7 +235,7 @@ osPersistentHandle *os_persistent_open(
         return OS_NULL;
     }
 
-#if EOSAL_RELAX_SECURITY == 0
+#if OSAL_RELAX_SECURITY == 0
     /* Reading or writing seacred block requires secret flag. When this function
        is called for data transfer, there is no secure flag and thus secret block
        cannot be accessed to break security.

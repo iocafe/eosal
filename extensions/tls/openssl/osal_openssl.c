@@ -1582,7 +1582,7 @@ static int osal_openssl_verify_callback(
         }
     }
 
-#if EOSAL_RELAX_SECURITY
+#if OSAL_RELAX_SECURITY
     return 1;
 #else
     if (err == X509_V_OK ||
