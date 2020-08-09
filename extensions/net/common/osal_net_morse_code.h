@@ -24,6 +24,7 @@ struct osalNetworkState;
  */
 typedef enum osalMorseCodeEnum
 {
+    MORSE_PROGRAMMING_DEVICE = -3,
     MORSE_CONFIGURING = -2,
     MORSE_CONFIGURATION_MATCH = -1,
     MORSE_RUNNING = 0,

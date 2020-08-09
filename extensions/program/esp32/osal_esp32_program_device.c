@@ -258,6 +258,7 @@ osalStatus osal_start_device_programming(void)
     osal_istate.hdr_verified = OS_FALSE;
     osal_istate.update_handle = 0;
 
+    osal_set_network_state_int(OSAL_NS_PROGRAMMING_DEVICE, 0, OS_TRUE);
     return OSAL_SUCCESS;
 }
 
@@ -434,6 +435,8 @@ osalStatus get_device_programming_status(void)
 */
 void osal_cancel_device_programming(void)
 {
+    osal_set_network_state_int(OSAL_NS_PROGRAMMING_DEVICE, 0, OS_FALSE);
+
     if (osal_istate.buf) {
         osal_trace("programming buffer released");
         os_free(osal_istate.buf, OSAL_PROG_BLOCK_SZ);

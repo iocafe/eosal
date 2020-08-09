@@ -104,6 +104,7 @@ osalStatus osal_start_device_programming(void)
 
     osal_istate.deb_stream = osal_file_open(deb_path, OS_NULL, &s, OSAL_STREAM_WRITE);
     if (osal_istate.deb_stream == OS_NULL) return s;
+    osal_set_network_state_int(OSAL_NS_PROGRAMMING_DEVICE, 0, OS_TRUE);
     return OSAL_SUCCESS;
 }
 
@@ -216,6 +217,7 @@ void osal_cancel_device_programming(void)
     osal_trace2("cancel programming");
     osal_close_tmp_file();
     osal_delete_tmp_file();
+    osal_set_network_state_int(OSAL_NS_PROGRAMMING_DEVICE, 0, OS_FALSE);
 }
 
 

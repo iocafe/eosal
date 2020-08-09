@@ -258,6 +258,13 @@ void osal_set_network_state_int(
             ns->gazerbeam_connected = value;
             break;
 
+#if OSAL_DEVICE_PROGRAMMING_SUPPORT
+        case OSAL_NS_PROGRAMMING_DEVICE:
+            if (ns->programming_device == value) return;
+            ns->programming_device = value;
+            break;
+#endif
+
         case OSAL_NS_DEVICE_INIT_INCOMPLETE:
             if (ns->device_init_incomplete == value) return;
             ns->device_init_incomplete = value;
@@ -315,6 +322,12 @@ os_int osal_get_network_state_int(
         case OSAL_NS_GAZERBEAM_CONNECTED:
             rval = ns->gazerbeam_connected;
             break;
+
+#if OSAL_DEVICE_PROGRAMMING_SUPPORT
+        case OSAL_NS_PROGRAMMING_DEVICE:
+            rval = ns->programming_device;
+            break;
+#endif
 
         case OSAL_NS_DEVICE_INIT_INCOMPLETE:
             rval = ns->device_init_incomplete;

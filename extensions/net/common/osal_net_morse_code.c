@@ -46,6 +46,13 @@ osalMorseCodeEnum osal_network_state_to_morse_code(
         goto setit;
     }
 
+    /* If we are programming the flash.
+     */
+    if (osal_get_network_state_int(OSAL_NS_PROGRAMMING_DEVICE, 0)) {
+        code = MORSE_PROGRAMMING_DEVICE;
+        goto setit;
+    }
+
     /* If WiFi is not connected?
      */
     if (osal_get_network_state_int(OSAL_NS_NETWORK_USED, 0) &&
