@@ -145,6 +145,12 @@ void osal_shutdown(
     osal_mutex_shutdown();
 #endif
 
+    /* Shut down system console.
+     */
+#if OSAL_CONSOLE
+    osal_console_shutdown();
+#endif
+
     /* Shut down memory management.
      */
 #if OSAL_MEMORY_MANAGER

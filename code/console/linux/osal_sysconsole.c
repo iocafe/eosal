@@ -25,8 +25,11 @@
 #include <stdio.h>
 #include <termios.h>
 #include <sys/ioctl.h>
-
 #include <unistd.h>
+
+const int osal_stdin_fno = STDIN_FILENO;
+static struct termios osal_console_attr;
+
 /**
 ****************************************************************************************************
 
@@ -43,7 +46,35 @@
 void osal_sysconsole_initialize(
     void)
 {
+    struct termios attr;
+
+    tcgetattr(osal_stdin_fno, &attr);
+    osal_console_attr = attr;
+    attr.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(osal_stdin_fno, TCSANOW, &attr);
+    /* This doesn't seem necessary: setbuf(stdin, NULL); */
 }
+
+
+#if OSAL_PROCESS_CLEANUP_SUPPORT
+/**
+****************************************************************************************************
+
+  @brief Shut down system console.
+  @anchor osal_sysconsole_shutdown
+
+  The osal_sysconsole_shutdown() function restores console state as it was.
+  @return  None
+
+****************************************************************************************************
+*/
+void osal_sysconsole_shutdown(
+    void)
+{
+    tcsetattr(osal_stdin_fno, TCSANOW, &osal_console_attr);
+}
+#endif
+
 
 /**
 ****************************************************************************************************
@@ -88,25 +119,14 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
-    struct termios attr;
     int nbytes = 0;
-    static os_boolean line_buffering_disabled = OS_FALSE;
-    const int stdin_handle = 0;
+    os_uchar c;
 
-    if (!line_buffering_disabled)
-    {
-        line_buffering_disabled = OS_TRUE;
-
-        tcgetattr(stdin_handle, &attr);
-        attr.c_lflag &= ~(ICANON | ECHO);
-        tcsetattr(stdin_handle, TCSANOW, &attr);
-        setbuf(stdin, NULL);
-    }
-
-    ioctl(stdin_handle, FIONREAD, &nbytes);
+    ioctl(osal_stdin_fno, FIONREAD, &nbytes);
     if (nbytes <= 0) return 0;
 
-    return (os_uint)getchar();
+    read(fileno(stdin), &c, 1);
+    return c;
 }
 
 #endif

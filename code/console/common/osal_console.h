@@ -43,9 +43,10 @@
 
 #if OSAL_CONSOLE
 
-    /* Initialize console.
+    /* Initialize and shut down console.
      */
     #define osal_console_initialize() osal_sysconsole_initialize()
+    #define osal_console_shutdown() osal_sysconsole_shutdown()
 
     /* Write text to console.
      */
@@ -58,6 +59,7 @@
 #else
 
     #define osal_console_initialize()
+    #define osal_console_shutdown()
     #define osal_console_write(t)
     #define osal_console_read() 0
 

@@ -39,6 +39,25 @@ void osal_sysconsole_initialize(
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
+/**
+****************************************************************************************************
+
+  @brief Shut down system console.
+  @anchor osal_sysconsole_shutdown
+
+  The osal_sysconsole_shutdown() function restores console state as it was.
+  @return  None
+
+****************************************************************************************************
+*/
+void osal_sysconsole_shutdown(
+    void)
+{
+}
+#endif
+
+
 /**
 ****************************************************************************************************
 

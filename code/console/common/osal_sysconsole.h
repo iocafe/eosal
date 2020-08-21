@@ -38,6 +38,11 @@
 void osal_sysconsole_initialize(
     void);
 
+/* Shut down system console.
+ */
+void osal_sysconsole_shutdown(
+    void);
+
 /* Write text to system console.
  */
 void osal_sysconsole_write(
