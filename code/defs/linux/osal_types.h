@@ -6,11 +6,11 @@
   @version 1.0
   @date    12.8.2020
 
-  This file defines operating system independent names for data types. 
+  This file defines operating system independent names for data types.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -20,7 +20,7 @@
 #define OSAL_TYPES_H_
 #include "eosal.h"
 
-/** 
+/**
    @name Operating System Independent Types
    Since C doesn't fix type sizes, new names are defined for primitive types. This will
    help software to behave exactly the same way when run on different platforms.
@@ -55,16 +55,16 @@ typedef unsigned short os_ushort;
  */
 typedef int os_int;
 
-/** 32 bit unsigned integer. The os_uint is ususally same as unsigned int, if platform's 
-    integers are 32 bit. If platforms integer is only 16 bit, this is defined as unsigned 
-	long.
+/** 32 bit unsigned integer. The os_uint is ususally same as unsigned int, if platform's
+    integers are 32 bit. If platforms integer is only 16 bit, this is defined as unsigned
+    long.
  */
 typedef unsigned int os_uint;
 
 /** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then 32 bit integer.
     For Microsoft compilers this is "__int64" and for GNU compilers "long long". The
-	OSAL_LONG_IS_64_BITS define is checked so that embedded code without 64 bit support
-	can be tested on Windows by setting the define to zero.
+    OSAL_LONG_IS_64_BITS define is checked so that embedded code without 64 bit support
+    can be tested on Windows by setting the define to zero.
  */
 #if OSAL_LONG_IS_64_BITS
 typedef long long os_long;
@@ -85,12 +85,12 @@ typedef unsigned long os_ulong;
  */
 typedef os_long os_memsz;
 
-/** Single precision floating point number. In most cases this is same as float, 
+/** Single precision floating point number. In most cases this is same as float,
     typically 4 bytes.
  */
 typedef float os_float;
 
-/** Double precision floating point number. In most cases this is same as double, 
+/** Double precision floating point number. In most cases this is same as double,
     typically 4 bytes.
  */
 typedef double os_double;
