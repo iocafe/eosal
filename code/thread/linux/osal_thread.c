@@ -32,6 +32,7 @@
 #include <sched.h>
 #include <pthread.h>
 #include <limits.h>
+#include <stdlib.h>
 
 /** Intermediate parameter structure when creating a new Linux thread.
  */
@@ -146,7 +147,7 @@ osalThread *osal_thread_create(
 
     if (flags & OSAL_THREAD_ATTACHED)
     {
-        handle = (osalLinuxThreadHandle*)os_malloc(sizeof(osalLinuxThreadHandle), OS_NULL);
+        handle = (osalLinuxThreadHandle*)malloc(sizeof(osalLinuxThreadHandle));
         os_memclear(handle, sizeof(osalLinuxThreadHandle));
     }
     else
@@ -184,7 +185,7 @@ osalThread *osal_thread_create(
     if (s)
     {
         osal_debug_error("osal_thread,pthread_create failed");
-        os_free(handle, sizeof(osalLinuxThreadHandle));
+        free(handle);
         return OS_NULL;
     }
 
@@ -299,7 +300,7 @@ void osal_thread_join(
 
     /* Delete the handle structure.
      */
-    os_free(handle, sizeof(osalLinuxThreadHandle));
+    free(handle);
 }
 
 
