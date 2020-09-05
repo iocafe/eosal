@@ -57,6 +57,7 @@
            was given. OS_NULL if not needed.
   @param   flags OSAL_PROCESS_DEFAULT just starts the process. OSAL_PROCESS_WAIT causes
            the function to return only when started process has been terminated.
+           OSAL_PROCESS_ELEVATE flag = run as root.
 
   @return  OSAL_SUCCESS if new process was started. Other return values indicate an error.
 
@@ -128,14 +129,21 @@ osalStatus osal_create_process(
         osal_trace("ELEVATION SUCCESS");
     }
 
-    /* Spawn the process. Try to look up first by file argument as given,
-       then by PATH environment variable.
+    /* Spawn the process. If we have separators in file name, try to look up first
+       by file argument as given, then by PATH environment variable.
      */
     posix_spawnattr_init(&spawnattr);
-    rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, envp);
-    if (rval) {
+    if (os_strchr((os_char*)file, '/')) {
+        rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, envp);
+    }
+    else {
         rval = posix_spawnp(&pid, file, OS_NULL, &spawnattr, argv, envp);
     }
+
+    /* WAS: rval = posix_spawn(&pid, file, OS_NULL, &spawnattr, argv, envp);
+    if (rval) {
+        rval = posix_spawnp(&pid, file, OS_NULL, &spawnattr, argv, envp);
+    } */
 
     /* If we succeeded, we need to wait for process to exit if OSAL_PROCESS_WAIT
        flag is given. Call waitpid(-1, &rval, WNOHANG) in any case to kill zombies.
