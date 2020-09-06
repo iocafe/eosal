@@ -33,6 +33,7 @@
 #include <pthread.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <time.h>
 
 /** Intermediate parameter structure when creating a new Linux thread.
  */
@@ -320,7 +321,10 @@ void osal_thread_join(
 */
 void os_timeslice(void)
 {
-    usleep(1000);
+    static struct timespec ts = { .tv_sec = 0, .tv_nsec=2000000 };
+
+    nanosleep(&ts, NULL);
+    // usleep(1000);
 }
 #endif
 
