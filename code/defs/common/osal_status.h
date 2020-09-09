@@ -29,6 +29,16 @@
   Many OSAL function returns status code. Zero is always success and other values identify
   an error or an exception condition.
 
+  Note: Many eobjects library (object tree hierarchy, higher level library) functions return
+  also status codes. Enumeration eStatus defines these codes. These can be mixed with EOSAL
+  status codes.
+  - Status codes from 0 to 49 are reserved for EOSAL reutrn codes which do not indicate an error.
+  - Status codes from 50 to 99 are reseved for EOBJECTS return codes which do not indicate an error.
+  - Status codes from 100 to 399 are reserved for EOSAL error codes.
+  - Status codes from 500 to 799 are reserved for EOBJECTS error codes.
+  - Commonly used ESTATUS_SUCCESS is same as OSAL_SUCCESS and and ESTATUS_FAILED is same as
+    OSAL_STATUS_FAILED.
+
 ****************************************************************************************************
 */
 /*@{*/
@@ -90,15 +100,11 @@ typedef enum
      */
     OSAL_UDP_SOCKET_DISCONNECTED = 30,
 
-    /** IO device has been assigned to IO network. This is feature of light house, so that
-        IO devices do not need to be pre configured to network, if for example running in
-        internal network of small automated system.
-     */
-    // OSAL_IO_NETWORK_NAME_SET = 40,
-
     /** End of file has been reached.
      */
-    OSAL_END_OF_FILE = 50,
+    OSAL_END_OF_FILE = 49,
+
+    /** Status codes 50 - 99 are reserved for eobjects library */
 
     /** General failed, start enumerating errors from 100.
      */
@@ -254,6 +260,8 @@ typedef enum
     /** Handle has been closed (object referred by handle doesn't exist)
      */
     OSAL_STATUS_HANDLE_CLOSED = 206
+
+    /** Status codes 400 - 99 are reserved for eobjects library */
 }
 osalStatus;
 
