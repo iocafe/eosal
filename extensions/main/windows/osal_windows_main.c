@@ -1,10 +1,10 @@
 /**
 
-  @file    main/windows/osal_main.c
+  @file    main/windows/osal_windows_main.c
   @brief   Windows specific process entry point function.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    14.8.2020
 
   This OSAL main process entry point header file. Generally the operating system calls entry
   point function to start the process. Unfortunately name, arguments and character encoding
@@ -14,6 +14,7 @@
   To be start a process in generic way we write osal_main() function in our application
   and then link with osal_main, etc. library which contains appropriate operating system
   dependent entry point, converts the arguments to UTF8 and passes these on to osal_main()
+  Use macro EOSAL_C_MAIN in application to generate actual C main() function code.
 
   Notice that using osal_main() function to enter the process is optional, you can start the
   process in any way you like.
@@ -24,9 +25,9 @@
   - An application using /SUBSYSTEM:WINDOWS; calls wWinMain, which must be defined with
     __stdcall, set wWinMainCRTStartup as entry point. Link with ?
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -42,6 +43,7 @@
   @anchor wmain
 
   The wmain() function is Windows /SUBSYSTEM:CONSOLE Unicode compilation entry point name.
+  Macro EOSAL_C_MAIN generates wmain function which calls eosal_entry_w().
 
   @param   argc Number of command line arguments. First argument is name of the executable.
   @param   argv Array of string pointers, one for each command line argument plus first
@@ -51,7 +53,7 @@
 
 ****************************************************************************************************
 */
-int wmain(
+int eosal_entry_w(
     int argc,
     wchar_t *argv[])
 {
@@ -90,7 +92,7 @@ int wmain(
     /* Shut down operating system abstraction layer.
      */
     osal_shutdown();
-    
+
     return rval;
 }
 
@@ -99,9 +101,10 @@ int wmain(
 ****************************************************************************************************
 
   @brief Windows console subsystem MBCS entry point.
-  @anchor main
+  @anchor eosal_entry_s
 
-  The main() function is Windows /SUBSYSTEM:CONSOLE MBCS compilation entry point name.
+  The main() function is Windows /SUBSYSTEM:CONSOLE MBCS compilation entry point name. Macro
+  EOSAL_C_MAIN generates main function which calls eosal_entry_s().
 
   MinGW doesn't support wmain() directly, thus this intermediate entry point function is
   always needed when compiling with MinGW.
@@ -113,7 +116,7 @@ int wmain(
 
 ****************************************************************************************************
 */
-int main(
+int eosal_entry_s(
     int a_argc,
     char **a_argv)
 {

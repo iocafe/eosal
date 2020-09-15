@@ -26,6 +26,10 @@ static MyParams prm_a, prm_b;
 static os_timer t;
 static os_int count;
 
+/* If needed for the operating system, EOSAL_C_MAIN macro generates the actual C main() function.
+ */
+EOSAL_C_MAIN
+
 
 /**
 ****************************************************************************************************

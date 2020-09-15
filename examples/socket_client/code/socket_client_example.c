@@ -54,6 +54,10 @@ typedef struct MyThreadParams
 }
 MyThreadParams;
 
+/* If needed for the operating system, EOSAL_C_MAIN macro generates the actual C main() function.
+ */
+EOSAL_C_MAIN
+
 
 /**
 ****************************************************************************************************

@@ -7,11 +7,11 @@
   @date    8.1.2020
 
   Simple communication server: No dynamic memory alloccation, multithreading, socket
-  select, etc. Uses single thread loop. Just bare bones. 
+  select, etc. Uses single thread loop. Just bare bones.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -36,7 +36,7 @@
 #define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
 /* EXAMPLE_USE_SERIAL_PORT, define EXAMPLE_SERIAL_PORT: Serial port can be selected using Windows
-   style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific 
+   style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
 #define EXAMPLE_SERIAL_PORT "COM3,baud=115200"
@@ -46,6 +46,10 @@
  */
 static osalStream stream, mystream;
 
+/* If needed for the operating system, EOSAL_C_MAIN macro generates the actual C main() function.
+ */
+EOSAL_C_MAIN
+
 
 /**
 ****************************************************************************************************
@@ -54,7 +58,7 @@ static osalStream stream, mystream;
 
   The osal_main() function is OS independent entry point.
 
-  The function initializes used stream library and either opens a serial port or creates 
+  The function initializes used stream library and either opens a serial port or creates
   listening TCP/TLS socket.
 
   @param   argc Number of command line arguments.
@@ -107,9 +111,9 @@ osalStatus osal_main(
   @brief Loop function to be called repeatedly.
 
   The osal_loop() function:
-  - Accepts incoming TCP/TLS socket connection. 
+  - Accepts incoming TCP/TLS socket connection.
   - If we have a connection:
-  -- Reads data received from socket and prints it to console. 
+  -- Reads data received from socket and prints it to console.
   -- Check for user key pressess and writes those to socket.
 
   Note: See note for serial communication, same applies here.
@@ -213,8 +217,8 @@ osalStatus osal_loop(
         }
     }
 
-    /* Call flush to move data. This is necessary even nothing was written just now. Some stream 
-       implementetios buffers data internally and this moves buffered data. 
+    /* Call flush to move data. This is necessary even nothing was written just now. Some stream
+       implementetios buffers data internally and this moves buffered data.
      */
     if (mystream)
     {
@@ -235,7 +239,7 @@ osalStatus osal_loop(
   @brief Finish with communication.
 
   The osal_main_cleanup() function closes listening socket port and connected socket port, then
-  closes underlying stream library. Notice that the osal_stream_close() function does close does 
+  closes underlying stream library. Notice that the osal_stream_close() function does close does
   nothing if it is called with NULL argument.
 
   @param   app_context Void pointer, reserved to pass context structure, etc.

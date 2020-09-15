@@ -41,10 +41,16 @@ OSAL_C_HEADER_BEGINS
 
 #include "extensions/math/common/osal_round.h"
 
-/* Include osal_main.h header regardless of OSAL_MAIN_SUPPORT define. Needed for micro controller
-   environments.
+/* Include osal_main.h header regardless of OSAL_MAIN_SUPPORT define. Needed for
+   micro-controller environments.
  */
 #include "extensions/main/common/osal_main.h"
+#ifdef E_OS_linux
+  #include "extensions/main/linux/osal_linux_main.h"
+#endif
+#ifndef EOSAL_C_MAIN
+  #define EOSAL_C_MAIN
+#endif
 #include "extensions/stream/common/osal_stream.h"
 #include "extensions/stream/common/osal_stream_defaults.h"
 #include "extensions/stream/common/osal_stream_buffer.h"
