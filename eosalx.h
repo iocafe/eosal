@@ -48,6 +48,9 @@ OSAL_C_HEADER_BEGINS
 #ifdef E_OS_linux
   #include "extensions/main/linux/osal_linux_main.h"
 #endif
+#ifdef E_OS_windows
+  #include "extensions/main/windows/osal_windows_main.h"
+#endif
 #ifndef EOSAL_C_MAIN
   #define EOSAL_C_MAIN
 #endif
