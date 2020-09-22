@@ -111,6 +111,13 @@ osalTypeId;
  */
 #define OSAL_TYPEID_MASK 31
 
+/** Macros to help to decide how to draw the type.
+ */
+#define OSAL_IS_UNDEFINED_TYPE(id) ((os_int)(id) == (os_int)OS_UNDEFINED_TYPE)
+#define OSAL_IS_BOOLEAN_TYPE(id) ((os_int)(id) == (os_int)OS_BOOLEAN)
+#define OSAL_IS_INTEGER_TYPE(id) ((os_int)(id) >= (os_int)OS_CHAR && (os_int)(id) <= (os_int)OS_LONG)
+#define OSAL_IS_FLOAT_TYPE(id) ((os_int)(id) >= (os_int)OS_FLOAT && (os_int)(id) <= (os_int)OS_DEC001)
+
 #if OSAL_TYPEID_SUPPORT
 
 /* Convert type name string to type identifier (integer).
