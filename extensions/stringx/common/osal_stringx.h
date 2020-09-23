@@ -8,9 +8,9 @@
 
   This header file contains functions prototypes for more string manipulation.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -33,7 +33,7 @@
 #define OSAL_FLOAT_E_FORMAT 1
 
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Extended string manipulation and conversions functions
@@ -85,9 +85,9 @@ os_memsz osal_str_to_int64(
  */
 const os_char *osal_str_get_item_value(
     const os_char *list_str,
-	const os_char *item_name,
-	os_memsz *n_chars,
-	os_short flags);
+    const os_char *item_name,
+    os_memsz *n_chars,
+    os_short flags);
 
 /* Get integer value of specified list item.
  */
@@ -115,7 +115,7 @@ osalStatus osal_str_list_iter(
  */
 os_long osal_str_to_int(
     const os_char *str,
-	os_memsz *count);
+    os_memsz *count);
 
 /* Convert hexadecimal string to integer.
  */
@@ -159,6 +159,12 @@ os_boolean osal_pattern_match(
     const os_char *str,
     const os_char *pattern,
     os_int flags);
+
+/* Check if "str" ends with "ending", for example to check if path has trailing slash.
+ */
+const os_char *osal_str_ends_with(
+    const os_char *str,
+    const os_char *ending);
 
 /*@}*/
 
