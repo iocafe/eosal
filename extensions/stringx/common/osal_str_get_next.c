@@ -77,10 +77,10 @@ const os_char *osal_str_get_next(
   @brief Iterate trough items in string list.
   @anchor osal_str_list_iter
 
-  The osal_str_list_iter() function is used to iterate trough list string. Before the first
-  osal_str_copy_item call list_str_ptr is set to point the list string. The function copies one
-  item from list into the buffer given as argument and advances list_str_ptr. When there are
-  not more items in list, the function returns OSAL_STATUS_FAILED.
+  The osal_str_list_iter() function is used to iterate trough list string. Before calling
+  osal_str_copy_item for the first time, set list_str_ptr is set to point the list string.
+  The function copies one item from list into the buffer given as argument and advances
+  list_str_ptr. When there are not more items in list, the function returns OSAL_STATUS_FAILED.
 
   @param   list_str Pointer to list string to search. If the str is OS_NULL the function
            will return pointer to null character.
