@@ -154,61 +154,42 @@ osalTypeId osal_typeid_from_name(
 const os_char *osal_typeid_to_name(
     osalTypeId type_id)
 {
-    if ((os_int)type_id < 0 || (os_int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
-    {
+    os_int itype_id;
+    itype_id = ((os_int)type_id & OSAL_TYPEID_MASK);
+    if (itype_id >= OSAL_NRO_TYPE_INFO_ROWS) {
         return osal_str_empty;
     }
 
-    return osal_typeinfo[type_id].name;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get type size in bytes (code with type names).
-
-  The osal_type_size function gets data type size in bytes.
-
-  @param   type_id Type identifier.
-  @return  Size in bytes, 0 if variable or unknown.
-
-****************************************************************************************************
-*/
-os_memsz osal_type_size(
-    osalTypeId type_id)
-{
-    if ((os_int)type_id < 0 || (os_int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
-    {
-        return 0;
-    }
-
-    return osal_typeinfo[type_id].sz;
-}
-
-#else
-
-/**
-****************************************************************************************************
-
-  @brief Get type size in bytes (code without type names).
-
-  The osal_type_size function gets data type size in bytes.
-
-  @param   type_id Type identifier.
-  @return  Size in bytes, 0 if variable or unknown.
-
-****************************************************************************************************
-*/
-os_memsz osal_type_size(
-    osalTypeId type_id)
-{
-    if ((os_int)type_id < 0 || (os_int)type_id >= OSAL_NRO_TYPE_INFO_ROWS)
-    {
-        return 0;
-    }
-
-    return osal_typesz[type_id];
+    return osal_typeinfo[itype_id].name;
 }
 
 #endif
+
+/**
+****************************************************************************************************
+
+  @brief Get type size in bytes.
+
+  The osal_type_size function gets data type size in bytes.
+
+  @param   type_id Type identifier.
+  @return  Size in bytes, 0 if variable or unknown.
+
+****************************************************************************************************
+*/
+os_memsz osal_type_size(
+    osalTypeId type_id)
+{
+    os_int itype_id;
+    itype_id = ((os_int)type_id & OSAL_TYPEID_MASK);
+    if (itype_id >= OSAL_NRO_TYPE_INFO_ROWS) {
+        return 0;
+    }
+
+#if OSAL_TYPEID_SUPPORT
+    return osal_typeinfo[itype_id].sz;
+#else
+    return osal_typesz[type_id];
+#endif
+}
+

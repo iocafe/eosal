@@ -53,7 +53,11 @@
 /** Null pointer.
  */
 #ifndef OS_NULL
+#ifdef __cplusplus
+#define OS_NULL NULL
+#else
 #define OS_NULL 0
+#endif
 #endif
 
 /** Value indication boolead condition TRUE.

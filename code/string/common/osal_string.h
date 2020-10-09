@@ -8,9 +8,9 @@
 
   This header file contains functions prototypes for string manipulation.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -20,7 +20,7 @@
 #define OSAL_STRING_H_
 #include "eosal.h"
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Flags For String Functions
@@ -35,14 +35,14 @@
  */
 #define OSAL_STRING_DEFAULT 0
 
-/** Search for item name only. If specified the os_strchr() function will 
+/** Search for item name only. If specified the os_strchr() function will
     search only for item name, whole word, not value.
  */
-#define OSAL_STRING_SEARCH_ITEM_NAME 1 
+#define OSAL_STRING_SEARCH_ITEM_NAME 1
 
-/** Search first line only. If specified the os_strchr(), 
+/** Search first line only. If specified the os_strchr(),
     osal_str_get_item_value(), osal_str_get_item_int()...  functions will search only
-	first line of the sting.
+    first line of the sting.
  */
 #define OSAL_STRING_SEARCH_LINE_ONLY 2
 
@@ -53,7 +53,7 @@
 
 /*@}*/
 
-/** 
+/**
 ****************************************************************************************************
 
   @name String Manipulation Functions
@@ -84,6 +84,13 @@ os_int os_strcmp(
     const os_char *str1,
     const os_char *str2);
 
+/* Compare n first characters of two strings.
+ */
+os_int os_strncmp(
+    const os_char *str1,
+    const os_char *str2,
+    os_memsz n);
+
 /* Compare two strings, ignore case, limit maximum string length.
  */
 os_int os_strnicmp(
@@ -100,27 +107,27 @@ os_memsz os_strlen(
  */
 os_char *os_strchr(
     os_char *str,
-	os_uint c32);
+    os_uint c32);
 
 /* Find last matching character within string.
  */
 os_char *os_strechr(
     os_char *str,
-	os_uint c32);
+    os_uint c32);
 
 /* Find a substring within a string. Used also to find named items from list.
  */
 os_char *os_strstr(
     const os_char *str,
-	const os_char *substr,
-	os_short flags);
+    const os_char *substr,
+    os_short flags);
 
 /* Convert integer to string.
  */
 os_memsz osal_int_to_str(
     os_char *buf,
-	os_memsz buf_sz,
-	os_long x);
+    os_memsz buf_sz,
+    os_long x);
 
 /*@}*/
 

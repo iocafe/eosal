@@ -109,7 +109,7 @@ osalTypeId;
 
 /** Mask for getting type ID only, in case some other bits are stored in same integer.
  */
-#define OSAL_TYPEID_MASK 31
+#define OSAL_TYPEID_MASK 0x1F
 
 /** Macros to help to decide how to draw the type.
  */
@@ -117,6 +117,13 @@ osalTypeId;
 #define OSAL_IS_BOOLEAN_TYPE(id) ((os_int)(id) == (os_int)OS_BOOLEAN)
 #define OSAL_IS_INTEGER_TYPE(id) ((os_int)(id) >= (os_int)OS_CHAR && (os_int)(id) <= (os_int)OS_LONG)
 #define OSAL_IS_FLOAT_TYPE(id) ((os_int)(id) >= (os_int)OS_FLOAT && (os_int)(id) <= (os_int)OS_DEC001)
+
+/** If type ID is stored in byte, it takes 5 bits. There are three extra bits which can
+    be used on something else:
+ */
+#define OSAL_TYPEID_EXTRA_BIT_A 0x20
+#define OSAL_TYPEID_EXTRA_BIT_B 0x40
+#define OSAL_TYPEID_EXTRA_BIT_C 0x80
 
 #if OSAL_TYPEID_SUPPORT
 
