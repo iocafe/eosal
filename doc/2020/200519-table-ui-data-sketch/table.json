@@ -5,7 +5,7 @@
     "use": "timebase",
     "title": "My measurements over time",
     "subtitle": "candy5",
-    "align" : "right",
+    "attr" : "right",
     "digs" : 1,
     "select": [
         {
@@ -26,32 +26,25 @@
         {
           "name": "timestamp", 
           "group": "columnhdr",
-          "type" : "time",
-          "align" : "left",
-          "attr": "char",
-          "width" : 10
+          "type" : "long",
+          "attr": "time,char,left,w:10",
         },
         {
           "name": "input", 
           "type" : "int",
           "attr": "char",
-          "width" : 3
         },
         {
           "name": "temperature", 
-          "status" : "ok",
-          "type" : "time",
-          "digs" : 3,
-          "align" : "left",
-          "attr": "char",
-          "width" : 6
+          "value" : "ok",
+          "type" : "str",
+          "attr": "left",
         },
         {
           "name": "humidity", 
           "status" : "ok",
-          "type" : "time",
-          "align" : "left",
-          "attr": "char",
+          "type" : "float",
+          "digs" : 3,
           "group": "Watery Stuff"
         },
         {
