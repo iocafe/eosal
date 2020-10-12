@@ -6,11 +6,11 @@
   @version 1.0
   @date    8.1.2020
 
-  This file defines operating system independent names for data types. 
+  This file defines operating system independent names for data types.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -20,7 +20,7 @@
 #define OSAL_TYPES_H_
 #include "eosal.h"
 
-/** 
+/**
    @name Operating System Independent Types
    Since C doesn't fix type sizes, new names are defined for primitive types. This will
    help software to behave exactly the same way when run on different platforms.
@@ -56,16 +56,16 @@ typedef unsigned short os_ushort;
  */
 typedef long os_int;
 
-/** 32 bit unsigned integer. The os_uint is ususally same as unsigned int, if platform's 
-    integers are 32 bit. If platforms integer is only 16 bit, this is defined as unsigned 
-	long.
+/** 32 bit unsigned integer. The os_uint is ususally same as unsigned int, if platform's
+    integers are 32 bit. If platforms integer is only 16 bit, this is defined as unsigned
+    long.
  */
 typedef unsigned long os_uint;
 
 /** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then 32 bit integer.
     For Microsoft compilers this is "__int64" and for GNU compilers "long long". The
-	OSAL_LONG_IS_64_BITS define is checked so that embedded code without 64 bit support
-	can be tested on Windows by setting the define to zero.
+    OSAL_LONG_IS_64_BITS define is checked so that embedded code without 64 bit support
+    can be tested on Windows by setting the define to zero.
  */
 #if OSAL_LONG_IS_64_BITS
 typedef long long os_long;
@@ -86,12 +86,12 @@ typedef unsigned long os_ulong;
  */
 typedef os_int os_memsz;
 
-/** Single precision floating point number. In most cases this is same as float, 
+/** Single precision floating point number. In most cases this is same as float,
     typically 4 bytes.
  */
 typedef float os_float;
 
-/** Double precision floating point number. In most cases this is same as double, 
+/** Double precision floating point number. In most cases this is same as double,
     typically 4 bytes.
  */
 typedef double os_double;
@@ -106,14 +106,27 @@ typedef void *os_pointer;
 /**
    @name Limits for types
    Maximum and minimum values for each type should be defined here.
-   For now many are missing.
+   We use constants. It is important that the limits are same for
+   all hardware architectures. Notes:
+   - Rare microcontroller environments have no compiler 64 bit integer
+     support -> the OS_LONG_MIN and OS_LONG_MAX will not work. Avoid using
+     these in code whicn needs to run in such environments.
+   - Avoid using OS_FLOAT_MAX and OS_DOUBLE_MAX. These are floating point
+     hardware specififc (values here work for most, but not all).
+   - For now some defines are missing. These may be added later.
  */
 /*@{*/
 #define OS_CHAR_MAX (~(os_schar)0 >> 1)
 #define OS_SHORT_MAX (~(os_short)0 >> 1)
 #define OS_INT_MAX (~(os_int)0 >> 1)
 #define OS_LONG_MAX (~(os_long)0 >> 1)
-#define OS_FLOAT_MAX 3.402823e+38
+
+#define OS_CHAR_MIN (~OS_CHAR_MAX)
+#define OS_SHORT_MIN (~OS_SHORT_MAX)
+#define OS_INT_MIN (~OS_INT_MAX)
+#define OS_LONG_MIN (~OS_LONG_MAX)
+
+#define OS_FLOAT_MAX 3.402823e+38F
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
 /*@}*/
 

@@ -105,14 +105,27 @@ typedef void *os_pointer;
 /**
    @name Limits for types
    Maximum and minimum values for each type should be defined here.
-   For now many are missing.
+   We use constants. It is important that the limits are same for
+   all hardware architectures. Notes:
+   - Rare microcontroller environments have no compiler 64 bit integer
+     support -> the OS_LONG_MIN and OS_LONG_MAX will not work. Avoid using
+     these in code whicn needs to run in such environments.
+   - Avoid using OS_FLOAT_MAX and OS_DOUBLE_MAX. These are floating point
+     hardware specififc (values here work for most, but not all).
+   - For now some defines are missing. These may be added later.
  */
 /*@{*/
 #define OS_CHAR_MAX (~(os_schar)0 >> 1)
 #define OS_SHORT_MAX (~(os_short)0 >> 1)
 #define OS_INT_MAX (~(os_int)0 >> 1)
 #define OS_LONG_MAX (~(os_long)0 >> 1)
-#define OS_FLOAT_MAX 3.402823e+38
+
+#define OS_CHAR_MIN (~OS_CHAR_MAX)
+#define OS_SHORT_MIN (~OS_SHORT_MAX)
+#define OS_INT_MIN (~OS_INT_MAX)
+#define OS_LONG_MIN (~OS_LONG_MAX)
+
+#define OS_FLOAT_MAX 3.402823e+38F
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
 /*@}*/
 
