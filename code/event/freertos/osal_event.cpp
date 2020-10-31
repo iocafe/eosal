@@ -11,9 +11,9 @@
 
   See https://www.freertos.org/xSemaphoreCreateBinary.html
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -71,7 +71,7 @@ osalEvent osal_event_create(
   The osal_event_delete() function deletes an event which was created by osal_event_create()
   function. Resource monitor's event count is decremented, if resource monitor is enabled.
 
-  @param   evnt Pointer to event to delete. 
+  @param   evnt Pointer to event to delete.
 
   @return  None.
 
@@ -154,7 +154,7 @@ void OS_ISR_FUNC_ATTR osal_event_set(
   @param   evnt Event pointer returned by osal_event_create() function.
   @param   timeout_ms Wait timeout. If event is not signaled within this time, then the
            function will return OSAL_STATUS_TIMEOUT. To wait infinetly give
-           OSAL_EVENT_INFINITE (-1) here. To check event state or to reset event to non
+           OSAL_EVENT_INFINITE (-1) here. To check event state and to reset event to non
            signaled state without waiting set timeout_ms to 0.
 
   @return  If the event was signaled, either before the osal_event_wait call or during

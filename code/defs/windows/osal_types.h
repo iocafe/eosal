@@ -112,15 +112,14 @@ typedef void *os_pointer;
    - For now some defines are missing. These may be added later.
  */
 /*@{*/
-#define OS_CHAR_MAX (~(os_schar)0 >> 1)
-#define OS_SHORT_MAX (~(os_short)0 >> 1)
-#define OS_INT_MAX (~(os_int)0 >> 1)
-#define OS_LONG_MAX (~(os_long)0 >> 1)
-
-#define OS_CHAR_MIN (~OS_CHAR_MAX)
-#define OS_SHORT_MIN (~OS_SHORT_MAX)
-#define OS_INT_MIN (~OS_INT_MAX)
-#define OS_LONG_MIN (~OS_LONG_MAX)
+#define OS_CHAR_MAX 127
+#define OS_SHORT_MAX 32767
+#define OS_INT_MAX ((os_int)0x7FFFFFFF)
+#define OS_LONG_MAX ((os_long)0x7FFFFFFFFFFFFFFFLL)
+#define OS_CHAR_MIN -128
+#define OS_SHORT_MIN -32768
+#define OS_INT_MIN ((os_int)0x80000000)
+#define OS_LONG_MIN ((os_long)0x8000000000000000ULL)
 
 #define OS_FLOAT_MAX 3.402823e+38F
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
