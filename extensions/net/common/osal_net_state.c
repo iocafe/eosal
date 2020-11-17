@@ -10,7 +10,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -205,10 +205,21 @@ osalStatus osal_add_network_state_notification_handler(
     return OSAL_STATUS_FAILED;
 }
 
-/* Set network state item. For example called by TLS socket wrapper to inform that we do not
-   have client certificate chain.
-   @param   item OSAL_NS_NIC_STATE, OSAL_NS_NETWORK_CONNECTED, OSAL_NS_NO_CERT_CHAIN
- */
+
+/**
+****************************************************************************************************
+
+  @brief Set network state indicator.
+  @anchor osal_set_network_state_int
+
+  For example called by TLS socket wrapper to inform that we do not
+  have client certificate chain.
+
+  @param   item Which indicator: OSAL_NS_NIC_STATE, OSAL_NS_NETWORK_CONNECTED,
+           OSAL_NS_NO_CERT_CHAIN, etc.
+
+****************************************************************************************************
+*/
 void osal_set_network_state_int(
     osalNetStateItem item,
     os_int index,

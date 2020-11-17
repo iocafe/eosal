@@ -106,7 +106,7 @@ os_memsz os_strlen(
 /* Find a character within string.
  */
 os_char *os_strchr(
-    os_char *str,
+    const os_char *str,
     os_uint c32);
 
 /* Find last matching character within string.
