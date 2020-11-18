@@ -315,6 +315,13 @@
 #define OSAL_FILESYS_SUPPORT 1
 #endif
 
+/** OSAL extensions: If we need stream buffer support, define 1. See default
+ *  define in osal_common_defs.h if undefined here.
+ */
+#ifndef OSAL_STREAM_BUFFER_SUPPORT
+#define OSAL_STREAM_BUFFER_SUPPORT 1
+#endif
+
 /** OSAL extensions: If 64 bit integer multiplication, division or
     to/from double conversion are needed without compiler's 64 bit
     support (OSAL_LONG_IS_64_BITS is zero), then define 1.
