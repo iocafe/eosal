@@ -86,6 +86,27 @@ typedef os_char os_boolean;
 #define OSAL_PATH_SZ 128
 #endif
 
+/** OSAL extensions: If OSAL_STREAM_BUFFER_SUPPORT is not defined in osal_defs.h
+    or in build flags, decide if it needed by other configuration flags.
+    For Windows and Linux this should be always 1, this is only for microcontroller.
+ */
+#ifndef OSAL_STREAM_BUFFER_SUPPORT
+#if OSAL_JSON_TEXT_SUPPORT
+#define OSAL_STREAM_BUFFER_SUPPORT 1
+#endif
+#endif
+
+#ifndef OSAL_STREAM_BUFFER_SUPPORT
+#if OSAL_MAIN_SUPPORT
+#define OSAL_STREAM_BUFFER_SUPPORT 1
+#endif
+#endif
+
+#ifndef OSAL_STREAM_BUFFER_SUPPORT
+#define OSAL_STREAM_BUFFER_SUPPORT 0
+#endif
+
+
 /** Macro to flag unused function argument so that compiler warning "unused parameter"
     is not generated.
  */

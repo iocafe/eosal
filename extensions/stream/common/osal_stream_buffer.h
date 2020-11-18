@@ -20,6 +20,7 @@
 #ifndef OSAL_STREAM_BUFFER_H_
 #define OSAL_STREAM_BUFFER_H_
 #include "eosalx.h"
+#if OSAL_STREAM_BUFFER_SUPPORT
 
 /** Stream interface structure for the stream buffer class.
  */
@@ -95,6 +96,7 @@ os_char *osal_stream_buffer_content(
     os_memsz *n);
 
 /*@}*/
+#endif
 
 /* No stream buffer interface, allow build even if the define is used.
  */

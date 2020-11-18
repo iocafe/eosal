@@ -17,7 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-
+#if OSAL_STREAM_BUFFER_SUPPORT
 
 /** Stream buffer data structure.
  */
@@ -358,4 +358,6 @@ const osalStreamInterface osal_stream_buffer_iface
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
     osal_stream_default_select};
+
+#endif
 

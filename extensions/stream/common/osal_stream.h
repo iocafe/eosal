@@ -161,6 +161,37 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_DISABLE_CHECKSUM 0x80000
 
+
+/**
+****************************************************************************************************
+  Stream flags reserved for eObjects library.
+****************************************************************************************************
+*/
+
+/** eQueue specific flag: Encode data when writing into queue. If not set, data is written to
+    queue as is.
+ */
+#define OSAL_STREAM_ENCODE_ON_WRITE 0x0100000
+
+/** eQueue specific flag: Decode data when reading from queue. If not set, data is read from
+    queue as is.
+ */
+#define OSAL_STREAM_DECODE_ON_READ 0x0200000
+
+/** eQueue specific flag: Maintain flush control count within queue when reading input
+    from socket, etc.
+ */
+#define OSAL_FLUSH_CTRL_COUNT 0x0400000
+
+/** eobjects library specific flag: Disable stream encoding.
+ */
+#define OSAL_STREAM_PLAIN 0x0800000
+
+/** eobjects library specific flag: Disable buffering queues.
+ */
+#define OSAL_STREAM_UNBUFFERED 0x1000000
+
+
 /**
 ****************************************************************************************************
 
