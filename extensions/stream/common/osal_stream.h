@@ -183,14 +183,6 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_FLUSH_CTRL_COUNT 0x0400000
 
-/** eobjects library specific flag: Disable stream encoding.
- */
-#define OSAL_STREAM_PLAIN 0x0800000
-
-/** eobjects library specific flag: Disable buffering queues.
- */
-#define OSAL_STREAM_UNBUFFERED 0x1000000
-
 
 /**
 ****************************************************************************************************

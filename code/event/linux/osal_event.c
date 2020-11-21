@@ -385,7 +385,7 @@ int osal_event_pipefd(
             osal_debug_error("pipe2 write failed");
         }
 
-        osal_trace("OK\n");
+        osal_trace("OK");
     }
 
     return pe->pipefd[0];
