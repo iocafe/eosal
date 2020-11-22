@@ -38,18 +38,18 @@
 /* Convert integer to packed serial format.
  */
 os_int osal_intser_writer(
-	os_char *buf,
-	os_long x);
+    os_char *buf,
+    os_long x);
 
 /* Get integer from packed serial format.
  */
 os_int osal_intser_reader(
     const os_char *buf,
-	os_long *x);
+    os_long *x);
 
 /* Get number of bytes following first byte
  */
-#define osal_intser_more_bytes(c) ((os_int)(((os_uchar)(c)) >> 5))
+#define osal_intser_more_bytes(c) ((os_int)(((os_uchar)(c)) >> 4))
 
 
 /*@}*/
@@ -76,8 +76,8 @@ os_boolean osal_ints2double(
 /* Split double to mantissa and exponent.
  */
 void osal_double2ints(
-	os_double x,
-	os_long *m,
+    os_double x,
+    os_long *m,
     os_short *e);
 
 /* Convert integer mantissa and exponent to float.
