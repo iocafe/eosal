@@ -34,6 +34,7 @@
   - S sign
   - xxx Least significant 3 data bits.
 
+
   @param  buf Buffer where to store the serialized integer, minimum OSAL_INTSER_BUF_SZ (10)
           charactters.
   @param  x Integer to serialize.
