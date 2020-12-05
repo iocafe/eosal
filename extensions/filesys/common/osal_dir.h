@@ -8,9 +8,9 @@
 
   Functions for listing, creating and removing a directory.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -52,8 +52,9 @@ osalDirListItem;
  */
 #define OSAL_DIR_DEFAULT 0
 #define OSAL_DIR_FILESTAT 1
+#define OSAL_DIR_LIST_DOT_DIRS 2
 
-/** 
+/**
 ****************************************************************************************************
 
   @name OSAL file Functions.
@@ -71,7 +72,7 @@ osalStatus osal_dir(
     const os_char *path,
     const os_char *wildcard,
     osalDirListItem **list,
-	os_int flags);
+    os_int flags);
 
 /* Release directory list from memory.
  */
@@ -88,7 +89,7 @@ osalStatus osal_mkdir(
  */
 osalStatus osal_rmdir(
     const os_char *path,
-	os_int flags);
+    os_int flags);
 
 /*@}*/
 

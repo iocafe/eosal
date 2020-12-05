@@ -37,6 +37,7 @@
           needs to be released by calling osal_free_dirlist().
   @param  flags Set OSAL_DIR_DEFAULT (0) for simple operation. OSAL_DIR_FILESTAT to get
           also file size, isdir type and time stamp.
+          Use OSAL_DIR_LIST_DOT_DIRS flag to include directory names starting with "dot".
   @return If successful, the function returns OSAL_SUCCESS(0). Other return values
           indicate an error.
 
@@ -92,6 +93,15 @@ osalStatus osal_dir(
          */
         if (!osal_pattern_match(pDirent->d_name, wildcard, 0)) continue;
 
+        /* Skip directory names starting with dot, unless we have
+           OSAL_DIR_LIST_DOT_DIRS flag.
+         */
+        if ((flags & OSAL_DIR_LIST_DOT_DIRS) == 0) {
+            if (pDirent->d_type == DT_DIR) {
+                if (pDirent->d_name[0] == '.') continue;
+            }
+        }
+
         /* Allocate empty item and join it to chain.
          */
         item = (osalDirListItem*)os_malloc(sizeof(osalDirListItem), OS_NULL);
@@ -125,6 +135,9 @@ osalStatus osal_dir(
                 osal_int64_copy(&item->tstamp, &filestat.tstamp);
             }
         }
+        else {
+            item->isdir = (os_boolean)(pDirent->d_type == DT_DIR);
+        }
 
         /* Allocate memory and save file name.
          */
@@ -135,9 +148,9 @@ osalStatus osal_dir(
     closedir (pDir);
 
     os_free(fspath, fspath_sz);
-
     return OSAL_SUCCESS;
 }
+
 
 /**
 ****************************************************************************************************
