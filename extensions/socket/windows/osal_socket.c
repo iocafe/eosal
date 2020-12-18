@@ -266,7 +266,7 @@ osalStream osal_socket_open(
         }
     }
 
-    /* Success, inform error handler, set status code and return stream pointer.
+    /* Success, inform event handler, set status code and return stream pointer.
      */
     osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;

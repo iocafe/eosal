@@ -291,7 +291,7 @@ osalStream osal_socket_open(
         }
     }
 
-    /* Success, inform error handler, set status code and return stream pointer.
+    /* Success, inform event handler, set status code and return stream pointer.
      */
     osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     osal_info(eosal_mod, info_code, parameters);

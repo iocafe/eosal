@@ -46,6 +46,10 @@
 
 #if OSAL_PERSISTENT_SUPPORT
 
+/* Maximum persistent path length.
+ */
+#define OSAL_PERSISTENT_MAX_PATH 128
+
 /** Parameters structure for os_persistent_initialze() function.
  */
 typedef struct
@@ -54,11 +58,11 @@ typedef struct
      */
     const os_char *path;
 
-    /** In Windows/linux environment, the device name is used to change persistent file
-        folder to keep settings for multiple IO device processess separate. Device name
-        is without number.
+    /** In Windows/linux environment, the subdirectory and/or path can be used to
+        set persistent file folder to keep settings for multiple IO device processess
+        separate. One can set device name, etc, here.
      */
-    const os_char *device_name;
+    const os_char *subdirectory;
 
     /** If set (nonzero) sets minimum required EEPROM size. This is Arduino specific.
      */

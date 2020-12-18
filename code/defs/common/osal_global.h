@@ -175,7 +175,7 @@ typedef struct
 #if OSAL_MAX_ERROR_HANDLERS > 0
    /** Error handler function and context pointers.
      */
-    osalErrorHandler error_handler[OSAL_MAX_ERROR_HANDLERS];
+    osalNetEventHandler event_handler[OSAL_MAX_ERROR_HANDLERS];
 #endif
 
     /** Network state structure pointer (osal_net_state.c).

@@ -54,27 +54,27 @@ void osal_error(
     const os_char *description)
 {
 #if OSAL_MAX_ERROR_HANDLERS > 0
-    osalErrorHandler *error_handler;
+    osalNetEventHandler *event_handler;
     int i;
     os_boolean app_error_handler_called = OS_FALSE;
 
-    /* Call error handlers and remember if we an application error handler.
+    /* Call event handlers and remember if we an application event handler.
      */
     for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
     {
-        error_handler = &osal_global->error_handler[i];
-        if (error_handler->func != OS_NULL)
+        event_handler = &osal_global->event_handler[i];
+        if (event_handler->func != OS_NULL)
         {
-            error_handler->func(level, module, code,
-                description, error_handler->context);
+            event_handler->func(level, module, code,
+                description, event_handler->context);
 
-            if ((error_handler->flags & OSAL_SYSTEM_ERROR_HANDLER) == 0) {
+            if ((event_handler->flags & OSAL_SYSTEM_ERROR_HANDLER) == 0) {
                 app_error_handler_called = OS_TRUE;
             }
         }
     }
 
-    /* If no application error handler called, call default error handler.
+    /* If no application event handler called, call default event handler.
      */
     if (!app_error_handler_called && !osal_global->quiet_mode)
     {
@@ -119,7 +119,7 @@ void osal_info(
   The osal_clear_error() function provides as generic way to pass information to error
   handling that an error should be cleared. This actually just calls osal_error with
   error level OSAL_CLEAR_ERROR and NULL description. There is not separate callback for
-  clearing error, the same error handler callback functions gets called with OSAL_CLEAR_ERROR
+  clearing error, the same event handler callback functions gets called with OSAL_CLEAR_ERROR
   argument.
 
   @param   Module which reported the error, string. Typically static constant, like eosal_mod
@@ -143,75 +143,75 @@ void osal_clear_error(
 /**
 ****************************************************************************************************
 
-  @brief Set error handler (function to be called when error is reported).
-  @anchor osal_set_error_handler
+  @brief Set event handler (function to be called when error is reported).
+  @anchor osal_set_net_event_handler
 
-  The osal_set_error_handler() function saves pointer to custom error handler function and
-  application context pointer. After this, the custom error handler function is called
-  instead of default error handler.
+  The osal_set_net_event_handler() function saves pointer to custom event handler function and
+  application context pointer. After this, the custom event handler function is called
+  instead of default event handler.
 
-  Typically eosal and iocom set system error handler for example to maintain network status
-  based on osal_error() calls, etc. Outside these, application can set own error handler.
-  If application error handler is set, default error handler is not called.
+  Typically eosal and iocom set system event handler for example to maintain network status
+  based on osal_error() calls, etc. Outside these, application can set own event handler.
+  If application event handler is set, default event handler is not called.
 
   SETTING ERROR HANDLERS IS NOT MULTITHREAD SAFE AND THUS ERROR HANDLER FUNCTIONS NEED BE
   SET BEFORE THREADS ARE COMMUNICATION, ETC THREADS WHICH CAN REPORT ERRORS ARE CREATED.
 
-  @param   func Pointer to application provided error handler function. Set OS_NULL to
-           remove error handler.
-  @param   context Application specific pointer, to be passed to error handler when it is
+  @param   func Pointer to application provided event handler function. Set OS_NULL to
+           remove event handler.
+  @param   context Application specific pointer, to be passed to event handler when it is
            called.
   @param   flags Bits: OSAL_REPLACE_ERROR_HANDLER (0) or OSAL_ADD_ERROR_HANDLER (1),
            OSAL_APP_ERROR_HANDLER (0) or OSAL_SYSTEM_ERROR_HANDLER (2).
 
   @return  If successful, the function returns OSAL_SUCCESS. If there are already
-           maximum number of error handlers (OSAL_MAX_ERROR_HANDLERS), the function
+           maximum number of event handlers (OSAL_MAX_ERROR_HANDLERS), the function
            returns OSAL_STATUS_FAILED.
 
 ****************************************************************************************************
 */
-osalStatus osal_set_error_handler(
+osalStatus osal_set_net_event_handler(
     osal_error_handler *func,
     void *context,
     os_short flags)
 {
 #if OSAL_MAX_ERROR_HANDLERS > 0
     int i;
-    osalErrorHandler *error_handler;
+    osalNetEventHandler *event_handler;
 
-    /* If we are replacing existing error handler, remove old ones. If we are
-       replacing application error handler, remove application error handlers.
-       If we are replacing system error handler, remove system error handlers.
+    /* If we are replacing existing event handler, remove old ones. If we are
+       replacing application event handler, remove application event handlers.
+       If we are replacing system event handler, remove system event handlers.
      */
     if ((flags & OSAL_ADD_ERROR_HANDLER) == 0)
     {
         for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
         {
-            error_handler = &osal_global->error_handler[i];
-            if (error_handler->func &&
-                (error_handler->flags & OSAL_SYSTEM_ERROR_HANDLER)
+            event_handler = &osal_global->event_handler[i];
+            if (event_handler->func &&
+                (event_handler->flags & OSAL_SYSTEM_ERROR_HANDLER)
                 == (flags & OSAL_SYSTEM_ERROR_HANDLER))
             {
-                error_handler->func = OS_NULL;
+                event_handler->func = OS_NULL;
             }
         }
     }
 
-    /* Add error handler.
+    /* Add event handler.
      */
     for (i = 0; i < OSAL_MAX_ERROR_HANDLERS; i++)
     {
-        error_handler = &osal_global->error_handler[i];
-        if (error_handler->func == OS_NULL)
+        event_handler = &osal_global->event_handler[i];
+        if (event_handler->func == OS_NULL)
         {
-            error_handler->func = func;
-            error_handler->context = context;
-            error_handler->flags = flags;
+            event_handler->func = func;
+            event_handler->context = context;
+            event_handler->flags = flags;
             return OSAL_SUCCESS;
         }
     }
 
-    /* Too many error handlers.
+    /* Too many event handlers.
      */
 #endif
     return OSAL_STATUS_FAILED;
@@ -222,15 +222,15 @@ osalStatus osal_set_error_handler(
 /**
 ****************************************************************************************************
 
-  @brief Default error handler function
+  @brief Default event handler function
   @anchor osal_default_error_handler
 
   The osal_default_error_handler() writes error message to debug output (console, serial port,
-  etc). This function is useful only for first stages of testing. Custom error handler function
+  etc). This function is useful only for first stages of testing. Custom event handler function
   needs to be implemented to have report errors in such way that is useful to the end user.
 
-  The osal_default_error_handler can be considered as application error handler, since it
-  is not called if application error handler is set.
+  The osal_default_error_handler can be considered as application event handler, since it
+  is not called if application event handler is set.
 
   @param   level Seriousness or error or clear error request. One of: OSAL_INFO, OSAL_WARNING,
            OSAL_ERROR, OSAL_SYSTEM_ERROR, or OSAL_CLEAR_ERROR.
@@ -239,7 +239,7 @@ osalStatus osal_set_error_handler(
   @param   code Status code or error number, like osalStatus enumeration for the eosal library.
   @param   description Text description of an error or additional information . Optional,
            can be OS_NULL.
-  @param   context Application specific pointer, not used by default error handler.
+  @param   context Application specific pointer, not used by default event handler.
 
   @return  None.
 

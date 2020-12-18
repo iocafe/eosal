@@ -9,7 +9,7 @@
   This eosal error API is used by eosal, iocom, and pins libraries to report errors. It can
   also be used for application's error reporting. Or if application has it's own error
   reporting API, the error information from esal, iocom and pins can be mapped to it
-  by setting an application specific error handler callback.
+  by setting an application specific event handler callback.
 
   ***** REPORTING ERRORS *****
   When an error occurs, the osal_error() function is called to record it. The code argument
@@ -33,12 +33,12 @@
         os_int code);
 
   ***** ERROR HANDLER *****
-  The default error handler osal_default_error_handler() is useful only for first stages
+  The default event handler osal_default_error_handler() is useful only for first stages
   of testing. It just calls writes error messages to console or serial port, similarly to
-  osal_debug. Custom error handler function needs to be implemented to have report
+  osal_debug. Custom event handler function needs to be implemented to have report
   errors in such way that is useful to the end user.
 
-  Make a custom error handler like my_custom_error_handler() below:
+  Make a custom event handler like my_custom_error_handler() below:
 
     void my_custom_error_handler(
         osalErrorLevel level,
@@ -49,10 +49,10 @@
     {
     }
 
-  Set it as error handler (context can be any app specific pointer to pass to callback,
+  Set it as event handler (context can be any app specific pointer to pass to callback,
   here OS_NULL):
 
-    osal_set_error_handler(my_custom_error_handler, OS_NULL);
+    osal_set_net_event_handler(my_custom_error_handler, OS_NULL);
 
   ***** WHY OSAL_ERROR AND OSAL_DEBUG_ERROR? *****
   Difference to osal_debug_error*(), osal_debug_assert(), osal_trace*() is the osal_error.h API
@@ -100,7 +100,7 @@ osalErrorLevel;
  */
 extern const os_char eosal_mod[];
 
-/* Flags for osal_set_error_handler() function and in osalErrorHandler structure.
+/* Flags for osal_set_net_event_handler() function and in osalNetEventHandler structure.
  */
 #define OSAL_REPLACE_ERROR_HANDLER 0
 #define OSAL_ADD_ERROR_HANDLER 1
@@ -129,13 +129,13 @@ typedef struct
     osal_error_handler *context;
 
     /** Error handler flags, significant flag OSAL_SYSTEM_ERROR_HANDLER separates
-        if this is system error handler (set by eosal/iocom) or application error handler.
-        When error handler is set, application error handler can be replaced by
-        application error handler and system error handler by system error handler.
+        if this is system event handler (set by eosal/iocom) or application event handler.
+        When event handler is set, application event handler can be replaced by
+        application event handler and system event handler by system event handler.
      */
     os_short flags;
 }
-osalErrorHandler;
+osalNetEventHandler;
 
 /* Report an error
  */
@@ -158,14 +158,14 @@ void osal_clear_error(
     const os_char *module,
     os_int code);
 
-/* Set error handler (function to be called when error is reported).
+/* Set event handler (function to be called when error is reported).
  */
-osalStatus osal_set_error_handler(
+osalStatus osal_set_net_event_handler(
     osal_error_handler *func,
     void *context,
     os_short flags);
 
-/* Default error handler function
+/* Default event handler function
  */
 void osal_default_error_handler(
     osalErrorLevel level,

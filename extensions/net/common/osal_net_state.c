@@ -62,14 +62,14 @@ void osal_initialize_net_state(void)
     os_memclear(&static_net_state, sizeof(static_net_state));
     osal_global->net_state = &static_net_state;
 
-    /* Set error handler callback function to get informaion from error handling.
+    /* Set event handler callback function to get informaion from error handling.
      */
-    osal_set_error_handler(osal_net_state_handler, &static_net_state,
+    osal_set_net_event_handler(osal_net_state_handler, &static_net_state,
         OSAL_ADD_ERROR_HANDLER|OSAL_SYSTEM_ERROR_HANDLER);
 }
 
 
-/* Error handler to move information provided by error handler callbacks to network state structure.
+/* Error handler to move information provided by event handler callbacks to network state structure.
  */
 static void osal_net_state_handler(
     osalErrorLevel level,

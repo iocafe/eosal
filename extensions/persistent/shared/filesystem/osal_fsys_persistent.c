@@ -32,7 +32,6 @@
 
 /* STATIC VARIABLES HERE SHOULD BE MOVED TO GLOBAL STRUCTURE FOR WINDOWS DLLS */
 
-#define OSAL_PERSISTENT_MAX_PATH 128
 static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = OSAL_PERSISTENT_ROOT;
 
 static os_boolean initialized = OS_FALSE;
@@ -89,9 +88,9 @@ void os_persistent_initialze(
         }
         osal_mkdir(rootpath, 0);
 
-        if (prm->device_name) {
+        if (prm->subdirectory) {
             os_strncat(rootpath, "/", sizeof(rootpath));
-            os_strncat(rootpath, prm->device_name, sizeof(rootpath));
+            os_strncat(rootpath, prm->subdirectory, sizeof(rootpath));
             osal_mkdir(rootpath, 0);
         }
     }
