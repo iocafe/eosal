@@ -103,6 +103,12 @@ typedef os_char os_boolean;
 #endif
 
 #ifndef OSAL_STREAM_BUFFER_SUPPORT
+#if OSAL_DYNAMIC_MEMORY_ALLOCATION
+#define OSAL_STREAM_BUFFER_SUPPORT 1
+#endif
+#endif
+
+#ifndef OSAL_STREAM_BUFFER_SUPPORT
 #define OSAL_STREAM_BUFFER_SUPPORT 0
 #endif
 

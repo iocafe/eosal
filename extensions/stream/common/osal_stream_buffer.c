@@ -73,6 +73,9 @@ osalStream osal_stream_buffer_open(
 {
     osalStreamBuffer *sbuf;
     osalStatus s;
+    OSAL_UNUSED(parameters);
+    OSAL_UNUSED(option);
+    OSAL_UNUSED(flags);
 
     sbuf = (osalStreamBuffer*)os_malloc(sizeof(osalStreamBuffer), OS_NULL);
     if (sbuf == OS_NULL)
@@ -115,6 +118,7 @@ void osal_stream_buffer_close(
     os_int flags)
 {
     osalStreamBuffer *sbuf;
+    OSAL_UNUSED(flags);
 
     if (stream == OS_NULL) return;
     sbuf = (osalStreamBuffer*)stream;
@@ -209,6 +213,7 @@ osalStatus osal_stream_buffer_write(
 {
     osalStreamBuffer *sbuf;
     osalStatus s;
+    OSAL_UNUSED(flags);
 
     sbuf = (osalStreamBuffer*)stream;
     if (sbuf->n + n > sbuf->sz)
