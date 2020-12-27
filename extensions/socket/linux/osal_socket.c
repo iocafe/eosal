@@ -405,9 +405,9 @@ static osalStatus osal_setup_tcp_socket(
 
     /* Save flags and interface pointer.
      */
-    mysocket->open_flags = flags;
+    // mysocket->open_flags = flags;
     mysocket->is_ipv6 = iface_addr_is_ipv6;
-    mysocket->hdr.iface = &osal_socket_iface;
+    // mysocket->hdr.iface = &osal_socket_iface;
 
     if (flags & OSAL_STREAM_LISTEN)
     {
