@@ -73,7 +73,7 @@ void os_strncpy(
 
 /* Append a string to another string.
  */
-void os_strncat(
+osalStatus os_strncat(
     os_char *dst,
     const os_char *src,
     os_memsz dst_size);
