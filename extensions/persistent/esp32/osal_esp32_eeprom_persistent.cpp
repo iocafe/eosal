@@ -6,10 +6,25 @@
   @version 1.0
   @date    8.1.2020
 
+
   Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash
   for EEPROM emulation.
 
   ONLY ONE BLOCK CAN BE OPEN AT THE TIME FOR WRITING.
+
+  See https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spi_flash.html
+  Exspecially chapter "Concurrency Constraints for flash on SPI1"
+
+  TRY THIS
+    This function suspends the scheduler.  When it is called from vTask1 the
+    scheduler is already suspended, so this call creates a nesting depth of 2.
+    vTaskSuspendAll();
+
+    Perform an action here.
+
+    As calls to vTaskSuspendAll() are nested, resuming the scheduler here will
+    not cause the scheduler to re-enter the active state.
+    xTaskResumeAll();
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -423,7 +438,6 @@ osalStatus os_persistent_write(
 
     return OSAL_STATUS_FAILED;
 }
-
 
 
 /**
