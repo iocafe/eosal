@@ -248,6 +248,7 @@ typedef struct osalNodeConfOverrides
 }
 osalNodeConfOverrides;
 
+
 /** Information about a light house end point.
  */
 typedef struct osalLighthouseEndPointInfo
