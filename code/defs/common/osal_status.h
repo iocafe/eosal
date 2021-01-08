@@ -139,7 +139,7 @@ typedef enum
      */
     OSAL_STATUS_NOT_AUTOHORIZED = 110,
 
-    /** Operation not supported for this operating system/hardware platform.
+    /** Operation is not supported for this operating system/hardware platform/etc.
      */
     OSAL_STATUS_NOT_SUPPORTED = 120,
 
