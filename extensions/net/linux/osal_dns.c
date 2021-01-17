@@ -8,7 +8,7 @@
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -44,10 +44,10 @@
   @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow
            storing IPv6 address.
   @param   is_ipv6 Pointer to boolean. At input this is hint wether the caller prefers IPv4
-           or IPv6 address. Host names may have both IPv4 and IPv6 address assigned. 
-           The function sets this to OS_TRUE if IPv6 address is selected, or to OS_FALSE for 
-           IPv4 address. 
-  @param   default_use_flags What socket is used for. This is used to make defaule IP address
+           or IPv6 address. Host names may have both IPv4 and IPv6 address assigned.
+           The function sets this to OS_TRUE if IPv6 address is selected, or to OS_FALSE for
+           IPv4 address.
+  @param   default_use_flags What socket is used for. This is used to make the default IP address
            if it is omitted from parameters" string. Set either OSAL_STREAM_CONNECT (0) or
            OSAL_STREAM_LISTEN depending which end of the socket we are preparing.
            OSAL_STREAM_MULTICAST if we are using the address for multicasts.

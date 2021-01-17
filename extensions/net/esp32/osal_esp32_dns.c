@@ -40,7 +40,7 @@
            or IPv6 address. Host names may have both IPv4 and IPv6 address assigned.
            The function sets this to OS_TRUE if IPv6 address is selected, or to OS_FALSE for
            IPv4 address.
-  @param   default_use_flags What socket is used for. This is used to make defaule IP address
+  @param   default_use_flags What socket is used for. This is used to make the default IP address
            if it is omitted from parameters" string. Set either OSAL_STREAM_CONNECT (0) or
            OSAL_STREAM_LISTEN depending which end of the socket we are preparing.
            OSAL_STREAM_MULTICAST if we are using the address for multicasts.

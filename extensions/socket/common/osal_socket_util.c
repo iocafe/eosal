@@ -42,7 +42,7 @@
            if this is IPv4 address.
   @param   port_nr Pointer to integer into which to store the port number.
   @param   is_ipv6 Flag to set if IP v6 address has been selected.
-  @param   default_use_flags What socket is used for. This is used to make defaule IP address
+  @param   default_use_flags What socket is used for. This is used to make the default IP address
            if it is omitted from parameters" string. Set either OSAL_STREAM_CONNECT (0) or
            OSAL_STREAM_LISTEN depending which end of the socket we are preparing.
            OSAL_STREAM_MULTICAST if we are using the address for multicasts.
