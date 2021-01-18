@@ -181,4 +181,45 @@ void osal_socket_embed_default_port(
     os_strncat(buf, nbuf, buf_sz);
 }
 
+
+/**
+****************************************************************************************************
+
+  @brief Make ip string from binary address "ip", port number and is_ipv6 flag.
+  @anchor osal_make_ip_str
+
+  @param   straddr Pointer to buffer where to store the resulting string,
+  @param   straddr_sz IP string buffer size. This should be OSAL_IPADDR_AND_PORT_SZ bytes to allow
+           enough space for IPv6 addresses.
+  @param   ip Binary IP address, either 4 bytes (IPv4) or 16 bytes (IPv6).
+  @param   port_nr TCP port number. If port_nr is 0, port is left out of the resulting string.
+  @param   is_ipv6 Flag indicating IPv6. If OS_FALSE, IPv$ is assumed.
+
+****************************************************************************************************
+*/
+void osal_make_ip_str(
+    os_char *straddr,
+    os_memsz straddr_sz,
+    const os_uchar *ip,
+    os_int port_nr,
+    os_boolean is_ipv6)
+{
+    os_char nbuf[OSAL_NBUF_SZ + 1];
+    if (is_ipv6) {
+        *(straddr++) = '[';
+        straddr_sz--;
+    }
+
+    osal_ip_to_str(straddr, straddr_sz, ip,
+        is_ipv6 ? OSAL_IPV6_BIN_ADDR_SZ  : OSAL_IPV4_BIN_ADDR_SZ);
+    if (is_ipv6) {
+        os_strncat(straddr, "]", straddr_sz);
+    }
+    if (port_nr) {
+        nbuf[0] = ':';
+        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, port_nr);
+        os_strncat(straddr, nbuf, straddr_sz);
+    }
+}
+
 #endif

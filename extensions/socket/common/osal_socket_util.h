@@ -8,9 +8,9 @@
 
   Socket helper functions common to all operating systems.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -38,5 +38,14 @@ void osal_socket_embed_default_port(
     os_char *buf,
     os_memsz buf_sz,
     os_int default_port_nr);
+
+/* Make ip string from binary address "ip", port number and is_ipv6 flag.
+ */
+void osal_make_ip_str(
+    os_char *straddr,
+    os_memsz straddr_sz,
+    const os_uchar *ip,
+    os_int port_nr,
+    os_boolean is_ipv6);
 
 #endif
