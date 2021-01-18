@@ -75,7 +75,7 @@ osalStatus osal_gethostbyname(
     os_memclear(addr, addr_sz);
     s = OSAL_STATUS_FAILED;
 
-    /* Nowdays we enforce allocating enough memory also for IPv6.
+    /* Enforce allocating enough memory also for IPv6.
      */
     if (addr_sz < 16)
     {
