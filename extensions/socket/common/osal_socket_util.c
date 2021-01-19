@@ -37,8 +37,10 @@
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
            depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
            Addr can be OS_NULL if not needed (makes the function OS independent).
+           THis can be also address, string, if addr_sz is negative.
   @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow
-           storing IPv6 address.
+           storing IPv6 address. Negative addr_size indicates that we want address string
+           back.
   @param   is_ipv6 Pointer to boolean to set to OS_TRUE if this is IPv6 address or OE_FALSE
            if this is IPv4 address.
   @param   port_nr Pointer to integer into which to store the port number.
@@ -126,6 +128,14 @@ osalStatus osal_socket_get_ip_and_port(
         return OSAL_SUCCESS;
     }
 
+    /* Negative address srting size means that caller wants address string, not the
+     * binary address.
+     */
+    if (addr_sz < 0) {
+        os_strncpy(addr, addr_pos, -addr_sz);
+        return OSAL_SUCCESS;
+    }
+
     /* Convert to binary IP. If starts with bracket, skip it. This is operating system specific.
      */
     return osal_gethostbyname(addr_pos[0] == '[' ? addr_pos + 1 : addr_pos, addr, addr_sz,
@@ -197,6 +207,7 @@ void osal_socket_embed_default_port(
 
 ****************************************************************************************************
 */
+/* NOT USED
 void osal_make_ip_str(
     os_char *straddr,
     os_memsz straddr_sz,
@@ -221,5 +232,6 @@ void osal_make_ip_str(
         os_strncat(straddr, nbuf, straddr_sz);
     }
 }
+*/
 
 #endif

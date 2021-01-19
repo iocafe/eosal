@@ -41,11 +41,11 @@ void osal_socket_embed_default_port(
 
 /* Make ip string from binary address "ip", port number and is_ipv6 flag.
  */
-void osal_make_ip_str(
+/* void osal_make_ip_str(
     os_char *straddr,
     os_memsz straddr_sz,
     const os_uchar *ip,
     os_int port_nr,
-    os_boolean is_ipv6);
+    os_boolean is_ipv6); */
 
 #endif

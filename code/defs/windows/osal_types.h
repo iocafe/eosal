@@ -79,7 +79,7 @@ typedef unsigned long os_ulong;
 #endif
 
 /** Memory size type. Define os_int 32 if maximum process memory space is <= 2GB, or
-    os_long if more.
+    os_long if more. This must be a signed integer type.
  */
 typedef os_long os_memsz;
 
