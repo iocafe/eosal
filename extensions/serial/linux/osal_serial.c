@@ -93,7 +93,7 @@ static const osalBaudChoice osal_baud_list[] = {
 
 /* Number of elements in osal_baud_list array.
  */
-#define OSA_NRO_BAUD_CHOICES (sizeof(osal_baud_list)/sizeof(osalBaudChoice))
+#define OSA_NRO_BAUD_CHOICES ((os_int)(sizeof(osal_baud_list)/sizeof(osalBaudChoice)))
 
 
 /* Prototypes for forward referred static functions.
@@ -170,12 +170,29 @@ osalStream osal_serial_open(
     os_int i;
     osalStatus rval = OSAL_STATUS_FAILED;
 
+    OSAL_UNUSED(option);
+
     /* Open the serial port.
      */
     osal_get_linux_serial_port_name(&parameters, portname, sizeof(portname));
     handle = open(portname, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (handle < 0)
     {
+        switch (errno) {
+            case EACCES:
+                rval = OSAL_STATUS_NO_ACCESS_RIGHT;
+                osal_debug_error_str("User doesn't have permissions to open the serial port: ", portname);
+                break;
+
+            case EADDRINUSE:
+                rval = OSAL_STATUS_AKREADY_IN_USE;
+                osal_debug_error_str("Serial port is already used by someone else: ", portname);
+                break;
+
+            default:
+                break;
+
+        }
         goto getout;
     }
 
@@ -285,6 +302,8 @@ void osal_serial_close(
     os_int flags)
 {
     osalSerial *myserial;
+
+    OSAL_UNUSED(flags);
 
     /* If called with NULL argument, do nothing.
      */
@@ -414,6 +433,7 @@ osalStatus osal_serial_write(
 {
     osalSerial *myserial;
     int rval, handle;
+    OSAL_UNUSED(flags);
 
     if (stream)
     {
@@ -486,6 +506,7 @@ osalStatus osal_serial_read(
 {
     osalSerial *myserial;
     int handle, rval;
+    OSAL_UNUSED(flags);
 
     if (stream)
     {
@@ -564,6 +585,7 @@ osalStatus osal_serial_select(
     fd_set rdset, wrset;
     os_int i, handle, serial_nr, maxfd, pipefd, rval;
     struct timespec timeout, *to;
+    OSAL_UNUSED(flags);
 
     os_memclear(selectdata, sizeof(osalSelectData));
 
@@ -710,7 +732,12 @@ static void osal_get_linux_serial_port_name(
     e = portname + portname_sz - 1;
     while (osal_char_isspace(*p)) p++;
 
-    os_strncpy(portname, "/dev/", portname_sz);
+    if (os_strncmp(p, "/dev/", 5)) {
+        os_strncpy(portname, "/dev/", portname_sz);
+    }
+    else {
+        portname[0] = '\0';
+    }
 
     if (!os_strnicmp(p, winport, winport_n))
     {
@@ -727,7 +754,7 @@ static void osal_get_linux_serial_port_name(
     else
     {
         d = os_strchr(portname, '\0');
-        while (!osal_char_isspace(*p) && (osal_char_isaplha(*p) || osal_char_isdigit(*p)) && d < e)
+        while (!osal_char_isspace(*p) && (*p != ',' && *p != ':' && *p != ';') && d < e)
         {
             *(d++) = *(p++);
         }
@@ -801,9 +828,11 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
 #if OSAL_SERIAL_SELECT_SUPPORT
-    osal_serial_select};
+    osal_serial_select,
 #else
-    osal_stream_default_select};
+    osal_stream_default_select,
 #endif
+    OS_NULL,
+    OS_NULL};
 
 #endif

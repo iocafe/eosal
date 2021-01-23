@@ -324,10 +324,19 @@
 #define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
 #endif
 
+/** Duino platform serial support selection.
+ */
+#define OSAL_DUINO_SERIAL_DEFAULT 1
+#define OSAL_DUINO_SERIAL_MINIMALISTIC 2
+
 /** If serial communication is supported for the platform, define 1.
  */
 #ifndef OSAL_SERIAL_SUPPORT
-#define OSAL_SERIAL_SUPPORT 1
+    #if OSAL_MINIMALISTIC
+        #define OSAL_SERIAL_SUPPORT OSAL_DUINO_SERIAL_MINIMALISTIC
+    #else
+        #define OSAL_SERIAL_SUPPORT OSAL_DUINO_SERIAL_DEFAULT
+    #endif
 #endif
 
 /** Serial communication options for the Arduino platform

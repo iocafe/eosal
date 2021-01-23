@@ -225,9 +225,13 @@ typedef enum
      */
     OSAL_STATUS_CONNECTION_RESET = 185,
 
-    /** Process does not have access right to object.
+    /** Process does not have access right to object/resource.
      */
     OSAL_STATUS_NO_ACCESS_RIGHT = 186,
+
+    /** Requested object/resource is used by someone else.
+     */
+    OSAL_STATUS_AKREADY_IN_USE = 187,
 
     /** Creating new process has failed.
      */

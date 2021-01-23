@@ -20,6 +20,9 @@
 #ifndef EOSAL_H_
 #define EOSAL_H_
 
+////////////////////////////////////// TESTING< REMOVE OS_MINIMALISTIC
+// #define OSAL_MINIMALISTIC 1
+
 /* Include target operating system specific defines.
  */
 #ifdef E_OS_esp32

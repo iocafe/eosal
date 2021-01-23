@@ -125,8 +125,11 @@ os_uint osal_sysconsole_read(
     ioctl(osal_stdin_fno, FIONREAD, &nbytes);
     if (nbytes <= 0) return 0;
 
-    read(fileno(stdin), &c, 1);
-    return c;
+    if (read(fileno(stdin), &c, 1) > 0) {
+        return c;
+    }
+
+    return 0;
 }
 
 #endif

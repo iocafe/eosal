@@ -35,7 +35,7 @@
 #include "eosalx.h"
 
 #if OSAL_SERIAL_SUPPORT
-#if OSAL_MINIMALISTIC
+#if OSAL_SERIAL_SUPPORT == OSAL_DUINO_SERIAL_MINIMALISTIC
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
@@ -181,6 +181,8 @@ osalStatus osal_serial_flush(
      */
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
 
+osal_sysconsole_write("HERE WLUSH\n");
+
     if (flags & OSAL_STREAM_CLEAR_RECEIVE_BUFFER)
     {
         /* Clear the receive buffer.
@@ -227,6 +229,8 @@ osalStatus osal_serial_write(
 
     if (stream)
     {
+        osal_sysconsole_write("HERE WRITE\n");
+
         /* See how much we have space in TX buffer. Write smaller number of bytes, either how
            many bytes can fit into TX buffer or buffer size n given as argument.
          */
@@ -279,6 +283,8 @@ osalStatus osal_serial_read(
 
     if (stream)
     {
+        osal_sysconsole_write("HERE READ\n");
+
         /* See how much data we in RX buffer. Read smaller number of bytes, either how
            many bytes we have in RX buffer or buffer size n given as argument.
          */

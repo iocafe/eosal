@@ -35,7 +35,7 @@
 #include "eosalx.h"
 
 #if OSAL_SERIAL_SUPPORT
-#if OSAL_MINIMALISTIC == 0
+#if OSAL_SERIAL_SUPPORT == OSAL_DUINO_SERIAL_DEFAULT
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
