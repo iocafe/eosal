@@ -32,7 +32,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_ARDUINO_WIFI_INIT
+#if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_ARDUINO_WIFI_INIT && OSAL_SOCKET_SUPPORT
 
 /** Do we include code to automatically select one from known access points. Define 1 or 0.
  */

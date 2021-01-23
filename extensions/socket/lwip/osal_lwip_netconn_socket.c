@@ -1485,14 +1485,14 @@ void osal_socket_initialize_2(void)
 
     //DO NOT TOUCH
      //  This is here to force the ESP32 to reset the WiFi and initialise correctly.
-     Serial.print("WIFI status = ");
-     Serial.println(WiFi.getMode());
+     osal_console_write("WIFI status = ");
+     osal_console_write(WiFi.getMode());
      WiFi.disconnect(true);
      delay(1000);
      WiFi.mode(WIFI_STA);
      delay(1000);
-     Serial.print("WIFI status = ");
-     Serial.println(WiFi.getMode());
+     osal_console_write("WIFI status = ");
+     osal_console_write(WiFi.getMode());
      // End silly stuff !!!
 
      WiFi.mode(WIFI_STA);

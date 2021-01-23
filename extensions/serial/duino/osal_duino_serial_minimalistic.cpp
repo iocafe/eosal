@@ -48,10 +48,6 @@
   #define OSAL_DUINO_BAUD 115200
 #endif
 
-#ifndef OSAL_DUINO_PARITY
-  #define OSAL_DUINO_PARITY SERIAL_8N1
-#endif
-
 /** Arduino specific serial point state data structure. OSAL functions cast their own
     structure pointers to osalStream pointers.
  */
@@ -126,10 +122,6 @@ osalStream osal_serial_open(
     os_memclear(&serialport, sizeof(osalSerial));
     serialport.hdr.iface = &osal_serial_iface;
 
-    /* Configure the serial port.
-     */
-    myUARTX.begin(OSAL_DUINO_BAUD, OSAL_DUINO_PARITY);
-
     /* Set status code and cast serial structure pointer to stream pointer and return it.
      */
     if (status) *status = OSAL_SUCCESS;
@@ -157,9 +149,6 @@ void osal_serial_close(
     osalStream stream,
     os_int flags)
 {
-    if (stream) {
-        myUARTX.end();
-    }
 }
 
 
@@ -325,6 +314,9 @@ osalStatus osal_serial_read(
 void osal_serial_initialize(
     void)
 {
+    /* Configure the serial port.
+     */
+    myUARTX.begin(OSAL_DUINO_BAUD);
 }
 
 
