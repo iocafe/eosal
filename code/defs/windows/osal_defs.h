@@ -57,6 +57,9 @@
 
 /* If we want the default defines for a minimalistic serial communication device.
  */
+#ifndef OSAL_MINIMALISTIC
+  #define OSAL_MINIMALISTIC 0
+#endif
 #if OSAL_MINIMALISTIC
   #include "code/defs/common/osal_minimalistic.h"
 #endif

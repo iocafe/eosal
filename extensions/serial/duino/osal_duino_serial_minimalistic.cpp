@@ -35,59 +35,50 @@
 #include "eosalx.h"
 
 #if OSAL_SERIAL_SUPPORT
-#if OSAL_MINIMALISTIC == 0
+#if OSAL_MINIMALISTIC
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-  /** Arduino specific serial point state data structure. OSAL functions cast their own
-      structure pointers to osalStream pointers.
+#ifndef OSAL_DUINO_SERIAL_PORT
+  #define OSAL_DUINO_SERIAL_PORT 0
+#endif
+
+#ifndef OSAL_DUINO_BAUD
+  #define OSAL_DUINO_BAUD 115200
+#endif
+
+#ifndef OSAL_DUINO_PARITY
+  #define OSAL_DUINO_PARITY SERIAL_8N1
+#endif
+
+/** Arduino specific serial point state data structure. OSAL functions cast their own
+    structure pointers to osalStream pointers.
+ */
+typedef struct osalSerial
+{
+  /** A stream structure must start with this generic stream header structure, which contains
+      parameters common to every stream.
    */
-  typedef struct osalSerial
-  {
-    /** A stream structure must start with this generic stream header structure, which contains
-        parameters common to every stream.
-     */
-    osalStreamHeader hdr;
+  osalStreamHeader hdr;
+}
+osalSerial;
 
-    /** Pointer to global serial port object.
-     */
-    HardwareSerial *serial;
-  }
-  osalSerial;
+static osalSerial serialport;
 
-  #define OSAL_NRO_ARDUINO_SERIAL_PORTS 3
-  static osalSerial serialport[OSAL_NRO_ARDUINO_SERIAL_PORTS];
+#if OSAL_DUINO_SERIAL_PORT == 0
+  #define myUARTX Serial
+#endif
+#if OSAL_DUINO_SERIAL_PORT == 1
+  #define myUARTX Serial1
+#endif
+#if OSAL_DUINO_SERIAL_PORT == 2
+  #define myUARTX Serial2
+#endif
+#if OSAL_DUINO_SERIAL_PORT == 3
+  #define myUARTX Serial3
+#endif
 
-  #ifdef USART1
-    static HardwareSerial myUART1(USART1);
-  #endif
-
-  #ifdef USART2
-    static HardwareSerial myUART2(USART2);
-  #endif
-
-  #ifdef USART3
-    #define PIN_SERIAL3_TX PC4
-    #define PIN_SERIAL3_RX PC5
-    static HardwareSerial myUART3(USART3);
-  #endif
-
-  #ifdef USART4
-    static HardwareSerial myUART4(USART4);
-    #define MYUART4
-  #else
-    #ifdef UART4
-      static HardwareSerial myUART4(UART4);
-      #define MYUART4
-    #endif
-  #endif
-
-
-  /* Prototypes for forward referred static functions.
-   */
-  static int osal_get_arduino_serial_port_nr(
-      const os_char **parameters);
 
 /**
 ****************************************************************************************************
@@ -127,89 +118,24 @@
 ****************************************************************************************************
 */
 osalStream osal_serial_open(
-        const os_char *parameters,
+    const os_char *parameters,
     void *option,
     osalStatus *status,
     os_int flags)
 {
-    osalSerial *myserial = OS_NULL;
-    const os_char *v;
-    long baudrate;
-    int port_config, portnr0;
-
-    /* Get zero based port number and move parameters behind port name.
-     */
-    portnr0 = osal_get_arduino_serial_port_nr(&parameters);
-
-    /* Baud rate.
-     */
-    baudrate = (long)osal_str_get_item_int(parameters, "baud", 115200, OSAL_STRING_DEFAULT);
-
-    /* Parity.
-     */
-    v = osal_str_get_item_value(parameters, "parity", OS_NULL, OSAL_STRING_DEFAULT);
-    port_config = SERIAL_8N1;
-    if (!os_strnicmp(v, "even", 4))
-    {
-        port_config = SERIAL_8E1;
-    }
-    else if (!os_strnicmp(v, "odd", 3))
-    {
-        port_config = SERIAL_8O1;
-    }
-
-    /* Allocate and clear serial structure.
-     */
-    myserial = serialport + portnr0;
-    os_memclear(myserial, sizeof(osalSerial));
-    myserial->hdr.iface = &osal_serial_iface;
-
-    /* Set up serial port structure.
-     */
-    switch (portnr0)
-    {
-        default:
-
-#ifdef USART1
-        case 0:
-            myserial->serial = &myUART1;
-            break;
-
-#endif
-
-#ifdef USART2
-        case 1:
-            myserial->serial = &myUART2;
-            break;
-#endif
-
-#ifdef USART3
-        case 2:
-#ifdef PIN_SERIAL3_TX
-            myUART3.setTx(PIN_SERIAL3_TX);
-            myUART3.setRx(PIN_SERIAL3_RX);
-#endif
-            myserial->serial = &myUART3;
-            break;
-#endif
-
-#ifdef MYUART4
-        case 3:
-            myserial->serial = &myUART4;
-            break;
-#endif
-        break;
-    }
+    os_memclear(&serialport, sizeof(osalSerial));
+    serialport.hdr.iface = &osal_serial_iface;
 
     /* Configure the serial port.
      */
-    myserial->serial->begin(baudrate, port_config);
+    myUARTX.begin(OSAL_DUINO_BAUD, OSAL_DUINO_PARITY);
 
-    /* Success set status code and cast serial structure pointer to stream pointer and return it.
+    /* Set status code and cast serial structure pointer to stream pointer and return it.
      */
     if (status) *status = OSAL_SUCCESS;
-    return (osalStream)myserial;
+    return (osalStream)&serialport;
 }
+
 
 /**
 ****************************************************************************************************
@@ -231,19 +157,9 @@ void osal_serial_close(
     osalStream stream,
     os_int flags)
 {
-    osalSerial *myserial;
-
-    /* If called with NULL argument, do nothing.
-     */
-    if (stream == OS_NULL) return;
-
-    /* Cast stream pointer to serial port structure pointer.
-     */
-    myserial = (osalSerial*)stream;
-
-    /* Finish with serial communication.
-     */
-    myserial->serial->end();
+    if (stream) {
+        myUARTX.end();
+    }
 }
 
 
@@ -272,24 +188,16 @@ osalStatus osal_serial_flush(
     osalStream stream,
     os_int flags)
 {
-    osalSerial *myserial;
-
     /* If called with NULL argument, do nothing.
      */
     if (stream == OS_NULL) return OSAL_STATUS_FAILED;
-
-    /* Cast stream type to serial structure pointer, get operating system's serial port handle.
-     */
-    myserial = (osalSerial*)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
 
     if (flags & OSAL_STREAM_CLEAR_RECEIVE_BUFFER)
     {
         /* Clear the receive buffer.
          */
-        while(myserial->serial->available())
-        {
-            myserial->serial->read();
+        while (myUARTX.available()) {
+            myUARTX.read();
         }
     }
 
@@ -326,26 +234,20 @@ osalStatus osal_serial_write(
     os_memsz *n_written,
     os_int flags)
 {
-    osalSerial *myserial;
     int nwr;
 
     if (stream)
     {
-        /* Cast stream pointer to serial port structure pointer.
-         */
-        myserial = (osalSerial*)stream;
-
         /* See how much we have space in TX buffer. Write smaller number of bytes, either how
            many bytes can fit into TX buffer or buffer size n given as argument.
          */
-        nwr = myserial->serial->availableForWrite();
+        nwr = myUARTX.availableForWrite();
         if (n < nwr) nwr = n;
-        myserial->serial->write((const uint8_t*)buf, nwr);
+        myUARTX.write((const uint8_t*)buf, nwr);
 
         /* Return number of bytes written.
          */
         *n_written = nwr;
-        osal_resource_monitor_update(OSAL_RMON_TX_SERIAL, nwr);
         return OSAL_SUCCESS;
     }
 
@@ -384,79 +286,25 @@ osalStatus osal_serial_read(
     os_memsz *n_read,
     os_int flags)
 {
-    osalSerial *myserial;
     int nrd;
 
     if (stream)
     {
-        /* Cast stream pointer to serial port structure pointer.
-         */
-        myserial = (osalSerial*)stream;
-
         /* See how much data we in RX buffer. Read smaller number of bytes, either how
            many bytes we have in RX buffer or buffer size n given as argument.
          */
-        nrd = myserial->serial->available();
+        nrd = myUARTX.available();
         if (n < nrd) nrd = n;
-        myserial->serial->readBytes(buf, nrd);
+        myUARTX.readBytes(buf, nrd);
 
         /* Return number of bytes written.
          */
         *n_read = nrd;
-        osal_resource_monitor_update(OSAL_RMON_RX_SERIAL, nrd);
         return OSAL_SUCCESS;
     }
 
     *n_read = 0;
     return OSAL_STATUS_FAILED;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get serial port number.
-  @anchor osal_get_arduino_serial_port_nr
-
-  The osal_get_arduino_serial_port_nr() gets zero based com port number from Windows like COM
-  port name COM1 ... COM4 in beginning of the parameters string.
-
-  @param   parameters Pointer to parameter string pointer. The "parameters" string should start
-           with serial port name, like "COM2", the port name can be followed by optional
-           colon, comma or semicolon to separate the rest of parameters (if any). The string
-           pointer "parameters" is moved past port name.
-
-  @return  Serial port number 0...
-
-****************************************************************************************************
-*/
-static int osal_get_arduino_serial_port_nr(
-    const os_char **parameters)
-{
-    const os_char *p;
-    int portnr0;
-
-    p = *parameters;
-    while (osal_char_isspace(*p)) p++;
-
-    portnr0 = 0;
-    while (osal_char_isaplha(*p) || osal_char_isdigit(*p))
-    {
-        if (osal_char_isdigit(*p)) portnr0 = *p - '1';
-        p++;
-    }
-
-    while (osal_char_isspace(*p) || *p == ',' || *p == ';' || *p == ':')
-    {
-        p++;
-    }
-
-    *parameters = p;
-    if (portnr0 < 0 || portnr0 >= OSAL_NRO_ARDUINO_SERIAL_PORTS)
-    {
-        portnr0 = 0;
-    }
-    return portnr0;
 }
 
 

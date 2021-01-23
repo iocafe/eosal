@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#if OSAL_SOCKET_SUPPORT
 #if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_ETHERNET_AP || \
     (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIFI_API || \
     (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI_API
@@ -66,4 +67,5 @@ osalStatus osal_gethostbyname(
     return osal_ip_from_str((os_uchar*)addr, addr_sz, name);
 }
 
+#endif
 #endif

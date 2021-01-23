@@ -111,12 +111,6 @@ osalStatus osal_str_list_iter(
     const os_char **list_str_ptr,
     os_short flags);
 
-/* Convert string to integer.
- */
-os_long osal_str_to_int(
-    const os_char *str,
-    os_memsz *count);
-
 /* Convert hexadecimal string to integer.
  */
 os_long osal_hex_str_to_int(

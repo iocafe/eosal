@@ -129,6 +129,12 @@ os_memsz osal_int_to_str(
     os_memsz buf_sz,
     os_long x);
 
+/* Convert string to integer.
+ */
+os_long osal_str_to_int(
+    const os_char *str,
+    os_memsz *count);
+
 /*@}*/
 
 #endif

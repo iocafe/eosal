@@ -30,6 +30,9 @@
 
 /* If we want the default defines for a minimalistic serial communication device.
  */
+#ifndef OSAL_MINIMALISTIC
+  #define OSAL_MINIMALISTIC 0
+#endif
 #if OSAL_MINIMALISTIC
   #include "code/defs/common/osal_minimalistic.h"
 #endif
@@ -386,7 +389,7 @@
     for the platform, define 1.
  */
 #ifndef OSAL_STRINGX_SUPPORT
-#define OSAL_STRINGX_SUPPORT 1
+#define OSAL_STRINGX_SUPPORT (OSAL_MINIMALISTIC == 0)
 #endif
 
 /** OSAL extensions: If GMT clock is supported for the platform, define 1.
