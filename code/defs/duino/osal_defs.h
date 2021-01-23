@@ -342,10 +342,10 @@
 #define OSAL_BLUETOOTH_SUPPORT 0
 #endif
 
-/** If low level serialization is supported for the platform, define 1.
+/** If low level serialization is supported, define 1.
  */
 #ifndef OSAL_SERIALIZE_SUPPORT
-#define OSAL_SERIALIZE_SUPPORT 1
+#define OSAL_SERIALIZE_SUPPORT (OSAL_MINIMALISTIC == 0)
 #endif
 
 /** Support parsing and writing JSON as plain text. Notice tha compressed binary JSON support
@@ -401,7 +401,7 @@
 /** OSAL extensions: If type identifiers are supported for the platform, define 1.
  */
 #ifndef OSAL_TYPEID_SUPPORT
-#define OSAL_TYPEID_SUPPORT 1
+#define OSAL_TYPEID_SUPPORT (OSAL_MINIMALISTIC == 0)
 #endif
 
 /** Enumeration of persistent support options. SAM = Arduino SAM.

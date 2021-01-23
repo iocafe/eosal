@@ -763,6 +763,7 @@ void osal_serial_initialize(
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -781,7 +782,7 @@ void osal_serial_shutdown(
     void)
 {
 }
-
+#endif
 
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.

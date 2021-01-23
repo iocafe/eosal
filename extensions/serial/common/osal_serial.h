@@ -127,9 +127,12 @@ void osal_serial_initialize(
 
 /* Shut down OSAL serials library.
  */
-void osal_serial_shutdown(
-    void);
-
+#if OSAL_PROCESS_CLEANUP_SUPPORT
+    void osal_serial_shutdown(
+        void);
+#else
+    #define osal_serial_shutdown()
+#endif
 /*@}*/
 
 

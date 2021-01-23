@@ -59,7 +59,7 @@ static OS_FLASH_MEM osalTypeInfo osal_typeinfo[] = {
 
 /** Number of rows in osal_typeinfo table.
  */
-#define OSAL_NRO_TYPE_INFO_ROWS (sizeof(osal_typeinfo) / sizeof(osalTypeInfo))
+#define OSAL_NRO_TYPE_INFO_ROWS ((os_int)(sizeof(osal_typeinfo) / sizeof(osalTypeInfo)))
 
 #else
 
@@ -86,7 +86,7 @@ static OS_FLASH_MEM os_char osal_typesz[] = {
 
 /** Number of rows in osal_typeinfo table.
  */
-#define OSAL_NRO_TYPE_INFO_ROWS (sizeof(osal_typesz) / sizeof(os_char))
+#define OSAL_NRO_TYPE_INFO_ROWS ((os_int)(sizeof(osal_typesz) / sizeof(os_char)))
 
 #endif
 

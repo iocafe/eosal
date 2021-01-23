@@ -960,6 +960,7 @@ void osal_serial_initialize(void)
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -977,6 +978,7 @@ void osal_serial_initialize(void)
 void osal_serial_shutdown(void)
 {
 }
+#endif
 
 OS_FLASH_MEM osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
