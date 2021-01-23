@@ -328,9 +328,16 @@
  */
 #define OSAL_DUINO_SERIAL_DEFAULT 1
 #define OSAL_DUINO_SERIAL_MINIMALISTIC 2
+#define OSAL_DUINO_SERIAL_NORMAL 3
 
-/** If serial communication is supported for the platform, define 1.
+/** Select serial communication supporte for the duino platform, define 1.
  */
+#ifdef OSAL_SERIAL_SUPPORT
+    #if OSAL_SERIAL_SUPPORT == OSAL_DUINO_SERIAL_DEFAULT
+        #undef OSAL_SERIAL_SUPPORT
+    #endif
+#endif
+
 #ifndef OSAL_SERIAL_SUPPORT
     #if OSAL_MINIMALISTIC
         #define OSAL_SERIAL_SUPPORT OSAL_DUINO_SERIAL_MINIMALISTIC
