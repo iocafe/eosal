@@ -7,7 +7,7 @@
   @date    8.1.2020
 
 
-  Define OSAL_LONG_IS_64_BITS controls compiler's code generation for 64 bit integer arithmetic. 
+  Define OSAL_COMPILER_HAS_64_BIT_INTS controls compiler's code generation for 64 bit integer arithmetic.
   If the define is nonzero, then compiler supported 64 bit arithmetic is used. If the define
   is zero, the functions implemented in osal_int64.h are used.
 
@@ -92,9 +92,9 @@ extern const os_int64 osal_int64_1000000;
 
   @name 64 bit Integer Arithmetic Macro with Compiler Support. 
 
-  If compiler supports 64 bit integer type (OSAL_LONG_IS_64_BITS define is nonzero), the os_long 
-  is 64 bit and os_int64 is same as os_long. The compiler's 64 bit functionality is used trough
-  these macros, so that same code will compile also on systems without 64 bit support.
+  If compiler supports 64 bit integer type (OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero),
+  the os_longlong  is 64 bit and os_int64 is same as os_long. The compiler's 64 bit functionality
+  is used trough these macros, so that same code will compile also on systems without 64 bit support.
 
 ****************************************************************************************************
 */
@@ -192,7 +192,7 @@ extern const os_int64 osal_int64_1000000;
 
   @name 64 Bit Integer Arithmetic Functions and Macros without Compiler Suppport.
 
-  If the used compiler doesn't support 64 integers (OSAL_LONG_IS_64_BITS define is zero), then 
+  If the used compiler doesn't support 64 integers (OSAL_COMPILER_HAS_64_BIT_INTS define is zero), then
   function implementations and a few macros are used. Here are function prototypes and related
   macros.
 
@@ -200,7 +200,7 @@ extern const os_int64 osal_int64_1000000;
  */
 /*@{*/
 
-#if OSAL_LONG_IS_64_BITS == 0
+#if OSAL_COMPILER_HAS_64_BIT_INTS == 0
 
 /** Set 64 bit integer to zero. Macro implementation.
     @anchor osal_int64_set_zero
