@@ -437,6 +437,7 @@ osalStreamHeader;
 
 ****************************************************************************************************
 */
+#if OSAL_MINIMALISTIC == 0
 
 /* Open a stream (connect, listen, open file, etc).
  */
@@ -548,5 +549,36 @@ osalStatus osal_stream_receive_packet(
     os_char *remote_addr,
     os_memsz remote_addr_sz,
     os_int flags);
+
+#endif
+
+
+/**
+****************************************************************************************************
+
+  @name Macros to map stream functions directly to serial port
+
+  If OSAL_MINIMALISTIC is set, these macros fix stream interface to serial port.
+  Serial port will be the only supported stream.
+
+****************************************************************************************************
+*/
+
+#if OSAL_MINIMALISTIC
+#define osal_stream_open(i,p,o,s,f) osal_serial_open(p,o,s,f)
+#define osal_stream_close(s,f) osal_serial_close(s,f)
+#define osal_stream_accept(s,a,z,s,f) osal_stream_default_accept(s,a,z,s,f)
+#define osal_stream_flush(s,f) osal_serial_flush(s,f)
+#define osal_stream_seek(s,p,f) osal_stream_default_seek(s,p,f)
+#define osal_stream_write(s,b,n,nn,f) osal_serial_write(s,b,n,nn,f)
+#define osal_stream_read(s,b,n,nn,f) osal_serial_read(s,b,n,nn,f)
+#define osal_stream_write_value(s,c,f) osal_stream_default_write_value(s,c,f)
+#define osal_stream_read_value(s,c,f) osal_stream_default_read_value(s,c,f)
+#define osal_stream_get_parameter(s,i) osal_stream_default_get_parameter(s,i)
+#define osal_stream_set_parameter(s,i,v) osal_stream_default_set_parameter(s,i, v)
+#define osal_stream_select(s,n,e,d,t,f) osal_stream_default_select(s,n,e,d,t,f)
+#define osal_stream_send_packet(s,b,n,f) OSAL_STATUS_NOT_SUPPORTED
+#define osal_stream_receive_packet(s,b,n,nn,a,z,f) OSAL_STATUS_NOT_SUPPORTED
+#endif
 
 #endif

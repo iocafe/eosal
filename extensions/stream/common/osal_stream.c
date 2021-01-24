@@ -13,6 +13,9 @@
   it can be called. The stream interface structure pointer is stored within handle, so
   it is not needed as argument for rest of the osal_stream_* functions.
 
+  If OSAL_MINIMIMALISTIC flag is specified, only serial stream is supported (no socket, etc),
+  and osal_stream_* functions map to serial functions.
+
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
@@ -22,6 +25,7 @@
 */
 #include "eosalx.h"
 
+#if OSAL_MINIMALISTIC == 0
 
 /**
 ****************************************************************************************************
@@ -442,10 +446,10 @@ osalStatus osal_stream_write_value(
 /**
 ****************************************************************************************************
 
-  @brief Write single value.
+  @brief Read single value.
   @anchor osal_stream_read_value
 
-  The osal_stream_write_value() function writes one byte value or control code to stream.
+  The osal_stream_read_value() function reads one byte value or control code to stream.
   This function is used by eobjects for serialized object versioning, do not use from iocom, etc.
 
   @param   stream Stream pointer.
@@ -640,3 +644,4 @@ osalStatus osal_stream_receive_packet(
     return OSAL_STATUS_NOT_SUPPORTED;
 }
 
+#endif
