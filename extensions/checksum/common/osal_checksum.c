@@ -15,6 +15,16 @@
   using the same ioc_read(), ioc_get16(), ioc_write(), ioc_set16(), etc. functions. For data
   memory, the address is positive or zero, status memory addresses are negative.
 
+  Some test code:
+
+    const os_char *buf;
+    os_ushort crc;
+    buf = "ajksa("; crc = os_checksum(buf, os_strlen(buf), OS_NULL); osal_debug_error_int("1: ", crc);
+    buf = "DADsa("; crc = os_checksum(buf, os_strlen(buf), OS_NULL); osal_debug_error_int("1: ", crc);
+    buf = "a12("; crc = os_checksum(buf, os_strlen(buf), &crc); osal_debug_error_int("1: ", crc);
+    buf = "ajksa("; crc = os_checksum(buf, os_strlen(buf), &crc); osal_debug_error_int("1: ", crc);
+
+
   Copyright 2020 Pekka Lehtikoski. This file is part of the iocom project and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
@@ -23,6 +33,13 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+
+
+/* Set 1 to optimize size of code, 0 to optimize speed.
+ */
+#define OSAL_CRC_OPTIMIZE_SIZE OSAL_MINIMALISTIC
+
+#if OSAL_CRC_OPTIMIZE_SIZE==0
 
 static OS_FLASH_MEM os_ushort crc_table[] = {
     0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 0X03C0, 0X0280, 0XC241,
@@ -106,7 +123,41 @@ os_ushort os_checksum(
     return w;
 }
 
+#else
 
+// Compute the MODBUS RTU CRC
+os_ushort os_checksum(
+    const os_char *buf,
+    os_memsz n,
+    os_ushort *append_to_checksum)
+{
+    os_ushort crc = OSAL_CHECKSUM_INIT;
+    os_short pos;
+
+    if (append_to_checksum) crc = *append_to_checksum;
+
+    for (pos = 0; pos < n; pos++)
+    {
+        crc ^= (os_ushort)buf[pos];         // XOR byte into least sig. byte of crc
+
+        for (int i = 8; i != 0; i--)        // Loop over each bit
+        {
+            if ((crc & 0x0001) != 0) {      // If the LSB is set
+                crc >>= 1;                  // Shift right and XOR 0xA001
+                crc ^= 0xA001;
+            }
+            else  {                         // Else LSB is not set
+                crc >>= 1;                  // Just shift right
+            }
+        }
+    }
+
+    // Note, this number has low and high bytes swapped, so use it accordingly (or swap bytes)
+    if (append_to_checksum) *append_to_checksum = crc;
+    return crc;
+}
+
+#endif
 
 #if OSAL_CHECKSUM_TEST
 /**

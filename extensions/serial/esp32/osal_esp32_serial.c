@@ -153,7 +153,7 @@ osalStream osal_serial_open(
      */
     myserial = serialport + uart_nr;
     os_memclear((os_char*)myserial, sizeof(osalSerial));
-    myserial->hdr.iface = &osal_serial_iface;
+    myserial->hdr.iface = OSAL_SERIAL_IFACE;
     myserial->open_flags = flags;
 
     /* Configure UART parameters.
@@ -546,6 +546,7 @@ void osal_serial_shutdown(
 #endif
 
 
+#if OSAL_MINIMALISTIC == 0
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
  */
@@ -563,5 +564,6 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
     osal_serial_get_parameter,
     osal_serial_set_parameter,
     osal_stream_default_select};
+#endif
 
 #endif

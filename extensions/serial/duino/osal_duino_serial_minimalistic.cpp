@@ -25,19 +25,14 @@
   To display
   stty -a -F /dev/ttyUSB0
 
-
-  Stream interface for OSAL serials. This is structure osalStreamInterface filled with
-  function pointers to OSAL serials implementation.
-  If OSAL_MINIMIMALISTIC flag is specified, os_stream only serial stream is supported
-
   Arduino UNO peculiarity, notice OS_FLASH_MEM_H.
   we cannot use OS_FLASH_MEM (const PROGMEM) normally with osal_serial_iface. We would need
-    to get function pointers with something like pgm_read_word(&iface->stream_open). This
-    will not play nice with other microcontrollers. So problem avoided by declaring structure
-    here simply as OS_FLASH_MEM_H (just const), so we have a copy on RAM. A bit of a waste.
+  to get function pointers with something like pgm_read_word(&iface->stream_open). This
+  will not play nice with other microcontrollers. So problem avoided by declaring structure
+  here simply as OS_FLASH_MEM_H (just const), so we have a copy on RAM. A bit of a waste.
 
-    https://teslabs.com/openplayer/docs/docs/prognotes/Progmem%20Tutorial.pdf
- */
+  https://teslabs.com/openplayer/docs/docs/prognotes/Progmem%20Tutorial.pdf
+
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
@@ -325,7 +320,7 @@ void osal_serial_initialize(
     void)
 {
     os_memclear(&serialport, sizeof(osalSerial));
-    serialport.hdr.iface = &osal_serial_iface;
+    serialport.hdr.iface = OSAL_SERIAL_IFACE;
 
     /* Configure the serial port.
      */
@@ -354,8 +349,11 @@ void osal_serial_shutdown(
 }
 #endif
 
-
-OS_FLASH_MEM osalStreamInterface osal_serial_iface
+#if OSAL_MINIMALISTIC == 0
+/** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
+    function pointers to OSAL serials implementation.
+ */
+OS_FLASH_MEM_H osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
     osal_serial_close,
@@ -369,6 +367,7 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
     osal_stream_default_get_parameter,
     osal_stream_default_set_parameter,
     osal_stream_default_select};
+#endif
 
 #endif
 #endif

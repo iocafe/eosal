@@ -162,7 +162,7 @@ osalStream osal_serial_open(
      */
     myserial = serialport + portnr0;
     os_memclear(myserial, sizeof(osalSerial));
-    myserial->hdr.iface = &osal_serial_iface;
+    myserial->hdr.iface = OSAL_SERIAL_IFACE;
 
     /* Set up serial port structure.
      */
@@ -281,7 +281,7 @@ osalStatus osal_serial_flush(
     /* Cast stream type to serial structure pointer, get operating system's serial port handle.
      */
     myserial = (osalSerial*)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+    osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
 
     if (flags & OSAL_STREAM_CLEAR_RECEIVE_BUFFER)
     {

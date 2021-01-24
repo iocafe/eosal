@@ -250,7 +250,7 @@ osalStream osal_serial_open(
 
     /* Save interface pointer.
      */
-    myserial->hdr.iface = &osal_serial_iface;
+    myserial->hdr.iface = OSAL_SERIAL_IFACE;
 
     /* Success set status code and cast serial structure pointer to stream pointer and return it.
      */
@@ -313,7 +313,7 @@ void osal_serial_close(
        to detect access to already closed stream while debugging.
      */
     myserial = (osalSerial*)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+    osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
 
     /* Close the serial port.
      */
@@ -370,7 +370,7 @@ osalStatus osal_serial_flush(
     /* Cast stream type to serial structure pointer, get operating system's serial port handle.
      */
     myserial = (osalSerial*)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+    osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
 
     if (flags & (OSAL_STREAM_CLEAR_RECEIVE_BUFFER|OSAL_STREAM_CLEAR_TRANSMIT_BUFFER))
     {
@@ -440,7 +440,7 @@ osalStatus osal_serial_write(
         /* Cast stream type to serial structure pointer, get operating system's serial port handle.
          */
         myserial = (osalSerial*)stream;
-        osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+        osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
         handle = myserial->handle;
 
         /* If operating system serial is already closed.
@@ -514,7 +514,7 @@ osalStatus osal_serial_read(
            port handle, check function argument.
          */
         myserial = (osalSerial*)stream;
-        osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+        osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
         handle = myserial->handle;
         if (buf == OS_NULL || n < 0) goto getout;
 
@@ -598,7 +598,7 @@ osalStatus osal_serial_select(
         myserial = (osalSerial*)streams[i];
         if (myserial)
         {
-            osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+            osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
             handle = myserial->handle;
 
             FD_SET(handle, &rdset);
@@ -811,6 +811,7 @@ void osal_serial_shutdown(
 }
 #endif
 
+#if OSAL_MINIMALISTIC == 0
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
  */
@@ -834,5 +835,6 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
 #endif
     OS_NULL,
     OS_NULL};
+#endif
 
 #endif

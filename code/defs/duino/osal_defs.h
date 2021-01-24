@@ -209,7 +209,8 @@
 
 /** On Arduino P32 we need to have PROGMEM attribute to place data on flash only
  */
-#define OS_FLASH_MEM const __attribute__((progmem))
+// #define OS_FLASH_MEM const __attribute__((progmem))
+#define OS_FLASH_MEM const
 #define OS_FLASH_MEM_H const
 
 /* Socket type enumeration to select socket API.

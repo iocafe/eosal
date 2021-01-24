@@ -567,7 +567,7 @@ osalStatus osal_stream_receive_packet(
 #if OSAL_MINIMALISTIC
 #define osal_stream_open(i,p,o,s,f) osal_serial_open(p,o,s,f)
 #define osal_stream_close(s,f) osal_serial_close(s,f)
-#define osal_stream_accept(s,a,z,s,f) osal_stream_default_accept(s,a,z,s,f)
+#define osal_stream_accept(s,a,z,ss,f) osal_stream_default_accept(s,a,z,ss,f)
 #define osal_stream_flush(s,f) osal_serial_flush(s,f)
 #define osal_stream_seek(s,p,f) osal_stream_default_seek(s,p,f)
 #define osal_stream_write(s,b,n,nn,f) osal_serial_write(s,b,n,nn,f)

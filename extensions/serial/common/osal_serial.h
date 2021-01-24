@@ -31,8 +31,11 @@ extern OS_FLASH_MEM_H osalStreamInterface osal_serial_iface;
 /** Define to get serial interface pointer. The define is used so that this can
     be converted to function call.
  */
-#define OSAL_SERIAL_IFACE &osal_serial_iface
-
+#if OSAL_MINIMALISTIC
+    #define OSAL_SERIAL_IFACE OS_NULL
+#else
+    #define OSAL_SERIAL_IFACE &osal_serial_iface
+#endif
 /* Needed for Windows: Maximum number of socket streams to pass as an argument to
    osal_serial_select().
  */

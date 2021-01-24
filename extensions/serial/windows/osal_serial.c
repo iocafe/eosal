@@ -239,7 +239,7 @@ osalStream osal_serial_open(
     }
 
     os_memclear(myserial, sizeof(osalSerial));
-    myserial->hdr.iface = &osal_serial_iface;
+    myserial->hdr.iface = OSAL_SERIAL_IFACE;
     myserial->open_flags = flags;
     myserial->h = h;
 
@@ -300,7 +300,7 @@ void osal_serial_close(
     /* Cast stream pointer to serial structure pointer and get operating system's serial port handle.
     */
     myserial = (osalSerial *)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+    osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
     h = myserial->h;
 
     /* Mark serial port closed.
@@ -378,7 +378,7 @@ osalStatus osal_serial_flush(
     /* Cast stream type to serial structure pointer, get operating system's serial port handle.
      */
     myserial = (osalSerial*)stream;
-    osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+    osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
 
     if (flags & (OSAL_STREAM_CLEAR_RECEIVE_BUFFER|OSAL_STREAM_CLEAR_TRANSMIT_BUFFER))
     {
@@ -459,7 +459,7 @@ osalStatus osal_serial_write(
         /* Cast stream pointer to serial structure pointer.
             */
         myserial = (osalSerial *)stream;
-        osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+        osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
 
         /* Special case. Writing 0 bytes will trigger write callback by worker thread.
          */
@@ -595,7 +595,7 @@ osalStatus osal_serial_read(
            serial handle.
          */
         myserial = (osalSerial *)stream;
-        osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+        osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
         h = myserial->h;
 
 #if OSAL_SERIAL_SELECT_SUPPORT
@@ -782,7 +782,7 @@ osalStatus osal_serial_select(
         myserial = (osalSerial*)streams[i];
         if (myserial)
         {
-            osal_debug_assert(myserial->hdr.iface == &osal_serial_iface);
+            osal_debug_assert(myserial->hdr.iface == OSAL_SERIAL_IFACE);
             events[n_serials] = myserial->ov.hEvent;
             n_serials++;
 
@@ -980,6 +980,7 @@ void osal_serial_shutdown(void)
 }
 #endif
 
+#if OSAL_MINIMALISTIC == 0
 OS_FLASH_MEM osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
@@ -997,6 +998,7 @@ OS_FLASH_MEM osalStreamInterface osal_serial_iface
     osal_serial_select};
 #else
     osal_stream_default_select};
+#endif
 #endif
 
 #endif
