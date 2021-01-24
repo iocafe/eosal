@@ -152,7 +152,7 @@ os_ushort os_checksum(
 
     for (pos = 0; pos < n; pos++)
     {
-        crc ^= (os_ushort)buf[pos];         // XOR byte into least sig. byte of crc
+        crc ^= (os_uchar)buf[pos];         // XOR byte into least sig. byte of crc
 
         for (int i = 8; i != 0; i--)        // Loop over each bit
         {
@@ -203,13 +203,13 @@ int osal_test_checksum(
     os_ushort
         crc;
 
-    os_uchar
+    os_char
         test[] = "123456789";
 
     int
         ok;
 
-    crc = os_checksum(test, sizeof(test)-1);
+    crc = os_checksum(test, sizeof(test)-1, OS_NULL);
 
     ok = (int)(crc == 0x4B37);
     return ok;
