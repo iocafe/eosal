@@ -21,7 +21,7 @@
 #define EOSAL_H_
 
 ////////////////////////////////////// TESTING< REMOVE OS_MINIMALISTIC
-#define OSAL_MINIMALISTIC 1
+// #define OSAL_MINIMALISTIC 1
 
 /* Include target operating system specific defines.
  */
