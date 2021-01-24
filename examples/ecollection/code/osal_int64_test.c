@@ -74,6 +74,8 @@ osalStatus osal_int64_test(
         yy,
         zz;
 #endif
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     /* Generate test data.
      */

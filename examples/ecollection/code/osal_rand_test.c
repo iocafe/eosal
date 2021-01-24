@@ -42,6 +42,9 @@ osalStatus osal_rand_test(
     os_int argc,
     os_char *argv[])
 {
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
+
     /* For ESP32 it is recommended to initialize WiFi or blue tooth to get hardware
        random numbers. In practice I got random numbers even without this, maybe
        the note relates to some older esp-idf version.

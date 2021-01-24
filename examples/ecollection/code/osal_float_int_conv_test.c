@@ -50,6 +50,8 @@ osalStatus osal_float_int_conv_test(
     os_int i;
     os_short e;
     os_float f;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     s = osal_test_double_value(0);
     if (s) goto failed;

@@ -42,6 +42,8 @@ osalStatus osal_json_compress_test(
     os_char nbuf[OSAL_NBUF_SZ];
     os_char *data, *str, *json_text;
     os_memsz data_sz, str_sz, json_text_sz;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     json_text = os_read_file_alloc(example_json_path, &json_text_sz, OS_FILE_DEFAULT);
     if (json_text == OS_NULL)

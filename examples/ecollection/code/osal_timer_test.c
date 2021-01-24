@@ -37,6 +37,8 @@ osalStatus osal_timer_test(
 {
     os_timer start_t, end_t;
     os_int count = 0, elapsed_ms;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     osal_debug_error("Starting os_get_timer() test, press 'x' to move to sleep test.");
     os_get_timer(&start_t);

@@ -36,11 +36,11 @@
 */
 /*@{*/
 
-#if OSAL_LONG_IS_64_BITS
+#if OSAL_COMPILER_HAS_64_BIT_INTS
 
 /** 64 bit integer type if compiler supports 64 bit integers.
  */
-typedef os_long os_int64;
+typedef os_longlong os_int64;
   
 
 #else
@@ -100,7 +100,7 @@ extern const os_int64 osal_int64_1000000;
 */
 /*@{*/
 
-#if OSAL_LONG_IS_64_BITS
+#if OSAL_COMPILER_HAS_64_BIT_INTS
 
 /** Set 64 bit integer to zero. Macro implementation to be used if compiler supports 
     64 bit integers.
@@ -140,7 +140,7 @@ extern const os_int64 osal_int64_1000000;
 /** Get value of a 64 bit integer as os_long. Macro implementation to be used if compiler 
     supports  64 bit integers.
  */
-#define osal_int64_get_long(x) (*(x))
+#define osal_int64_get_long(x) ((os_long)(*(x)))
 
 /** Get value of 64 bit integer as os_double. Macro implementation to be used if compiler
     supports 64 bit integers.

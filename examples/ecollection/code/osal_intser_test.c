@@ -44,6 +44,8 @@ osalStatus osal_intser_test(
     osalStatus s;
     os_long x;
     os_int i;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     s = osal_intser_test_value(3687);
     if (s) goto failed;

@@ -159,12 +159,19 @@
 #define OSAL_MEMORY_TYPE_ALIGNMENT 0
 #endif
 
-/** Support for 64 bit integers. Define 1 if compiler supports 64 bit integers, like "__int64"
-    or "long long" or plain "long" in 64 bit GNU compilers. Define 0 if compiler doesn't
-    have 64 bit support.
+/** If compiler supports 64 bit integer type, like "__int64" or "long long" or plain
+   "long" in 64 bit GNU compilers. Define 0 if compiler doesn't have 64 bit support.
+ */
+#ifndef OSAL_COMPILER_HAS_64_BIT_INTS
+#define OSAL_COMPILER_HAS_64_BIT_INTS 1
+#endif
+
+/** Select is os_long or or 64 bit. Typically 1 for 32/64 bit processors and 0 for 8/16 bit processors.
+    If set, os_long is 64 bit type, like "__int64" or "long long" or plain "long" in 64 bit GNU compilers.
+    Define 0 if compiler doesn't have 64 bit support.
  */
 #ifndef OSAL_LONG_IS_64_BITS
-#define OSAL_LONG_IS_64_BITS 1
+#define OSAL_LONG_IS_64_BITS 0
 #endif
 
 /** Timer is 64 bit integer. Define 1 if timer value type is 64 bit integer. If 0, then
@@ -379,8 +386,8 @@
 
 /** OSAL extensions: If 64 bit integer multiplication, division or
     to/from double conversion are needed without compiler's 64 bit
-    support (OSAL_LONG_IS_64_BITS is zero), then define 1.
-    If OSAL_LONG_IS_64_BITS is 1, this flag is ignored.
+    support (OSAL_COMPILER_HAS_64_BIT_INTS is zero), then define 1.
+    If OSAL_COMPILER_HAS_64_BIT_INTS is 1, this flag is ignored.
  */
 #ifndef OSAL_INT64X_SUPPORT
 #define OSAL_INT64X_SUPPORT 0

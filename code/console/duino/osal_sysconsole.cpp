@@ -78,6 +78,7 @@ void osal_sysconsole_write(
     const os_char *text)
 {
     Serial.write(text);
+    Serial.flush();
 }
 
 

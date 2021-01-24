@@ -61,15 +61,13 @@ typedef int os_int;
  */
 typedef unsigned int os_uint;
 
-/** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then 32 bit integer.
-    For Microsoft compilers this is "__int64" and for GNU compilers "long long". The
-    OSAL_LONG_IS_64_BITS define is checked so that embedded code without 64 bit support
-    can be tested on Windows by setting the define to zero.
+/** Long signed integer. If OS/compiler doesn't support 64 integers, then 32 bit integer.
+    32 bit long type can be used on minimalistic 8/16 bit microcontrollers to save memory.
  */
 #if OSAL_LONG_IS_64_BITS
 typedef long long os_long;
 #else
-typedef long os_long;
+typedef int os_long;
 #endif
 
 /** The same as os_long, but unsigned.
@@ -77,7 +75,17 @@ typedef long os_long;
 #if OSAL_LONG_IS_64_BITS
 typedef unsigned long long os_ulong;
 #else
-typedef unsigned long os_ulong;
+typedef unsigned int os_ulong;
+#endif
+
+/** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then os_longlong is
+    undefined. (The os_longlong/os_ulonglogn should not be used in application.
+    Use type os_int64 if you need always 64 bit byte)
+    For older Microsoft compilers this is "__int64" and for GNU and most new compilers "long long".
+ */
+#if OSAL_COMPILER_HAS_64_BIT_INTS
+typedef long long os_longlong;
+typedef unsigned long long os_ulonglong;
 #endif
 
 /** Memory size type. Define os_int 32 if maximum process memory space is <= 2GB, or

@@ -54,3 +54,7 @@ osalStatus osal_persistent_test(
 osalStatus osal_timer_test(
     os_int argc,
     os_char *argv[]);
+
+osalStatus osal_type_test(
+    os_int argc,
+    os_char *argv[]);

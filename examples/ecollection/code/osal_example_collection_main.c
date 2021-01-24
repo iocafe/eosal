@@ -41,17 +41,19 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
-    os_sleep(7000);
+    // os_sleep(7000);
     // return osal_threads_example_main(argc, argv);
     // return osal_threads_example_2_main(argc, argv);
     // return osal_int64_test(argc, argv);
     // return osal_intser_test(argc, argv);
     // return osal_json_compress_test(argc, argv);
-    return osal_rand_test(argc, argv);
+    // return osal_rand_test(argc, argv);
     // return osal_float_int_conv_test(argc, argv);
     // return osal_password_test(argc, argv);
     // return osal_persistent_test(argc, argv);
     // return osal_timer_test(argc, argv);
+
+    return osal_type_test(argc, argv);
 }
 
 
@@ -60,6 +62,7 @@ osalStatus osal_main(
 osalStatus osal_loop(
     void *app_context)
 {
+    OSAL_UNUSED(app_context);
     return OSAL_SUCCESS;
 }
 
@@ -68,5 +71,5 @@ osalStatus osal_loop(
 void osal_main_cleanup(
     void *app_context)
 {
-
+    OSAL_UNUSED(app_context);
 }

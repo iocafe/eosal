@@ -64,6 +64,9 @@ osalStatus osal_threads_example_2_main(
 	osalThread
 		*handle;
 
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
+
     os_memclear(&myprm, sizeof(myprm));
 
     handle = osal_thread_create(my_thread_2_func, &myprm, OS_NULL, OSAL_THREAD_ATTACHED);

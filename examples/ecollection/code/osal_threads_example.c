@@ -55,6 +55,8 @@ osalStatus osal_threads_example_main(
     os_char *argv[])
 {
     MyThreadParameters myprm;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     os_memclear(&myprm, sizeof(myprm));
 

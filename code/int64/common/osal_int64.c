@@ -7,7 +7,7 @@
   @date    8.1.2020
 
   Basic 64 bit integer functions. Setting, getting and comparing values. Addition and substraction.
-  Define OSAL_LONG_IS_64_BITS controls compiler's code generation for 64 bit integer arithmetic. 
+  Define OSAL_COMPILER_HAS_64_BIT_INTS controls compiler's code generation for 64 bit integer arithmetic.
   If the define is nonzero, then compiler supported 64 bit arithmetic is used. If the define
   is zero, the functions implemented in osal_int64.h are used.
 
@@ -23,7 +23,7 @@
 
 /* 64 bit integer constants.
  */
-#if OSAL_LONG_IS_64_BITS
+#if OSAL_COMPILER_HAS_64_BIT_INTS
 
 /** 64 bit constant global variable holding value 1. Do not modify the value.
  */
@@ -65,7 +65,7 @@ const os_int64 osal_int64_1000000 = {{0x4240, 0x000F, 0, 0}};
 
 /* We need the code from this file only if compiler doesn't support 64 bit integers.
  */
-#if OSAL_LONG_IS_64_BITS == 0
+#if OSAL_COMPILER_HAS_64_BIT_INTS == 0
 
 
 /**
@@ -76,9 +76,9 @@ const os_int64 osal_int64_1000000 = {{0x4240, 0x000F, 0, 0}};
 
   The osal_int64_set_long() function stores integer value of type os_long into 64 bit 
   integer. Notice that os_long is either 32 or 64 bits, depending on compiler support and 
-  OSAL_LONG_IS_64_BITS define.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  OSAL_COMPILER_HAS_64_BIT_INTS define.
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to 64 bit integer to set. 
@@ -110,8 +110,8 @@ void osal_int64_set_long(
   @anchor osal_int64_set_uint2
 
   The osal_int64_set_uint2() function sets a 64 bit integer from 32 bit low and high parts.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to 64 bit integer to set. 
@@ -146,10 +146,10 @@ void osal_int64_set_uint2(
   @anchor osal_int64_get_long
 
   The osal_int64_get_long() function gets value of 64 bit integer as os_long. Notice that
-  os_long is either 32 or 64 bits, depending on compiler support and OSAL_LONG_IS_64_BITS
+  os_long is either 32 or 64 bits, depending on compiler support and OSAL_COMPILER_HAS_64_BIT_INTS
   define.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to 64 bit integer. 
@@ -177,8 +177,8 @@ os_long osal_int64_get_long(
 
   The osal_int64_get_uint2() function sets value of 64 bit integer as two 32 bit integers,
   low and high parts.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to 64 bit integer. 
@@ -212,8 +212,8 @@ void osal_int64_get_uint2(
 
   The osal_int64_add() function adds two 64 bit integers, x and y, together and stores the
   result into x.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to the first 64 bit integer, result is stored here. 
@@ -261,8 +261,8 @@ os_boolean osal_int64_add(
   @anchor osal_int64_subtract
 
   The osal_int64_subtract() function subtracts y from x and stores the result into x.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to the first 64 bit integer, result is stored here. 
@@ -312,8 +312,8 @@ os_boolean osal_int64_subtract(
   @anchor osal_int64_divide
 
   The osal_int64_negate() function negates 64 bit integer x. This is simple one's complement.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to the 64 bit integer, result is stored here. 
@@ -351,8 +351,8 @@ void osal_int64_negate(
   The osal_int64_compare() function compares two 64 bit integers, x and y. If x is greater
   than y, then the function returns 1. If x is less than y, then function returns -1.
   If x and y are equal, the function returns 0. This is always signed compare.
-  This function implementation is used if OSAL_LONG_IS_64_BITS define is zero. If the
-  OSAL_LONG_IS_64_BITS define is nonzero, then the os_int64 is the same as os_long, 
+  This function implementation is used if OSAL_COMPILER_HAS_64_BIT_INTS define is zero. If the
+  OSAL_COMPILER_HAS_64_BIT_INTS define is nonzero, then the os_int64 is the same as os_long,
   and macro implementation is used instead of this function.
 
   @param   x Pointer to the first 64 bit integer, remains unmodified. 
@@ -400,6 +400,6 @@ os_int osal_int64_compare(
 }
 
 
-/* End OSAL_LONG_IS_64_BITS == 0
+/* End OSAL_COMPILER_HAS_64_BIT_INTS == 0
  */
 #endif

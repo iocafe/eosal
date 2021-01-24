@@ -35,6 +35,8 @@ osalStatus osal_password_test(
 {
     os_char password[OSAL_SECRET_STR_SZ], hashed[OSAL_SECRET_STR_SZ];
     os_short i;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     for (i = 0; i<10; ++i)
     {

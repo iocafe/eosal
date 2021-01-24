@@ -84,7 +84,11 @@ os_long osal_rand(
 
     x = random(-2147483648, 2147483647);
     z = random(-2147483648, 2147483647);
+#if OSAL_LONG_IS_64_BITS
     x ^= z << 32;
+#else
+    x ^= z << 5;
+#endif
     os_get_timer(&t);
     x ^= t;
 

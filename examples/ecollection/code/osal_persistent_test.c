@@ -80,6 +80,8 @@ osalStatus osal_persistent_test(
 {
     int s = 0;
     os_int i;
+    OSAL_UNUSED(argc);
+    OSAL_UNUSED(argv);
 
     /* Initialize persistent storage
      */
