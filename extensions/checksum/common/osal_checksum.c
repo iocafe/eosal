@@ -1,21 +1,19 @@
 /**
 
   @file    osal_checksum.c
-  @brief   Calculate checksum.
+  @brief   Calculate checksum (modbus CRC).
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
 
-  The Communication status refers to general communication information and settings. For example
-  number of connections (sockets, etc) connected to a memory block. In future this could
-  indicate which input data is selected in redundant communication, etc. Communication status
-  may include also settings.
+  The checksum used by EOSAL and IOCOM libraries is 16 bit modbus CRC. The implementation comes
+  in two flavord, one optimized for speed and other for RAM size.
 
-  From application's view communication status appears the same as data memory and is accessed
-  using the same ioc_read(), ioc_get16(), ioc_write(), ioc_set16(), etc. functions. For data
-  memory, the address is positive or zero, status memory addresses are negative.
+  See osal_test_checksum function at end of this file for test code for ensure that the CRC
+  is calculated correctly (there are errornous implementations in net).
 
-  Some test code:
+  You can also use test code below, run with and without OSAL_CRC_OPTIMIZE_SIZE, and see
+  that you get the same output.
 
     const os_char *buf;
     os_ushort crc;
@@ -79,7 +77,7 @@ static OS_FLASH_MEM os_ushort crc_table[] = {
 /**
 ****************************************************************************************************
 
-  @brief Calculate a checksum.
+  @brief Calculate a checksum (optimized for speed, uses CRC table)
   @anchor os_checksum
 
   The os_checksum() function calculates modbus checksum for the buffer given as an argument.
@@ -125,14 +123,30 @@ os_ushort os_checksum(
 
 #else
 
-// Compute the MODBUS RTU CRC
+/**
+****************************************************************************************************
+
+  @brief Calculate a checksum (optimized for size, used when RAM is limited)
+  @anchor os_checksum
+
+  The os_checksum() function is alternate implementation for calculating the modbus checksum.
+  It is used when it is necessary to minimize RAM usage.
+
+  @param   buf Pointer to the buffer.
+  @param   n Number of bytes in buffer. Negative values are same as zero.
+  @param   append_to_checksum Set OS_NULL to calculate checksum from buffer. If nonzero, on
+           entry this contains previous checksum, and on exit updated checksum.
+  @return  Checksum.
+
+****************************************************************************************************
+*/
 os_ushort os_checksum(
     const os_char *buf,
     os_memsz n,
     os_ushort *append_to_checksum)
 {
     os_ushort crc = OSAL_CHECKSUM_INIT;
-    os_short pos;
+    os_memsz pos;
 
     if (append_to_checksum) crc = *append_to_checksum;
 
