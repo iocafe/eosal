@@ -119,9 +119,6 @@ osalStream osal_serial_open(
     osalStatus *status,
     os_int flags)
 {
-    os_memclear(&serialport, sizeof(osalSerial));
-    serialport.hdr.iface = &osal_serial_iface;
-
     /* Set status code and cast serial structure pointer to stream pointer and return it.
      */
     if (status) *status = OSAL_SUCCESS;
@@ -314,6 +311,9 @@ osalStatus osal_serial_read(
 void osal_serial_initialize(
     void)
 {
+    os_memclear(&serialport, sizeof(osalSerial));
+    serialport.hdr.iface = &osal_serial_iface;
+
     /* Configure the serial port.
      */
     myUARTX.begin(OSAL_DUINO_BAUD);
@@ -344,8 +344,14 @@ void osal_serial_shutdown(
 
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
+
+    Arduino UNO peculiarity, notice OS_FLASH_MEM_H.
+    we cannot use OS_FLASH_MEM (const PROGMEM) normally with osal_serial_iface. We would need
+    to get function pointers with something like pgm_read_word(&iface->stream_open). This
+    will not play nice with other microcontrollers. So problem avoided by declaring structure
+     here simply as OS_FLASH_MEM_H (just const), so we have a copy on RAM. A bit of a waste.
  */
-OS_FLASH_MEM osalStreamInterface osal_serial_iface
+OS_FLASH_MEM_H osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
     osal_serial_close,
