@@ -1241,7 +1241,7 @@ void osal_socket_maintain(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-OS_FLASH_MEM osalStreamInterface osal_socket_iface
+OS_CONST osalStreamInterface osal_socket_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_socket_open,
     osal_socket_close,

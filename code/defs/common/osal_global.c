@@ -17,6 +17,6 @@
 
 /* Some common strings.
  */
-OS_FLASH_MEM os_char osal_str_asterisk[] = "*";
-OS_FLASH_MEM os_char osal_str_empty[] = "";
+OS_CONST os_char osal_str_asterisk[] = "*";
+OS_CONST os_char osal_str_empty[] = "";
 

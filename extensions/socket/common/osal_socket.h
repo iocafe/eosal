@@ -25,7 +25,7 @@
 /** Stream interface structure for sockets.
  */
 #if OSAL_SOCKET_SUPPORT
-extern OS_FLASH_MEM_H osalStreamInterface osal_socket_iface;
+extern OS_CONST_H osalStreamInterface osal_socket_iface;
 #endif
 
 /* Default socket port number for IOCOM.

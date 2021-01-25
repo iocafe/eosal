@@ -1597,7 +1597,7 @@ static int osal_openssl_verify_callback(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-OS_FLASH_MEM osalStreamInterface osal_tls_iface
+OS_CONST osalStreamInterface osal_tls_iface
  = {OSAL_STREAM_IFLAG_SECURE,
     osal_openssl_open,
     osal_openssl_close,

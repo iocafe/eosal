@@ -37,7 +37,7 @@ osalTypeInfo;
 
 /** Type names and sizes.
  */
-static OS_FLASH_MEM osalTypeInfo osal_typeinfo[] = {
+static OS_CONST osalTypeInfo osal_typeinfo[] = {
     {"undef", 0},					  /* OS_UNDEFINED_TYPE = 0 */
     {"boolean", sizeof(os_boolean)},  /* OS_BOOLEAN = 1 */
     {"char", sizeof(os_char)},		  /* OS_CHAR = 2 */
@@ -65,7 +65,7 @@ static OS_FLASH_MEM osalTypeInfo osal_typeinfo[] = {
 
 /** Type size.
  */
-static OS_FLASH_MEM os_char osal_typesz[] = {
+static OS_CONST os_char osal_typesz[] = {
     0,                                /* OS_UNDEFINED_TYPE = 0 */
     sizeof(os_boolean),               /* OS_BOOLEAN = 1 */
     sizeof(os_char),		          /* OS_CHAR = 2 */

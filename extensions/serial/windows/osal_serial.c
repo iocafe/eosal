@@ -981,7 +981,7 @@ void osal_serial_shutdown(void)
 #endif
 
 #if OSAL_MINIMALISTIC == 0
-OS_FLASH_MEM osalStreamInterface osal_serial_iface
+OS_CONST osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
     osal_serial_close,

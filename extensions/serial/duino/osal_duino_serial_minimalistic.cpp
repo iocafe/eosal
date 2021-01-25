@@ -25,11 +25,11 @@
   To display
   stty -a -F /dev/ttyUSB0
 
-  Arduino UNO peculiarity, notice OS_FLASH_MEM_H.
-  we cannot use OS_FLASH_MEM (const PROGMEM) normally with osal_serial_iface. We would need
+  Arduino UNO peculiarity, notice OS_CONST_H.
+  we cannot use OS_CONST (const PROGMEM) normally with osal_serial_iface. We would need
   to get function pointers with something like pgm_read_word(&iface->stream_open). This
   will not play nice with other microcontrollers. So problem avoided by declaring structure
-  here simply as OS_FLASH_MEM_H (just const), so we have a copy on RAM. A bit of a waste.
+  here simply as OS_CONST_H (just const), so we have a copy on RAM. A bit of a waste.
 
   https://teslabs.com/openplayer/docs/docs/prognotes/Progmem%20Tutorial.pdf
 
@@ -353,7 +353,7 @@ void osal_serial_shutdown(
 /** Stream interface for OSAL serials. This is structure osalStreamInterface filled with
     function pointers to OSAL serials implementation.
  */
-OS_FLASH_MEM_H osalStreamInterface osal_serial_iface
+OS_CONST_H osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_serial_open,
     osal_serial_close,

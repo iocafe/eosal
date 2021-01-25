@@ -2426,7 +2426,7 @@ static void osal_socket_setup_ring_buffer(
 }
 
 
-OS_FLASH_MEM osalStreamInterface osal_socket_iface
+OS_CONST osalStreamInterface osal_socket_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_socket_open,
     osal_socket_close,

@@ -207,11 +207,18 @@
 #define OSAL_INTERRUPT_LIST_SUPPORT 0
 #endif
 
-/** On Arduino P32 we need to have PROGMEM attribute to place data on flash only
+/** On Arduino P32 we can have OS_PROGMEM attribute to place data on flash only (no RAM copy),
+ *  but may need to access it trough os_memcpy_P() function.
+ *  OS_CONST define is used if our hardware allows us to place const data on flash, which can
+ *  be used directly trough pointer.
+ *  Flag IOC_MBLK_STATIC_IN_PROGMEN instructs IOCOM that static IO configuration is kept
+ *  in flash memory, and needs to be copied with os_memcpy_P.
  */
-// #define OS_FLASH_MEM const __attribute__((progmem))
-#define OS_FLASH_MEM const
-#define OS_FLASH_MEM_H const
+#define OS_CONST const
+#define OS_CONST_H const
+#define OS_PROGMEM const __attribute__((progmem))
+#define OS_PROGMEM_H const
+#define IOC_MBLK_STATIC_IN_PROGMEN 1
 
 /* Socket type enumeration to select socket API.
  */

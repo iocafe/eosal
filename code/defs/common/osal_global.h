@@ -43,8 +43,8 @@ typedef void osal_shutdown_func(void);
 
 /* Some common strings.
  */
-extern OS_FLASH_MEM_H os_char osal_str_asterisk[];
-extern OS_FLASH_MEM_H os_char osal_str_empty[];
+extern OS_CONST_H os_char osal_str_asterisk[];
+extern OS_CONST_H os_char osal_str_empty[];
 
 
 /**

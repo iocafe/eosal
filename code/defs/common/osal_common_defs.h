@@ -181,8 +181,7 @@ typedef os_char os_boolean;
 #endif
 
 /** If we have no interrupt handler function type for this operating system,
-    define empty OS_ISR_FUNC_ATTR. Define OS_FLASH_MEM is used to force data
-    to flash.
+    define empty OS_ISR_FUNC_ATTR.
  */
 #ifndef OS_ISR_FUNC_ATTR
 #define OS_ISR_FUNC_ATTR
@@ -190,12 +189,33 @@ typedef os_char os_boolean;
 #ifndef OS_ISR_DATA_ATTR
 #define OS_ISR_DATA_ATTR
 #endif
-#ifndef OS_FLASH_MEM
-#define OS_FLASH_MEM const
+
+/** Depending on hardware, we can use OS_PROGMEM attribute to place data on flash only (no RAM copy),
+ *  but may need to access it trough os_memcpy_P() function.
+ *  OS_CONST define is used if our hardware allows us to place const data on flash, which can
+ *  be used directly trough pointer.
+ *  Define with "_H" suffix  is meant for .h file, like "extern OS_CONST_H os_int my_int;" and the
+ *  other for C file (for example "OS_CONST os_int my_int = 1234;"
+ *  The general purpose defines here just state that data is constant without any HW specific attributes.
+ *  Flag IOC_MBLK_STATIC_IN_PROGMEN instructs IOCOM that static IO configuration is kept
+ *  in flash memory, and needs to be copied with os_memcpy_P (off for generic HW).
+ */
+#ifndef OS_CONST
+#define OS_CONST const
 #endif
-#ifndef OS_FLASH_MEM_H
-#define OS_FLASH_MEM_H const
+#ifndef OS_CONST_H
+#define OS_CONST_H const
 #endif
+#ifndef OS_PROGMEM
+#define OS_PROGMEM const
+#endif
+#ifndef OS_PROGMEM_H
+#define OS_PROGMEM_H const
+#endif
+#ifndef IOC_MBLK_STATIC_IN_PROGMEN
+#define IOC_MBLK_STATIC_IN_PROGMEN 0
+#endif
+
 
 /** By default, do not maintain list of function pointers to enable/disable
     all application interrupts by one function call.

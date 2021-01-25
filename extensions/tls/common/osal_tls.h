@@ -89,7 +89,7 @@ osalSecurityConfig;
 
 /** Stream interface structure for OpenSLL sockets.
  */
-extern OS_FLASH_MEM_H osalStreamInterface osal_tls_iface;
+extern OS_CONST_H osalStreamInterface osal_tls_iface;
 
 /** Define to get socket interface pointer.
  */

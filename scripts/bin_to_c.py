@@ -32,8 +32,8 @@ def process_source_file(path, variablename):
 
         l = len(file_content)
 
-        cfile.write('OS_FLASH_MEM os_char ' + variablename + '[' + str(l) + '] = {\n')
-        hfile.write('extern OS_FLASH_MEM_H os_char ' + variablename + '[' + str(l) + '];\n')
+        cfile.write('OS_PROGMEM os_char ' + variablename + '[' + str(l) + '] = {\n')
+        hfile.write('extern OS_PROGMEM_H os_char ' + variablename + '[' + str(l) + '];\n')
 
         columns = 0
         for x in range(0, l):
