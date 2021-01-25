@@ -197,7 +197,7 @@ typedef os_char os_boolean;
  *  Define with "_H" suffix  is meant for .h file, like "extern OS_CONST_H os_int my_int;" and the
  *  other for C file (for example "OS_CONST os_int my_int = 1234;"
  *  The general purpose defines here just state that data is constant without any HW specific attributes.
- *  Flag IOC_MBLK_STATIC_IN_PROGMEN instructs IOCOM that static IO configuration is kept
+ *  Flag IOC_STATIC_MBLK_IN_PROGMEN instructs IOCOM that static IO configuration is kept
  *  in flash memory, and needs to be copied with os_memcpy_P (off for generic HW).
  */
 #ifndef OS_CONST
@@ -212,8 +212,8 @@ typedef os_char os_boolean;
 #ifndef OS_PROGMEM_H
 #define OS_PROGMEM_H const
 #endif
-#ifndef IOC_MBLK_STATIC_IN_PROGMEN
-#define IOC_MBLK_STATIC_IN_PROGMEN 0
+#ifndef IOC_STATIC_MBLK_IN_PROGMEN
+#define IOC_STATIC_MBLK_IN_PROGMEN 0
 #endif
 
 

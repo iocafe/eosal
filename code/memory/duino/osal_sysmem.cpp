@@ -17,7 +17,7 @@
 */
 #include "eosal.h"
 #include <stdlib.h>
-
+#include <avr/pgmspace.h>
 
 /**
 ****************************************************************************************************
@@ -75,8 +75,6 @@ os_char *osal_sysmem_alloc(
            the function does nothing.
   @param   bytes Either requested or allocated size of memory block.
 
-  @return  None.
-
 ****************************************************************************************************
 */
 void osal_sysmem_free(
@@ -87,4 +85,29 @@ void osal_sysmem_free(
         free(memory_block);
         osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
     }
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Copy data from program memory to RAM.
+  @anchor os_memcpy_P
+
+  The os_memcpy_P() function is very hardware specific function to copy data from
+  microcontroller's flash to ram. This function is used to access some const configuration
+  structures on flash.
+
+  @param   dest  Pointer to destination in RAM.
+  @param   src Pointer to fource on flash.
+  @param   n Number of bytes to copy.
+
+****************************************************************************************************
+*/
+void os_memcpy_P(
+    void *dest,
+    const void *src,
+    os_memsz n)
+{
+    memcpy_P(dest, src, n);
 }

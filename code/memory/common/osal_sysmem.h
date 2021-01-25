@@ -76,6 +76,13 @@ void osal_sysmem_free(
     void *memory_block,
     os_memsz bytes);
 
+/* Copy data from program memory to RAM.
+ */
+void os_memcpy_P(
+    void *dest,
+    const void *src,
+    os_memsz n);
+
 /*@}*/
 
 #endif
