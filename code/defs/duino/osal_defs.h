@@ -48,6 +48,29 @@
 
   -DARDUINO_{build.board}
 
+  You can find all T3.x with check like:
+  #if defined(KINETISK)
+
+  T-LC with:
+  #elif defined(KINETISL)
+
+
+  Many boards are known by their processor...
+  So you will see things like:
+  #if defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
+
+  With
+  T3 - __MK20DX128__
+  3.2 __MK20DX256__
+  3.5 __MK64FX512__
+  3.6 __MK66FX1M0__
+
+  T4 and T4.1 __IMXRT1062__
+
+  So with the release of T4.1 we needed a way to know the difference, so now our builds have a define that like some other Arduino platforms do. So for example if you build for Teensy T4.1: ARDUINO_TEENSY41
+  T4 ARDUINO_TEENSY40
+
+  Likewise for T3..
 
 ****************************************************************************************************
 */
@@ -63,10 +86,83 @@
 
 #include "Arduino.h"
 
+/* Board types.
+ */
+#define OSAL_UNKNOWN_BOARD 0
+#define OSAL_ARDUINO_BOARD 1
+#define OSAL_TEENSY_BOARD 1
+
+/* Board subtypes.
+ */
+#define OSAL_ARDUINO_UNO 100
+#define OSAL_TEENSY_3 230
+#define OSAL_TEENSY_3_2 232
+#define OSAL_TEENSY_3_5 235
+#define OSAL_TEENSY_3_6 236
+#define OSAL_TEENSY_4_0 240
+#define OSAL_TEENSY_4_1 241
+
+/* Detect board type and board subtype by preprocessor defines.
+ */
+#ifndef OSAL_BOARD_TYPE
+#ifdef ARDUINO_AVR_UNO
+    #define OSAL_BOARD_TYPE OSAL_ARDUINO_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_ARDUINO_UNO
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+#ifdef ARDUINO_TEENSY40
+    #define OSAL_BOARD_TYPE OSAL_TEENSY_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_TEENSY_4_0
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+#ifdef ARDUINO_TEENSY41_
+    #define OSAL_BOARD_TYPE OSAL_TEENSY_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_TEENSY_4_1
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+#ifdef __MK20DX128__
+    #define OSAL_BOARD_TYPE OSAL_TEENSY_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_TEENSY_3
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+#ifdef __MK20DX256__
+    #define OSAL_BOARD_TYPE OSAL_TEENSY_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_TEENSY_3_2
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+#ifdef __MK64FX512__
+    #define OSAL_BOARD_TYPE OSAL_TEENSY_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_TEENSY_3_5
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+#ifdef __MK66FX1M0__
+    #define OSAL_BOARD_TYPE OSAL_TEENSY_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_TEENSY_3_6
+#endif
+#endif
+
+#ifndef OSAL_BOARD_TYPE
+    #define OSAL_BOARD_TYPE OSAL_UNKNOWN_BOARD
+    #define OSAL_BOARD_SUBTYPE OSAL_UNKNOWN_BOARD
+#endif
+
+
 /* If we want the default defines for a minimalistic serial communication device.
  */
 #ifndef OSAL_MINIMALISTIC
-    #ifdef ARDUINO_AVR_UNO
+    #if OSAL_BOARD_SUBTYPE == OSAL_ARDUINO_UNO
         #define OSAL_MINIMALISTIC 1
     #endif
 #endif
