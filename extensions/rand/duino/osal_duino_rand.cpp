@@ -83,7 +83,7 @@ os_long osal_rand(
     os_timer t;
 
     x = random(-2147483648, 2147483647);
-    z = random(-2147483648, 2147483647);
+    z = random(-2147483648, 2147483647); // THIS IS NOT WORKING !!!!
 #if OSAL_LONG_IS_64_BITS
     x ^= z << 32;
 #else
