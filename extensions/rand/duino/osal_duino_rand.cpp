@@ -55,6 +55,7 @@ void osal_rand_seed(
         p[i % sizeof(z)] ^= ent[i % ent_sz];
     }
 
+    z ^= random(2147483647);
     randomSeed((unsigned long)z);
 }
 
@@ -82,10 +83,10 @@ os_long osal_rand(
     os_long x, z, range;
     os_timer t;
 
-    x = random(-2147483648, 2147483647);
-    z = random(-2147483648, 2147483647); // THIS IS NOT WORKING !!!!
+    x = random(2147483647);
+    z = random(2147483647);
 #if OSAL_LONG_IS_64_BITS
-    x ^= z << 32;
+    x ^= z << 31;
 #else
     x ^= z << 5;
 #endif
