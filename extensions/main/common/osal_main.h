@@ -45,7 +45,6 @@ OSAL_C_HEADER_BEGINS
  */
 extern void *osal_application_context;
 
-
 /* Prototype for application's entry point function. We declare this prototype, even without
  * OSAL_MAIN_SUPPORT define set.
  */

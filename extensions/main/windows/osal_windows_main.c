@@ -129,7 +129,7 @@ int eosal_entry_s(
 
     /* Call the Unicode entry point.
      */
-    return wmain(argc, argv);
+    return eosal_entry_w(argc, argv);
 }
 
 #endif

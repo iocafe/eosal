@@ -51,6 +51,7 @@
     <ClInclude Include="..\..\extensions\filesys\common\osal_filestat.h" />
     <ClInclude Include="..\..\extensions\filesys\common\osal_fileutil.h" />
     <ClInclude Include="..\..\extensions\main\common\osal_main.h" />
+    <ClInclude Include="..\..\extensions\main\windows\osal_windows_main.h" />
     <ClInclude Include="..\..\extensions\math\common\osal_round.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_dns.h" />
     <ClInclude Include="..\..\extensions\net\common\osal_net_config.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="..\..\code\string\common\osal_strncpy.c" />
     <ClCompile Include="..\..\code\string\common\osal_strnicmp.c" />
     <ClCompile Include="..\..\code\string\common\osal_strstr.c" />
+    <ClCompile Include="..\..\code\string\common\osal_str_to_int.c" />
     <ClCompile Include="..\..\code\thread\windows\osal_sleep.c" />
     <ClCompile Include="..\..\code\thread\windows\osal_thread.c" />
     <ClCompile Include="..\..\code\thread\windows\osal_thread_priority.c" />
@@ -128,7 +130,7 @@
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_double.c" />
     <ClCompile Include="..\..\extensions\int64x\common\osal_int64_multiply.c" />
     <ClCompile Include="..\..\extensions\main\common\osal_simloop.c" />
-    <ClCompile Include="..\..\extensions\main\windows\osal_main.c" />
+    <ClCompile Include="..\..\extensions\main\windows\osal_windows_main.c" />
     <ClCompile Include="..\..\extensions\net\common\osal_net_morse_code.c" />
     <ClCompile Include="..\..\extensions\net\common\osal_net_state.c" />
     <ClCompile Include="..\..\extensions\net\windows\osal_dns.c" />
@@ -165,7 +167,6 @@
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_value.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_next.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_bin.c" />
-    <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_int.c" />
     <ClCompile Include="..\..\extensions\time\windows\osal_time.c" />
     <ClCompile Include="..\..\extensions\tls\mbedtls\osal_crypto_hash.c" />
     <ClCompile Include="..\..\extensions\tls\mbedtls\osal_mbedtls.c" />

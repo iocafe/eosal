@@ -42,6 +42,9 @@ int eosal_entry(
 
 /* Macro to generate C main() function code.
  */
-#define EOSAL_C_MAIN  int main(int c, char **v) {return eosal_entry((c), (v)); }
+#define EOSAL_C_MAIN  \
+    OSAL_C_HEADER_BEGINS \
+    int main(int c, char **v) {return eosal_entry((c), (v)); } \
+    OSAL_C_HEADER_ENDS
 
 #endif

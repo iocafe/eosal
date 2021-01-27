@@ -52,7 +52,9 @@ int eosal_entry_s(
 /* Macro to generate C main() function code.
  */
 #define EOSAL_C_MAIN  \
+    OSAL_C_HEADER_BEGINS \
     int wmain(int c, wchar_t *v[]) {return eosal_entry_w((c), (v)); } \
-    int main(int c, char **v) {return eosal_entry_s((c), (v)); }
+    int main(int c, char **v) {return eosal_entry_s((c), (v)); } \
+    OSAL_C_HEADER_ENDS
 
 #endif
