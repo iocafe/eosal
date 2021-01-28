@@ -101,6 +101,7 @@
     <ClCompile Include="..\..\code\string\common\osal_int_to_str.c" />
     <ClCompile Include="..\..\code\string\common\osal_strchr.c" />
     <ClCompile Include="..\..\code\string\common\osal_strcmp.c" />
+    <ClCompile Include="..\..\code\string\common\osal_strcnmp.c" />
     <ClCompile Include="..\..\code\string\common\osal_strechr.c" />
     <ClCompile Include="..\..\code\string\common\osal_strlen.c" />
     <ClCompile Include="..\..\code\string\common\osal_strncat.c" />
@@ -163,6 +164,7 @@
     <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_int64_to_str.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_str_to_float.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_strcnv_str_to_int64.c" />
+    <ClCompile Include="..\..\extensions\stringx\common\osal_str_ends_with.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_int.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_item_value.c" />
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_get_next.c" />
