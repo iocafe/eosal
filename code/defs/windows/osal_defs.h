@@ -87,7 +87,7 @@
 /** Default level for OS which osal_trace() lines to compile in. OSAL_DEBUG required to trace.
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 1
+#define OSAL_TRACE 2
 #endif
 
 /** Define 1 is this is micro-controller environment. This is used to get sensible default
