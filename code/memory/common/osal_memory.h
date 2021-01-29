@@ -224,6 +224,15 @@ void osal_memory_free(
     void *memory_block,
     os_memsz bytes);
 
+#if OSAL_MEMORY_DEBUG
+/* Check for memory block overrun.
+ */
+void osal_memory_check(
+    void *memory_block,
+    os_memsz bytes);
+#endif
+
+
 /*@}*/
 
 #elif OSAL_DYNAMIC_MEMORY_ALLOCATION==0

@@ -442,6 +442,83 @@ void osal_memory_free(
 }
 
 
+#if OSAL_MEMORY_DEBUG
+/**
+****************************************************************************************************
+
+  @brief Check for memory block overrun.
+  @anchor osal_memory_check
+
+  The osal_memory_check() function checks if memory block has overrun.
+
+  @param   memory_block Pointer to memory block. If this pointer is OS_NULL, then
+           the function does nothing.
+  @param   bytes Size of memory block, either request_bytes given as argument or allocated_bytes
+		   returned by osal_memory_allocate() function.
+
+  @return  None.
+
+****************************************************************************************************
+*/
+void osal_memory_check(
+    void *memory_block,
+    os_memsz bytes)
+{
+    os_short
+        ix;
+
+    /* NULL memory block is accepted, function just does nothing.
+     */
+    if (memory_block == OS_NULL) return;
+
+osal_debug_assert(bytes > 0); 
+
+    /* In debug mode allow space for debug information.
+     */
+    bytes += 4 * sizeof(os_short);
+    memory_block = (os_char*)memory_block - 2 * sizeof(os_short);
+
+    /* Use quick find table to find block index for the small memory blocks.
+     */
+    if (bytes < OSAL_MEMORY_QUICK_FIND_TABLE_LEN)
+    {
+        ix = osal_global->memstate.quick_find[bytes];
+    }
+
+    /* Larger block, use function to find block index.
+     */
+    else if (bytes <= osal_global->memstate.max_block_sz)
+    {
+        ix = osal_memory_get_block_ix(bytes);
+    }
+
+    /* Too large block for memory manager, call operating system directly.
+     */
+    else
+    {
+        return;
+    }
+
+	if (*(os_short*)((os_char*)memory_block + sizeof(os_short))
+		!= OSAL_MEMORY_BLOCK_START_MARK)
+	{
+		osal_debug_error("CHK: Memory corrupted 1");
+	}
+
+	if (ix != *(os_short*)memory_block)
+	{
+		osal_debug_error("CHK: bytes given to osal_memory_free is faulty");
+	}
+
+	if (*(os_short*)((os_char*)memory_block + osal_global->memstate.block_sz[ix] 
+		- 2*sizeof(os_short)) != OSAL_MEMORY_BLOCK_END_MARK)
+	{
+		osal_debug_error("CHK: Memory corrupted 2");
+	}
+}
+#endif
+
+
 /**
 ****************************************************************************************************
 
