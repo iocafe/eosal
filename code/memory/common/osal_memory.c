@@ -697,7 +697,6 @@ static void *osal_memory_allocate_slice(
                 if (bytes_left < sizeof(osalMemorySliceHeader) ||
 					bytes_left < sz0)
                 {
-
                     p = memory_block + bytes;
 
                     while (bytes_left >= sz0)
