@@ -109,7 +109,7 @@ typedef struct osalTlsSocket
 
     /** Flag indicating that we have completed handshake successfully.
      */
-    os_boolean handshake_done;
+    // os_boolean handshake_done;
 
     /** Flag indicating that handshake has failed.
      */
@@ -604,7 +604,7 @@ static osalStatus osal_mbedtls_write(
 
     /* Finish handshake first.
      */
-    if (!so->handshake_done) {
+    if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
         s = osal_mbedtls_handshake(so);
         if (s == OSAL_PENDING) return OSAL_SUCCESS;
         if (s) return s;
@@ -672,7 +672,7 @@ static osalStatus osal_mbedtls_read(
 
     /* Finish handshake first.
      */
-    if (!so->handshake_done) {
+    if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
         s = osal_mbedtls_handshake(so);
         if (s == OSAL_PENDING) return OSAL_SUCCESS;
         if (s) return s;
@@ -1232,39 +1232,32 @@ static osalStatus osal_mbedtls_handshake(
     uint32_t xflags;
 
     if (so->handshake_failed) return OSAL_STATUS_CONNECTION_REFUSED;
-    if (so->handshake_done) return OSAL_SUCCESS;
+    // if (so->handshake_done) return OSAL_SUCCESS;
 
     /* Handshake
      */
     count = 0;
-    while (1)
+
+    ret = mbedtls_ssl_handshake(&so->ssl);
+    osal_stream_flush(so->tcpsocket, 0);
+
+    if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
     {
-        ret = mbedtls_ssl_handshake(&so->ssl);
-        if (ret == 0) {
-            osal_stream_flush(so->tcpsocket, 0);
-            break;
-        }
-
-        if( ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE )
-        {
-            osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_CONNECTION_REFUSED, OS_NULL);
+        osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_CONNECTION_REFUSED, OS_NULL);
 #if OSAL_DEBUG
-            osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
-            if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
-                osal_debug_error("MBEDTLS_ERR_MPI_ALLOC_FAILED");
-            }
-#endif
-
-            so->handshake_failed = OS_TRUE;
-            return OSAL_STATUS_CONNECTION_REFUSED;
+        osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
+        if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
+            osal_debug_error("MBEDTLS_ERR_MPI_ALLOC_FAILED");
         }
-
-        osal_stream_flush(so->tcpsocket, 0);
-        os_timeslice();
-
-        if (++count > 2) return OSAL_PENDING;
-// return OSAL_PENDING;
+#endif
+        so->handshake_failed = OS_TRUE;
+        return OSAL_STATUS_CONNECTION_REFUSED;
     }
+
+    if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
+        return OSAL_PENDING;
+    }
+
     so->peer_connected = OS_TRUE;
 
     /* If client, verify the server certificate.
@@ -1284,7 +1277,7 @@ static osalStatus osal_mbedtls_handshake(
         }
     }
 
-    so->handshake_done = OS_TRUE;
+    // so->handshake_done = OS_TRUE;
     osal_trace2("TLS handshake ok");
     return OSAL_SUCCESS;
 }
