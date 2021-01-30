@@ -146,6 +146,8 @@ osalThread *osal_thread_create(
         return OS_NULL;
     }
 
+    /* Setup attributes for the new thread.
+     */
     if (flags & OSAL_THREAD_ATTACHED)
     {
         handle = (osalLinuxThreadHandle*)malloc(sizeof(osalLinuxThreadHandle));
@@ -155,7 +157,6 @@ osalThread *osal_thread_create(
     {
         handle = OS_NULL;
     }
-
     pthread_attr_init(&attrib);
     pthread_attr_setschedpolicy(&attrib, SCHED_OTHER);
     pthread_attr_setdetachstate(&attrib,
@@ -175,7 +176,11 @@ osalThread *osal_thread_create(
         }
     }
 
-    /* Call linux to create and start the new thread.
+    /* Call Posix function to create and start the new thread.
+     * SIGSTOP note: Some versions of QTcreator display a pop up window with SIGSTOP
+       when pthreade_create is called during gdb debug and console output is set to
+       separate window in "Project" setting, run configuration. Disable console
+       output to debug more conviniently.
      */
     s = pthread_create(&threadh, &attrib,
         osal_thread_intermediate_func, &linprm);
