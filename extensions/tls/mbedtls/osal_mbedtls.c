@@ -107,10 +107,6 @@ typedef struct osalTlsSocket
      */
     os_boolean peer_connected;
 
-    /** Flag indicating that we have completed handshake successfully.
-     */
-    // os_boolean handshake_done;
-
     /** Flag indicating that handshake has failed.
      */
     os_boolean handshake_failed;
@@ -308,12 +304,6 @@ mbedtls_ssl_conf_authmode(&so->conf,MBEDTLS_SSL_VERIFY_NONE);
             osal_debug_error_int("mbedtls_ssl_setup returned ", ret);
             goto getout;
         }
-
-        /* We cannot set host name for security validation, because
-         * we often connect by IP address
-        ret = mbedtls_ssl_set_hostname(&so->ssl, host); */
-        /* mbedtls_ssl_conf_read_timeout(&so->conf, 3000); */
-        /* mbedtls_ssl_set_bio(&so->ssl, &so->fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout); */
 
         /* We use osal socket implementation for reads and writes.
          */
@@ -682,9 +672,8 @@ static osalStatus osal_mbedtls_read(
     ret = mbedtls_ssl_read(&so->ssl, (os_uchar*)buf, (size_t)n);
     if (ret < 0)
     {
-        // MBEDTLS_ERR_SSL_CONN_EOF
-        // if (ret != MBEDTLS_ERR_SSL_TIMEOUT)
-        if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
+        if (ret != MBEDTLS_ERR_SSL_WANT_READ && 
+            ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
             so->peer_connected = OS_FALSE;
             if(ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY)
@@ -1114,15 +1103,6 @@ static int osal_net_recv(
     if (so->tcpsocket == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
     s = osal_stream_read(so->tcpsocket, (os_char*)buf, len, &n_read, OSAL_STREAM_DEFAULT);
-    /* if (s) {
-        return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
-    }
-    if (n_read == 0) {
-        return MBEDTLS_ERR_SSL_WANT_READ;
-    } 
-    return (int)n_read;
-    */
-
     switch (s)
     {
         case OSAL_SUCCESS:
@@ -1133,6 +1113,7 @@ static int osal_net_recv(
             return MBEDTLS_ERR_NET_CONN_RESET;
 
         default:
+            // return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
             return MBEDTLS_ERR_NET_RECV_FAILED;
     } 
 }
@@ -1172,11 +1153,8 @@ static int osal_net_send(
     so = (osalTlsSocket*)ctx;
     if (so->tcpsocket == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
-// so->tcpsocket->write_timeout_ms = 500;
-//     s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len, &n_written, OSAL_STREAM_WAIT);
-   //  osal_stream_flush(so->tcpsocket, 0);
-
-    s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
+    s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len,
+        &n_written, OSAL_STREAM_DEFAULT);
     switch (s)
     {
         case OSAL_SUCCESS:
@@ -1233,7 +1211,6 @@ static osalStatus osal_mbedtls_handshake(
     uint32_t xflags;
 
     if (so->handshake_failed) return OSAL_STATUS_CONNECTION_REFUSED;
-    // if (so->handshake_done) return OSAL_SUCCESS;
 
     /* Handshake
      */
@@ -1278,7 +1255,6 @@ static osalStatus osal_mbedtls_handshake(
         }
     }
 
-    // so->handshake_done = OS_TRUE;
     osal_trace2("TLS handshake ok");
     return OSAL_SUCCESS;
 }
