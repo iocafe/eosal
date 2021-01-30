@@ -316,7 +316,7 @@ static osalStream osal_mbedtls_open(
 
         /* We use osal socket implementation for reads and writes.
          */
-        mbedtls_ssl_set_bio(&so->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
+        mbedtls_ssl_set_bio(&so->ssl, so, osal_net_send, osal_net_recv, NULL);
 
         s = osal_mbedtls_handshake(so);
         if (OSAL_IS_ERROR(s))
@@ -502,7 +502,7 @@ static osalStream osal_mbedtls_accept(
 
     /* We use osal socket implementation for reads and writes.
      */
-    mbedtls_ssl_set_bio(&newso->ssl, tcpsocket, osal_net_send, osal_net_recv, NULL);
+    mbedtls_ssl_set_bio(&newso->ssl, newso, osal_net_send, osal_net_recv, NULL);
 
     s = osal_mbedtls_handshake(newso);
     if (OSAL_IS_ERROR(s)) goto getout;
@@ -1106,14 +1106,22 @@ static int osal_net_recv(
 {
     os_memsz n_read;
     osalStatus s;
+    osalTlsSocket *so;
 
     if (ctx == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
+    so = (osalTlsSocket*)ctx;
+    if (so->tcpsocket == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
-    s = osal_stream_read((osalStream)ctx, (os_char*)buf, len, &n_read, OSAL_STREAM_DEFAULT);
-    if (s) return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
-    if (n_read == 0) return MBEDTLS_ERR_SSL_WANT_READ;
+    s = osal_stream_read(so->tcpsocket, (os_char*)buf, len, &n_read, OSAL_STREAM_DEFAULT);
+    if (s) {
+        return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
+    }
+    if (n_read == 0) {
+        return MBEDTLS_ERR_SSL_WANT_READ;
+    } 
+    return (int)n_read;
 
-    switch (s)
+    /* switch (s)
     {
         case OSAL_SUCCESS:
             if (n_read == 0)  return MBEDTLS_ERR_SSL_WANT_READ;
@@ -1124,7 +1132,7 @@ static int osal_net_recv(
 
         default:
             return MBEDTLS_ERR_NET_RECV_FAILED;
-    }
+    } */
 }
 
 
@@ -1153,13 +1161,16 @@ static int osal_net_send(
 {
     os_memsz n_written;
     osalStatus s;
+    osalTlsSocket *so;
 #if OSAL_DEBUG
     static os_boolean warning_issued = OS_FALSE;
 #endif
 
     if (ctx == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
+    so = (osalTlsSocket*)ctx;
+    if (so->tcpsocket == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
-    s = osal_stream_write((osalStream)ctx, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
+    s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
     switch (s)
     {
         case OSAL_SUCCESS:
