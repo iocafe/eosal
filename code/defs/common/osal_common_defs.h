@@ -112,6 +112,7 @@ typedef os_char os_boolean;
 #define OSAL_STREAM_BUFFER_SUPPORT 0
 #endif
 
+
 /** Define OSAL_DEBUG_FILE_AND_LINE as 1 to include file name and line number in osal_debug
     and osal_assert macros. Effective only when OSAL_DEBUG is 1.
  */

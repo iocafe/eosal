@@ -102,11 +102,21 @@ static void osal_append_C_file_name_and_line_nr(
 void osal_debug_error_func(
     const os_char *text,
     const os_char *file,
-    os_int line)
+    os_int line,
+    os_boolean is_error)
 {
     os_boolean new_line_at_end = OS_TRUE;
     if (osal_global->quiet_mode) return;
-    if (*text == '~') { new_line_at_end = OS_FALSE; text++; }
+    if (*text == '~') {
+        new_line_at_end = OS_FALSE;
+        text++;
+    }
+
+    /* Set breakpoint here to trap only errors.
+     */
+    if (is_error) {
+        osal_console_write("ERR:");
+    }
 
     /* Write error message on debug console, if any.
      */
@@ -141,24 +151,13 @@ void osal_debug_error_int_func(
     const os_char *text,
     os_long v,
     const os_char *file,
-    os_int line)
+    os_int line,
+    os_boolean is_error)
 {
     os_char nbuf[OSAL_NBUF_SZ];
-    os_boolean new_line_at_end = OS_TRUE;
-    if (osal_global->quiet_mode) return;
-    if (*text == '~') { new_line_at_end = OS_FALSE; text++; }
-
-    /* Write error message on debug console, if any.
-     */
-    osal_console_write(text);
     osal_int_to_str(nbuf, sizeof(nbuf), v);
-    osal_console_write(nbuf);
-
-    /* Strip path from file name to keep output more readable.
-     */
-    osal_append_C_file_name_and_line_nr(file, line, new_line_at_end);
+    osal_debug_error_str_func(text, nbuf, file, line, is_error);
 }
-
 
 
 /**
@@ -184,7 +183,8 @@ void osal_debug_error_str_func(
     const os_char *text,
     const os_char *v,
     const os_char *file,
-    os_int line)
+    os_int line,
+    os_boolean is_error)
 {
     os_boolean new_line_at_end = OS_TRUE;
     if (osal_global->quiet_mode) return;
@@ -192,6 +192,12 @@ void osal_debug_error_str_func(
     {
         new_line_at_end = OS_FALSE;
         text++;
+    }
+
+    /* Set breakpoint here to trap only errors.
+     */
+    if (is_error) {
+        osal_console_write("ERR:");
     }
 
     /* Write error message on debug console, if any.
@@ -229,7 +235,7 @@ void osal_debug_assert_func(
     if (osal_global->quiet_mode) return;
     if (!cond)
     {
-        osal_debug_error_func("Assert failed", file, line);
+        osal_debug_error_func("Assert failed", file, line, OS_TRUE);
     }
 }
 
@@ -253,12 +259,22 @@ void osal_debug_assert_func(
 
 ****************************************************************************************************
 */
-void osal_debug_error(
-    const os_char *text)
+void osal_debug_error_func(
+    const os_char *text,
+    os_boolean is_error)
 {
     const os_char *end_with = ".\n";
     if (osal_global->quiet_mode) return;
-    if (*text == '~') { end_with = osal_str_empty; text++; }
+    if (*text == '~') {
+        end_with = osal_str_empty;
+        text++;
+    }
+
+    /* Set breakpoint here to trap only errors.
+     */
+    if (is_error) {
+        osal_console_write("ERR:");
+    }
 
     /* Write error message on debug console, if any.
      */
@@ -284,21 +300,14 @@ void osal_debug_error(
 
 ****************************************************************************************************
 */
-void osal_debug_error_int(
+void osal_debug_error_int_func(
     const os_char *text,
-    os_long v)
+    os_long v,
+    os_boolean is_error)
 {
-    const os_char *end_with = ".\n";
-    os_char nbuf[22];
-    if (osal_global->quiet_mode) return;
-    if (*text == '~') { end_with = osal_str_empty; text++; }
-
-    /* Write error message and integer argument on debug console, if any.
-     */
-    osal_console_write(text);
+    os_char nbuf[OSAL_NBUF_SZ];
     osal_int_to_str(nbuf, sizeof(nbuf), v);
-    osal_console_write(nbuf);
-    osal_console_write(end_with);
+    osal_debug_error_str_func(text, nbuf, is_error);
 }
 
 
@@ -319,13 +328,20 @@ void osal_debug_error_int(
 
 ****************************************************************************************************
 */
-void osal_debug_error_str(
+void osal_debug_error_str_func(
     const os_char *text,
-    const os_char *v)
+    const os_char *v,
+    os_boolean is_error)
 {
     const os_char *end_with = ".\n";
     if (osal_global->quiet_mode) return;
     if (*text == '~') { end_with = osal_str_empty; text++; }
+
+    /* Set breakpoint here to trap only errors.
+     */
+    if (is_error) {
+        osal_console_write("ERR:");
+    }
 
     /* Write error message and integer argument on debug console, if any.
      */
@@ -350,7 +366,7 @@ void osal_debug_error_str(
 
 ****************************************************************************************************
 */
-void osal_debug_assert(
+void osal_debug_assert_func(
     os_long cond)
 {
     if (osal_global->quiet_mode) return;
