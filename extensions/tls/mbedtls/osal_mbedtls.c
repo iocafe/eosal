@@ -1241,15 +1241,13 @@ static osalStatus osal_mbedtls_handshake(
     ret = mbedtls_ssl_handshake(&so->ssl);
     osal_stream_flush(so->tcpsocket, 0);
 
-    if (ret) {
-        if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
-        {
-            osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_CONNECTION_REFUSED, OS_NULL);
-    #if OSAL_DEBUG
-            osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
-            if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
-                osal_debug_error("MBEDTLS_ERR_MPI_ALLOC_FAILED");
-            }
+    if (ret && ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE)
+    {
+        osal_error(OSAL_WARNING, eosal_mod, OSAL_STATUS_CONNECTION_REFUSED, OS_NULL);
+#if OSAL_DEBUG
+        osal_debug_error_int("mbedtls_ssl_handshake returned ", ret);
+        if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
+            osal_debug_error("MBEDTLS_ERR_MPI_ALLOC_FAILED");
         }
 #endif
         so->handshake_failed = OS_TRUE;
