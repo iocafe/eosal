@@ -285,11 +285,11 @@ static osalStream osal_mbedtls_open(
            transfer of certificate chain from server to the device, effectively stamping device
            as part of IO device network.
          */
-//        mbedtls_ssl_conf_authmode(&so->conf,
-//            osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
-//            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_REQUIRED);
+        mbedtls_ssl_conf_authmode(&so->conf,
+            osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
+            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_REQUIRED);
 
-mbedtls_ssl_conf_authmode(&so->conf,MBEDTLS_SSL_VERIFY_NONE);
+// mbedtls_ssl_conf_authmode(&so->conf, MBEDTLS_SSL_VERIFY_NONE);
 
         osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
             ? " NO CERT CHAIN": "certificate chain loaded");
