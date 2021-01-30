@@ -672,7 +672,7 @@ static osalStatus osal_mbedtls_read(
     ret = mbedtls_ssl_read(&so->ssl, (os_uchar*)buf, (size_t)n);
     if (ret < 0)
     {
-        if (ret != MBEDTLS_ERR_SSL_WANT_READ && 
+        if (ret != MBEDTLS_ERR_SSL_WANT_READ &&
             ret != MBEDTLS_ERR_SSL_WANT_WRITE)
         {
             so->peer_connected = OS_FALSE;
@@ -1115,7 +1115,7 @@ static int osal_net_recv(
         default:
             // return MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY;
             return MBEDTLS_ERR_NET_RECV_FAILED;
-    } 
+    }
 }
 
 
@@ -1207,15 +1207,13 @@ static int osal_net_send(
 static osalStatus osal_mbedtls_handshake(
     osalTlsSocket *so)
 {
-    int ret, count;
+    int ret;
     uint32_t xflags;
 
     if (so->handshake_failed) return OSAL_STATUS_CONNECTION_REFUSED;
 
     /* Handshake
      */
-    count = 0;
-
     ret = mbedtls_ssl_handshake(&so->ssl);
     osal_stream_flush(so->tcpsocket, 0);
 
