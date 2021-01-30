@@ -1170,7 +1170,11 @@ static int osal_net_send(
     so = (osalTlsSocket*)ctx;
     if (so->tcpsocket == OS_NULL) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
 
-    s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
+so->tcpsocket->write_timeout_ms = 500;
+    s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len, &n_written, OSAL_STREAM_WAIT);
+    osal_stream_flush(so->tcpsocket, 0);
+
+//    s = osal_stream_write(so->tcpsocket, (const os_char*)buf, len, &n_written, OSAL_STREAM_DEFAULT);
     switch (s)
     {
         case OSAL_SUCCESS:

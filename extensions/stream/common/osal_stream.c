@@ -264,18 +264,13 @@ osalStatus osal_stream_write(
             rval = stream->iface->stream_write(stream, buf, n, &n_written_now, flags);
             total_written += n_written_now;
             n -= n_written_now;
-            if (rval || write_timeout_ms == 0 || n == 0) break;
+            if (rval || !use_timer || n == 0) break;
 
-            if (use_timer)
-            {
-                if (n_written)
-                {
-                    os_get_timer(&start_t);
-                }
-                else
-                {
-                    if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
-                }
+            if (n_written_now) {
+                os_get_timer(&start_t);
+            }
+            else {
+                if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
             }
 
             buf += n_written_now;
