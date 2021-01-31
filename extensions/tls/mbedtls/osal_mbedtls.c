@@ -338,6 +338,23 @@ getout:
 }
 
 
+/**
+****************************************************************************************************
+
+  @brief Make certificates valid forever.
+  @anchor osal_mbedtls_close
+
+  The osal_verify_certificate_callback() function clears MBEDTLS_X509_BADCERT_EXPIRED flag.
+  This disables checking server certificate's expiration date. Reason is that is is often very
+  difficult in embedded systems to renew certificates reliably, and we do not want out automation
+  system to crash and burn at specific date.
+
+  @param   stream Stream pointer representing the socket. After this call stream pointer will
+           point to invalid memory location.
+  @return  None.
+
+****************************************************************************************************
+*/
 static int osal_verify_certificate_callback(
     void *data, mbedtls_x509_crt *crt, int depth, uint32_t *flags)
 {
@@ -348,17 +365,17 @@ static int osal_verify_certificate_callback(
     mbedtls_x509_crt_info(buf, sizeof(buf), "  ", crt);
     osal_trace(buf);
 
+    /* Ignore certificate expiration date.
+     */
+    *flags &= ~MBEDTLS_X509_BADCERT_EXPIRED;
+
     if ( ( *flags ) == 0 )
         osal_trace("This certificate has no issues");
     else
     {
         mbedtls_x509_crt_verify_info(buf, sizeof(buf), "  ! ", *flags);
-        osal_trace_str( "%s\n", buf);
+        osal_trace_str("%s\n", buf);
     }
-
-    /* Ignore certificate expiration date.
-     */
-    *flags &= ~MBEDTLS_X509_BADCERT_EXPIRED;
 
     return 0;
 }
