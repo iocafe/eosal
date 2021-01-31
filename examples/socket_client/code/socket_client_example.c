@@ -201,7 +201,7 @@ osalStatus osal_main(
         osalSecurityConfig security_prm;
 
         os_memclear(&security_prm, sizeof(security_prm));
-        security_prm.client_cert_chain_file = "myhome-bundle.crt";
+        security_prm.trusted_cert_file = "myhome-bundle.crt";
 
         /* Initialize the transport, socket, TLS, serial, etc..
          */

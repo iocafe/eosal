@@ -74,7 +74,7 @@ typedef struct osalSecurityConfig
 
     /** Client certificate chain file (PEM, bundle)
      */
-    const os_char *client_cert_chain_file;
+    const os_char *trusted_cert_file;
 }
 osalSecurityConfig;
 

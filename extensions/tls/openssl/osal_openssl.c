@@ -986,10 +986,10 @@ static void osal_openssl_init(
      */
     osal_openssl_client_setup(prm, certs_dir);
 
-    /* if (prm->client_cert_chain_file)
+    /* if (prm->trusted_cert_file)
     {
         os_strncpy(path, certs_dir, sizeof(path));
-        os_strncat(path, prm->client_cert_chain_file, sizeof(path));
+        os_strncat(path, prm->trusted_cert_file, sizeof(path));
         if ( SSL_CTX_load_verify_locations(ctx, path, NULL) != 1 )
         {
             osal_debug_error("SSL_CTX_load_verify_locations failed");
@@ -1020,7 +1020,7 @@ static void osal_openssl_client_setup(
 
     t = osal_global->tls;
 
-    file_name = prm->client_cert_chain_file;
+    file_name = prm->trusted_cert_file;
 
 file_name = "myhome-bundle.crt";
 

@@ -380,6 +380,7 @@ static int osal_verify_certificate_callback(
      */
     if ( ( *flags ) == 0 )
         osal_trace("This certificate is formally ok (not yet accepted)");
+        // Callback to add received certificate.
     else
     {
         mbedtls_x509_crt_verify_info(buf, sizeof(buf), "  ! ", *flags);
@@ -943,7 +944,7 @@ static void osal_mbedtls_init(
      */
     mbedtls_x509_crt_init(&t->cacert);
     s = osal_mbedtls_setup_cert_or_key(&t->cacert, OS_NULL, OS_PBNR_CLIENT_CERT_CHAIN,
-        certs_dir, prm->client_cert_chain_file);
+        certs_dir, prm->trusted_cert_file);
 
     /* Mark to network info that we need certificate chain.
      */
