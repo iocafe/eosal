@@ -370,9 +370,11 @@ static int osal_verify_certificate_callback(
     osal_trace(buf);
 #endif
 
+#if OSAL_CHECK_SERVER_CERT_EXPIRATION == 0
     /* Ignore certificate expiration date.
      */
     *flags &= ~MBEDTLS_X509_BADCERT_EXPIRED;
+#endif
 
     /* Show if certificate is formally ok
      */

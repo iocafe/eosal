@@ -50,6 +50,15 @@
   #define OSAL_RELAX_SECURITY 0
 #endif
 
+/** Usually we do not check server certificate expiration (under no circumstances
+    we want out automation system to go down at specific date). In internet applications
+    for general public, this may be desirable and OSAL_CHECK_SERVER_CERT_EXPIRATION can
+    be defined as 1.
+ */
+#ifndef OSAL_CHECK_SERVER_CERT_EXPIRATION
+#define OSAL_CHECK_SERVER_CERT_EXPIRATION 0
+#endif
+
 /** Null pointer.
  */
 #ifndef OS_NULL
