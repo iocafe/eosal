@@ -122,6 +122,12 @@ osalTlsSocket;
 
 /* Prototypes for forward referred static functions.
  */
+static int osal_verify_certificate_callback(
+    void *data,
+    mbedtls_x509_crt *crt,
+    int depth,
+    uint32_t *flags);
+
 static void osal_mbedtls_close(
     osalStream stream,
     os_int flags);
@@ -281,18 +287,20 @@ static osalStream osal_mbedtls_open(
             goto getout;
         }
 
+        mbedtls_ssl_conf_verify(&so->conf, osal_verify_certificate_callback, so);
+
+
         /* We must use MBEDTLS_SSL_VERIFY_OPTIONAL if we have no certificate chain. This allows
            transfer of certificate chain from server to the device, effectively stamping device
            as part of IO device network.
          */
         mbedtls_ssl_conf_authmode(&so->conf,
             osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
-            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_REQUIRED);
-
-// mbedtls_ssl_conf_authmode(&so->conf, MBEDTLS_SSL_VERIFY_NONE);
+            ? MBEDTLS_SSL_VERIFY_NONE : MBEDTLS_SSL_VERIFY_OPTIONAL); //  MBEDTLS_SSL_VERIFY_REQUIRED);
 
         osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
             ? " NO CERT CHAIN": "certificate chain loaded");
+
 
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
@@ -327,6 +335,32 @@ getout:
     osal_mbedtls_close((osalStream)so, 0);
     if (status) *status = OSAL_STATUS_FAILED;
     return OS_NULL;
+}
+
+
+static int osal_verify_certificate_callback(
+    void *data, mbedtls_x509_crt *crt, int depth, uint32_t *flags)
+{
+    char buf[512];
+
+    osal_trace_int("Certificate verify requested for Depth ", depth);
+
+    mbedtls_x509_crt_info(buf, sizeof(buf), "  ", crt);
+    osal_trace(buf);
+
+    if ( ( *flags ) == 0 )
+        osal_trace("This certificate has no issues");
+    else
+    {
+        mbedtls_x509_crt_verify_info(buf, sizeof(buf), "  ! ", *flags);
+        osal_trace_str( "%s\n", buf);
+    }
+
+    /* Ignore certificate expiration date.
+     */
+    *flags &= ~MBEDTLS_X509_BADCERT_EXPIRED;
+
+    return 0;
 }
 
 
@@ -512,6 +546,21 @@ getout:
     return OS_NULL;
 }
 
+
+/* static void lws_tls_server_client_cert_verify_config(struct lws_context_creation_info *info,
+        struct lws_vhost *vh)
+{
+    SSL_CTX_set_verify(vh->ssl_ctx, SSL_VERIFY_PEER, NULL);
+    int verify_options = SSL_VERIFY_PEER;
+
+    if (lws_check_opt(info->options, LWS_SERVER_OPTION_PEER_CERT_NOT_REQUIRED))
+        verify_options = SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
+
+    SSL_CTX_set_verify(vh->ssl_ctx, verify_options, NULL);
+
+    return 0;
+}
+*/
 
 /**
 ****************************************************************************************************
