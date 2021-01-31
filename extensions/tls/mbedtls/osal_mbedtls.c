@@ -358,19 +358,26 @@ getout:
 static int osal_verify_certificate_callback(
     void *data, mbedtls_x509_crt *crt, int depth, uint32_t *flags)
 {
-    char buf[512];
+#if OSAL_MICROCONTROLLER
+    char buf[128];
+#else
+    char buf[1024];
+#endif
 
+#if OSAL_MICROCONTROLLER == 0
     osal_trace_int("Certificate verify requested for Depth ", depth);
-
     mbedtls_x509_crt_info(buf, sizeof(buf), "  ", crt);
     osal_trace(buf);
+#endif
 
     /* Ignore certificate expiration date.
      */
     *flags &= ~MBEDTLS_X509_BADCERT_EXPIRED;
 
+    /* Show if certificate is formally ok
+     */
     if ( ( *flags ) == 0 )
-        osal_trace("This certificate has no issues");
+        osal_trace("This certificate is formally ok (not yet accepted)");
     else
     {
         mbedtls_x509_crt_verify_info(buf, sizeof(buf), "  ! ", *flags);
