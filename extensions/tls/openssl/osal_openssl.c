@@ -946,7 +946,7 @@ static void osal_openssl_init(
         certs_dir = OSAL_FS_ROOT "coderoot/eosal/extensions/tls/keys-and-certs/";
     }
 
-// root_cert_file ?
+// share_cert_file ?
 
     /* Load certificate and private key files, and check consistency.
      */

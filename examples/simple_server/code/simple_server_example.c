@@ -81,9 +81,10 @@ osalStatus osal_main(
     osalSecurityConfig security_prm;
 
     os_memclear(&security_prm, sizeof(security_prm));
-    security_prm.server_cert_file = "rootca.crt";
-    security_prm.server_key_file = "secret/rootca.key";
-    security_prm.root_cert_file = security_prm.server_cert_file;
+    security_prm.server_cert_file = "myhome.crt";
+    security_prm.server_key_file = "secret/myhome.key";
+    security_prm.share_cert_file = "rootca.crt";
+    security_prm.trusted_cert_file = "rootca.crt";
 
     /* Initialize the transport, socket, TLS, serial, etc..
      */

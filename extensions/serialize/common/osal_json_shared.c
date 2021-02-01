@@ -16,12 +16,12 @@
 #include "eosalx.h"
 #if OSAL_SERIALIZE_SUPPORT
 
-const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
+OS_CONST os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
  = {"-",        /* OSAL_JSON_DICT_NONE = 0, NONE must be "-" indicating array item */
     "groups",   /* OSAL_JSON_DICT_GROUPS = 1  */
     "signals",  /* OSAL_JSON_DICT_SIGNALS = 2  */
     "name",     /* OSAL_JSON_DICT_NAME = 3  */
-    "value",    /* OSAL_JSON_DICT_VALUE = 4  */
+    "array",    /* OSAL_JSON_DICT_ARRAY = 4  */
     "type",     /* OSAL_JSON_DICT_TYPE = 5  */
     "addr",     /* OSAL_JSON_DICT_ADDR = 6  */
     "bank",     /* OSAL_JSON_DICT_BANK = 7  */
@@ -29,8 +29,8 @@ const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
     "min",      /* OSAL_JSON_DICT_MIN = 9 */
     "max",      /* OSAL_JSON_DICT_MAX = 10 */
     "digs",     /* OSAL_JSON_DICT_DIGS = 11 */
-    OS_NULL,
-    OS_NULL,
+    "mblk",     /* OSAL_JSON_DICT_MBLK = 12 */
+    "pflag",    /* OSAL_JSON_DICT_PFLAG = 13 */
     "boolean",  /* OSAL_JSON_DICT_BOOLEAN = 14 */
     "char",     /* OSAL_JSON_DICT_CHAR = 15 */
     "uchar",    /* OSAL_JSON_DICT_UCHAR = 16 */
@@ -42,18 +42,20 @@ const os_char *osal_static_json_dict[OSAL_JSON_DICT_N_DEFINED]
     "float",    /* OSAL_JSON_DICT_FLOAT = 22 */
     "double",   /* OSAL_JSON_DICT_DOUBLE = 23 */
     "str",      /* OSAL_JSON_DICT_STR = 24 */
-    OS_NULL,
-    OS_NULL,
-    "pins",     /* OSAL_JSON_DICT_PINS = 27 */
-    "inputs",   /* OSAL_JSON_DICT_INPUTS = 28 */
-    "outputs",  /* OSAL_JSON_DICT_OUTPUTS = 29 */
-    "controls",     /* OSAL_JSON_DICT_CONTROLS = 30 */
-    "frequency",    /* OSAL_JSON_DICT_FREQUENCY = 31 */
-    "resolution",   /* OSAL_JSON_DICT_RESOLUTION = 32 */
-    "device_name",  /* OSAL_JSON_DICT_DEVICE_NAME = 33 */
+    "exp",      /* OSAL_JSON_DICT_EXP = 25 */
+    "imp",      /* OSAL_JSON_DICT_IMP = 26 */
+    "*",        /* OSAL_JSON_DICT_ASTERISK = 27 */
+    "network",      /* OSAL_JSON_DICT_NETWORK = 28 */
+    "publish",      /* OSAL_JSON_DICT_PUBLISH = 29 */
+    "connect",      /* OSAL_JSON_DICT_CONNECT = 30 */
+    "flags",        /* OSAL_JSON_DICT_FLAGS = 31 */
+    "transport",    /* OSAL_JSON_DICT_TRANSPORT = 32 */
+    "parameters",   /* OSAL_JSON_DICT_PARAMETERS = 33 */
     "device_nr",    /* OSAL_JSON_DICT_DEVICE_NR = 34 */
     "network_name", /* OSAL_JSON_DICT_NETWORK_NAME = 35 */
-    "password"      /* OSAL_JSON_DICT_PASSWORDE = 36 */
+    "password",     /* OSAL_JSON_DICT_PASSWORDE = 36 */
+    "gateway",      /* OSAL_JSON_DICT_GATEWAY = 37 */
+    "subnet"        /* OSAL_JSON_DICT_SUBNET = 38 */
    };
 
 /* Find static dictionary item number by string, OSAL_JSON_DICT_NO_ENTRY is none.
