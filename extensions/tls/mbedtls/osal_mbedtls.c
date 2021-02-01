@@ -958,11 +958,12 @@ static void osal_mbedtls_init(
     mbedtls_pk_init(&t->pkey);
     osal_mbedtls_setup_cert_or_key(&t->srvcert, OS_NULL, OS_PBNR_SERVER_CERT,
         certs_dir, prm->server_cert_file);
-    osal_mbedtls_setup_cert_or_key(&t->srvcert, OS_NULL, OS_PBNR_ROOT_CERT,
-        certs_dir, prm->root_cert_file);
-
     osal_mbedtls_setup_cert_or_key(OS_NULL, &t->pkey, OS_PBNR_SERVER_KEY,
         certs_dir, prm->server_key_file);
+
+    /* osal_mbedtls_setup_cert_or_key(&t->srvcert, OS_NULL, OS_PBNR_ROOT_CERT,
+        certs_dir, prm->share_cert_file); */
+
 }
 
 

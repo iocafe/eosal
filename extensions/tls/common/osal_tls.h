@@ -68,11 +68,13 @@ typedef struct osalSecurityConfig
      */
     const os_char *server_key_file;
 
-    /** Root certificate.
+    /** Share this certificate over communication to allow client option to
+        accept this certificate as trusted.
      */
-    const os_char *root_cert_file;
+    const os_char *share_cert_file;
 
-    /** Client certificate chain file (PEM, bundle)
+    /** A certificate trusted by client (PEM, bundle?). This is meant for clients which
+        can use one trust only.
      */
     const os_char *trusted_cert_file;
 }
