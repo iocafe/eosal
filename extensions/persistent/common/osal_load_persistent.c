@@ -6,9 +6,9 @@
   @version 1.0
   @date    30.1.2020
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -46,7 +46,7 @@ osalStatus os_load_persistent_malloc(
     os_char **pblock,
     os_memsz *pblock_sz)
 {
-    const os_char *block;
+    const os_uchar *block;
     os_char *p;
     os_memsz block_sz, n_read;
     osPersistentHandle *h = OS_NULL;
@@ -120,7 +120,7 @@ osalStatus os_load_persistent(
     os_char *block,
     os_memsz block_sz)
 {
-    const os_char *sblock;
+    const os_uchar *sblock;
     os_memsz sblock_sz, n_read;
     osPersistentHandle *h;
     osalStatus s;

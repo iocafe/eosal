@@ -182,7 +182,7 @@ void os_persistent_shutdown(
 */
 osalStatus os_persistent_get_ptr(
     osPersistentBlockNr block_nr,
-    const os_char **block,
+    const os_uchar **block,
     os_memsz *block_sz,
     os_int flags)
 {
