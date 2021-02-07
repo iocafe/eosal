@@ -926,7 +926,7 @@ static void osal_get_windows_serial_port_name(
     os_strncpy(portname, "\\\\.\\", portname_sz);
     d = os_strchr(portname, '\0');
 
-    while (!osal_char_isspace(*p) && (osal_char_isaplha(*p) || osal_char_isdigit(*p)) && d < e)
+    while (!osal_char_isspace(*p) && (osal_char_isalpha(*p) || osal_char_isdigit(*p)) && d < e)
     {
         *(d++) = *(p++);
     }

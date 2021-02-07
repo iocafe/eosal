@@ -100,7 +100,7 @@ os_char *os_strstr(
 					if (flags & OSAL_STRING_SEARCH_ITEM_NAME)
 					{
 						d = s[1];
-						if (osal_char_isaplha(d) || osal_char_isdigit(d)) 
+						if (osal_char_isalpha(d) || osal_char_isdigit(d)) 
 							goto skipthis;
 					}
 					return (os_char*)p;

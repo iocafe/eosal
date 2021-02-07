@@ -440,7 +440,7 @@ static int osal_get_arduino_serial_port_nr(
     while (osal_char_isspace(*p)) p++;
 
     portnr0 = 0;
-    while (osal_char_isaplha(*p) || osal_char_isdigit(*p))
+    while (osal_char_isalpha(*p) || osal_char_isdigit(*p))
     {
         if (osal_char_isdigit(*p)) portnr0 = *p - '1';
         p++;

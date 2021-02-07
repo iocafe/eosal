@@ -746,7 +746,7 @@ static void osal_get_linux_serial_port_name(
             com_nr - (com_nr >= first_com_to_usb ? first_com_to_usb : 1));
         os_strncat(portname, com_nr >= first_com_to_usb ? "ttyUSB" : "tty", portname_sz);
         os_strncat(portname, nbuf, portname_sz);
-        while (osal_char_isaplha(*p) || osal_char_isdigit(*p))
+        while (osal_char_isalpha(*p) || osal_char_isdigit(*p))
         {
             p++;
         }

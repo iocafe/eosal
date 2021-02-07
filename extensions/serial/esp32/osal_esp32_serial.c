@@ -473,7 +473,7 @@ static uart_port_t osal_get_esp32_uart_nr(
     /* Get the first integer number (single digit) which we encouner in uart_nr.
      */
     uart_nr = 0;
-    while (osal_char_isaplha(*p) || osal_char_isdigit(*p)) {
+    while (osal_char_isalpha(*p) || osal_char_isdigit(*p)) {
         if (osal_char_isdigit(*p)) uart_nr = *p - '1';
         p++;
     }
