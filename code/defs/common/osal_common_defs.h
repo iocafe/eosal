@@ -226,6 +226,10 @@ typedef os_char os_boolean;
 #define IOC_STATIC_MBLK_IN_PROGMEN 0
 #endif
 
+/** Do we need support for minimum - maximum ranges for integer types?
+    By default we support these on PC, not on microcontroller.
+ */
+#define OSAL_TYPE_RANGE_SUPPORT (OSAL_MICROCONTROLLER == 0 && OSAL_TYPEID_SUPPORT)
 
 /** By default, do not maintain list of function pointers to enable/disable
     all application interrupts by one function call.

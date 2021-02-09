@@ -32,13 +32,41 @@ typedef struct
     /* Data type size in bytes. 0 if variable or unknown.
      */
     os_int sz;
+
+#if OSAL_TYPE_RANGE_SUPPORT
+    /* Integer data type range.
+     */
+    os_long min_value;
+    os_long max_value;
+#endif
 }
 osalTypeInfo;
 
 /** Type names and sizes.
  */
+#if OSAL_TYPE_RANGE_SUPPORT
 static OS_CONST osalTypeInfo osal_typeinfo[] = {
-    {"undef", 0},					  /* OS_UNDEFINED_TYPE = 0 */
+    {"undef", 0},                                                    /* OS_UNDEFINED_TYPE = 0 */
+    {"boolean", sizeof(os_boolean),             0,              1},  /* OS_BOOLEAN = 1 */
+    {"char", sizeof(os_char),         OS_CHAR_MIN,    OS_CHAR_MAX},	 /* OS_CHAR = 2 */
+    {"uchar", sizeof(os_uchar),                 0,   OS_UCHAR_MAX},  /* OS_UCHAR = 3 */
+    {"short", sizeof(os_short),	     OS_SHORT_MIN,   OS_SHORT_MAX},  /* OS_SHORT = 4 */
+    {"ushort", sizeof(os_ushort),	            0,  OS_USHORT_MAX},  /* OS_USHORT = 5 */
+    {"int", sizeof(os_int),            OS_INT_MIN,     OS_INT_MAX},  /* OS_INT = 6 */
+    {"uint", sizeof(os_uint),		            0,    OS_UINT_MAX},  /* OS_UINT = 7 */
+    {"int64", sizeof(os_int64),                 0,              0},  /* OS_INT64 = 8 */
+    {"long", sizeof(os_long),                   0,              0},  /* OS_LONG = 9 */
+    {"float", sizeof(os_float),                 0,              0},	 /* OS_FLOAT = 10 */
+    {"double", sizeof(os_double),               0,              0},	 /* OS_DOUBLE = 11 */
+    {"dec01", sizeof(os_short),                 0,              0},	 /* OS_DEC01 = 12 */
+    {"dec001", sizeof(os_short),                0,              0},	 /* OS_DEC001 = 13 */
+    {"str", 0,                                  0,              0},	 /* OS_STR = 14 */
+    {"object", 0,                               0,              0},	 /* OS_OBJECT = 15 */
+    {"pointer", sizeof(os_pointer),             0,              0}}; /* OS_POINTER = 16 */
+
+#else
+static OS_CONST osalTypeInfo osal_typeinfo[] = {
+    {"undef", 0},                      /* OS_UNDEFINED_TYPE = 0 */
     {"boolean", sizeof(os_boolean)},  /* OS_BOOLEAN = 1 */
     {"char", sizeof(os_char)},		  /* OS_CHAR = 2 */
     {"uchar", sizeof(os_uchar)},	  /* OS_UCHAR = 3 */
@@ -56,6 +84,7 @@ static OS_CONST osalTypeInfo osal_typeinfo[] = {
     {"object", 0},	                  /* OS_OBJECT = 15 */
     {"pointer", sizeof(os_pointer)}}; /* OS_POINTER = 16 */
 
+#endif
 
 /** Number of rows in osal_typeinfo table.
  */
@@ -164,6 +193,43 @@ const os_char *osal_typeid_to_name(
 }
 
 #endif
+
+
+#if OSAL_TYPE_RANGE_SUPPORT
+/**
+****************************************************************************************************
+
+  @brief Get numeric range of a type.
+
+  The osal_type_range function gets numeric range of an integer type. This works for smaller
+  integer types, but not for 64 bit ones. If range is not specified for the type, the
+  returned range is from 0 to 0. Compare if min and max are different before using the returned
+  range.
+
+  @param   type_id Type identifier.
+  @param   min_value Pointer to long integer where to store the minimum value for the type.
+  @param   max_value Pointer to long integer where to store the maximum value for the type.
+
+****************************************************************************************************
+*/
+void osal_type_range(
+    osalTypeId type_id,
+    os_long *min_value,
+    os_long *max_value)
+{
+    os_int itype_id;
+    itype_id = ((os_int)type_id & OSAL_TYPEID_MASK);
+    if (itype_id >= OSAL_NRO_TYPE_INFO_ROWS) {
+        *min_value = *max_value = 0;
+    }
+    else {
+        *min_value = osal_typeinfo[itype_id].min_value;
+        *max_value = osal_typeinfo[itype_id].max_value;
+    }
+}
+
+#endif
+
 
 /**
 ****************************************************************************************************

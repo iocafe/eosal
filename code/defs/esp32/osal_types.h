@@ -133,6 +133,10 @@ typedef void *os_pointer;
 #define OS_INT_MIN ((os_int)0x80000000)
 #define OS_LONG_MIN ((os_long)0x8000000000000000ULL)
 
+#define OS_UCHAR_MAX 255
+#define OS_USHORT_MAX 65535
+#define OS_UINT_MAX ((os_uint)0xFFFFFFFF)
+
 #define OS_FLOAT_MAX 3.402823e+38F
 #define OS_DOUBLE_MAX 1.7976931348623158e+308
 /*@}*/

@@ -139,6 +139,17 @@ const os_char *osal_typeid_to_name(
 
 #endif
 
+#if OSAL_TYPE_RANGE_SUPPORT
+
+/* Get numeric range of a type.
+ */
+void osal_type_range(
+    osalTypeId type_id,
+    os_long *min_value,
+    os_long *max_value);
+
+#endif
+
 /* Get type size in bytes.
  */
 os_memsz osal_type_size(
