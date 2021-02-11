@@ -46,6 +46,7 @@ osalStatus os_compress_JPEG(
     os_uchar *src,
     os_int w,
     os_int h,
+    os_int row_nbytes,
     osalBitmapFormat format,
     os_int quality,
     osalStream dst_stream,

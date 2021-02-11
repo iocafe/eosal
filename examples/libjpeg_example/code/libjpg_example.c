@@ -51,7 +51,8 @@ osalStatus osal_loop(
 {
     const os_int width = 100, height = 120;
     const osalBitmapFormat format = OSAL_RGB24;
-    os_int bytes = width * height * OSAL_BITMAP_BYTES_PER_PIX(format);
+    os_int row_nbytes = width * OSAL_BITMAP_BYTES_PER_PIX(format);
+    os_int bytes = row_nbytes * height;
     os_uchar *buf;
     os_int i;
     osalStatus s;
@@ -64,7 +65,8 @@ osalStatus osal_loop(
     for (i = 0; i<bytes; i++) {
         buf[i] = (os_uchar)i;
     }
-    s = os_compress_JPEG(buf, width, height, format, 50, OS_NULL, jpeg_buf, jpeg_sz, &jpeg_nbytes, OSAL_JPEG_DEFAULT);
+    s = os_compress_JPEG(buf, width, height, row_nbytes, format, 50, OS_NULL,
+        jpeg_buf, jpeg_sz, &jpeg_nbytes, OSAL_JPEG_DEFAULT);
     if (s) {
         osal_debug_error_int("os_compress_JPEG() failed s=", s);
     }

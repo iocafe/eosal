@@ -52,6 +52,8 @@ static void osal_jpeg_disaster_exit(
   @param   src Source bitmap data.
   @param   w Source bitmap width in pixels.
   @param   h Source bitmap height in pixels.
+  @param   row_nbytes Row width in bytes. This may be different from from width * pixel size,
+           to align rows in specific ways or to compress just part of input bitmap.
   @param   format Source bitmap format, one of: OSAL_GRAYSCALE8, OSAL_GRAYSCALE16, OSAL_RGB24,
            or OSAL_RGBA32.
   @param   quality Compression quality, 0 - 100.
@@ -74,6 +76,7 @@ osalStatus os_compress_JPEG(
     os_uchar *src,
     os_int w,
     os_int h,
+    os_int row_nbytes,
     osalBitmapFormat format,
     os_int quality,
     osalStream dst_stream,
@@ -86,14 +89,15 @@ osalStatus os_compress_JPEG(
     struct osalJpegErrorManager err_manager;    /* Own error manager */
     JSAMPROW row_pointer[1];                    /* Pointer source scanline. */
     os_uchar *s, *d, *b, *scanline;
+    os_memsz b_sz;
     os_int count;
     osalStatus status = OSAL_SUCCESS, finish_status;
-    
+
     *dst_nbytes = 0;
 
     /* Check arguments.
      */
-    if (src == OS_NULL || w <= 0 || h <= 0) {
+    if (src == OS_NULL || w <= 0 || h <= 0 || row_nbytes <= 0) {
         osal_debug_error("compress JPEG: illegal argument.");
         return OSAL_STATUS_FAILED;
     }
@@ -139,6 +143,7 @@ osalStatus os_compress_JPEG(
 
         /* 24 or 32 bit/pixel collor image, three color components per pixel.
          */
+        case OSAL_RGB32:
         case OSAL_RGBA32:
             if (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) {
                 prm.input_components = 1;
@@ -168,7 +173,7 @@ osalStatus os_compress_JPEG(
     /* Start compressor. TRUE ensures that we will write
        a complete interchange-JPEG format.
      */
-     jpeg_start_compress(&prm, TRUE);
+    jpeg_start_compress(&prm, TRUE);
 
     /* Create the JPEG. The Library's variable prm.next_scanline is used as a loop counter.
        One scan line at a time to keep things simple.
@@ -181,7 +186,7 @@ osalStatus os_compress_JPEG(
         case OSAL_GRAYSCALE8:
             while (prm.next_scanline < prm.image_height)
             {
-                row_pointer[0] = (os_char*)(src + prm.next_scanline * (os_memsz)w);
+                row_pointer[0] = (os_char*)(src + prm.next_scanline * (os_memsz)row_nbytes);
                 jpeg_write_scanlines(&prm, row_pointer, 1);
             }
             break;
@@ -228,7 +233,7 @@ osalStatus os_compress_JPEG(
 
                 /* Advance to next scan line.
                  */
-                scanline += 2 * (os_memsz)w;
+                scanline += row_nbytes;
             }
 
             /* Release scan line buffer.
@@ -241,7 +246,8 @@ osalStatus os_compress_JPEG(
         case OSAL_RGB24:
             /* Allocate buffer to convert a scan line to 24 bit RGB.
              */
-            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
+            b_sz = 3 * (os_memsz)w;
+            b = (os_uchar*)os_malloc(b_sz, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
@@ -274,26 +280,29 @@ osalStatus os_compress_JPEG(
                  */
                 row_pointer[0] = (os_char*)b;
                 jpeg_write_scanlines(&prm, row_pointer, 1);
-                scanline += 3 * (os_memsz)w;
+                scanline += row_nbytes;
             }
 
             /* Release scan line buffer.
              */
-            os_free(b, 3 * (os_memsz)w);
+            os_free(b, b_sz);
             break;
 
-        /* 32 bit/pixel color image with alpha channel.
+        /* 32 bit/pixel color image with or without alpha channel.
          */
+        case OSAL_RGB32:
         case OSAL_RGBA32:
             /* Allocate buffer to convert a scan line to 24 bit RGB.
              */
-            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
+            b_sz = (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) ? w : 3 * (os_memsz)w;
+            b = (os_uchar*)os_malloc(b_sz, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
                 goto getout;
             }
             scanline = src;
+            if (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) scanline += 3;
 
             /* Go through image, scan line at a time.
              */
@@ -307,26 +316,35 @@ osalStatus os_compress_JPEG(
 
                 /* Copy RGB info (either RGB or BGR order), skip alpha channnel.
                  */
-                while (count--)
-                {
+                if (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) {
+                    while (count--)
+                    {
+                        *(d++) = *s;
+                        s += 4;
+                    }
+                }
+                else {
+                    while (count--)
+                    {
 #if OSAL_BGR_COLORS
-                    d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
+                        d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
 #else
-                    *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
+                        *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
 #endif
-                    s++;
+                        s++;
+                    }
                 }
 
                 /* Compress scan line and move to next one.
                  */
                 row_pointer[0] = (os_char*)b;
                 jpeg_write_scanlines(&prm, row_pointer, 1);
-                scanline += 4 * (os_memsz)w;
+                scanline += row_nbytes;
             }
 
             /* Release scan line buffer.
              */
-            os_free(b, 3 * (os_memsz)w);
+            os_free(b, b_sz);
             break;
     }
 
