@@ -6,7 +6,7 @@
   @version 1.0
   @date    2.5.2020
 
-  This is the original old libjpeg, jpegsr6.zip, dated 6b of 27.3.1998 with minor changes
+  This is the original old libjpeg, jpegsr6.zip, dated 6b with minor changes
   to organization.
 
   - Memory allocation uses eosal (operating system abstraction layer) functions.

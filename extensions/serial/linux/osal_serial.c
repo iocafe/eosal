@@ -185,7 +185,7 @@ osalStream osal_serial_open(
                 break;
 
             case EADDRINUSE:
-                rval = OSAL_STATUS_AKREADY_IN_USE;
+                rval = OSAL_STATUS_ALREADY_IN_USE;
                 osal_debug_error_str("Serial port is already used by someone else: ", portname);
                 break;
 

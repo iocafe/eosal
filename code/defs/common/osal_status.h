@@ -231,7 +231,7 @@ typedef enum
 
     /** Requested object/resource is used by someone else.
      */
-    OSAL_STATUS_AKREADY_IN_USE = 187,
+    OSAL_STATUS_ALREADY_IN_USE = 187,
 
     /** Creating new process has failed.
      */
