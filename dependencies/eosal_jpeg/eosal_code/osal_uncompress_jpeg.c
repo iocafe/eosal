@@ -51,11 +51,14 @@ static void osal_jpeg_disaster_exit(
   @param   src_buf Pointer to source JPEG data.
   @param   src_nbytes Size of JPEG data in bytes.
   @param   dst_nbytes Pointer where to store resulting JPEG size upon successful compression.
-  @param   alloc_func Pointer to function to allocate buffer within allocation context. Can
-           be OS_NULL if begger is pre allocated (buf and buf_sz set), or to allocate
-           buffer by os_malloc(). In latter case buffer must be release by application.
   @oaram   alloc_context Sturcture for managing allocation. Clear before calling this structure
            and optionally set buf and buf_sz.
+           Calling application can optionally set row_nbytes and format in alloc_context
+           structure: row_nbytes is needed bitmap rows are aligned to even, etc memory addressess,
+           or we are uncompressin smalled jpeg inside larger buffer. The format is
+           needed when uncompressing color image into OSAL_RGBA32 bitmap where alpha
+           channel is compressed separately.
+           If buffer is allocated by this function, it must be freed by os_free().
   @param   flags Bit fields, set OSAL_JPEG_DEFAULT (0) for default operation. Set
            OSAL_JPEG_SELECT_ALPHA_CHANNEL bit to save alpha channel of RGBA32
            bitmap (not yet implemented).
@@ -67,14 +70,13 @@ static void osal_jpeg_disaster_exit(
 osalStatus os_uncompress_JPEG(
     os_uchar *src_buf,
     os_memsz src_nbytes,
-    osal_jpeg_malloc_func *alloc_func,
     osalJpegMallocContext *alloc_context,
     os_int flags)
 {
     struct jpeg_decompress_struct prm;          /* Decompression parameters */
     struct osalJpegErrorManager err_manager;    /* Own error manager */
     os_uchar *d, *s, *p, *b, *scanline, *dst_buf;
-    os_memsz sz;
+    os_memsz sz, row_nbytes, b_sz;
     os_int count, w, h;
     // os_ushort v;
     osalStatus status = OSAL_SUCCESS;
@@ -118,9 +120,19 @@ osalStatus os_uncompress_JPEG(
 
     w = prm.output_width;
     h = prm.output_height;
-    format = prm.num_components == 1 ? OSAL_GRAYSCALE8 : OSAL_RGB24,
+    format = alloc_context->format;
+    if (format == 0) {
+        format = prm.num_components == 1 ? OSAL_GRAYSCALE8 : OSAL_RGB24;
+        alloc_context->format = format;
+    }
 
-    sz = w * (os_memsz)h * prm.num_components;
+    row_nbytes = alloc_context->row_nbytes;
+    if (row_nbytes == 0) {
+        row_nbytes = w * OSAL_BITMAP_BYTES_PER_PIX(alloc_context->format);
+        alloc_context->row_nbytes = row_nbytes;
+    }
+
+    sz = (os_memsz)h * (os_memsz)row_nbytes;
 
     /* Verify that parameters within JPEG are correct.
      */
@@ -134,14 +146,9 @@ osalStatus os_uncompress_JPEG(
 
     alloc_context->w = w;
     alloc_context->h = h;
-    alloc_context->format = format;
     alloc_context->nbytes = sz;
 
-    if (alloc_func) {
-        status = alloc_func(alloc_context, sz);
-        if (status) goto getout;
-    }
-    else if (alloc_context->buf == OS_NULL)
+    if (alloc_context->buf == OS_NULL)
     {
         alloc_context->buf = (os_uchar*)os_malloc(sz, &alloc_context->buf_sz);
     }
@@ -163,16 +170,18 @@ osalStatus os_uncompress_JPEG(
             while (prm.output_scanline < prm.output_height)
             {
                 jpeg_read_scanlines(&prm, &p, 1);
-                p += w;
+                p += row_nbytes;
             }
             break;
 
         /* 24 bit/pixel RGB image
          */
         case OSAL_RGB24:
+#if OSAL_BGR_COLORS
             /* Allocate buffer for reading 24 bit RGB data.
              */
-            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
+            b_sz = 3 * (os_memsz)w;
+            b = (os_uchar*)os_malloc(b_sz, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
@@ -190,35 +199,43 @@ osalStatus os_uncompress_JPEG(
                 d = scanline;
                 s = b;
 
-                while (count--)
-                {
-#if OSAL_BGR_COLORS
+                while (count--) {
                     d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
-#else
-                    *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
-#endif
                 }
 
                 /* Advance to next scan line.
                  */
-                scanline += 3 * (os_memsz)w;
+                scanline += row_nbytes;
             }
 
-            os_free(b, 3 * (os_memsz)w);
+            os_free(b, b_sz);
             break;
+#else
+            /* Go through image, uncompress one scan line at a time.
+             */
+            scanline = dst_buf;
+            while (prm.output_scanline < prm.output_height) {
+                jpeg_read_scanlines(&prm, &scanline, 1);
+                scanline += row_nbytes;
+            }
+            break;
+#endif
 
-        /* 32 bit/pixel RGB image with alpha channel
+        /* 32 bit/pixel RGB image with or without alpha channel
          */
+        case OSAL_RGB32:
         case OSAL_RGBA32:
             /* Allocate buffer for reading 24 bit RGB data.
              */
-            b = (os_uchar*)os_malloc(3 * (os_memsz)w, OS_NULL);
+            b_sz = (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) ? w : 3 * (os_memsz)w;
+            b = (os_uchar*)os_malloc(b_sz, OS_NULL);
             if (b == OS_NULL)
             {
                 status = OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
                 goto getout;
             }
             scanline = dst_buf;
+            if (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) scanline += 3;
 
             /* Go through image, scan line at a time.
              */
@@ -230,22 +247,34 @@ osalStatus os_uncompress_JPEG(
                 d = scanline;
                 s = b;
 
-                while (count--)
-                {
+                /* Copy RGB info (either RGB or BGR order), skip alpha channnel.
+                 */
+                if (flags & OSAL_JPEG_SELECT_ALPHA_CHANNEL) {
+                    while (count--)
+                    {
+                        *(d++) = *s;
+                        s += 4;
+                    }
+                }
+
+                else {
+                    while (count--)
+                    {
 #if OSAL_BGR_COLORS
-                    d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
+                        d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
 #else
-                    *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
+                        *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
 #endif
-                    *(d++) = 0xFF;
+                        *(d++) = 0xFF;
+                    }
                 }
 
                 /* Next scan line.
                  */
-                scanline += 4 * (os_memsz)w;
+                scanline += row_nbytes;
             }
 
-            os_free(b, 3 * (os_memsz)w);
+            os_free(b, b_sz);
             break;
 
         default:

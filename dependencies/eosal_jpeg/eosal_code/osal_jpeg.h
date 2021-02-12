@@ -28,6 +28,7 @@ typedef struct osalJpegMallocContext
 {
     os_uchar *buf;
     os_memsz buf_sz;
+    os_memsz row_nbytes;
     os_memsz nbytes;
     os_int w, h;
     osalBitmapFormat format;
@@ -36,9 +37,9 @@ osalJpegMallocContext;
 
 /* Function to customize memory allocation for uncompressed bitmap.
  */
-typedef osalStatus osal_jpeg_malloc_func(
+/* typedef osalStatus osal_jpeg_malloc_func(
     osalJpegMallocContext *context,
-    os_memsz nbytes);
+    os_memsz nbytes); */
 
 /* Convert a bitmap in memory to JPEG.
  */
@@ -60,6 +61,5 @@ osalStatus os_compress_JPEG(
 osalStatus os_uncompress_JPEG(
     os_uchar *src_buf,
     os_memsz src_nbytes,
-    osal_jpeg_malloc_func *alloc_func,
     osalJpegMallocContext *alloc_context,
     os_int flags);

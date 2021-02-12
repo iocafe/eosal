@@ -76,7 +76,7 @@ osalStatus osal_loop(
     os_free(buf, bytes);
 
     os_memclear(&alloc_context, sizeof(alloc_context));
-    s = os_uncompress_JPEG(jpeg_buf, jpeg_nbytes, OS_NULL, &alloc_context, OSAL_JPEG_DEFAULT);
+    s = os_uncompress_JPEG(jpeg_buf, jpeg_nbytes, &alloc_context, OSAL_JPEG_DEFAULT);
     if (s) {
         osal_debug_error_int("os_uncompress_JPEG() failed s=", s);
     }

@@ -244,6 +244,7 @@ osalStatus os_compress_JPEG(
         /* 24 bit/pixel color image
          */
         case OSAL_RGB24:
+#if OSAL_BGR_COLORS
             /* Allocate buffer to convert a scan line to 24 bit RGB.
              */
             b_sz = 3 * (os_memsz)w;
@@ -267,13 +268,8 @@ osalStatus os_compress_JPEG(
 
                 /* Copy RGB info (either RGB or BGR order).
                  */
-                while (count--)
-                {
-#if OSAL_BGR_COLORS
+                while (count--) {
                     d[2] = *(s++); d[1] = *(s++); d[0] = *(s++); d += 3;
-#else
-                    *(d++) = *(s++); *(d++) = *(s++); *(d++) = *(s++);
-#endif
                 }
 
                 /* Compress a scan line and move to next one.
@@ -287,7 +283,16 @@ osalStatus os_compress_JPEG(
              */
             os_free(b, b_sz);
             break;
-
+#else
+            /* Go through image, compress one scan line at a time.
+             */
+            scanline = src;
+            while (prm.next_scanline < prm.image_height) {
+                jpeg_write_scanlines(&prm, &scanline, 1);
+                scanline += row_nbytes;
+            }
+            break;
+#endif
         /* 32 bit/pixel color image with or without alpha channel.
          */
         case OSAL_RGB32:
