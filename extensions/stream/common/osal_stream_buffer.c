@@ -377,7 +377,7 @@ os_char *osal_stream_buffer_adopt_content(
 
     sbuf->ptr = OS_NULL;
     sbuf->sz = sbuf->n = 0;
-    sbuf->read_pos;
+    sbuf->read_pos = 0;
 
     return ptr;
 }
