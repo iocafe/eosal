@@ -95,6 +95,13 @@ os_char *osal_stream_buffer_content(
     osalStream stream,
     os_memsz *n);
 
+/* Get stream buffer content and take ownership of it.
+ */
+os_char *osal_stream_buffer_adopt_content(
+    osalStream stream,
+    os_memsz *n,
+    os_memsz *alloc_n);
+
 /*@}*/
 #endif
 

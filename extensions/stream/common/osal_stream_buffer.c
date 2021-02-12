@@ -86,13 +86,6 @@ osalStream osal_stream_buffer_open(
     os_memclear(sbuf, sizeof(osalStreamBuffer));
     sbuf->hdr.iface = &osal_stream_buffer_iface;
 
-    s = osal_stream_buffer_realloc((osalStream)sbuf, 64);
-    if (s)
-    {
-        os_free(sbuf, sizeof(osalStreamBuffer));
-        goto getout;
-    }
-
 getout:
     if (status) *status = s;
     return (osalStream)sbuf;
@@ -123,13 +116,11 @@ void osal_stream_buffer_close(
     if (stream == OS_NULL) return;
     sbuf = (osalStreamBuffer*)stream;
 
-    if (sbuf->sz)
-    {
+    if (sbuf->sz) {
         os_free(sbuf->ptr, sbuf->sz);
     }
 
-    sbuf->ptr = OS_NULL;
-    sbuf->sz = sbuf->n = 0;
+    os_free(sbuf, sizeof(osalStreamBuffer));
 }
 
 
@@ -212,15 +203,18 @@ osalStatus osal_stream_buffer_write(
     os_int flags)
 {
     osalStreamBuffer *sbuf;
+    os_memsz try_sz;
     osalStatus s;
     OSAL_UNUSED(flags);
 
     sbuf = (osalStreamBuffer*)stream;
     if (sbuf->n + n > sbuf->sz)
     {
-        s = osal_stream_buffer_realloc(stream, 2*sbuf->sz + n);
-        if (s)
-        {
+        try_sz = 5*sbuf->sz/3 + n;
+        if (try_sz < 64) try_sz = 64;
+
+        s = osal_stream_buffer_realloc(stream, try_sz);
+        if (s) {
             *n_written = 0;
             return s;
         }
@@ -343,6 +337,49 @@ os_char *osal_stream_buffer_content(
 
     if (n) *n = sbuf->n;
     return sbuf->ptr;
+}
+
+
+/**
+****************************************************************************************************
+
+  @brief Get stream buffer content and take ownership of it.
+  @anchor osal_stream_buffer_adopt_content
+
+  The osal_stream_buffer_adopt_content() function returns pointer to stream buffer content and sets
+  n to content size and n_alloc to memory allocation for content.
+
+  THIS FUNCTTION MOVES OWNERSHIP OF CONTENT BUFFER FROM STREAM TO CALLER. Caller is respobsible
+  for releasing content buffer by os_free(content, n) or os_free(content, alloc_n). The stream
+  is empty after this call. New writes to it will start a new buffer.
+
+  @param   stream Pointer to the stream buffer object.
+  @param   n Pointer to integer where to store content size in bytes. Can be OS_NULL if not needed.
+  @param   alloc_n Pointer to integer where to store buffer allocation size in bytes.
+           Can be OS_NULL if not needed.
+
+  @return  Pointer to stream buffer content.
+
+****************************************************************************************************
+*/
+os_char *osal_stream_buffer_adopt_content(
+    osalStream stream,
+    os_memsz *n,
+    os_memsz *alloc_n)
+{
+    os_char *ptr;
+    osalStreamBuffer *sbuf;
+    sbuf = (osalStreamBuffer*)stream;
+
+    if (n) *n = sbuf->n;
+    if (alloc_n) *alloc_n = sbuf->sz;
+    ptr = sbuf->ptr;
+
+    sbuf->ptr = OS_NULL;
+    sbuf->sz = sbuf->n = 0;
+    sbuf->read_pos;
+
+    return ptr;
 }
 
 
