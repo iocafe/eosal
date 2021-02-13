@@ -22,7 +22,7 @@
 #define OSAL_JPEG_DEFAULT 0
 #define OSAL_JPEG_SELECT_ALPHA_CHANNEL 1
 
-/* Structure for managing uncomression bitmap.
+/* Structure for managing uncompressing.
  */
 typedef struct osalJpegMallocContext
 {
@@ -34,12 +34,6 @@ typedef struct osalJpegMallocContext
     osalBitmapFormat format;
 }
 osalJpegMallocContext;
-
-/* Function to customize memory allocation for uncompressed bitmap.
- */
-/* typedef osalStatus osal_jpeg_malloc_func(
-    osalJpegMallocContext *context,
-    os_memsz nbytes); */
 
 /* Convert a bitmap in memory to JPEG.
  */
