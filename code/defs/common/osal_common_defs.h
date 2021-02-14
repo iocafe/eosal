@@ -254,6 +254,7 @@ typedef os_char os_boolean;
 #define OSAL_BITMAP_BYTES_PER_PIX(f) (((os_int)(f) & 0x3F) >> 3)
 typedef enum osalBitmapFormat
 {
+    OSAL_BITMAP_FORMAT_NOT_SET = 0,
     OSAL_GRAYSCALE8 = 8,
     OSAL_GRAYSCALE16 = 16,
     OSAL_RGB24 = 24 | OSAL_BITMAP_COLOR_FLAG,
