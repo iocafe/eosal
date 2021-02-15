@@ -1209,10 +1209,10 @@ static void osal_arduino_ip_from_str(
 
 static String DisplayAddress(IPAddress address)
 {
- return String(address[0]) + "." +
-        String(address[1]) + "." +
-        String(address[2]) + "." +
-        String(address[3]);
+    return String(address[0]) + "." +
+           String(address[1]) + "." +
+           String(address[2]) + "." +
+           String(address[3]);
 }
 
 
