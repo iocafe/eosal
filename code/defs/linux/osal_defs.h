@@ -64,7 +64,7 @@
  *  TRACE MODE 3 TIMING IS NOT USEFUL, FIX BEFORE USING
  */
 #ifndef OSAL_TRACE
-#define OSAL_TRACE 3
+#define OSAL_TRACE 1
 #endif
 
 /** Define 1 is this is micro-controller environment. This is used to get sensible default
