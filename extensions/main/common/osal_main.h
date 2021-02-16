@@ -71,6 +71,19 @@ void osal_main_cleanup(
 void osal_simulated_loop(
     void *app_context);
 
+/* If we are not running in microcontroller, we may want to allow setting device number
+   from command line, like "-n=7".
+ */
+#if OSAL_MAIN_SUPPORT
+    os_int osal_command_line_device_nr(
+        os_int device_nr,
+        os_int argc,
+        os_char *argv[]);
+#else
+    #define osal_command_line_device_nr(n,c,v) (n)
+#endif
+
+
 /* If C++ compilation, end the undecorated code.
  */
 OSAL_C_HEADER_ENDS

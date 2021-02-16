@@ -51,4 +51,3 @@ void osal_simulated_loop(
     osal_main_cleanup(app_context);
 #endif
 }
-
