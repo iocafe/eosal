@@ -112,7 +112,7 @@ os_char *os_strchr(
 /* Find last matching character within string.
  */
 os_char *os_strechr(
-    os_char *str,
+    const os_char *str,
     os_uint c32);
 
 /* Find a substring within a string. Used also to find named items from list.
