@@ -78,7 +78,7 @@ os_char *os_strechr(
         {
             str = os_strstr(str, substr, OSAL_STRING_DEFAULT);
             if (str == OS_NULL) return p;
-            p = str;
+            p = (os_char*)str;
             str += n;
         }
     }
@@ -89,7 +89,7 @@ os_char *os_strechr(
     c = (os_char)c32;
     do
     {
-        if (*str == c) p = str;
+        if (*str == c) p = (os_char*)str;
     }
     while (*(str++));
 
