@@ -70,7 +70,6 @@
     <ClInclude Include="..\..\extensions\serial\common\osal_serial.h" />
     <ClInclude Include="..\..\extensions\socket\common\osal_socket.h" />
     <ClInclude Include="..\..\extensions\socket\common\osal_socket_util.h" />
-    <ClInclude Include="..\..\extensions\strcnv\common\osal_strcnv.h" />
     <ClInclude Include="..\..\extensions\stream\common\osal_stream.h" />
     <ClInclude Include="..\..\extensions\stream\common\osal_stream_buffer.h" />
     <ClInclude Include="..\..\extensions\stream\common\osal_stream_defaults.h" />

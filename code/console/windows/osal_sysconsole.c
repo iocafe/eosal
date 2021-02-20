@@ -20,6 +20,7 @@
 #include "eosal.h"
 #include <wchar.h>
 #include <conio.h>
+#include <stdlib.h>
 
 #if OSAL_CONSOLE
 
@@ -85,12 +86,17 @@ void osal_sysconsole_write(
     os_memsz
         sz;
 
-    /* Convert an UTF8 string to UTF16 string, print it
-       and release allocated buffer.
+    /* Convert the string from UTF8 to UTF16. Allocate buffer for the string usint plain 
+       malloc() (DO NOT USE OS_MALLOC(), that needs os_lock().
      */
-    utf16_str = osal_str_utf8_to_utf16_malloc(text, &sz);
+    sz = osal_str_utf8_to_utf16(OS_NULL, 0, text);
+    utf16_str = (os_ushort*)malloc(sz*sizeof(os_ushort));
+    osal_str_utf8_to_utf16(utf16_str, sz, text);
+
+    /* Print it and release buffer
+     */
     wprintf(L"%ls", utf16_str);
-    os_free(utf16_str, sz);
+    free(utf16_str);
 
 #if 0
 THIS IS WINDOWS IMPLEMENTATION. DOESN'T WORK WELL AT LEAST ON WIN 10
