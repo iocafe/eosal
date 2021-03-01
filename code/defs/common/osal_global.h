@@ -41,6 +41,10 @@ typedef void osal_shutdown_func(void);
  */
 #define OSAL_SECRET_STR_SZ 46
 
+/** Sizeof nickname buffer.
+ */
+#define OSAL_NICKNAME_SZ 16
+
 /* Some common strings.
  */
 extern OS_CONST_H os_char osal_str_asterisk[];
@@ -136,6 +140,12 @@ typedef struct
     os_char auto_password[OSAL_SECRET_STR_SZ];
 #endif
 
+#if OSAL_NICKNAME_SUPPORT
+    /** Nickname.
+     */
+    os_char nickname[OSAL_NICKNAME_SZ];
+#endif
+
     /* Resource monitor related, see osal_resource_monitor.c.
      */
 #if OSAL_RESOURCE_MONITOR
@@ -191,5 +201,15 @@ osalGlobalStruct;
  */
 os_boolean osal_quiet(
     os_boolean enable);
+
+/* Get global nickname for the device (~ process).
+ */
+#if OSAL_NICKNAME_SUPPORT
+    #define osal_nickname() (osal_global->nickname)
+    #define osal_set_nickname(n) os_strncpy(osal_global->nickname, (n), OSAL_NICKNAME_SZ)
+#else
+    #define osal_nickname() (OS_NULL)
+    #define osal_set_nickname(n)
+#endif
 
 #endif
