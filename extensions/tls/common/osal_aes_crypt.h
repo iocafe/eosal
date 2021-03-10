@@ -1,7 +1,7 @@
 /**
 
   @file    tls/common/osal_aes_crypt.h
-  @brief   Simple AES encryption and decryption routines.
+  @brief   Simple AES encryption/decryption function.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    20.1.2020

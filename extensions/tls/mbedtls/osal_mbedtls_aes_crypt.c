@@ -1,7 +1,7 @@
 /**
 
   @file    tls/common/osal_mbedtls_aes_crypt.c
-  @brief   Simple AES encryption and decryption routines using Mbed TLS.
+  @brief   Simple AES encryption/decryption function using Mbed TLS.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    20.1.2020
