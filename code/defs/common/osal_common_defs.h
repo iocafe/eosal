@@ -135,6 +135,11 @@ typedef os_char os_boolean;
   #define OSAL_NICKNAME_SUPPORT 0
 #endif
 
+/** By default we do not have unique identifier of CPU.
+ */
+#ifndef OSAL_CPUID_SUPPORT
+#define OSAL_CPUID_SUPPORT 0
+#endif
 
 /** Define OSAL_DEBUG_FILE_AND_LINE as 1 to include file name and line number in osal_debug
     and osal_assert macros. Effective only when OSAL_DEBUG is 1.

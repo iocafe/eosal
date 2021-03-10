@@ -421,11 +421,17 @@
 #define OSAL_PROCESS_SUPPORT (OSAL_MICROCONTROLLER == 0)
 #endif
 
+/** Can we get unique identifier of CPU or the computer?
+ */
+#ifndef OSAL_CPUID_SUPPORT
+#define OSAL_CPUID_SUPPORT 1
+#endif
+
 /** Having a console for testing makes sense in linux and windows PC environments,
     and may be used also in micro-controller systems trough serial port.
  */
-#ifndef OS_CONTROL_CONSOLE_SUPPORT
-#define OS_CONTROL_CONSOLE_SUPPORT 1
+#ifndef OSAL_CONTROL_CONSOLE_SUPPORT
+#define OSAL_CONTROL_CONSOLE_SUPPORT 1
 #endif
 
 #endif

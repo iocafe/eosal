@@ -113,6 +113,9 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/process/common/osal_process.h"
 #endif
 
+#if OSAL_CPUID_SUPPORT
+  #include "extensions/cpuid/common/osal_cpuid.h"
+#endif
 
 /* If C++ compilation, end the undecorated code.
  */
