@@ -24,16 +24,19 @@
 #define OSAL_AES_KEY_SZ 32
 #define OSAL_AES_BITS (OSAL_AES_KEY_SZ * 8)
 
+/* Selects if osal_aes_crypt() encrypts or decrypts.
+ */
 typedef enum osalAesOperation {
     OSAL_AES_ENCRYPT,
     OSAL_AES_DECRYPT
 }
 osalAesOperation;
 
-
-/* Initialize global AES crypt key for device secret and private server password.
+/* Initialize AES crypt key for device secret and private server password.
  */
-void osal_initialize_aes_crypt_key(void);
+void osal_initialize_aes_crypt_key(
+    os_uchar secret_crypt_key[OSAL_AES_KEY_SZ],
+    os_int use_cpuid);
 
 /* Encrypt or decrypt data, AES 256.
  */

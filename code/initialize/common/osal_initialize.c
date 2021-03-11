@@ -89,7 +89,7 @@ void osal_initialize(
     osal_timer_initialize();
 
 #if OSAL_AES_CRYPTO_SUPPORT
-    osal_initialize_aes_crypt_key();
+    osal_initialize_aes_crypt_key(osal_global->secret_crypt_key, OSAL_AES_CRYPTO_WITH_CPUID);
 #endif
 
     /* Initialize system console.
