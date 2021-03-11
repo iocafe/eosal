@@ -16,7 +16,8 @@
 #pragma once
 #ifndef OSAL_AES_CRYPT_H_
 #define OSAL_AES_CRYPT_H_
-#include "eosalx.h"
+#include "eosal.h"
+#if OSAL_AES_CRYPTO_SUPPORT
 
 /* Encryption key size is 32 bytes, 256 bits.
  */
@@ -29,6 +30,11 @@ typedef enum osalAesOperation {
 }
 osalAesOperation;
 
+
+/* Initialize global AES crypt key for device secret and private server password.
+ */
+void osal_initialize_aes_crypt_key(void);
+
 /* Encrypt or decrypt data, AES 256.
  */
 void osal_aes_crypt(
@@ -39,4 +45,5 @@ void osal_aes_crypt(
     const os_uchar key[OSAL_AES_KEY_SZ],
     osalAesOperation operation);
 
+#endif
 #endif

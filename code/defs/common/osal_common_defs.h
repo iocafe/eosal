@@ -141,6 +141,20 @@ typedef os_char os_boolean;
 #define OSAL_CPUID_SUPPORT 0
 #endif
 
+/** By default we do use AES encryption for secrets if we have TLS.
+ */
+#ifndef OSAL_AES_CRYPTO_SUPPORT
+#define OSAL_AES_CRYPTO_SUPPORT OSAL_TLS_SUPPORT
+#endif
+
+/** By default: We use CPUID in secret crypt key, if this is we have CPUID support and
+    this is microcontroller. We do not use this in PC, since we want to be able to make
+    a working backup of PC server and run it in spare computer.
+ */
+#ifndef OSAL_AES_CRYPTO_WITH_CPUID
+#define OSAL_AES_CRYPTO_WITH_CPUID (OSAL_AES_CRYPTO_SUPPORT && OSAL_CPUID_SUPPORT && OSAL_MICROCONTROLLER)
+#endif
+
 /** Define OSAL_DEBUG_FILE_AND_LINE as 1 to include file name and line number in osal_debug
     and osal_assert macros. Effective only when OSAL_DEBUG is 1.
  */

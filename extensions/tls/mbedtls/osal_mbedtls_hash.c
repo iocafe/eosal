@@ -19,6 +19,7 @@
 */
 #include "eosalx.h"
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
+#if OSAL_AES_CRYPTO_SUPPORT
 #include "mbedtls/md.h"
 
 /**
@@ -52,5 +53,4 @@ void osal_sha256(
 }
 
 #endif
-
-
+#endif

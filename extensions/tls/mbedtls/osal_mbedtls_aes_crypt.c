@@ -25,7 +25,8 @@
   @param   data Data to encrypt or decrypt.
   @param   data_sz Data size in bytes. Any data size will do, doesn't have to be multple of 16.
   @param   buf Pointer to buffer where to place encrypted/decrypted data, always data_sz bytes
-           are stored into buffer.
+           are stored into buffer. buf can be same pointer as data, and data is overwritten with
+           the result.
   @param   buf_sz Should be at least the same as data_sz. Used only to point out program errors.
   @param   key 256 bit encryption key, 32 bytes.
   @param   operation Either OSAL_AES_ENCRYPT or OSAL_AES_DECRYPT.
@@ -45,6 +46,7 @@ void osal_aes_crypt(
     os_uchar *use_buf;
     const os_uchar *use_data;
     os_memsz use_sz;
+    os_boolean temp_buffers;
 
     osal_debug_assert(buf_sz >= data_sz);
 
@@ -52,7 +54,8 @@ void osal_aes_crypt(
 
     /* AES-CBC buffer encryption/decryption Length should be a multiple of the block size (16 bytes)
      */
-    if (buf_sz & 0xF) {
+    temp_buffers = ((buf_sz & 0xF) || (buf == data)) ? OS_TRUE : OS_FALSE;
+    if (temp_buffers) {
         use_sz = (buf_sz + 0xF) & ~0xF;
         use_buf = (os_uchar*)os_malloc(2 * use_sz, OS_NULL);
         os_memclear(use_buf, 2 * use_sz);
@@ -73,7 +76,7 @@ void osal_aes_crypt(
 
     mbedtls_aes_free(&aes);
 
-    if (buf_sz & 0xF) {
+    if (temp_buffers) {
         os_memcpy(buf, use_buf, data_sz);
         os_free(use_buf, 2 * use_sz);
     }

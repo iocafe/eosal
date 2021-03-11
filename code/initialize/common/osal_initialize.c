@@ -88,6 +88,10 @@ void osal_initialize(
      */
     osal_timer_initialize();
 
+#if OSAL_AES_CRYPTO_SUPPORT
+    osal_initialize_aes_crypt_key();
+#endif
+
     /* Initialize system console.
      */
 #if OSAL_CONSOLE

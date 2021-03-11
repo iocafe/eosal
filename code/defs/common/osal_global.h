@@ -20,6 +20,12 @@
 #define OSAL_GLOBAL_H_
 #include "eosal.h"
 
+/* We need OSAL_AES_KEY_SZ
+ */
+#if OSAL_AES_CRYPTO_SUPPORT
+#include "extensions/tls/common/osal_aes_crypt.h"
+#endif
+
 struct osalMutexStruct;
 struct osalNetworkState;
 struct osalSocketGlobal;
@@ -31,7 +37,6 @@ typedef void osal_shutdown_func(void);
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
     struct osalTLS;
 #endif
-
 
 /** Secret (random number used as security basis) size as binary, 256 bits = 32 bytes.
  */
@@ -138,6 +143,15 @@ typedef struct
     /** Automatically generated IO node password.
      */
     os_char auto_password[OSAL_SECRET_STR_SZ];
+
+#if OSAL_AES_CRYPTO_SUPPORT
+    /** Key for encrypting secret and private server key for optional extra security.
+        Used to protect the keys on microcontroller against attacker using JTAG
+        debugger, or if PC computer security is broken.
+     */
+    os_uchar secret_crypt_key[OSAL_AES_KEY_SZ];
+#endif
+
 #endif
 
 #if OSAL_NICKNAME_SUPPORT
