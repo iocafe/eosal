@@ -82,6 +82,10 @@
  */
 #define OSAL_NETWORK_NAME_SZ 24
 
+/** User name size (optionally containing network name separated with '.').
+ */
+#define OSAL_LONG_USER_NAME_SZ (OSAL_NETWORK_NAME_SZ + 16)
+
 /** Number of bytes to store a boolean as sting.
  */
 #define OSAL_BOOL_STR_SZ 2
