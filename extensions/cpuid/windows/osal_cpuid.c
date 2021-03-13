@@ -20,7 +20,7 @@
 /* Forward referred static functions.
  */
 static void osal_xor_helper(
-    unsigned int x,
+    int x,
     os_int *pos,
     os_uchar *buf,
     os_memsz buf_sz);
@@ -42,7 +42,7 @@ osalStatus osal_xor_cpuid(
     os_uchar *buf,
     os_memsz buf_sz)
 {
-    int cpuinfo[4];
+    int cpuinfo[4], i;
     os_int pos = 0;
 
     __cpuid(cpuinfo, 0);
