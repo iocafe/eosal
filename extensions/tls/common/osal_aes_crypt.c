@@ -21,9 +21,9 @@
 
   @brief Initialize AES crypt key for device secret and private server password.
 
-  This function sets secret_crypt_key in osal_global structure. This is combination of simple
-  fixed key, application hard coded key (from define) and optionally CPUID, which intends to
-  unuquaely identifiy the individual computer.
+  This function sets secret_crypt_key. This is combination of simple fixed key, application
+  hard coded key (from define) and optionally CPUID, which intends to uniquely identifiy
+  the individual computer.
 
   Application hard coded key is set by define OSAL_AES_KEY at build time.
   OSAL_AES_KEY="myseacretkey" can be defined in Cmakelists.txt, platformio.ini,
@@ -33,14 +33,14 @@
     #define OSAL_AES_KEY "KebabMakkaraKioski"
     #define OSAL_AES_CRYPTO_WITH_CPUID 1
 
-  The unique hardware identification is not normally used for PC computers, since
-  we want to be able to make a working backup copy of a server computer. For microcontrollers
+  The unique hardware identification is normally used only for user login for PC computers,
+  since we want to be able to make a working backup copy of a server computer. For microcontrollers
   we use this, if CPUID functionality support is available (OSAL_CPUID_SUPPORT define).
 
   This is not bullet proof. Serious microcontroller security should be done so that debugging
   ports, like JTAG and UART are permanently disabled at production version. On Windows and
   linux we should primarily depend on operating system security. But since we live in real
-  world with real people, and errors happen with these, we want at least to make it really
+  world with real people, and errors happen with these, we want at least to make it
   hard to get the device secret, user login or server's private key.
 
   @param   secret_crypt_key Pointer to buffer where to store the generated crypt key.

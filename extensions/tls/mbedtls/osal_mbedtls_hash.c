@@ -1,6 +1,6 @@
 /**
 
-  @file    tls/common/osal_mbedtls_hash.c
+  @file    tls/mbedtls/osal_mbedtls_hash.c
   @brief   Cryptographic hash.
   @author  Pekka Lehtikoski
   @version 1.0

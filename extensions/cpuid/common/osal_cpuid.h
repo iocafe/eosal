@@ -14,8 +14,8 @@
   has a major down side: One cannot any more copy the server and assume that it will start
   working.
 
-  This is rarely useful for microcontrollers, since flash is integrated to microcontroller.
-  Thus attacker has access to both flash and microcontroller/board idenfifiation.
+  CPUID is not necessarily used for microcontrollers, since flash is integrated to microcontroller:
+  The attacker has access to both flash and microcontroller/board identification.
 
   Possible security improvement for servers and microcontrollers is to save additional random
   key code to USB flash, etc, removable media, or on a separate device in network.
@@ -24,8 +24,8 @@
   outweigh the added security. Thus taking care that decommissioned server SSD drives are wiped
   or destroyed, and security reset is done on decommissioned devices.
 
-  This function can be critisized that it has limited entropy. This is true, an educated attacker
-  could quess the possible combinations and simply try them all. We may improve entropy later on
+  This function can be criticized that it has limited entropy. This is true, an educated attacker
+  could guess the possible combinations and simply try them all. We may improve entropy later on
   by adding mother board serial number, NIC address, etc to this function.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
