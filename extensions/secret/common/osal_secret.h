@@ -20,7 +20,7 @@
   Application should use only following four secret related functions:
   - osal_get_secret()    Get secret as string. Secret is loaded or generated as needed.
                           String buffer size if 46 characters (OSAL_SECRET_STR_SZ).
-  - osal_get_password()   Get password as string. Password is sort of limited "secret". It
+  - osal_get_auto_password()   Get password as string. Password is sort of limited "secret". It
                           can be transferred over secure connection from device to server.
   - osal_hash_password()  Make cryptographic hash of password. Hash is public information and
                           can be displayed to user, etc. It can be used to compare if
@@ -36,9 +36,9 @@
   - IO node's password is SHA-256 hash of the secret.
   - IO node's hash password is SHA-256 of the node's password. So SHA-256 hash is run twice.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -73,7 +73,7 @@ void osal_get_secret(
 
 /* Get password. This is used as IO node password.
  */
-void osal_get_password(
+void osal_get_auto_password(
     os_char *buf,
     os_memsz buf_sz);
 

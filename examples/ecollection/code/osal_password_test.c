@@ -41,7 +41,7 @@ osalStatus osal_password_test(
     for (i = 0; i<10; ++i)
     {
         osal_make_random_secret();
-        osal_get_password(password, sizeof(password));
+        osal_get_auto_password(password, sizeof(password));
 
         printf("random password = %s\n", password);
 

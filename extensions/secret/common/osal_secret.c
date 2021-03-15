@@ -20,7 +20,7 @@
   Application should use only following four secret related functions:
   - osal_get_secret()    Get secret as string. Secret is loaded or generated as needed.
                           String buffer size if 46 characters (OSAL_SECRET_STR_SZ).
-  - osal_get_password()   Get password as string. Password is sort of limited "secret". It
+  - osal_get_auto_password()   Get password as string. Password is sort of limited "secret". It
                           can be transferred over secure connection from device to server.
   - osal_hash_password()  Make cryptographic hash of password. Hash is public information and
                           can be displayed to user, etc. It can be used to compare if
@@ -46,9 +46,6 @@
 #include "eosalx.h"
 #if OSAL_SECRET_SUPPORT
 
-/** Size of string buffer for storing the secret or passowrd.
- */
-#define OSAL_SECRET_STR_SZ 46
 
 static os_char osal_group_to_asc(os_uchar x);
 static osalStatus ioc_load_secret(void);
@@ -67,7 +64,7 @@ void osal_get_secret(
 
 /* Get password. This is used as IO node password.
  */
-void osal_get_password(
+void osal_get_auto_password(
     os_char *buf,
     os_memsz buf_sz)
 {
