@@ -184,6 +184,17 @@ void osal_socket_embed_default_port(
     p = os_strchr(p, ':');
     if (p) return;
 
+    /* If this is only port number, change to ":port".
+     */
+    for (p = buf; *p != '\0'; p++) {
+        if (!osal_char_isdigit(*p)) break;
+    }
+    if (*p == '\0') {
+        buf[0] = ':';
+        os_strncpy(buf + 1, parameters, buf_sz - 1);
+        return;
+    }
+
     /* Otherwise, append port number.
      */
     os_strncat(buf, ":", buf_sz);
