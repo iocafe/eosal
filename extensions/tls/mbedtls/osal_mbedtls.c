@@ -301,7 +301,6 @@ static osalStream osal_mbedtls_open(
         osal_debug_error(osal_get_network_state_int(OSAL_NS_NO_CERT_CHAIN, 0)
             ? " NO CERT CHAIN": "certificate chain loaded");
 
-
         mbedtls_ssl_conf_ca_chain(&so->conf, &t->cacert, NULL);
         mbedtls_ssl_conf_rng(&so->conf, mbedtls_ctr_drbg_random, &t->ctr_drbg);
         mbedtls_ssl_conf_dbg(&so->conf, osal_mbedtls_debug, stdout);
@@ -365,7 +364,7 @@ static int osal_verify_certificate_callback(
 #endif
 
 #if OSAL_MICROCONTROLLER == 0
-    osal_trace_int("Certificate verify requested for Depth ", depth);
+    osal_trace_int("Certificate verify requested for depth ", depth);
     mbedtls_x509_crt_info(buf, sizeof(buf), "  ", crt);
     osal_trace(buf);
 #endif
@@ -378,9 +377,10 @@ static int osal_verify_certificate_callback(
 
     /* Show if certificate is formally ok
      */
-    if ( ( *flags ) == 0 )
-        osal_trace("This certificate is formally ok (not yet accepted)");
+    if ( ( *flags ) == 0 ) {
+        osal_trace("This certificate is formally ok (not yet accepted???)");
         // Callback to add received certificate.
+    }
     else
     {
         mbedtls_x509_crt_verify_info(buf, sizeof(buf), "  ! ", *flags);
