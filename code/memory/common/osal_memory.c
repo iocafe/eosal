@@ -8,9 +8,9 @@
 
   Memory allocation manager.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -179,7 +179,7 @@ void osal_memory_initialize(
   @anchor osal_memory_shutdown
 
   The osal_memory_shutdown() shuts down OSAL memory management and releases any resources
-  allocated by memory management. This function is called by osal_shutdown() and should 
+  allocated by memory management. This function is called by osal_shutdown() and should
   not normally be called by application.
 
   @return  None.
@@ -193,8 +193,8 @@ void osal_memory_shutdown(
         *chunk_hdr,
         *next_chunk_hdr;
 
-	/* Loop through all memory chunks allocated from the operating system.
-	 */
+    /* Loop through all memory chunks allocated from the operating system.
+     */
     for (chunk_hdr = osal_global->memstate.chunk_list;
          chunk_hdr;
          chunk_hdr = next_chunk_hdr)
@@ -237,8 +237,8 @@ os_char *osal_memory_allocate(
     os_char
         *memory_block;
 
-	os_memsz
-		my_block_sz;
+    os_memsz
+        my_block_sz;
 
 #if OSAL_MEMORY_DEBUG
     request_bytes += 4 * sizeof(os_short);
@@ -265,18 +265,18 @@ os_char *osal_memory_allocate(
         my_block_sz = request_bytes;
         memory_block = osal_global->sysmem_alloc_func(request_bytes, OS_NULL);
 
-		if (memory_block == OS_NULL)
+        if (memory_block == OS_NULL)
         {
             osal_debug_error("Out of memory for large blocks");
-		    return OS_NULL;
+            return OS_NULL;
         }
         ix = -1;
         goto return_memory_block;
     }
 
-	/* Lock system mutex.
-	 */
-	os_lock();
+    /* Lock system mutex.
+     */
+    os_lock();
 
     /* Get pointer to fist free memory block of this size from chain of free blocks.
      */
@@ -289,12 +289,12 @@ os_char *osal_memory_allocate(
     if (memory_block == OS_NULL)
     {
         memory_block = osal_memory_allocate_slice(ix);
-        if (memory_block == OS_NULL) 
-		{
-			os_unlock();
-			osal_debug_error("Out of memory");
-			return OS_NULL;
-		}
+        if (memory_block == OS_NULL)
+        {
+            os_unlock();
+            osal_debug_error("Out of memory");
+            return OS_NULL;
+        }
     }
 
     /* Detach from chain of free blocks of this size.
@@ -304,11 +304,11 @@ os_char *osal_memory_allocate(
         osal_global->memstate.first_free_block[ix] = *((void**)memory_block);
     }
 
-	/* Unlock system mutex.
-	 */
-	os_unlock();
+    /* Unlock system mutex.
+     */
+    os_unlock();
 
-	my_block_sz = osal_global->memstate.block_sz[ix];
+    my_block_sz = osal_global->memstate.block_sz[ix];
 
 return_memory_block:
     /* Return allocated block size if needed.
@@ -325,23 +325,23 @@ return_memory_block:
     osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_USE, my_block_sz);
 
 #if OSAL_MEMORY_DEBUG
-	/* Store debug information. This tags word just before memory block with application
-	   with OSAL_MEMORY_BLOCK_START_MARK and word just after with OSAL_MEMORY_BLOCK_END_MARK.
-	   These are compared when memory block is released for buffer overruns. The size
-	   index is stored into the first word. This is checked when memory block is
-	   freed that bytes argument is correct.
-	 */
-	*(os_short*)memory_block = ix;
-	*(os_short*)(memory_block + sizeof(os_short)) = OSAL_MEMORY_BLOCK_START_MARK;
-	*(os_short*)(memory_block + my_block_sz - 2*sizeof(os_short)) = OSAL_MEMORY_BLOCK_END_MARK;
+    /* Store debug information. This tags word just before memory block with application
+       with OSAL_MEMORY_BLOCK_START_MARK and word just after with OSAL_MEMORY_BLOCK_END_MARK.
+       These are compared when memory block is released for buffer overruns. The size
+       index is stored into the first word. This is checked when memory block is
+       freed that bytes argument is correct.
+     */
+    *(os_short*)memory_block = ix;
+    *(os_short*)(memory_block + sizeof(os_short)) = OSAL_MEMORY_BLOCK_START_MARK;
+    *(os_short*)(memory_block + my_block_sz - 2*sizeof(os_short)) = OSAL_MEMORY_BLOCK_END_MARK;
 
-	/* Return pointer to memory block (starting from first byte which should be visible to
-	   calling application.
-	 */
+    /* Return pointer to memory block (starting from first byte which should be visible to
+       calling application.
+     */
     return memory_block + 2*sizeof(os_short);
 #else
-	/* Return pointer to the memory block.
-	 */
+    /* Return pointer to the memory block.
+     */
     return memory_block;
 #endif
 }
@@ -359,7 +359,7 @@ return_memory_block:
   @param   memory_block Pointer to memory block to release. If this pointer is OS_NULL, then
            the function does nothing.
   @param   bytes Size of memory block, either request_bytes given as argument or allocated_bytes
-		   returned by osal_memory_allocate() function.
+           returned by osal_memory_allocate() function.
 
   @return  None.
 
@@ -381,6 +381,10 @@ void osal_memory_free(
 #if OSAL_MEMORY_DEBUG
     bytes += 4 * sizeof(os_short);
     memory_block = (os_char*)memory_block - 2 * sizeof(os_short);
+    if (bytes < 0) {
+        osal_debug_error_int("osal_memory_free called with negative bytes", bytes);
+        return;
+    }
 #endif
 
     /* Use quick find table to find block index for the small memory blocks.
@@ -407,38 +411,38 @@ void osal_memory_free(
     }
 
 #if OSAL_MEMORY_DEBUG
-	if (*(os_short*)((os_char*)memory_block + sizeof(os_short))
-		!= OSAL_MEMORY_BLOCK_START_MARK)
-	{
-		osal_debug_error("Memory corrupted 1");
-	}
+    if (*(os_short*)((os_char*)memory_block + sizeof(os_short))
+        != OSAL_MEMORY_BLOCK_START_MARK)
+    {
+        osal_debug_error("Memory corrupted 1");
+    }
 
-	if (ix != *(os_short*)memory_block)
-	{
-		osal_debug_error("bytes given to osal_memory_free is faulty");
-	}
+    if (ix != *(os_short*)memory_block)
+    {
+        osal_debug_error("bytes given to osal_memory_free is faulty");
+    }
 
-	if (*(os_short*)((os_char*)memory_block + osal_global->memstate.block_sz[ix] 
-		- 2*sizeof(os_short)) != OSAL_MEMORY_BLOCK_END_MARK)
-	{
-		osal_debug_error("Memory corrupted 2");
-	}
+    if (*(os_short*)((os_char*)memory_block + osal_global->memstate.block_sz[ix]
+        - 2*sizeof(os_short)) != OSAL_MEMORY_BLOCK_END_MARK)
+    {
+        osal_debug_error("Memory corrupted 2");
+    }
 #endif
 
     osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_USE, -osal_global->memstate.block_sz[ix]);
 
-	/* Synchronize.
-	 */
-	os_lock();
+    /* Synchronize.
+     */
+    os_lock();
 
     /* Join to chain of free blocks of the same size.
      */
     *((void**)memory_block) = osal_global->memstate.first_free_block[ix];
     osal_global->memstate.first_free_block[ix] = memory_block;
 
-	/* End synchronization.
-	 */
-	os_unlock();
+    /* End synchronization.
+     */
+    os_unlock();
 }
 
 
@@ -454,7 +458,7 @@ void osal_memory_free(
   @param   memory_block Pointer to memory block. If this pointer is OS_NULL, then
            the function does nothing.
   @param   bytes Size of memory block, either request_bytes given as argument or allocated_bytes
-		   returned by osal_memory_allocate() function.
+           returned by osal_memory_allocate() function.
 
   @return  None.
 
@@ -471,7 +475,7 @@ void osal_memory_check(
      */
     if (memory_block == OS_NULL) return;
 
-osal_debug_assert(bytes > 0); 
+osal_debug_assert(bytes > 0);
 
     /* In debug mode allow space for debug information.
      */
@@ -499,22 +503,22 @@ osal_debug_assert(bytes > 0);
         return;
     }
 
-	if (*(os_short*)((os_char*)memory_block + sizeof(os_short))
-		!= OSAL_MEMORY_BLOCK_START_MARK)
-	{
-		osal_debug_error("CHK: Memory corrupted 1");
-	}
+    if (*(os_short*)((os_char*)memory_block + sizeof(os_short))
+        != OSAL_MEMORY_BLOCK_START_MARK)
+    {
+        osal_debug_error("CHK: Memory corrupted 1");
+    }
 
-	if (ix != *(os_short*)memory_block)
-	{
-		osal_debug_error("CHK: bytes given to osal_memory_free is faulty");
-	}
+    if (ix != *(os_short*)memory_block)
+    {
+        osal_debug_error("CHK: bytes given to osal_memory_free is faulty");
+    }
 
-	if (*(os_short*)((os_char*)memory_block + osal_global->memstate.block_sz[ix] 
-		- 2*sizeof(os_short)) != OSAL_MEMORY_BLOCK_END_MARK)
-	{
-		osal_debug_error("CHK: Memory corrupted 2");
-	}
+    if (*(os_short*)((os_char*)memory_block + osal_global->memstate.block_sz[ix]
+        - 2*sizeof(os_short)) != OSAL_MEMORY_BLOCK_END_MARK)
+    {
+        osal_debug_error("CHK: Memory corrupted 2");
+    }
 }
 #endif
 
@@ -525,7 +529,7 @@ osal_debug_assert(bytes > 0);
   @brief Find index of chain of memory blocks.
 
   The osal_memory_get_block_ix() function finds index of chain of specific size of blocks.
-  The chain index returned will be chain of smallest blocks, which can hold number of memory 
+  The chain index returned will be chain of smallest blocks, which can hold number of memory
   bytes given as argument.
 
   @param   bytes Number of bytes in the block.
@@ -594,29 +598,29 @@ static os_short osal_memory_get_slice_ix(
    os_int
         ix;
 
-	/* If allocated bytes is larger or equal than maximum block size, this goes automatically
-	   to last group.
-	 */
-	if (bytes >= osal_global->memstate.max_block_sz)
-	{
-		return osal_global->memstate.n - 1;
-	}
+    /* If allocated bytes is larger or equal than maximum block size, this goes automatically
+       to last group.
+     */
+    if (bytes >= osal_global->memstate.max_block_sz)
+    {
+        return osal_global->memstate.n - 1;
+    }
 
-	ix = osal_memory_get_block_ix(bytes);
+    ix = osal_memory_get_block_ix(bytes);
 
-	if (bytes < osal_global->memstate.block_sz[ix])
-	{
+    if (bytes < osal_global->memstate.block_sz[ix])
+    {
 #if OSAL_MEMORY_DEBUG
-		if (ix-- == 0)
-		{
-			osal_debug_error("Programming error");
-		}
+        if (ix-- == 0)
+        {
+            osal_debug_error("Programming error");
+        }
 #else
-		ix--;
+        ix--;
 #endif
-	}
+    }
 
-	return ix;
+    return ix;
 }
 
 
@@ -625,16 +629,16 @@ static os_short osal_memory_get_slice_ix(
 
   @brief Allocate a chunk of memory from operating system.
 
-  The osal_malloc_chunk() allocates a chunk of memory from operating system. 
-  
+  The osal_malloc_chunk() allocates a chunk of memory from operating system.
+
   If OSAL_PROCESS_CLEANUP_SUPPORT define is nonzero, part of chunk is used to maintain linked list
   of chunks, so that all memory can be released once the process exits or OSAL is restarted.
 
   @param   request_bytes Minimum number of bytes to allocate for use.
 
   @return  If the function succeeds to allocate the chunk of memory, it returns OSAL_SUCCESS (0).
-		   Other values indicate failure, exspecially OSAL_STATUS_MEMORY_ALLOCATION_FAILED 
-		   indicates that operating system memory allocation failed.
+           Other values indicate failure, exspecially OSAL_STATUS_MEMORY_ALLOCATION_FAILED
+           indicates that operating system memory allocation failed.
            See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
@@ -710,10 +714,10 @@ static osalStatus osal_allocate_chunk(
   a new chunk.
 
   @param   ix Index of memory block size to allocate. Index refers to block_sz array, which
-		   contains memory block
+           contains memory block
 
-  @return  Pointer to memory block of size specified by ix. If operating system memory 
-		   allocation is called and it fails, the function returns OS_NULL.
+  @return  Pointer to memory block of size specified by ix. If operating system memory
+           allocation is called and it fails, the function returns OS_NULL.
 
 ****************************************************************************************************
 */
@@ -748,7 +752,7 @@ static void *osal_memory_allocate_slice(
     bytes = osal_global->memstate.block_sz[ix];
 
     /* Try twice. First time we just try to get slice of existing chunk. If none is
-	   available, new chunk is allocated and slice is taken from that.
+       available, new chunk is allocated and slice is taken from that.
      */
     for (j = 0; j < 2; j++)
     {
@@ -767,12 +771,12 @@ static void *osal_memory_allocate_slice(
                 memory_block = (os_char*)slice;
                 sz0 = osal_global->memstate.block_sz[0];
 
-				/* If there is so little left of this chunk, that there is
-				   no space for the slicing header, just split left overs
-				   as free smallest available memory blocks.
-				 */
+                /* If there is so little left of this chunk, that there is
+                   no space for the slicing header, just split left overs
+                   as free smallest available memory blocks.
+                 */
                 if (bytes_left < sizeof(osalMemorySliceHeader) ||
-					bytes_left < sz0)
+                    bytes_left < sz0)
                 {
                     p = memory_block + bytes;
 
@@ -786,12 +790,12 @@ static void *osal_memory_allocate_slice(
                     }
                 }
 
-				/* Generate new slice header and map again.
-				 */
+                /* Generate new slice header and map again.
+                 */
                 else
                 {
-					/* Place the new slice header just after memory block.
-					 */
+                    /* Place the new slice header just after memory block.
+                     */
                     slice = (osalMemorySliceHeader*)(memory_block + bytes);
 
                     /* Get index where to join by bytes left in chunk.
@@ -805,8 +809,8 @@ static void *osal_memory_allocate_slice(
                     first_slice[i] = slice;
                 }
 
-				/* Return pointer to memory block.
-				 */
+                /* Return pointer to memory block.
+                 */
                 return memory_block;
             }
         }
