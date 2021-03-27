@@ -43,28 +43,6 @@ struct osalStreamHeader;
  */
 typedef struct osalStreamHeader *osalStream;
 
-/**
-****************************************************************************************************
-  Functions types to read and write stream with different stream implementations.
-****************************************************************************************************
-*/
-
-/* Read data from stream.
- */
-typedef osalStatus osal_stream_read_func(
-    os_char *buf,
-    os_memsz n,
-    os_memsz *n_read,
-    void *context);
-
-/* Write data to stream.
- */
-typedef osalStatus osal_stream_write_func(
-    const os_char *buf,
-    os_memsz n,
-    os_memsz *n_written,
-    void *context);
-
 
 /**
 ****************************************************************************************************

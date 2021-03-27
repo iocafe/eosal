@@ -255,7 +255,7 @@ static osalStream osal_mbedtls_open(
      */
     osal_socket_embed_default_port(parameters,
         hostbuf, sizeof(hostbuf), IOC_DEFAULT_TLS_PORT);
-    tcpsocket = osal_socket_open(hostbuf, option, status, flags);
+    tcpsocket = osal_stream_open(OSAL_SOCKET_IFACE, hostbuf, option, status, flags);
     if (tcpsocket == OS_NULL) return OS_NULL;
 
     /* Allocate and initialize own socket structure.
@@ -378,7 +378,7 @@ static int osal_verify_certificate_callback(
     /* Show if certificate is formally ok
      */
     if ( ( *flags ) == 0 ) {
-        osal_trace("This certificate is formally ok (not yet accepted???)");
+        osal_trace("This certificate is formally ok (not yet accepted?)");
         // Callback to add received certificate.
     }
     else
@@ -432,7 +432,7 @@ static void osal_mbedtls_close(
 
     /* Close the socket.
      */
-    osal_socket_close(so->tcpsocket, flags);
+    osal_stream_close(so->tcpsocket, flags);
 
 #if OSAL_DEBUG
     /* Mark the socket closed. This is used to detect if memory is accessed after it is freed.
@@ -493,7 +493,7 @@ static osalStream osal_mbedtls_accept(
 
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
-    tcpsocket = osal_socket_accept(so->tcpsocket, remote_ip_addr,
+    tcpsocket = osal_stream_accept(so->tcpsocket, remote_ip_addr,
         remote_ip_addr_sz, status, flags);
     if (tcpsocket == OS_NULL)
     {
@@ -623,7 +623,7 @@ static osalStatus osal_mbedtls_flush(
 
         /* Flush the underlying socket buffers.
          */
-        s = osal_socket_flush(so->tcpsocket, flags);
+        s = osal_stream_flush(so->tcpsocket, flags);
         return s;
     }
 
@@ -827,7 +827,7 @@ static osalStatus osal_mbedtls_select(
         tcpstreams[ntcpstreams++] = so->tcpsocket;
     }
 
-    return osal_socket_select(tcpstreams, ntcpstreams, evnt, selectdata, timeout_ms, flags);
+    return osal_stream_select(tcpstreams, ntcpstreams, evnt, selectdata, timeout_ms, flags);
 }
 #endif
 
