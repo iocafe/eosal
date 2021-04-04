@@ -105,6 +105,17 @@ typedef struct
      */
     void *system_mutex_thread;
 #endif
+
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    /** List of operating systems to set at exit.
+     */
+    osalEventList atexit_events_list;
+#endif
+
+    /** Number of threads created by osal_thread_create().
+     */
+    os_short thread_count;
+
 #endif
 
     /* Memory allocation related, see osal_memory.c
@@ -210,6 +221,13 @@ osalGlobalStruct;
 
 #define osal_go() (!osal_global->exit_process)
 #define osal_stop() (osal_global->exit_process)
+
+#if OSAL_PROCESS_CLEANUP_SUPPORT
+    void osal_request_exit(void);
+#else
+    #define osal_request_exit()
+#endif
+
 
 /* Quiet mode silences debug prints, etc. to allow user to operate console.
  */

@@ -8,9 +8,9 @@
 
   Operating system specific OSAL initialization and shut down.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -56,7 +56,7 @@ static void osal_linux_sigchld(
 static void osal_linux_terminate_by_signal(
     int signum)
 {
-    osal_global->exit_process = OS_TRUE;
+    osal_request_exit();
 }
 
 

@@ -25,7 +25,6 @@
 #include <pthread.h>
 #include <fcntl.h>
 #include <unistd.h>
-// #include <semaphore.h>
 
 
 #include <stdio.h> // FOR TESTING
@@ -35,6 +34,10 @@ int pipe2(int pipefd[2], int flags);
 
 typedef struct osalPosixEvent
 {
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    osalEventHeader hdr;
+#endif
+
     pthread_cond_t cond;
     pthread_mutex_t mutex;
     os_boolean event_signaled;
@@ -44,7 +47,6 @@ typedef struct osalPosixEvent
     int pipefd[2];
 }
 osalPosixEvent;
-
 
 
 /**
@@ -59,12 +61,17 @@ osalPosixEvent;
 
   Resource monitor's event count is incremented, if resource monitor is enabled.
 
+  @param   eflags Flags for osal_event_create function: If OSAL_EVENT_SET_AT_EXIT bit is set,
+           the osal_event_add_to_atexit() is called to add the event to global list of events
+           to set when exit process is requested. Use OSAL_EVENT_DEFAULT to indicate standard
+           operation.
+
   @return  evnt Event pointer. If the function fails, it returns OS_NULL.
 
 ****************************************************************************************************
 */
 osalEvent osal_event_create(
-    void)
+    os_short eflags)
 {
     osalPosixEvent *pe;
     pthread_condattr_t attrib;
@@ -73,7 +80,7 @@ osalEvent osal_event_create(
      * created by default.
      */
     pe = malloc(sizeof(osalPosixEvent));
-    pe->event_signaled = OS_FALSE;
+    os_memclear(pe, sizeof(osalPosixEvent));
     pe->pipefd[0] = pe->pipefd[1] =  -1;
 
     /* Create mutex to access the event
@@ -99,6 +106,11 @@ osalEvent osal_event_create(
 
     pthread_condattr_destroy(&attrib);
 
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    if (eflags & OSAL_EVENT_SET_AT_EXIT) {
+        osal_event_add_to_list(&osal_global->atexit_events_list, (osalEvent)pe);
+    }
+#endif
 
     /* Inform resource monitor that event has been created and return the event pointer.
      */
@@ -132,6 +144,10 @@ void osal_event_delete(
         osal_debug_error("osal_event_delete: NULL argument");
         return;
     }
+
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    osal_event_remove_from_list(&osal_global->atexit_events_list, evnt);
+#endif
 
     pe = (osalPosixEvent*)evnt;
 
@@ -374,7 +390,6 @@ int osal_event_pipefd(
     {
         osal_trace("Initializing pipe...");
 
-        // if (pipe(pe->pipefd) == -1)
         if (pipe2(pe->pipefd, O_NONBLOCK) == -1)
         {
             osal_debug_error("osal_event_pipefd: pipe2() failed");

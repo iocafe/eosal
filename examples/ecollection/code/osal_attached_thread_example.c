@@ -51,7 +51,7 @@ void osal_attached_thread_example(void)
     /* Clear parameter structure and create thread event.
      */
     os_memclear(&myprm, sizeof(myprm));
-    myprm.thread_event = osal_event_create();
+    myprm.thread_event = osal_event_create(OSAL_EVENT_SET_AT_EXIT);
 
     /* Start thread.
      */

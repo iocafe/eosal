@@ -85,9 +85,8 @@ static void osal_thread_intermediate_func(
   typically pointer to user defined parameter structure for the new thread. Second argument is
   done event, which the new thread must set by calling osal_event_set() function once the new
   thread has processed parameters and no longer will refer to prm pointer. Every thread
-  created by this function must be eventually either terminated by explicit osal_exit_thread()
-  function call, or by returning from entry point function which will result osal_exit_thread()
-  call. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
+  created by this function must be eventually either terminated by returning from thread
+  function. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
   entry point function can call osal_thread_set_priority() to set it's own priority.
 
   @param   func Pointer to thread entry point function. See osal_thread_func() for entry point
@@ -138,22 +137,13 @@ osalThread *osal_thread_create(
     thrprm.func = func;
     thrprm.prm = prm;
 
-    /* If we need to be able to join the thread, set up thread structure for
-     * storing handle and and
-       create .
+    /* Increment thread count, for "process ready to exit". Order of checking
+     * exit_process flag and modifying thread_count is significant.
      */
-    if (flags & OSAL_THREAD_ATTACHED)
-    {
-        handle = (osalArduinoThreadHandle*)os_malloc(sizeof(osalArduinoThreadHandle), OS_NULL);
-        if (handle == OS_NULL) return OS_NULL;
-        os_memclear(handle, sizeof(osalArduinoThreadHandle));
-
-        handle->join_event = thrprm.join_event = osal_event_create();
-        if (thrprm.join_event == OS_NULL)
-        {
-            os_free(handle, sizeof(osalArduinoThreadHandle));
-            return OS_NULL;
-        }
+    osal_global->thread_count++;
+    if (osal_global->exit_process) {
+        osal_global->thread_count--;
+        return OS_NULL;
     }
 
     /* Create event to wait until newly created thread has processed it's parameters. If creating
@@ -163,7 +153,28 @@ osalThread *osal_thread_create(
     if (thrprm.done == OS_NULL)
     {
         osal_debug_error("osal_thread,osal_event_create failed");
+        osal_global->thread_count--;
         return OS_NULL;
+    }
+
+    /* If we need to be able to join the thread, set up thread structure for
+     * storing handle and and
+       create .
+     */
+    if (flags & OSAL_THREAD_ATTACHED)
+    {
+        handle = (osalArduinoThreadHandle*)malloc(sizeof(osalArduinoThreadHandle));
+        if (handle == OS_NULL) return OS_NULL;
+        os_memclear(handle, sizeof(osalArduinoThreadHandle));
+
+        handle->join_event = thrprm.join_event = osal_event_create();
+        if (thrprm.join_event == OS_NULL)
+        {
+            osal_event_delete(thrprm.done);
+            free(handle);
+            osal_global->thread_count--;
+            return OS_NULL;
+        }
     }
 
     /* Process options, if any
@@ -199,6 +210,12 @@ osalThread *osal_thread_create(
     if (s != pdPASS)
     {
         osal_debug_error("osal_thread,xTaskCreate failed");
+        osal_event_delete(thrprm.done);
+        if (handle) {
+            osal_event_delete(handle->join_event);
+            free(handle);
+        }
+        osal_global->thread_count--;
         return OS_NULL;
     }
 
@@ -225,23 +242,19 @@ osalThread *osal_thread_create(
 
   @brief Intermediate thread entry point function.
 
-  The osal_thread_intermediate_func() function is intermediate function to start a new thread.
-  This function exists to make user's thread entry point function type same on all operating
-  systems.
+  The osal_thread_intermediate_func() function is called to start executing code under
+  newly created thread. It calls application's osal_thread_func() trough function pointer.
 
-  @param   lpParameter Pointer to parameter structure to start Windows thread.
-  @return  None. Typically this thread is terminated either by this thread or by OS on return.
+  @param   parameters Pointer to parameter structure for new FreeRTOS thread.
+  @return  None.
 
 ****************************************************************************************************
 */
 static void osal_thread_intermediate_func(
   void *parameters)
 {
-    osalArduinoThreadPrms
-        *thrprm;
-
-    osalEvent
-        join_event;
+    osalArduinoThreadPrms *thrprm;
+    osalEvent join_event;
 
     /* Cast the pointer and save join event, if any.
      */
@@ -252,13 +265,19 @@ static void osal_thread_intermediate_func(
      */
     thrprm->func(thrprm->prm, thrprm->done);
 
-osal_trace("thread exit");
-
     /* If we have join event (attached to another thread), then set join flag.
      */
-    if (join_event) osal_event_set(join_event);
+    if (join_event) {
+        osal_event_set(join_event);
+    }
 
-    /* Call OS to delete the taskm and Inform resource monitor.
+    /* Otherwise this is detached thread, decrement thread count.
+     */
+    else {
+        osal_global->thread_count--;
+    }
+
+    /* Call OS to delete (terminate) the taskm and Inform resource monitor.
      */
     osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
     vTaskDelete(NULL);
@@ -268,17 +287,16 @@ osal_trace("thread exit");
 /**
 ****************************************************************************************************
 
-  @brief Join worker thread to this thread (one which created the worker)
+  @brief Join attached worker thread
   @anchor osal_thread_join
 
-  The osal_thread_join() function is called by the thread which created worker thread to join
-  worker thread back. This function MUST be called for threads created with
-  OSAL_THREAD_ATTACHED flag and cannot be called for ones created with OSAL_THREAD_DETACHED flag.
-  It may be good idea to call osal_thread_request_exit() just before calling this function, to
-  make sure that worker thread knows to close.
+  The osal_thread_join() function must be called for threads created by osal_thread_create()
+  with OSAL_THREAD_ATTACHED flag. The function waits until worker thread exists and frees the
+  handle and associated resources.
+
+  Notice that this function doesn't signal worker thread to exit.
 
   @param   handle Thread handle as returned by osal_thread_create.
-  @return  None.
 
 ****************************************************************************************************
 */
@@ -299,7 +317,11 @@ void osal_thread_join(
     if (ahandle->join_event)
     {
         osal_event_wait(ahandle->join_event, OSAL_EVENT_INFINITE);
+        osal_event_delete(ahandle->join_event);
     }
+
+    free(handle);
+    osal_global->thread_count--;
 }
 
 

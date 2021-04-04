@@ -41,6 +41,10 @@ typedef struct
      */
     void *prm;
 
+    /** Flags argument of osal_thread_create().
+     */
+    os_int flags;
+
     /** Priority for the new thread.
      */
     osalThreadPriority priority;
@@ -80,9 +84,8 @@ static DWORD WINAPI osal_thread_intermediate_func(
   typically pointer to user defined parameter structure for the new thread. Second argument is
   done event, which the new thread must set by calling osal_event_set() function once the new
   thread has processed parameters and no longer will refer to prm pointer. Every thread
-  created by this function must be eventually either terminated by explicit osal_exit_thread()
-  function call, or by returning from entry point function which will result osal_exit_thread()
-  call. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
+  created by this function must be eventually either terminated by returning from thread
+  function. All new threads start with normal priority OSAL_THREAD_PRIORITY_NORMAL, but the
   entry point function can call osal_thread_set_priority() to set it's own priority.
 
   @param   func Pointer to thread entry point function. See osal_thread_func() for entry point
@@ -136,6 +139,16 @@ osalThread *osal_thread_create(
     os_memclear(&winprm, sizeof(osalWindowsThreadPrms));
     winprm.func = func;
     winprm.prm = prm;
+    winprm.flags = flags;
+
+    /* Increment thread count, for "process ready to exit". Order of checking
+     * exit_process flag and modifying thread_count is significant.
+     */
+    osal_global->thread_count++;
+    if (osal_global->exit_process) {
+        osal_global->thread_count--;
+        return OS_NULL;
+    }
 
     /* Create event to wait until newly created thread has processed it's parameters. If creating
        the event failes, return the error code.
@@ -144,12 +157,13 @@ osalThread *osal_thread_create(
     if (winprm.done == OS_NULL)
     {
         osal_debug_error("osal_thread,osal_event_create failed");
+        osal_global->thread_count--;
         return OS_NULL;
     }
 
     if (flags & OSAL_THREAD_ATTACHED)
     {
-        handle = (osalWindowsThreadHandle*)os_malloc(sizeof(osalWindowsThreadHandle), OS_NULL);
+        handle = (osalWindowsThreadHandle*)malloc(sizeof(osalWindowsThreadHandle));
         os_memclear(handle, sizeof(osalWindowsThreadHandle));
     }
     else
@@ -176,7 +190,9 @@ osalThread *osal_thread_create(
     if (thread_handle == NULL)
     {
         osal_debug_error("osal_thread,CreateThread failed");
-        os_free(handle, sizeof(osalWindowsThreadHandle));
+        free(handle);
+        osal_event_delete(winprm.done);
+        osal_global->thread_count--;
         return OS_NULL;
     }
 
@@ -216,12 +232,10 @@ osalThread *osal_thread_create(
 
   @brief Intermediate thread entry point function.
 
-  The osal_thread_intermediate_func() function is intermediate function to start a new thread.
-  This function exists to make user's thread entry point function type same on all operating
-  systems.
+  The osal_thread_intermediate_func() function is called to start executing code under
+  newly created thread. It calls application's osal_thread_func() trough function pointer.
 
-  @param   lpParameter Pointer to parameter structure to start Windows thread.
-
+  @param   lpParameter Pointer to parameter structure for new Windows thread.
   @return  Always 1.
 
 ****************************************************************************************************
@@ -229,12 +243,13 @@ osalThread *osal_thread_create(
 static DWORD WINAPI osal_thread_intermediate_func(
   LPVOID lpParameter)
 {
-    osalWindowsThreadPrms
-        *winprm;
+    osalWindowsThreadPrms *winprm;
+    os_int flags;
 
     /* Cast the pointer
      */
     winprm = (osalWindowsThreadPrms*)lpParameter;
+    flags = winprm->flags;
 
     /* Use specified thread priotity.
      */
@@ -248,6 +263,12 @@ static DWORD WINAPI osal_thread_intermediate_func(
     */
     osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
 
+    /* If this is detached thread, decrement thread count.
+     */
+    if (flags & OSAL_THREAD_DETACHED) {
+        osal_global->thread_count--;
+    }
+
     /* Return success.
      */
     return 1;
@@ -257,17 +278,16 @@ static DWORD WINAPI osal_thread_intermediate_func(
 /**
 ****************************************************************************************************
 
-  @brief Join worker thread to this thread (one which created the worker)
+  @brief Join attached worker thread
   @anchor osal_thread_join
 
-  The osal_thread_join() function is called by the thread which created worker thread to join
-  worker thread back. This function MUST be called for threads created with
-  OSAL_THREAD_ATTACHED flag and cannot be called for ones created with OSAL_THREAD_DETACHED flag.
-  It may be good idea to call osal_thread_request_exit() just before calling this function, to
-  make sure that worker thread knows to close.
+  The osal_thread_join() function must be called for threads created by osal_thread_create()
+  with OSAL_THREAD_ATTACHED flag. The function waits until worker thread exists and frees the
+  handle and associated resources.
+
+  Notice that this function doesn't signal worker thread to exit.
 
   @param   handle Thread handle as returned by osal_thread_create.
-  @return  None.
 
 ****************************************************************************************************
 */
@@ -289,7 +309,11 @@ void osal_thread_join(
     /* Delete the handle structure.
      */
     CloseHandle(((osalWindowsThreadHandle*)handle)->thread_handle);
-    os_free(handle, sizeof(osalWindowsThreadHandle));
+    free(handle);
+
+    /* Decrement thread count.
+     */
+    osal_global->thread_count--;
 }
 
 

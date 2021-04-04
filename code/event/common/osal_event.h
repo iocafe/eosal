@@ -13,9 +13,9 @@
   A thread may wait until an event is signaled or clear an event by osal_event_wait() function.
   Function osal_event_set() signals an event thus causing causes waiting thread to continue.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -27,53 +27,50 @@
 
 /**
 ****************************************************************************************************
-
-  @name Event Pointer Type.
-
-  The osalEvent type is pointer to event. It is defined as pointer to dummy
-  structure solely to provide compiler type checking. This sturcture is never really allocated,
-  and OSAL functions cast their own event pointers to osalEvent pointers.
-
-
+  Defines
 ****************************************************************************************************
 */
-/*@{*/
 
-/* Dummy structure to provide compiler type checking.
+/** The event header structure allows chaining events to be set at exit.
  */
-struct osalEventDummy;
+typedef struct osalEventHeader {
+    struct osalEventHeader *next, *prev;
+}
+osalEventHeader;
 
-/** Event pointer returned by osal_event_create() function.
+/** Event Pointer Type: Event pointer returned by osal_event_create() function. Operating
+    system specific functions cast their own event structure pointers to osalEvent pointers.
+    If OSAL_OS_EVENT_LIST_SUPPORT is set, operating specific event structure starts with
+    osalEventHeader structure.
  */
-typedef struct osalEventDummy *osalEvent;
-
-/*@}*/
+typedef struct osalEventHeader *osalEvent;
 
 
-/**
-****************************************************************************************************
+/** Head of linked event list, used for chaining events to be set at exit.
+ */
+typedef struct osalEventList {
+    struct osalEventHeader *first, *last;
+}
+osalEventList;
 
-  @name Infinite Timeout
 
-  Define OSAL_EVENT_INFINITE (-1) given as argument to osal_event_wait() function will disable
-  time out.
-
-****************************************************************************************************
-*/
-/*@{*/
+/** Flags for osal_event_create function: If OSAL_EVENT_SET_AT_EXIT bit is set, the
+    osal_event_add_to_atexit() is called to add the event to global list of events
+    to set when exit process is requested. Use OSAL_EVENT_DEFAULT to indicate standard opeation.
+ */
+#define OSAL_EVENT_DEFAULT 0
+#define OSAL_EVENT_SET_AT_EXIT 1
 
 /** Wait infinitely. The OSAL_EVENT_INFINITE (-1) given as timeout_ms argument to
-    osal_event_wait() function will cause the function to block infinitely until the
+    osal_event_wait() will cause the function to block infinitely until the
     event is signaled.
  */
 #define OSAL_EVENT_INFINITE -1
 #define OSAL_EVENT_NO_WAIT 0
 
-/*@}*/
 
-
-#if OSAL_MULTITHREAD_SUPPORT 
-/** 
+#if OSAL_MULTITHREAD_SUPPORT
+/**
 ****************************************************************************************************
 
   @name Event Functions
@@ -84,12 +81,11 @@ typedef struct osalEventDummy *osalEvent;
 
 ****************************************************************************************************
  */
-/*@{*/
 
 /* Create a new event.
  */
 osalEvent osal_event_create(
-    void);
+    os_short eflags);
 
 /* Delete an event.
  */
@@ -117,7 +113,28 @@ int osal_event_pipefd(
 void osal_event_clearpipe(
     osalEvent evnt);
 
-/*@}*/
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    /* Add event to list of events.
+     */
+    void osal_event_add_to_list(
+        osalEventList *list,
+        osalEvent evnt);
+
+    /* Remove event from list of events.
+     */
+    void osal_event_remove_from_list(
+        osalEventList *list,
+        osalEvent evnt);
+
+    /* Set all events in at exit list.
+     */
+    void osal_event_set_listed(
+        osalEventList *list);
+#else
+    #define osal_event_add_to_list(l,e)
+    #define osal_event_remove_from_list(l,e)
+    #define osal_event_set_listed(l)
+#endif
 
 #else
 
@@ -132,14 +149,11 @@ void osal_event_clearpipe(
 
 ****************************************************************************************************
 */
-/*@{*/
 
   #define osal_event_create() OS_NULL
   #define osal_event_delete(x)
   #define osal_event_set(x)
   #define osal_event_wait(x,z) OSAL_SUCCESS
-
-/*@}*/
 
 #endif
 #endif

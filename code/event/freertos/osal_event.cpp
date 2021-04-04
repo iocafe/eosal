@@ -25,6 +25,17 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 
+/* FreeRTOS specific event structure.
+ */
+#if OSAL_OS_EVENT_LIST_SUPPORT
+typedef struct osalFreeRtosEvent
+{
+    osalEventHeader hdr;
+    SemaphoreHandle_t m;
+}
+osalFreeRtosEvent;
+#endif
+
 /**
 ****************************************************************************************************
 
@@ -45,6 +56,8 @@ osalEvent osal_event_create(
     void)
 {
     SemaphoreHandle_t m;
+
+    osalFreeRtosEvent xxx xx ;
 
     /* Use semaphora as event
      */

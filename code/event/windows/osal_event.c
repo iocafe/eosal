@@ -9,9 +9,9 @@
   This file implements event related functionality for Windows. Generally events are used for
   a thread wait until it needs to do something.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -19,6 +19,17 @@
 #include "eosal.h"
 
 #if OSAL_MULTITHREAD_SUPPORT
+
+/* Windows specific event structure.
+ */
+#if OSAL_OS_EVENT_LIST_SUPPORT
+typedef struct osalFreeRtosEvent
+{
+    osalEventHeader hdr;
+    HANDLE handle;
+}
+osalFreeRtosEvent;
+#endif
 
 /**
 ****************************************************************************************************
@@ -39,8 +50,7 @@
 osalEvent osal_event_create(
     void)
 {
-    HANDLE
-        handle;
+    HANDLE handle;
 
     /* Call Windows to create an event.
      */
@@ -73,7 +83,7 @@ osalEvent osal_event_create(
   The osal_event_delete() function deletes an event which was created by osal_event_create()
   function. Resource monitor's event count is decremented, if resource monitor is enabled.
 
-  @param   evnt Pointer to event to delete. 
+  @param   evnt Pointer to event to delete.
 
   @return  None.
 
