@@ -140,21 +140,18 @@ osalThread *osal_thread_create(
        If creating the event failes, return the error code.
      */
     linprm.done = osal_event_create();
-    if (linprm.done == OS_NULL)
-    {
+    if (linprm.done == OS_NULL) {
         osal_debug_error("osal_thread,osal_event_create failed");
         return OS_NULL;
     }
 
     /* Setup attributes for the new thread.
      */
-    if (flags & OSAL_THREAD_ATTACHED)
-    {
+    if (flags & OSAL_THREAD_ATTACHED) {
         handle = (osalLinuxThreadHandle*)malloc(sizeof(osalLinuxThreadHandle));
         os_memclear(handle, sizeof(osalLinuxThreadHandle));
     }
-    else
-    {
+    else {
         handle = OS_NULL;
     }
     pthread_attr_init(&attrib);
@@ -209,8 +206,7 @@ osalThread *osal_thread_create(
 
     /* If we created joinable thread, save linux thread handle.
      */
-    if (handle)
-    {
+    if (handle) {
         handle->threadh = threadh;
     }
 
@@ -288,16 +284,14 @@ void osal_thread_join(
 
     /* Check for programming errors.
      */
-    if (handle == OS_NULL)
-    {
+    if (handle == OS_NULL) {
         osal_debug_error("osal_thread,osal_thread_join: NULL handle");
         return;
     }
 
     linuxhandle = (osalLinuxThreadHandle*)handle;
     s = pthread_join(linuxhandle->threadh, &res);
-    if (s != 0)
-    {
+    if (s != 0) {
         osal_debug_error("osal_thread,osal_thread_join failed");
         return;
     }

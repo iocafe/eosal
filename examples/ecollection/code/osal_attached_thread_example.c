@@ -14,7 +14,6 @@
 ****************************************************************************************************
 */
 #include "osal_example_collection_main.h"
-#include <stdio.h>
 
 /** Parameter structure for the new thread.
  */
@@ -40,25 +39,14 @@ static void my_attached_thread(
 
 /**
 ****************************************************************************************************
-
-  @brief Process entry point.
-
-  The osal_main() function is OS independent entry point.
-
-  @param   argc Number of command line arguments.
-  @param   argv Array of string pointers, one for each command line argument. UTF8 encoded.
-
+  Attached thread example entry point.
 ****************************************************************************************************
 */
-osalStatus osal_attached_thread_example(
-    os_int argc,
-    os_char *argv[])
+void osal_attached_thread_example(void)
 {
     MyThreadParameters myprm;
     osalThread *handle;
-
-    OSAL_UNUSED(argc);
-    OSAL_UNUSED(argv);
+    osal_console_write("attached thread example started\n");
 
     /* Clear parameter structure and create thread event.
      */
@@ -71,10 +59,11 @@ osalStatus osal_attached_thread_example(
 
     /* Do the work, not much here.
      */
-    os_sleep(2000);
+    os_sleep(5000);
     osal_console_write("parent thread runs\n");
+    os_sleep(500);
     osal_event_set(myprm.thread_event);
-    os_sleep(1000);
+    os_sleep(5000);
 
     /* Request the worker thread to exit and wait until done.
      */
@@ -83,7 +72,10 @@ osalStatus osal_attached_thread_example(
     osal_event_set(myprm.thread_event);
     osal_thread_join(handle);
 
-    return OSAL_SUCCESS;
+    /* Cleanup.
+     */
+    osal_event_delete(myprm.thread_event);
+    osal_console_write("attached thread example terminated\n");
 }
 
 
@@ -105,6 +97,7 @@ static void my_attached_thread(
     osalEvent done)
 {
     MyThreadParameters *myprm;
+    osal_console_write("child thread started\n");
 
     /* Save parameter pointer (here we expect parameter structure to be valid while thread runs).
      */
