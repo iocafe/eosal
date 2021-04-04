@@ -35,7 +35,7 @@ osalStatus osal_threads_example_main(
     os_int argc,
     os_char *argv[]);
 
-osalStatus osal_threads_example_2_main(
+osalStatus osal_attached_thread_example(
     os_int argc,
     os_char *argv[]);
 

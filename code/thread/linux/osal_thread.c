@@ -302,8 +302,6 @@ void osal_thread_join(
         return;
     }
 
-    /* free(res); Free memory allocated by thread */
-
     /* Delete the handle structure.
      */
     free(handle);
