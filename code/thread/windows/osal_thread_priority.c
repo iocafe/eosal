@@ -8,9 +8,9 @@
 
   Thread priority and identification for Windows.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -42,9 +42,9 @@ static int osal_thread_priority_to_sys_priority(
   used to prioritize execution of normal threads. The OSAL_THREAD_PRIORITY_TIME_CRITICAL is
   reserved for real time tasks only, and using this priority will put special requirements
   on the thread.
-  
+
   @param   priority Priority to set, one of OSAL_THREAD_PRIORITY_LOW, OSAL_THREAD_PRIORITY_NORMAL,
-		   OSAL_THREAD_PRIORITY_HIGH or OSAL_THREAD_PRIORITY_TIME_CRITICAL.
+           OSAL_THREAD_PRIORITY_HIGH or OSAL_THREAD_PRIORITY_TIME_CRITICAL.
            See @ref osalThreadPriority "enumeration of thread priorities" for more information.
 
   @return  If the thread priority is  succesfully set, the function returns OSAL_SUCCESS. If
@@ -56,7 +56,7 @@ static int osal_thread_priority_to_sys_priority(
 */
 #if OSAL_MULTITHREAD_SUPPORT
 osalStatus osal_thread_set_priority(
-	osalThreadPriority priority)
+    osalThreadPriority priority)
 {
     HANDLE hThread;
 
@@ -132,30 +132,3 @@ static int osal_thread_priority_to_sys_priority(
 }
 #endif
 
-
-/**
-****************************************************************************************************
-
-  @brief Get thread identifier.
-  @anchor osal_thread_get_id
-
-  The osal_thread_get_id() function gets thread identifier. Thread identifier is integer number
-  uniquely identifying the thread. Thread identifiers can be used for debugging, to make
-  sure that accessed resources really belong to the current thread, or to find thread specific
-  resources.
-
-  @param   reserved for future. Linux uses multiple different thread identifiers, this may later
-           be used which one. Set 0 for now.
-  @return  Thread id.
-
-****************************************************************************************************
-*/
-#if OSAL_MULTITHREAD_SUPPORT
-os_long osal_thread_get_id(
-    os_int reserved)
-{
-    /* Ask Windows for thread ID number.
-     */
-    return GetCurrentThreadId();
-}
-#endif

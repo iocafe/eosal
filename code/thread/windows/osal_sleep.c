@@ -16,8 +16,7 @@
   run at the same time, with each processor or core running a particular thread or task.
   A new thread is created by osal_thread_create() function call
   Thread priorizing and sleep are handled by osal_thread_set_priority() and
-  os_sleep() functions. Threads of execution can be identified by osal_thread_get_id()
-  function.
+  os_sleep() functions.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

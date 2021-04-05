@@ -31,9 +31,7 @@ osalStatus osal_json_compress_test(
     os_int argc,
     os_char *argv[]);
 
-osalStatus osal_threads_example_main(
-    os_int argc,
-    os_char *argv[]);
+void osal_detached_thread_example(void);
 
 void osal_attached_thread_example(void);
 

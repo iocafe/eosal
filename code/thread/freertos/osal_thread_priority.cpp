@@ -114,27 +114,4 @@ os_int osal_thread_priority_to_sys_priority(
 }
 
 
-/**
-****************************************************************************************************
-
-  @brief Get thread identifier.
-  @anchor osal_thread_get_id
-
-  The osal_thread_get_id() function gets thread identifier. Thread identifier is integer number
-  uniquely identifying the thread. Thread identifiers can be used for debugging, to make
-  sure that accessed resources really belong to the current thread, or to find thread specific
-  resources.
-
-  @param   reserved for future. Linux uses multiple different thread identifiers, this may later
-           be used which one. Set 0 for now.
-  @return  Thread id.
-
-****************************************************************************************************
-*/
-os_long osal_thread_get_id(
-    os_int reserved)
-{
-    return (os_long)xTaskGetCurrentTaskHandle();
-}
-
 #endif

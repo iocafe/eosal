@@ -1,7 +1,7 @@
 /**
 
-  @file    eosal/examples/ecollection/code/osal_attached_thread_example.c
-  @brief   Example code, create attached thread.
+  @file    eosal/examples/ecollection/code/osal_detached_thread_example.c
+  @brief   Example code, create detached thread.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    8.1.2020
@@ -13,69 +13,54 @@
 
 ****************************************************************************************************
 */
+#include "eosal.h"
 #include "osal_example_collection_main.h"
 
-/** Parameter structure for the new thread.
+/** Parameter structure for creating new thread.
  */
 typedef struct
 {
     /** Thread event to "trig" thread to process some activity.
      */
     osalEvent thread_event;
-
-    /** Flag to request the thread to exit.
-     */
-    volatile os_boolean exit_request;
 }
 MyThreadParameters;
 
-
 /* Forward referred static functions.
  */
-static void my_attached_thread(
+static void my_detached_thread(
     void *prm,
     osalEvent done);
 
-
 /**
 ****************************************************************************************************
-  Attached thread example entry point.
+  Detached thread example entry point.
 ****************************************************************************************************
 */
-void osal_attached_thread_example(void)
+void osal_detached_thread_example(void)
 {
     MyThreadParameters myprm;
-    osalThread *handle;
-    osal_console_write("attached thread example started\n");
+    os_int i;
+    osal_console_write("detached thread example started\n");
 
-    /* Clear parameter structure and create thread event.
+    /* Clear parameter structure and create thread event. OSAL_EVENT_SET_AT_EXIT is set
+     * that event is triggered when the process exit is requested by osal_exit(), etc.
      */
     os_memclear(&myprm, sizeof(myprm));
     myprm.thread_event = osal_event_create(OSAL_EVENT_SET_AT_EXIT);
 
     /* Start thread.
      */
-    handle = osal_thread_create(my_attached_thread, &myprm, OS_NULL, OSAL_THREAD_ATTACHED);
+    osal_thread_create(my_detached_thread, &myprm, OS_NULL, OSAL_THREAD_DETACHED);
 
-    /* Do the work, not much here.
+    /* Just print some text.
      */
-    os_sleep(5000);
-    osal_console_write("parent thread runs\n");
-    os_sleep(500);
-    osal_event_set(myprm.thread_event);
-    os_sleep(5000);
+    for (i = 0; i < 10; i++) {
+        osal_console_write("detached thread example running\n");
+        os_sleep(1000);
+    }
 
-    /* Request the worker thread to exit and wait until done.
-     */
-    osal_console_write("requesting child thread to exit\n");
-    myprm.exit_request = OS_TRUE;
-    osal_event_set(myprm.thread_event);
-    osal_thread_join(handle);
-
-    /* Cleanup.
-     */
-    osal_event_delete(myprm.thread_event);
-    osal_console_write("attached thread example terminated\n");
+    osal_console_write("detached thread example started\n");
 }
 
 
@@ -92,30 +77,33 @@ void osal_attached_thread_example(void)
 
 ****************************************************************************************************
 */
-static void my_attached_thread(
+static void my_detached_thread(
     void *prm,
     osalEvent done)
 {
-    MyThreadParameters *myprm;
-    osal_console_write("child thread started\n");
+    MyThreadParameters myprm;
+    os_int i;
 
-    /* Save parameter pointer (here we expect parameter structure to be valid while thread runs).
+    /* Copy parameters into local stack. Do not use prm pointer after setting "done" event.
      */
-    myprm = (MyThreadParameters*)prm;
+    os_memcpy(&myprm, prm, sizeof(MyThreadParameters));
 
-    /* Let thread which created this one proceed.
+    /* Let thread which created this one to proceed.
      */
     osal_event_set(done);
 
-    while (OS_TRUE)
+    /* Print some text every 800 ms. React to process exit request immediately
+     */
+    for (i = 0; i<8; i++)
     {
-        osal_event_wait(myprm->thread_event, OSAL_EVENT_INFINITE);
-        if (osal_stop() || myprm->exit_request) {
+        osal_event_wait(myprm.thread_event, 800);
+        if (osal_stop()) {
             break;
         }
-        osal_console_write("child thread runs\n");
+        osal_console_write("worker thread runs\n");
     }
 
-    osal_console_write("child thread terminated\n");
+    osal_event_delete(myprm.thread_event);
+    osal_console_write("worker thread terminated\n");
 }
 
