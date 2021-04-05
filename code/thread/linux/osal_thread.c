@@ -161,7 +161,7 @@ osalThread *osal_thread_create(
     /* Setup attributes for the new thread.
      */
     if (flags & OSAL_THREAD_ATTACHED) {
-        handle = (osalLinuxThreadHandle*)malloc(sizeof(osalLinuxThreadHandle));
+        handle = (osalLinuxThreadHandle*)osal_sysmem_alloc(sizeof(osalLinuxThreadHandle), OS_NULL);
         os_memclear(handle, sizeof(osalLinuxThreadHandle));
     }
     else {
@@ -201,7 +201,7 @@ osalThread *osal_thread_create(
     if (s)
     {
         osal_debug_error("osal_thread,pthread_create failed");
-        free(handle);
+        osal_sysmem_free(handle, sizeof(osalLinuxThreadHandle));
         osal_event_delete(linprm.done);
         osal_global->thread_count--;
         return OS_NULL;
@@ -318,7 +318,7 @@ void osal_thread_join(
 
     /* Delete the handle structure.
      */
-    free(handle);
+    osal_sysmem_free(handle, sizeof(osalLinuxThreadHandle));
 
     /* Decrement thread count.
      */
@@ -342,10 +342,8 @@ void osal_thread_join(
 */
 void os_timeslice(void)
 {
-    static struct timespec ts = { .tv_sec = 0, .tv_nsec=2000000 };
-
+    static const struct timespec ts = { .tv_sec = 0, .tv_nsec=2000000 };
     nanosleep(&ts, NULL);
-    // usleep(1000);
 }
 #endif
 

@@ -162,7 +162,7 @@ osalThread *osal_thread_create(
      */
     if (flags & OSAL_THREAD_ATTACHED)
     {
-        handle = (osalArduinoThreadHandle*)malloc(sizeof(osalArduinoThreadHandle));
+        handle = (osalArduinoThreadHandle*)osal_sysmem_alloc(sizeof(osalArduinoThreadHandle), OS_NULL);
         if (handle == OS_NULL) return OS_NULL;
         os_memclear(handle, sizeof(osalArduinoThreadHandle));
 
@@ -170,7 +170,7 @@ osalThread *osal_thread_create(
         if (thrprm.join_event == OS_NULL)
         {
             osal_event_delete(thrprm.done);
-            free(handle);
+            osal_sysmem_free(handle, sizeof(osalArduinoThreadHandle));
             osal_global->thread_count--;
             return OS_NULL;
         }
@@ -212,7 +212,7 @@ osalThread *osal_thread_create(
         osal_event_delete(thrprm.done);
         if (handle) {
             osal_event_delete(handle->join_event);
-            free(handle);
+            osal_sysmem_free(handle, sizeof(osalArduinoThreadHandle));
         }
         osal_global->thread_count--;
         return OS_NULL;
@@ -319,7 +319,7 @@ void osal_thread_join(
         osal_event_delete(ahandle->join_event);
     }
 
-    free(handle);
+    osal_sysmem_free(handle, sizeof(osalArduinoThreadHandle));
     osal_global->thread_count--;
 }
 

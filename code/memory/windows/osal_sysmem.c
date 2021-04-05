@@ -8,9 +8,9 @@
 
   Prototypes for operating system memory allocation functions.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -54,16 +54,14 @@ os_char *osal_sysmem_alloc(
     /* Allocate block from process heap. If fails, then return OS_NULL.
      */
     memory_block = HeapAlloc(heap, 0, (DWORD)request_bytes);
-    if (memory_block == NULL)
-    {
+    if (memory_block == NULL) {
         osal_error(OSAL_SYSTEM_ERROR, eosal_mod, OSAL_STATUS_MEMORY_ALLOCATION_FAILED, OS_NULL);
         return OS_NULL;
     }
 
     /* If caller wants to know number of bytes actually allocated, return it.
      */
-    if (allocated_bytes)
-    {
+    if (allocated_bytes) {
         *allocated_bytes = (os_memsz)HeapSize(heap, 0, memory_block);
     }
 

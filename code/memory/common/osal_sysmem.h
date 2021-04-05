@@ -8,9 +8,9 @@
 
   Prototypes for operating system memory allocation functions.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -52,7 +52,7 @@ typedef void osal_sysmem_free_func(
 
 #endif
 
-/** 
+/**
 ****************************************************************************************************
 
   @name Operating System's Memory Allocation Functions
@@ -64,13 +64,13 @@ typedef void osal_sysmem_free_func(
  */
 /*@{*/
 
-/* Allocate a block of memory.
+/* Allocate a block of memory (low level interface to OS memory).
  */
 os_char *osal_sysmem_alloc(
     os_memsz request_bytes,
     os_memsz *allocated_bytes);
 
-/* Release a block of memory.
+/* Release a block of memory (low level interface to OS memory).
  */
 void osal_sysmem_free(
     void *memory_block,

@@ -47,7 +47,6 @@ static os_char osal_mutex_null_ptr_msg[] = "NULL mutex pointer";
 typedef struct
 {
     pthread_mutex_t mutex;
-//    pthread_mutexattr_t attrib;
 }
 osalPosixMutex;
 
@@ -130,7 +129,7 @@ osalMutex osal_mutex_create(
     /* Allocate memory for mutex. Here we cannot use os_malloc(), since
        mutexes are initialized before memory (eosal memory allocation needs mutexes).
 	 */
-    pm = malloc(sizeof(osalPosixMutex));
+    pm = (osalPosixMutex*)osal_sysmem_alloc(sizeof(osalPosixMutex), OS_NULL);
 
     /* Setup mutex attributes.
      */
@@ -190,11 +189,10 @@ void osal_mutex_delete(
     {
         osal_debug_error("pthread_mutex_destroy failed");
     }
-    // pthread_mutexattr_destroy(&pm->attrib);
 
     /* Release memory.
      */
-    free(pm);
+    osal_sysmem_free(pm, sizeof(osalPosixMutex));
 
     /* Inform resource monitor that mutex has been deleted.
      */

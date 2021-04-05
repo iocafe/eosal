@@ -8,9 +8,9 @@
 
   Linux operating system memory allocation functions.
 
-  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used, 
+  Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
-  or distribute this file you indicate that you have read the license and understand and accept 
+  or distribute this file you indicate that you have read the license and understand and accept
   it fully.
 
 ****************************************************************************************************
@@ -27,10 +27,8 @@
   @brief Allocate a memory block from OS.
   @anchor osal_sysmem_alloc
 
-  The osal_sysmem_alloc()...
-
-  HeapAlloc allocates at least the amount of memory requested. HeapSize function is used to
-  determine actual size of the allocated block.
+  The osal_sysmem_alloc() is light weight interface to OS memory allocation. It doesn't use
+  mutex locks, etc. 
 
   @param   request_bytes The function allocates at least the amount of memory requested by this
            argument.

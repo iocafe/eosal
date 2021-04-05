@@ -79,7 +79,7 @@ osalEvent osal_event_create(
     /* Allocate event handle stricture and mark it initially not signaled. Pipes are not
      * created by default.
      */
-    pe = malloc(sizeof(osalPosixEvent));
+    pe = (osalPosixEvent*)osal_sysmem_alloc(sizeof(osalPosixEvent), OS_NULL);
     os_memclear(pe, sizeof(osalPosixEvent));
     pe->pipefd[0] = pe->pipefd[1] =  -1;
 
@@ -88,7 +88,7 @@ osalEvent osal_event_create(
     if (pthread_mutex_init(&pe->mutex, NULL))
     {
         osal_debug_error("osal_event.c: pthread_mutex_init() failed");
-        return OS_NULL;
+        goto getout;
     }
 
     /* Setup condition attributes
@@ -101,7 +101,8 @@ osalEvent osal_event_create(
     if (pthread_cond_init(&pe->cond, &attrib))
     {
         osal_debug_error("osal_event.c: pthread_cond_init() failed");
-        return OS_NULL;
+        pthread_condattr_destroy(&attrib);
+        goto getout;
     }
 
     pthread_condattr_destroy(&attrib);
@@ -116,6 +117,10 @@ osalEvent osal_event_create(
      */
     osal_resource_monitor_increment(OSAL_RMON_EVENT_COUNT);
     return (osalEvent)pe;
+
+getout:
+    osal_sysmem_free(pe, sizeof(osalPosixEvent));
+    return OS_NULL;
 }
 
 
@@ -178,7 +183,7 @@ void osal_event_delete(
     /* Free memory allocated for the event structure and inform resource monitor
        that event has been deleted.
      */
-    free(pe);
+    osal_sysmem_free(pe, sizeof(osalPosixEvent));
     osal_resource_monitor_decrement(OSAL_RMON_EVENT_COUNT);
 }
 

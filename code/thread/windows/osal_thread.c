@@ -162,7 +162,7 @@ osalThread *osal_thread_create(
 
     if (flags & OSAL_THREAD_ATTACHED)
     {
-        handle = (osalWindowsThreadHandle*)malloc(sizeof(osalWindowsThreadHandle));
+        handle = (osalWindowsThreadHandle*)osal_sysmem_alloc(sizeof(osalWindowsThreadHandle), OS_NULL);
         os_memclear(handle, sizeof(osalWindowsThreadHandle));
     }
     else
@@ -189,7 +189,7 @@ osalThread *osal_thread_create(
     if (thread_handle == NULL)
     {
         osal_debug_error("osal_thread,CreateThread failed");
-        free(handle);
+        osal_sysmem_free(handle, sizeof(osalWindowsThreadHandle));
         osal_event_delete(winprm.done);
         osal_global->thread_count--;
         return OS_NULL;
@@ -308,7 +308,7 @@ void osal_thread_join(
     /* Delete the handle structure.
      */
     CloseHandle(((osalWindowsThreadHandle*)handle)->thread_handle);
-    free(handle);
+    osal_sysmem_free(handle, sizeof(osalWindowsThreadHandle));
 
     /* Decrement thread count.
      */

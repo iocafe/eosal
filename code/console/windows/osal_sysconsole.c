@@ -86,17 +86,17 @@ void osal_sysconsole_write(
     os_memsz
         sz;
 
-    /* Convert the string from UTF8 to UTF16. Allocate buffer for the string usint plain 
-       malloc() (DO NOT USE OS_MALLOC(), that needs os_lock().
+    /* Convert the string from UTF8 to UTF16. Allocate buffer with osal_sysmem_alloc(),
+       (do NOT use os_malloc(), that calls os_lock().
      */
     sz = osal_str_utf8_to_utf16(OS_NULL, 0, text);
-    utf16_str = (os_ushort*)malloc(sz*sizeof(os_ushort));
+    utf16_str = (os_ushort*)osal_sysmem_alloc(sz*sizeof(os_ushort), OS_NULL);
     osal_str_utf8_to_utf16(utf16_str, sz, text);
 
     /* Print it and release buffer
      */
     wprintf(L"%ls", utf16_str);
-    free(utf16_str);
+    osal_sysmem_free(utf16_str, sz*sizeof(os_ushort));
 
 #if 0
 THIS IS WINDOWS IMPLEMENTATION. DOESN'T WORK WELL AT LEAST ON WIN 10
