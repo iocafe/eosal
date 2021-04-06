@@ -1069,6 +1069,7 @@ void osal_socket_initialize(
      */
     osal_sockets_initialized = OS_TRUE;
     osal_wifi_initialized = OS_FALSE;
+    osal_global->sockets_shutdown_func = osal_socket_shutdown;
 }
 
 

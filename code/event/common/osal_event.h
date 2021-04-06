@@ -58,7 +58,7 @@ osalEventList;
 
 
 /** Flags for osal_event_create function: If OSAL_EVENT_SET_AT_EXIT bit is set, the
-    osal_event_add_to_atexit() is called to add the event to global list of events
+    osal_event_add_to_list() is called to add the event to global list of events
     to set when exit process is requested. Use OSAL_EVENT_DEFAULT to indicate standard opeation.
  */
 #define OSAL_EVENT_DEFAULT 0

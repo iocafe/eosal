@@ -232,10 +232,12 @@ class osalSocket
  */
 static osalSocket osal_tls[OSAL_MAX_SOCKETS];
 
-
 /* Prototypes for forward referred static functions.
  */
 static osalSocket *osal_get_unused_socket(void);
+
+static void osal_tls_shutdown(
+    void);
 
 
 /**
@@ -716,7 +718,7 @@ void osal_tls_initialize(
     }
 
     osal_socket_initialize(nic, n_nics);
-
+    osal_global->sockets_shutdown_func = osal_tls_shutdown;
 
     osal_tls_initialized = OS_TRUE;
 
@@ -739,7 +741,7 @@ void osal_tls_initialize(
 
 ****************************************************************************************************
 */
-void osal_tls_shutdown(
+static void osal_tls_shutdown(
     void)
 {
     if (osal_tls_initialized)

@@ -158,6 +158,8 @@ static int osal_openssl_verify_callback(
     int preverify,
     X509_STORE_CTX* x509_ctx);
 
+static void osal_tls_shutdown(
+    void);
 
 /**
 ****************************************************************************************************
@@ -862,6 +864,7 @@ void osal_tls_initialize(
     os_memclear(osal_global->tls, sizeof(osalTLS));
 
     osal_openssl_init(prm);
+    osal_global->sockets_shutdown_func = osal_tls_shutdown;
 }
 
 
@@ -869,15 +872,11 @@ void osal_tls_initialize(
 ****************************************************************************************************
 
   @brief Shut down the OpenSSL library.
-  @anchor osal_tls_shutdown
-
   The osal_tls_shutdown() shuts down the underlying OpenSSL library.
-
-  @return  None.
 
 ****************************************************************************************************
 */
-void osal_tls_shutdown(
+static void osal_tls_shutdown(
     void)
 {
     if (osal_global->tls == OS_NULL) return;

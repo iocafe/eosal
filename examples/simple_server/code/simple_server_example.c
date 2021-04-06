@@ -253,16 +253,4 @@ void osal_main_cleanup(
 {
     osal_stream_close(mystream, OSAL_STREAM_DEFAULT);
     osal_stream_close(stream, OSAL_STREAM_DEFAULT);
-
-#if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-    osal_socket_shutdown();
-#endif
-
-#if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-    osal_tls_shutdown();
-#endif
-
-#if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
-    osal_serial_shutdown();
-#endif
 }

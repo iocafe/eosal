@@ -193,10 +193,22 @@ typedef struct
      */
     struct osalSocketGlobal *socket_global;
 
-    /** Shut down function to close sockets library. Set if sockets library
-        is initialized.
+    /** Shut down function to close sockets or TLS library. Set if sockets/TLS
+        library is initialized and needs shut down code. osal_shutdown() function
+        calls this.
      */
     osal_shutdown_func *sockets_shutdown_func;
+#endif
+
+#if OSAL_SERIAL_SUPPORT
+    /** Shut down function to close library. Set if sockets library
+        is initialized. osal_shutdown() function calls this.
+     */
+    osal_shutdown_func *serial_shutdown_func;
+#endif
+
+#if OSAL_BLUETOOTH_SUPPORT
+    osal_shutdown_func *bluetooth_shutdown_func;
 #endif
 
 #if OSAL_INTERRUPT_LIST_SUPPORT

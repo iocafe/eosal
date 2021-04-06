@@ -128,23 +128,13 @@ osalStatus osal_serial_select(
 void osal_serial_initialize(
     void);
 
-/* Shut down OSAL serials library.
- */
-#if OSAL_PROCESS_CLEANUP_SUPPORT
-    void osal_serial_shutdown(
-        void);
-#else
-    #define osal_serial_shutdown()
-#endif
 /*@}*/
-
 
 #else
 
 /* No serial port support, define empty socket macros that we do not need to #ifdef code.
  */
 #define osal_serial_initialize()
-#define osal_serial_shutdown()
 
 /* No serial interface, allow build even if the define is used.
  */

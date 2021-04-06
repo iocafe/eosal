@@ -960,26 +960,6 @@ void osal_serial_initialize(void)
 }
 
 
-#if OSAL_PROCESS_CLEANUP_SUPPORT
-/**
-****************************************************************************************************
-
-  @brief Shut down the serial communication.
-  @anchor osal_serial_shutdown
-
-  The osal_serial_shutdown() shuts down the underlying serial communication library.
-  This is not needed for Windows, just empty function to allow linking with code which
-  calls this function for some other OS.
-
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_serial_shutdown(void)
-{
-}
-#endif
-
 #if OSAL_MINIMALISTIC == 0
 OS_CONST osalStreamInterface osal_serial_iface
  = {OSAL_STREAM_IFLAG_NONE,

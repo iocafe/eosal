@@ -106,16 +106,11 @@ void osal_tls_initialize(
     os_int n_wifi,
     osalSecurityConfig *prm);
 
-/* Shut down OSAL sockets library.
- */
-void osal_tls_shutdown(void);
-
 #else
 
 /* No TLS support, define empty macros that we do not need to #ifdef code.
  */
 #define osal_tls_initialize(n,c,w,d,p)
-#define osal_tls_shutdown()
 
 /* No TLS interface, allow build even if the define is used.
  */

@@ -176,6 +176,9 @@ static void osal_mbedtls_debug(
     int line,
     const char *str);
 
+static void osal_tls_shutdown(
+    void);
+
 
 /**
 ****************************************************************************************************
@@ -868,6 +871,7 @@ void osal_tls_initialize(
     os_memclear(osal_global->tls, sizeof(osalTLS));
 
     osal_mbedtls_init(prm);
+    osal_global->sockets_shutdown_func = osal_tls_shutdown;
 }
 
 
@@ -875,15 +879,11 @@ void osal_tls_initialize(
 ****************************************************************************************************
 
   @brief Shut down the Mbed TLS library.
-  @anchor osal_tls_shutdown
-
   The osal_tls_shutdown() shuts down the underlying Mbed TLS library.
-
-  @return  None.
 
 ****************************************************************************************************
 */
-void osal_tls_shutdown(
+static void osal_tls_shutdown(
     void)
 {
     if (osal_global->tls == OS_NULL) return;

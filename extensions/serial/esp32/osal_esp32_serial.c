@@ -521,10 +521,10 @@ static uart_port_t osal_get_esp32_uart_nr(
 void osal_serial_initialize(
     void)
 {
+    /* osal_global->serial_shutdown_func = osal_serial_shutdown; */
 }
 
 
-#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -538,12 +538,11 @@ void osal_serial_initialize(
   @return  None.
 
 ****************************************************************************************************
-*/
-void osal_serial_shutdown(
+static void osal_serial_shutdown(
     void)
 {
 }
-#endif
+*/
 
 
 #if OSAL_MINIMALISTIC == 0

@@ -299,11 +299,5 @@ osalStatus osal_main(
     /* Cleanup.
      */
     osal_event_delete(mythreadprm.myevent);
-#if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-    osal_socket_shutdown();
-#endif
-#if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-    osal_tls_shutdown();
-#endif
     return 0;
 }

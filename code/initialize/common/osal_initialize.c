@@ -138,12 +138,21 @@ void osal_shutdown(
     osal_request_exit();
     osal_wait_for_threads_to_exit();
 
-#if OSAL_SOCKET_SUPPORT
-    /* Shutdown sockets library if it has been used, this is mostly for windows.
+    /* Shutdown sockets/TLS, serial and bluetooth libraries, if used.
      */
-    if (osal_global->sockets_shutdown_func)
-    {
+#if OSAL_SOCKET_SUPPORT
+    if (osal_global->sockets_shutdown_func) {
         osal_global->sockets_shutdown_func();
+    }
+#endif
+#if OSAL_SERIAL_SUPPORT
+    if (osal_global->serial_shutdown_func) {
+        osal_global->serial_shutdown_func();
+    }
+#endif
+#if OSAL_BLUETOOTH_SUPPORT
+    if (osal_global->bluetooth_shutdown_func) {
+        osal_global->bluetooth_shutdown_func();
     }
 #endif
 

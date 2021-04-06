@@ -57,6 +57,7 @@ void osal_socket_initialize(
     sg = (osalSocketGlobal*)os_malloc(sizeof(osalSocketGlobal), OS_NULL);
     os_memclear(sg, sizeof(osalSocketGlobal));
     osal_global->socket_global = sg;
+    osal_global->sockets_shutdown_func = osal_socket_shutdown;
 
     /** Copy NIC info for UDP multicasts.
      */

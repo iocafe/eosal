@@ -1631,6 +1631,7 @@ void osal_socket_initialize(
 #else
     osal_socket_initialize_2();
 #endif
+    osal_global->sockets_shutdown_func = osal_socket_shutdown;
 }
 
 

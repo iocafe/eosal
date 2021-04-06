@@ -29,7 +29,7 @@ OS_CONST os_char osal_str_empty[] = "";
   @anchor osal_request_exit
 
   The osal_request_exit() function sets global exit_process flag and sets all thread events listed
-  in atexit event list so that threads can start shutting themselves down. Main thred which does
+  in atexit event list so that threads can start shutting themselves down. Main thread which does
   eosal, etc, clean up should wait until child thread count reaches zero before final
   clean up.
 

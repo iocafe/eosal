@@ -243,6 +243,7 @@ void osal_socket_initialize(
     ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;
     ans.wifi_init_failed_once = OS_FALSE;
     osal_global->socket_global = &sg;
+    osal_global->sockets_shutdown_func = osal_socket_shutdown;
 
     /* Call wifi init once to move once to start it.
      */

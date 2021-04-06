@@ -252,6 +252,7 @@ void osal_bluetooth_initialize(
     void)
 {
     bluetooth_initialized = OS_FALSE;
+    os_global->bluetooth_shutdown_func = osal_bluetooth_shutdown;
 }
 
 
@@ -260,6 +261,8 @@ void osal_bluetooth_initialize(
 
   @brief Shut down the bluetooth communication.
   @anchor osal_bluetooth_shutdown
+
+  Called by osal_shutdown().
 
   The osal_bluetooth_shutdown() closes blue tooth, if it has been opened.
   @return  None.

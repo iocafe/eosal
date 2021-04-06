@@ -915,6 +915,7 @@ void osal_socket_initialize(
     /* Set socket library initialized flag.
      */
     osal_sockets_initialized = OS_TRUE;
+    osal_global->sockets_shutdown_func = osal_socket_shutdown;
 }
 
 
