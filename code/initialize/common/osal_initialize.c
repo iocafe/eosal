@@ -106,6 +106,12 @@ void osal_initialize(
     /* Mark that OSAL library is initialized
      */
     osal_global->osal_initialized = OS_TRUE;
+
+    /* Set normal thread priority.
+     */
+#if OSAL_MULTITHREAD_SUPPORT
+    osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
+#endif
 }
 
 

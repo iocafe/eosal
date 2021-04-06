@@ -65,12 +65,6 @@ int eosal_entry(
      */
     osal_initialize(OSAL_INIT_DEFAULT);
 
-    /* Set normal thread priority.
-     */
-#if OSAL_MULTITHREAD_SUPPORT
-    osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
-#endif
-
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION
     /* Copy pointers to command line arguments. If command line argument contains '\r'
        character, make copy and terminate ar '\r'. These memory allocations will be

@@ -70,12 +70,6 @@ int eosal_entry_w(
      */
     osal_initialize(OSAL_INIT_DEFAULT);
 
-    /* Set normal thread priority.
-     */
-#if OSAL_MULTITHREAD_SUPPORT
-    osal_thread_set_priority(OSAL_THREAD_PRIORITY_NORMAL);
-#endif
-
     /* Convert command line arguments from UTF16 to UTF8. This will be cleaned up when
        osal_shutdown runs at exit, and all memory will be released.
      */
