@@ -48,16 +48,50 @@ osalFreeRtosEvent;
 
   Resource monitor's event count is incremented, if resource monitor is enabled.
 
+  @param   eflags Flags for osal_event_create function: If OSAL_EVENT_SET_AT_EXIT bit is set,
+           the osal_event_add_to_atexit() is called to add the event to global list of events
+           to set when exit process is requested. Use OSAL_EVENT_DEFAULT to indicate standard
+           operation.
+
   @return  evnt Event pointer. If the function fails, it returns OS_NULL.
 
 ****************************************************************************************************
 */
 osalEvent osal_event_create(
-    void)
+    os_short eflags)
 {
-    SemaphoreHandle_t m;
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    osalFreeRtosEvent *evnt;
 
-    osalFreeRtosEvent xxx xx ;
+    /* Allocate event handle stricture and mark it initially not signaled. Pipes are not
+     * created by default.
+     */
+    evnt = (osalFreeRtosEvent*)osal_sysmem_alloc(sizeof(osalFreeRtosEvent), OS_NULL);
+    if (evnt == OS_NULL) {
+        return OS_NULL;
+    }
+    os_memclear(evnt, sizeof(osalFreeRtosEvent));
+
+    /* Use semaphora as event
+     */
+    evnt->m = xSemaphoreCreateBinary();
+    if (evnt->m == NULL)
+    {
+        osal_debug_error("osal_event.c, xSemaphoreCreateBinary() failed");
+        osal_sysmem_free(evnt, sizeof(osalFreeRtosEvent));
+        return OS_NULL;
+    }
+
+    if (eflags & OSAL_EVENT_SET_AT_EXIT) {
+        osal_event_add_to_list(&osal_global->atexit_events_list, (osalEvent)evnt);
+    }
+
+    /* Inform resource monitor that event has been created and return the event pointer.
+     */
+    osal_resource_monitor_increment(OSAL_RMON_EVENT_COUNT);
+    return (osalEvent)evnt;
+#else
+    SemaphoreHandle_t m;
 
     /* Use semaphora as event
      */
@@ -72,6 +106,7 @@ osalEvent osal_event_create(
      */
     osal_resource_monitor_increment(OSAL_RMON_EVENT_COUNT);
     return (osalEvent)m;
+#endif
 }
 
 
@@ -93,6 +128,24 @@ osalEvent osal_event_create(
 void osal_event_delete(
     osalEvent evnt)
 {
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    osalFreeRtosEvent *e;
+
+    if (evnt == OS_NULL)
+    {
+        osal_debug_error("osal_event_delete: NULL argument");
+        return;
+    }
+    osal_event_remove_from_list(&osal_global->atexit_events_list, evnt);
+
+    e = (osalFreeRtosEvent*)evnt;
+    vSemaphoreDelete(e->evnt);
+    osal_sysmem_free(evnt, sizeof(osalFreeRtosEvent));
+
+    /* Inform resource monitor that the event has been deleted.
+     */
+    osal_resource_monitor_decrement(OSAL_RMON_EVENT_COUNT);
+#else
     if (evnt == OS_NULL)
     {
         osal_debug_error("osal_event_delete: NULL argument");
@@ -104,6 +157,7 @@ void osal_event_delete(
     /* Inform resource monitor that the event has been deleted.
      */
     osal_resource_monitor_decrement(OSAL_RMON_EVENT_COUNT);
+#endif
 }
 
 
@@ -121,6 +175,10 @@ void osal_event_delete(
   Call osal_isr_event_set function is setting event from interrupt handler.
 
   @param   evnt Event pointer returned by osal_event_create() function.
+           Report an error for app use. If this function is called from interrupt handler,
+           be sure that evnt is not NULL before calling the function: osal_debug_error()
+           function is likely to crash the microcontroller if called from ISR.
+
   @return  None.
 
 ****************************************************************************************************
@@ -132,15 +190,15 @@ void OS_ISR_FUNC_ATTR osal_event_set(
 
     if (evnt == OS_NULL)
     {
-        /* Report an error for app use. If this function is called from interrupt handler,
-           be sure that evnt is not NULL before calling the function: osal_debug_error()
-           function is likely to crash the microcontroller if called from ISR.
-         */
         osal_debug_error("osal_event_set: NULL argument");
         return;
     }
 
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    xSemaphoreGiveFromISR(((osalFreeRtosEvent*)evnt)->m, &xHigherPriorityTaskWoken);
+#else
     xSemaphoreGiveFromISR(evnt, &xHigherPriorityTaskWoken);
+#endif
 
     /* If setting event woke up higher priority task, inform task scheduler that it
        should do task switch immediately.
@@ -196,8 +254,13 @@ osalStatus osal_event_wait(
 
     tout_ticks = (timeout_ms == OSAL_EVENT_INFINITE) ? portMAX_DELAY : timeout_ms/portTICK_PERIOD_MS;
 
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    return ((xSemaphoreTake(((osalFreeRtosEvent*)evnt)->m, tout_ticks) == pdTRUE)
+            ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
+#else
     return ((xSemaphoreTake(evnt, tout_ticks) == pdTRUE)
             ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
+#endif
 }
 
 #endif

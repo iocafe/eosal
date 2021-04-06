@@ -60,7 +60,7 @@ void osal_detached_thread_example(void)
         os_sleep(1000);
     }
 
-    osal_console_write("detached thread example started\n");
+    osal_console_write("detached thread example exited\n");
 }
 
 
@@ -94,9 +94,9 @@ static void my_detached_thread(
 
     /* Print some text every 800 ms. React to process exit request immediately
      */
-    for (i = 0; i<8; i++)
+    for (i = 0; i<80; i++)
     {
-        osal_event_wait(myprm.thread_event, 800);
+        osal_event_wait(myprm.thread_event, 300);
         if (osal_stop()) {
             break;
         }

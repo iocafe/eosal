@@ -151,7 +151,7 @@ void osal_event_delete(
     }
 
 #if OSAL_OS_EVENT_LIST_SUPPORT
-    osal_event_remove_from_list(&osal_global->atexit_events_list, evnt);
+    osal_event_remove_from_list(evnt);
 #endif
 
     pe = (osalPosixEvent*)evnt;
@@ -208,14 +208,9 @@ void osal_event_set(
     osalEvent evnt)
 {
     osalPosixEvent *pe;
-
-    if (evnt == OS_NULL)
-    {
-        osal_debug_error("osal_event_set: NULL argument");
-        return;
-    }
-
     pe = (osalPosixEvent*)evnt;
+
+    osal_debug_assert(evnt != OS_NULL);
 
     /* Lock event structure.
      */
@@ -290,11 +285,7 @@ osalStatus osal_event_wait(
     osalStatus s;
     struct timespec ts;
 
-    if (evnt == OS_NULL)
-    {
-        osal_debug_error("osal_event_wait: NULL argument");
-        return OSAL_STATUS_EVENT_FAILED;
-    }
+    osal_debug_assert(evnt != OS_NULL);
 
     /* Cast posix event pointer and lock event.
      */

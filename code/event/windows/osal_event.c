@@ -22,14 +22,14 @@
 
 /* Windows specific event structure.
  */
-#if OSAL_OS_EVENT_LIST_SUPPORT
-typedef struct osalFreeRtosEvent
+typedef struct osalWindowsEvent
 {
+#if OSAL_OS_EVENT_LIST_SUPPORT
     osalEventHeader hdr;
+#endif
     HANDLE handle;
 }
-osalFreeRtosEvent;
-#endif
+osalWindowsEvent;
 
 /**
 ****************************************************************************************************
@@ -50,19 +50,35 @@ osalFreeRtosEvent;
 osalEvent osal_event_create(
     void)
 {
-    HANDLE handle;
+    osalWindowsEvent *evnt;
+
+    /* Allocate event handle stricture and mark it initially not signaled. Pipes are not
+     * created by default.
+     */
+    evnt = (osalWindowsEvent*)osal_sysmem_alloc(sizeof(osalWindowsEvent), OS_NULL);
+    if (evnt == OS_NULL) {
+        return OS_NULL;
+    }
+    os_memclear(evnt, sizeof(osalWindowsEvent));
 
     /* Call Windows to create an event.
      */
-    handle = CreateEvent(NULL, FALSE, FALSE, NULL);
+    evnt->handle = CreateEvent(NULL, FALSE, FALSE, NULL);
 
     /* If failed.
      */
-    if (handle == NULL)
+    if (evnt->handle)
     {
         osal_debug_error("CreateEvent failed");
+        osal_sysmem_free(evnt, sizeof(osalWindowsEvent));
         return OS_NULL;
     }
+
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    if (eflags & OSAL_EVENT_SET_AT_EXIT) {
+        osal_event_add_to_list(&osal_global->atexit_events_list, (osalEvent)pe);
+    }
+#endif
 
     /* Inform resource monitor that new event has been succesfullly created.
      */
@@ -70,7 +86,7 @@ osalEvent osal_event_create(
 
     /* Return the event pointer.
      */
-    return (osalEvent)handle;
+    return (osalEvent)evnt;
 }
 
 
@@ -92,30 +108,31 @@ osalEvent osal_event_create(
 void osal_event_delete(
     osalEvent evnt)
 {
-    HANDLE
-        handle;
+    osalWindowsEvent *e;
 
-    handle = (HANDLE)evnt;
-
-#if OSAL_DEBUG
-    if (handle == NULL)
+    if (evnt == NULL)
     {
         osal_debug_error("NULL event pointer");
         return;
     }
+#if OSAL_OS_EVENT_LIST_SUPPORT
+    osal_event_remove_from_list(&osal_global->atexit_events_list, evnt);
 #endif
 
     /* Call Windows to delete the event.
      */
-    if (!CloseHandle(handle))
+    if (CloseHandle(((osalWindowsEvent*)evnt)->handle))
     {
+        /* Inform resource monitor that event has been deleted.
+         */
+        osal_resource_monitor_decrement(OSAL_RMON_EVENT_COUNT);
+    }
+    else {
         osal_debug_error("osal_event: CloseHandle failed");
-        return;
+        /* continue despite of error to free memory. */
     }
 
-    /* Inform resource monitor that event has been deleted.
-     */
-    osal_resource_monitor_decrement(OSAL_RMON_EVENT_COUNT);
+    osal_sysmem_free(evnt, sizeof(osalFreeRtosEvent));
 }
 
 
@@ -138,23 +155,17 @@ void osal_event_delete(
 void osal_event_set(
     osalEvent evnt)
 {
-    HANDLE
-        handle;
-
-    /* Convert OSAL event pointer to Windows handle.
-     */
-    handle = (HANDLE)evnt;
-
+    osal_debug_assert(evnt != OS_NULL);
 
 #if OSAL_DEBUG
-    if (handle == NULL)
+    if (evnt == NULL)
     {
         osal_debug_error("NULL event pointer");
         return;
     }
 #endif
 
-    if (!SetEvent(handle))
+    if (!SetEvent(((osalWindowsEvent*)evnt)->handle))
     {
         osal_debug_error("SetEvent failed");
         return;
@@ -192,12 +203,7 @@ osalStatus osal_event_wait(
     osalEvent evnt,
     os_int timeout_ms)
 {
-    HANDLE
-        handle;
-
-    /* Convert OSAL event pointer to Windows handle.
-     */
-    handle = (HANDLE)evnt;
+    osal_debug_assert(evnt != OS_NULL);
 
     /* Make sure that infinite timeout matshes. This is propably unnecessary, check?
      */
@@ -208,7 +214,7 @@ osalStatus osal_event_wait(
 
     /* Call Windows wait function
      */
-    switch (WaitForSingleObject(handle, (DWORD)timeout_ms))
+    switch (WaitForSingleObject((((osalWindowsEvent*)evnt)->handle), (DWORD)timeout_ms))
     {
         /* The state of the specified object is signaled.
          */

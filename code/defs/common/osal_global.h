@@ -222,10 +222,12 @@ osalGlobalStruct;
 #define osal_go() (!osal_global->exit_process)
 #define osal_stop() (osal_global->exit_process)
 
-#if OSAL_PROCESS_CLEANUP_SUPPORT
+#if OSAL_PROCESS_CLEANUP_SUPPORT && OSAL_MULTITHREAD_SUPPORT
     void osal_request_exit(void);
+    void osal_wait_for_threads_to_exit(void);
 #else
     #define osal_request_exit()
+    #define osal_wait_for_threads_to_exit();
 #endif
 
 

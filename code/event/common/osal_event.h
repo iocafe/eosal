@@ -25,6 +25,8 @@
 #define OSAL_EVENT_H_
 #include "eosal.h"
 
+struct osalEventList;
+
 /**
 ****************************************************************************************************
   Defines
@@ -35,6 +37,7 @@
  */
 typedef struct osalEventHeader {
     struct osalEventHeader *next, *prev;
+    struct osalEventList *list;
 }
 osalEventHeader;
 
@@ -73,7 +76,7 @@ osalEventList;
 /**
 ****************************************************************************************************
 
-  @name Event Functions
+  @name Event functions
 
   The osal_event_create() function creates a new event, and osal_event_delete() deletes it.
   A thread may wait until an event is signaled or clear an event by osal_event_wait() function.
@@ -123,13 +126,13 @@ void osal_event_clearpipe(
     /* Remove event from list of events.
      */
     void osal_event_remove_from_list(
-        osalEventList *list,
         osalEvent evnt);
 
     /* Set all events in at exit list.
      */
     void osal_event_set_listed(
         osalEventList *list);
+
 #else
     #define osal_event_add_to_list(l,e)
     #define osal_event_remove_from_list(l,e)
@@ -141,7 +144,7 @@ void osal_event_clearpipe(
 /**
 ****************************************************************************************************
 
-  @name Empty Event Macros
+  @name Empty macros
 
   If OSAL_MULTITHREAD_SUPPORT flag is zero, these macros will replace functions and not generate
   any code. This allows to compile code which has calls mutex functions without multithreading

@@ -117,6 +117,9 @@ void osal_initialize(
 
   The osal_shutdown() function cleans up resources used by the OSAL library.
 
+  THe os_lock() MUST NOT be on when this function is called: Worker threads may need os_lock()
+  to be able to terminate.
+
   @return  None.
 
 ****************************************************************************************************
@@ -129,6 +132,11 @@ void osal_shutdown(
     if (!osal_global->osal_initialized) return;
 
 #if OSAL_PROCESS_CLEANUP_SUPPORT
+
+    /* Request for worker threads to exit and wait until done.
+     */
+    osal_request_exit();
+    osal_wait_for_threads_to_exit();
 
 #if OSAL_SOCKET_SUPPORT
     /* Shutdown sockets library if it has been used, this is mostly for windows.
