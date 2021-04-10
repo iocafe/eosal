@@ -100,9 +100,7 @@ typedef struct osalSocket
 
     os_boolean wrset_enabled;
 
-    /** OS_TRUE if connection has been reported by select.
-     */
-    /* os_boolean connected; */
+
 
     /** Ring buffer, OS_NULL if not used.
      */
@@ -282,12 +280,18 @@ osalStream osal_socket_open(
     {
         s = osal_setup_tcp_socket(mysocket, iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
-        info_code = (flags & OSAL_STREAM_LISTEN)
-            ? OSAL_LISTENING_SOCKET_CONNECTED: OSAL_SOCKET_CONNECTED;
+        if (flags & OSAL_STREAM_LISTEN) {
+            info_code = OSAL_LISTENING_SOCKET_CONNECTED;
+        }
+        else {
+            info_code = OSAL_SOCKET_CONNECTED;
+            osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
+        }
     }
 
-    /* Success, inform error handler, set status code and return stream pointer.
+    /* Success, inform event handler, set status code and return stream pointer.
      */
+    osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
     osal_info(eosal_mod, info_code, parameters);
     if (status) *status = OSAL_SUCCESS;
     return (osalStream)mysocket;
@@ -399,9 +403,9 @@ static osalStatus osal_setup_tcp_socket(
 
     /* Save flags and interface pointer.
      */
-    mysocket->open_flags = flags;
+    // mysocket->open_flags = flags;
     mysocket->is_ipv6 = iface_addr_is_ipv6;
-    mysocket->hdr.iface = &osal_socket_iface;
+    // mysocket->hdr.iface = &osal_socket_iface;
 
     if (flags & OSAL_STREAM_LISTEN)
     {
@@ -1016,13 +1020,12 @@ void osal_socket_close(
     }
     osal_info(eosal_mod, info_code, nbuf);
 
-    /* Free ring buffer, if any.
+    /* Free ring buffer, if any, memory allocated for socket structure
+       and decrement socket count.
      */
     os_free(mysocket->buf, mysocket->buf_sz);
-
-    /* Free memory allocated for socket structure.
-     */
     os_free(mysocket, sizeof(osalSocket));
+    osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
 }
 
 
@@ -1159,6 +1162,8 @@ osalStream osal_socket_accept(
          */
         osal_trace2("socket accepted");
         if (status) *status = OSAL_SUCCESS;
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_COUNT);
+        osal_resource_monitor_increment(OSAL_RMON_SOCKET_CONNECT_COUNT);
         return (osalStream)newsocket;
     }
 
@@ -1361,6 +1366,7 @@ static osalStatus osal_socket_write2(
 
     mysocket->write2_blocked = (os_boolean)(rval != n);
 
+    osal_resource_monitor_update(OSAL_RMON_TX_TCP, rval);
     *n_written = rval;
     return OSAL_SUCCESS;
 
@@ -1604,6 +1610,7 @@ osalStatus osal_socket_read(
             rval = 0;
         }
 
+        osal_resource_monitor_update(OSAL_RMON_RX_TCP, rval);
         *n_read = rval;
         return OSAL_SUCCESS;
     }
@@ -1863,6 +1870,8 @@ osalStatus osal_socket_send_packet(
                         break;
                 }
             }
+
+            osal_resource_monitor_update(OSAL_RMON_TX_UDP, nbytes);
         }
     }
     else
@@ -1921,6 +1930,7 @@ osalStatus osal_socket_send_packet(
                         break;
                 }
             }
+            osal_resource_monitor_update(OSAL_RMON_TX_UDP, nbytes);
         }
     }
 
@@ -1928,6 +1938,7 @@ osalStatus osal_socket_send_packet(
     {
         osal_error(OSAL_ERROR, eosal_mod, OSAL_STATUS_SEND_MULTICAST_FAILED, OS_NULL);
     }
+
 
     return s;
 }
@@ -2041,6 +2052,7 @@ osalStatus osal_socket_receive_packet(
     }
 
     if (n_read) *n_read = nbytes;
+    osal_resource_monitor_update(OSAL_RMON_RX_UDP, nbytes);
     return OSAL_SUCCESS;
 }
 
@@ -2301,7 +2313,7 @@ static os_int osal_get_interface_index_by_ipv6_address(
 /** Stream interface for OSAL sockets. This is structure osalStreamInterface filled with
     function pointers to OSAL sockets implementation.
  */
-OS_FLASH_MEM osalStreamInterface osal_socket_iface
+OS_CONST osalStreamInterface osal_socket_iface
  = {OSAL_STREAM_IFLAG_NONE,
     osal_socket_open,
     osal_socket_close,

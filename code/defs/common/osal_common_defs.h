@@ -121,6 +121,10 @@ typedef os_char os_boolean;
 #define OSAL_STREAM_BUFFER_SUPPORT 0
 #endif
 
+#ifndef OSAL_RING_BUFFER_SUPPORT
+#define OSAL_RING_BUFFER_SUPPORT OSAL_SOCKET_SUPPORT
+#endif
+
 /* Decide if to include nick name support. By default we support nick names
  * we have sockets and we are not doing minimalistic build.
  */

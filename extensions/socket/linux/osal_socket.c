@@ -100,9 +100,9 @@ typedef struct osalSocket
 
     os_boolean wrset_enabled;
 
-    /** OS_TRUE if connection has been reported by select.
-     */
-    /* os_boolean connected; */
+#if 0
+    osalRingBuf ring;
+#else
 
     /** Ring buffer, OS_NULL if not used.
      */
@@ -119,6 +119,7 @@ typedef struct osalSocket
     /** Tail index. Position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
      */
     os_short tail;
+#endif
 }
 osalSocket;
 
@@ -1025,6 +1026,7 @@ void osal_socket_close(
     /* Free ring buffer, if any, memory allocated for socket structure
        and decrement socket count.
      */
+    // os_free(mysocket->ring.buf, mysocket->ring.buf_sz);
     os_free(mysocket->buf, mysocket->buf_sz);
     os_free(mysocket, sizeof(osalSocket));
     osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
@@ -1238,7 +1240,6 @@ osalStatus osal_socket_flush(
              */
             if (head < tail && head)
             {
-                /* tmpbuf = alloca(buf_sz); */
                 os_char tmpbuf[buf_sz];
                 wrnow = buf_sz - tail;
                 os_memcpy(tmpbuf, buf + tail, wrnow);

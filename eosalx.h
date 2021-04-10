@@ -54,6 +54,7 @@ OSAL_C_HEADER_BEGINS
 #ifndef EOSAL_C_MAIN
   #define EOSAL_C_MAIN
 #endif
+#include "extensions/ringbuf/common/osal_ringbuf.h"
 #include "extensions/stream/common/osal_stream.h"
 #include "extensions/stream/common/osal_stream_defaults.h"
 #include "extensions/stream/common/osal_stream_buffer.h"
