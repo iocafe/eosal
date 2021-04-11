@@ -49,6 +49,10 @@ osalRingBuf;
  */
 #define osal_ringbuf_is_empty(r) ((r)->head == (r)->tail)
 
+/* Check if ring buffer is full.
+ */
+#define osal_ringbuf_is_full(r) ((r)->head + 1 == (r)->tail || ((r)->head = buf_sz - 1 && (r)->tail == 0))
+
 /* Number of bytes in ring buffer.
  */
 #define osal_ringbuf_bytes(r) ((r)->head >= (r)->tail ? (r)->head - (r)->tail : (r)->buf_sz + (r)->head - (r)->tail)
@@ -78,7 +82,6 @@ os_int osal_ringbuf_set_buffer(
     const os_char *buf,
     os_int sz);
 
-
 /* Place up to n bytes into ring buffer. Returns number of bytes placed into ring buffer.
  */
 os_int osal_ringbuf_put(
@@ -93,5 +96,9 @@ os_int osal_ringbuf_get(
     os_char *data,
     os_int n);
 
+/* Reorganize data in ring buffer to be continuous.
+ */
+void osal_ringbuf_make_continuous(
+    osalRingBuf *r);
 
 #endif

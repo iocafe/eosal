@@ -152,21 +152,23 @@ os_int osal_ringbuf_put(
 
 ****************************************************************************************************
 */
-void osal_make_continuous(
+void osal_ringbuf_make_continuous(
     osalRingBuf *r)
 {
-    os_char tmpbuf[r->buf_sz], *buf = r->buf;
+    if (r->head < r->tail)
+    {
+        os_char tmpbuf[r->buf_sz], *buf;
+        os_int n;
 
-    if (r->head >= r->tail) {
-        return;
+        buf = r->buf;
+
+        n = r->buf_sz - r->tail;
+        os_memcpy(tmpbuf, buf + r->tail, n);
+        os_memcpy(tmpbuf + n, buf, r->head);
+        r->tail = 0;
+        r->head += n;
+        os_memcpy(buf, tmpbuf, r->head);
     }
-
-    os_int wrnow = r->buf_sz - r->tail;
-    os_memcpy(tmpbuf, buf + r->tail, wrnow);
-    os_memcpy(tmpbuf + wrnow, buf, r->head);
-    r->tail = 0;
-    r->head += wrnow;
-    os_memcpy(buf, tmpbuf, r->head);
 }
 
 
