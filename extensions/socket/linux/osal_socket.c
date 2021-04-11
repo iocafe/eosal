@@ -34,7 +34,7 @@
 #include <net/if.h>
 #include <ifaddrs.h>
 
-#define NEW_RING_TEST 0
+#define NEW_RING_TEST 1
 
 
 /* Use pselect(), POSIX.1-2001 version. According to earlier standards, include <sys/time.h>
@@ -1243,7 +1243,7 @@ osalStatus osal_socket_flush(
         if (s) return s;
 
         if (nwr == n) {
-            ring->head = ring->tail = 0;
+            osal_ringbuf_reset(ring);
         }
         else {
             ring->tail += (os_int)nwr;
@@ -1471,7 +1471,7 @@ osalStatus osal_socket_write(
     {
         count = 0;
 
-        while (OS_TRUE) {
+        do {
             n_now = osal_ringbuf_put(ring, buf, n);
             count += n_now;
             if (n_now == n) break;
@@ -1486,7 +1486,7 @@ osalStatus osal_socket_write(
             if (s) goto getout;
 
             if (nwr == n_now) {
-                ring->head = ring->tail = 0;
+                osal_ringbuf_reset(ring);
             }
             else {
                 ring->tail += (os_int)nwr;

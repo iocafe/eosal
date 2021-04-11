@@ -51,11 +51,11 @@ osalRingBuf;
 
 /* Check if ring buffer is full.
  */
-#define osal_ringbuf_is_full(r) ((r)->head + 1 == (r)->tail || ((r)->head = buf_sz - 1 && (r)->tail == 0))
+#define osal_ringbuf_is_full(r) ((r)->head + 1 == (r)->tail || ((r)->head == buf_sz - 1 && (r)->tail == 0))
 
 /* Number of bytes in ring buffer.
  */
-#define osal_ringbuf_bytes(r) ((r)->head >= (r)->tail ? (r)->head - (r)->tail : (r)->buf_sz + (r)->head - (r)->tail)
+#define osal_ringbuf_bytes(r) ((r)->head >= (r)->tail ? (r)->head - (r)->tail : (r)->buf_sz + ((r)->head - (r)->tail))
 
 /* Number of continuous bytes in ring buffer to get.
  */
@@ -72,7 +72,7 @@ osalRingBuf;
 /* Start ring buffer from beginning. Used when ring buffer is becomes empty to prevent unnecessary split by wrap
    around. This MUST NOT be used if ring buffer is used to move data from thread to another.
  */
-#define osal_ringbuf_reset(r) (r)->head = (r)->tail = 0;
+#define osal_ringbuf_reset(r) (r)->head = (r)->tail = 0
 
 
 /* Save buffer pointer and size within ring buffer srructure.
