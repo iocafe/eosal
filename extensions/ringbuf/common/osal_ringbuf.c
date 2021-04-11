@@ -146,7 +146,10 @@ os_int osal_ringbuf_put(
   Rotate ring buffer so that all buffered data is in continous memory.
 
   Warning: This function cannot be used if ring buffer is used to move data from thread to
-  anothee (unless syncronozation is used).
+  another (unless syncronozation is used).
+
+  Warning: This function should not be used in small microcontroller socket wrappers.
+  It uses > 1420 bytes of stack.
 
   @param   r Ring buffer state structure.
 

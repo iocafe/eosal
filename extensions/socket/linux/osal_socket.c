@@ -34,9 +34,6 @@
 #include <net/if.h>
 #include <ifaddrs.h>
 
-#define NEW_RING_TEST 1
-
-
 /* Use pselect(), POSIX.1-2001 version. According to earlier standards, include <sys/time.h>
    and <sys/types.h>. These would be needed with select instead of sys/select.h if pselect
    is not available.
@@ -102,26 +99,9 @@ typedef struct osalSocket
 
     os_boolean wrset_enabled;
 
-#if NEW_RING_TEST
+    /** Ring buffer to write socket with one call, used when TCP_NODELAY mode.
+     */
     osalRingBuf ring;
-#else
-
-    /** Ring buffer, OS_NULL if not used.
-     */
-    os_char *buf;
-
-    /** Buffer size in bytes.
-     */
-    os_short buf_sz;
-
-    /** Head index. Position in buffer to which next byte is to be written. Range 0 ... buf_sz-1.
-     */
-    os_short head;
-
-    /** Tail index. Position in buffer from which next byte is to be read. Range 0 ... buf_sz-1.
-     */
-    os_short tail;
-#endif
 }
 osalSocket;
 
@@ -1028,11 +1008,7 @@ void osal_socket_close(
     /* Free ring buffer, if any, memory allocated for socket structure
        and decrement socket count.
      */
-#if NEW_RING_TEST
     os_free(mysocket->ring.buf, mysocket->ring.buf_sz);
-#else
-    os_free(mysocket->buf, mysocket->buf_sz);
-#endif
     os_free(mysocket, sizeof(osalSocket));
     osal_resource_monitor_decrement(OSAL_RMON_SOCKET_COUNT);
 }
@@ -1134,7 +1110,7 @@ osalStream osal_socket_accept(
 
         osal_socket_blocking_mode(new_handle, OS_FALSE);
         if (flags & OSAL_STREAM_TCP_NODELAY) {
-            osal_socket_setup_ring_buffer(mysocket);
+            osal_socket_setup_ring_buffer(newsocket);
             osal_socket_set_nodelay(new_handle, OS_TRUE);
         }
 
@@ -1224,7 +1200,6 @@ osalStatus osal_socket_flush(
     osalStream stream,
     os_int flags)
 {
-#if NEW_RING_TEST
     osalSocket *mysocket;
     osalRingBuf *ring;
     os_memsz nwr;
@@ -1250,72 +1225,6 @@ osalStatus osal_socket_flush(
         }
     }
     return OSAL_SUCCESS;
-
-#else
-    osalSocket *mysocket;
-    os_char *buf;
-    os_memsz nwr;
-    os_short head, tail, wrnow, buf_sz;
-    osalStatus status;
-
-    if (stream)
-    {
-        mysocket = (osalSocket*)stream;
-        head = mysocket->head;
-        tail = mysocket->tail;
-
-        if (head != tail)
-        {
-            buf = mysocket->buf;
-            buf_sz = mysocket->buf_sz;
-
-            /* Never split to two TCP packets.
-             */
-            if (head < tail && head)
-            {
-                os_char tmpbuf[buf_sz];
-                wrnow = buf_sz - tail;
-                os_memcpy(tmpbuf, buf + tail, wrnow);
-                os_memcpy(tmpbuf + wrnow, buf, head);
-                tail = 0;
-                head += wrnow;
-                os_memcpy(buf, tmpbuf, head);
-            }
-
-            if (head < tail)
-            {
-                wrnow = buf_sz - tail;
-
-                status = osal_socket_write2(mysocket, buf + tail, wrnow, &nwr, flags);
-                if (status) goto getout;
-                if (nwr == wrnow) tail = 0;
-                else tail += (os_short)nwr;
-            }
-
-            if (head > tail)
-            {
-                wrnow = head - tail;
-
-                status = osal_socket_write2(mysocket, buf + tail, wrnow, &nwr, flags);
-                if (status) goto getout;
-                tail += (os_short)nwr;
-            }
-
-            if (tail == head)
-            {
-                tail = head = 0;
-            }
-
-            mysocket->head = head;
-            mysocket->tail = tail;
-        }
-    }
-
-    return OSAL_SUCCESS;
-
-getout:
-    return status;
-#endif
 }
 
 
@@ -1425,21 +1334,11 @@ osalStatus osal_socket_write(
     os_memsz *n_written,
     os_int flags)
 {
-#if NEW_RING_TEST
     osalSocket *mysocket;
     osalRingBuf *ring;
     os_memsz nwr;
     os_int n_now, count;
     osalStatus s;
-#else
-    osalSocket *mysocket;
-    int count, wrnow;
-    osalStatus s;
-    os_char *rbuf;
-    os_short head, tail, buf_sz, nexthead;
-    os_memsz nwr;
-    os_boolean all_not_flushed;
-#endif
 
     if (stream == OS_NULL) {
         s = OSAL_STATUS_FAILED;
@@ -1465,7 +1364,8 @@ osalStatus osal_socket_write(
         goto getout;
     }
 
-#if NEW_RING_TEST
+    /* Nagle disabled (TCP_NODELAY)
+     */
     ring = &mysocket->ring;
     if (ring->buf)
     {
@@ -1498,86 +1398,8 @@ osalStatus osal_socket_write(
         return OSAL_SUCCESS;
     }
 
-#else
-
-    if (mysocket->buf)
-    {
-        rbuf = mysocket->buf;
-        buf_sz = mysocket->buf_sz;
-        head = mysocket->head;
-        tail = mysocket->tail;
-        all_not_flushed = OS_FALSE;
-        count = 0;
-
-        while (OS_TRUE)
-        {
-            while (n > 0)
-            {
-                nexthead = head + 1;
-                if (nexthead >= buf_sz) nexthead = 0;
-                if (nexthead == tail) break;
-                rbuf[head] = *(buf++);
-                head = nexthead;
-                n--;
-                count++;
-            }
-
-            if (n == 0 || all_not_flushed)
-            {
-                break;
-            }
-
-            /* Never split to two TCP packets.
-             */
-            if (head < tail && head)
-            {
-                os_char tmpbuf[buf_sz];
-                wrnow = buf_sz - tail;
-                os_memcpy(tmpbuf, rbuf + tail, wrnow);
-                os_memcpy(tmpbuf + wrnow, rbuf, head);
-                tail = 0;
-                head += wrnow;
-                os_memcpy(rbuf, tmpbuf, head);
-            }
-
-            if (head < tail)
-            {
-                wrnow = buf_sz - tail;
-
-                osal_socket_set_nodelay(mysocket->handle, OS_TRUE);
-                s = osal_socket_write2(mysocket, rbuf+tail, wrnow, &nwr, flags);
-                if (s) goto getout;
-                if (nwr == wrnow) tail = 0;
-                else tail += (os_short)nwr;
-            }
-
-            if (head > tail)
-            {
-                wrnow = head - tail;
-
-                osal_socket_set_nodelay(mysocket->handle, OS_TRUE);
-                s = osal_socket_write2(mysocket, rbuf+tail, wrnow, &nwr, flags);
-                if (s) goto getout;
-                tail += (os_short)nwr;
-            }
-
-            if (tail == head)
-            {
-                tail = head = 0;
-            }
-            else
-            {
-                all_not_flushed = OS_TRUE;
-            }
-        }
-
-        mysocket->head = head;
-        mysocket->tail = tail;
-        *n_written = count;
-        return OSAL_SUCCESS;
-    }
-#endif
-
+    /* Using Nagle (no TCP_NODELAY)
+     */
     return osal_socket_write2(mysocket, buf, n, n_written, flags);
 
 getout:
@@ -2202,14 +2024,9 @@ static void osal_socket_set_nodelay(
 static void osal_socket_setup_ring_buffer(
     osalSocket *mysocket)
 {
-#if NEW_RING_TEST
     os_memclear(&mysocket->ring, sizeof(osalRingBuf));
     mysocket->ring.buf_sz = 1420; /* selected for TCP sockets */
     mysocket->ring.buf = (os_char*)os_malloc(mysocket->ring.buf_sz, OS_NULL);
-#else
-    mysocket->buf_sz = 1420; /* selected for TCP sockets */
-    mysocket->buf = (os_char*)os_malloc(mysocket->buf_sz, OS_NULL);
-#endif
 }
 
 

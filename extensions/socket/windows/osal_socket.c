@@ -243,8 +243,7 @@ osalStream osal_socket_open(
 
     /* Open UDP multicast socket
      */
-    if (flags & OSAL_STREAM_MULTICAST)
-    {
+    if (flags & OSAL_STREAM_MULTICAST) {
         s = osal_setup_socket_for_udp_multicasts(mysocket, option,
             iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
@@ -253,8 +252,7 @@ osalStream osal_socket_open(
 
     /* Open TCP socket.
      */
-    else
-    {
+    else {
         s = osal_setup_tcp_socket(mysocket, iface_addr_bin, is_ipv6, port_nr, flags);
         if (s) goto getout;
         if (flags & OSAL_STREAM_LISTEN) {
@@ -1209,8 +1207,7 @@ osalStream osal_socket_accept(
 
         /* If we work without Nagel.
          */
-        if (flags & OSAL_STREAM_TCP_NODELAY)
-        {
+        if (flags & OSAL_STREAM_TCP_NODELAY) {
             osal_socket_setup_ring_buffer(newsocket);
         }
 
