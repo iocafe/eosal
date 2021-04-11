@@ -6,13 +6,21 @@
   @version 1.0
   @date    8.1.2020
 
-  Buffer data for communication.
-  Transfer data from thread to another.
+  Ring buffers are commonly used to buffer data for communication, to combine multiple small
+  writes into one TCP package, or transfer data from thread to another.
 
-  Memory allocation handled by caller.
+  The osal_rinngbuf is simple general purpose ring buffer implementation, with typical head and
+  tail indices. The ting buffer state is maintained in osalRingBuf structure (head, tail, buffer
+  pointer and size)
 
-  Atomic changes to head and tail and tranfer data from thread to another. 8. 16. 32 bit processors.
-  Multithreading. Buffer size limit, or synchronization needed.
+  Memory allocation for buffer handled by caller and stored into buf, and buf_sz members
+  of ring buffer state structure.
+
+  Atomic changes to head and tail and tranfer data from thread to another: 8, 16, 32, 64 bit
+  processors use integers up to this size atomically (access and set is one processor
+  instruction and synchronization is not needed). This ring buffer doesn't require synchronization
+  when moving data between threads, if buffer size less than 65536 for 16 bit processors and
+  0x7FFFFFFF for 32 bit processors.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -24,14 +32,16 @@
 #include "eosalx.h"
 #if OSAL_RING_BUFFER_SUPPORT
 
-
+/* Ring buffer state structure. Before using ring buffer, application needs to set buffer pointer
+   and size, and clear head and tail indeixes to zero.
+ */
 typedef struct osalRingBuf
 {
-    /** Ring buffer, OS_NULL if not used.
+    /** Ring buffer.
      */
     os_char *buf;
 
-    /** Buffer allocation size in bytes. Maximum number of bytes to buffer is buf_sz - 1.
+    /** Buffer allocation size in bytes. Maximum number of buffered bytes is buf_sz - 1.
      */
     os_int buf_sz;
 
@@ -74,13 +84,6 @@ osalRingBuf;
  */
 #define osal_ringbuf_reset(r) (r)->head = (r)->tail = 0
 
-
-/* Save buffer pointer and size within ring buffer srructure.
- */
-os_int osal_ringbuf_set_buffer(
-    osalRingBuf *r,
-    const os_char *buf,
-    os_int sz);
 
 /* Place up to n bytes into ring buffer. Returns number of bytes placed into ring buffer.
  */

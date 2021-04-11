@@ -6,13 +6,21 @@
   @version 1.0
   @date    8.1.2020
 
-  Buffer data for communication.
-  Transfer data from thread to another.
+  Ring buffers are commonly used to buffer data for communication, to combine multiple small
+  writes into one TCP package, or transfer data from thread to another.
 
-  Memory allocation handled by caller.
+  The osal_rinngbuf is simple general purpose ring buffer implementation, with typical head and
+  tail indices. The ting buffer state is maintained in osalRingBuf structure (head, tail, buffer
+  pointer and size)
 
-  Atomic changes to head and tail and tranfer data from thread to another. 8. 16. 32 bit processors.
-  Multithreading. Buffer size limit, or synchronization needed.
+  Memory allocation for buffer handled by caller and stored into buf, and buf_sz members
+  of ring buffer state structure.
+
+  Atomic changes to head and tail and tranfer data from thread to another: 8, 16, 32, 64 bit
+  processors use integers up to this size atomically (access and set is one processor
+  instruction and synchronization is not needed). This ring buffer doesn't require synchronization
+  when moving data between threads, if buffer size less than 65536 for 16 bit processors and
+  0x7FFFFFFF for 32 bit processors.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -173,6 +181,5 @@ void osal_ringbuf_make_continuous(
         os_memcpy(buf, tmpbuf, r->head);
     }
 }
-
 
 #endif
