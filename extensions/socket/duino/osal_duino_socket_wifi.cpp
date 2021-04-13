@@ -913,7 +913,9 @@ osalStatus osal_socket_write(
 
     mysocket = (osalSocket*)stream;
     status = osal_socket_check(mysocket);
-    if (status) return status == OSAL_PENDING ? OSAL_SUCCESS: status;
+    if (status) {
+        return status == OSAL_PENDING ? OSAL_SUCCESS : status;
+    }
 
     /* Cast stream pointer to socket structure pointer.
      */
