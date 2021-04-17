@@ -61,7 +61,7 @@ osalRingBuf;
 
 /* Check if ring buffer is full.
  */
-#define osal_ringbuf_is_full(r) ((r)->head + 1 == (r)->tail || ((r)->head == buf_sz - 1 && (r)->tail == 0))
+#define osal_ringbuf_is_full(r) ((r)->head + 1 == (r)->tail || ((r)->head == (r)->buf_sz - 1 && (r)->tail == 0))
 
 /* Number of bytes in ring buffer.
  */

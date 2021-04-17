@@ -258,7 +258,7 @@ typedef struct osalSelectData
 {
     /** Zero based stream number, 0 = first stream, 1 = second stream... Value can also be
         one of OSAL_STREAM_NR_CUSTOM_EVENT, OSAL_STREAM_NR_TIMEOUT_EVENT or
-        OSAL_STREAM_NR_UNKNOWN_EVENT
+        OSAL_STREAM_NR_UNKNOWN_EVENT.
      */
     os_int stream_nr;
 }

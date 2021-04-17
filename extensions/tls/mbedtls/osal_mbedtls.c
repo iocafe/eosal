@@ -791,13 +791,11 @@ static osalStatus osal_mbedtls_read(
            OSAL_SOCKET_SELECT_MAX.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
   @param   selectdata Pointer to structure to fill in with information why select call
-           returned. The "stream_nr" member is stream number which triggered the return,
-           or OSAL_STREAM_NR_CUSTOM_EVENT if return was triggered by custom evenet given
-           as argument. The "errorcode" member is OSAL_SUCCESS if all is fine. Other
-           values indicate an error (broken or closed socket, etc). The "eventflags"
-           member is planned to to show reason for return. So far value of eventflags
-           is not well defined and is different for different operating systems, so
-           it should not be relied on.
+           returned. The "stream_nr" member is stream number which triggered the return:
+           0 = first stream, 1 = second stream... Or one of OSAL_STREAM_NR_CUSTOM_EVENT,
+           OSAL_STREAM_NR_TIMEOUT_EVENT or OSAL_STREAM_NR_UNKNOWN_EVENT. These indicate
+           that event was triggered, wait timeout, and that stream implementation did
+           not provide reason.
   @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
