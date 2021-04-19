@@ -67,6 +67,10 @@ typedef enum
      */
     OSAL_MEMORY_ALLOCATED = 8,
 
+    /** General "work done" status, something was done (not indicating an error).
+     */
+    OSAL_WORK_DONE = 9,
+
     /** Indicating that we are dealing with IP v6 address (not indicating an error).
      */
     OSAL_IS_IPV6 = 10,

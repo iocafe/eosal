@@ -71,11 +71,15 @@ osalRingBuf;
  */
 #define osal_ringbuf_continuous_bytes(r) ((r)->head >= (r)->tail ? (r)->head - (r)->tail : (r)->buf_sz - (r)->tail)
 
-/* Free space in ring buffer.
+/* Drip data in ring buffer, advance tail by n bytes.
+ */
+#define ioc_switchbox_ringbuf_skip_data(r,n) (r)->tail = (r)->tail + (n) < (r)->buf_sz ? (r)->tail + (n) : (r)->tail + (n) - (r)->buf_sz
+
+/* How much free space in ring buffer?
  */
 #define osal_ringbuf_space(r) ((r)->buf_sz - osal_ringbuf_bytes(r) - 1)
 
-/* Free continuous space in ring buffer to place new data.
+/* How much free continuous space in ring buffer to place new data?
  */
 #define osal_ringbuf_continuous_space(r) ((r)->tail > (r)->head ? (r)->tail - (r)->head - 1 : (r)->buf_sz - (r)->head - ((r)->tail ? 0 : 1))
 
