@@ -1539,8 +1539,8 @@ getout:
   read end to readfds. When the other thread wants to interrupt the select() just write a byte
   to it, then consume it afterward.
 
-  @param   streams Array of streams to wait for. These must be serial ports, no mixing
-           of different stream types is supported.
+  @param   streams Array of streams to wait for. All these must be sockets, different stream
+           types cannot be mixed in select.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
   @param   selectdata Pointer to structure to fill in with information why select call

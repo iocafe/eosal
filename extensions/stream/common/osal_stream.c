@@ -554,8 +554,8 @@ void osal_stream_set_parameter(
   The osal_stream_select() function blocks execution of the calling thread until something
   is received from stream, we can write data to it, or event given as argument is triggered.
 
-  @param   streams Array of streams to wait for. These must be serial ports, no mixing
-           of different stream types is supported.
+  @param   streams Array of streams to wait for. These must be all the same type, mixing
+           of different stream types is not supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
   @param   selectdata Pointer to structure to fill in with information why select call

@@ -785,8 +785,8 @@ static osalStatus osal_mbedtls_read(
   read end to readfds. When the other thread wants to interrupt the select() just write a byte
   to it, then consume it afterward.
 
-  @param   streams Array of streams to wait for. These must be serial ports, no mixing
-           of different stream types is supported.
+  @param   streams Array of streams to wait for. All these must be TLS sockets, different stream
+           types cannot be mixed in select.
   @param   n_streams Number of stream pointers in "streams" array. Must be in range from 1 to
            OSAL_SOCKET_SELECT_MAX.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
