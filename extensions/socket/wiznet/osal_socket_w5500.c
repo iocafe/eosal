@@ -163,7 +163,7 @@ static void osal_make_sockets(
           or directly in parameter sstring. For example "192.168.1.55:20" or "localhost:12345"
           specify IPv4 addressed. If only port number is specified, which is often
           useful for listening socket, for example ":12345".
-          IPv4 address is automatically recognized from numeric address like
+          IPv6 address is automatically recognized from numeric address like
           "2001:0db8:85a3:0000:0000:8a2e:0370:7334", but not when address is specified as string
           nor for empty IP specifying only port to listen. Use brackets around IP address
           to mark IPv6 address, for example "[localhost]:12345", or "[]:12345" for empty IP.
