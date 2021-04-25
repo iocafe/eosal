@@ -118,7 +118,6 @@ osalStatus osal_serial_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags);
 #endif

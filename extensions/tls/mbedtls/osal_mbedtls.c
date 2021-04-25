@@ -790,19 +790,11 @@ static osalStatus osal_mbedtls_read(
   @param   n_streams Number of stream pointers in "streams" array. Must be in range from 1 to
            OSAL_SOCKET_SELECT_MAX.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   selectdata Pointer to structure to fill in with information why select call
-           returned. The "stream_nr" member is stream number which triggered the return:
-           0 = first stream, 1 = second stream... Or one of OSAL_STREAM_NR_CUSTOM_EVENT,
-           OSAL_STREAM_NR_TIMEOUT_EVENT or OSAL_STREAM_NR_UNKNOWN_EVENT. These indicate
-           that event was triggered, wait timeout, and that stream implementation did
-           not provide reason.
   @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-  @return  None.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -810,7 +802,6 @@ static osalStatus osal_mbedtls_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {
@@ -828,7 +819,7 @@ static osalStatus osal_mbedtls_select(
         tcpstreams[ntcpstreams++] = so->tcpsocket;
     }
 
-    return osal_stream_select(tcpstreams, ntcpstreams, evnt, selectdata, timeout_ms, flags);
+    return osal_stream_select(tcpstreams, ntcpstreams, evnt, timeout_ms, flags);
 }
 #endif
 

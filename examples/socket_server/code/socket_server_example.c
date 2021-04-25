@@ -69,7 +69,6 @@ static void mythread_func(
     MyThreadParams *p;
     osalStream handle[OSAL_SOCKET_SELECT_MAX], st;
     osalStatus status;
-    osalSelectData selectdata;
     os_int i;
     os_char buf[64];
     os_memsz n_read, n_written;
@@ -114,7 +113,7 @@ static void mythread_func(
            Like custom event by user key press or someting received from socket, etc.
          */
         status = osal_stream_select(handle, OSAL_SOCKET_SELECT_MAX, p->myevent,
-            &selectdata, 0, OSAL_STREAM_DEFAULT);
+            0, OSAL_STREAM_DEFAULT);
         if (status)
         {
             osal_debug_error("osal_stream_select failed");
@@ -122,7 +121,7 @@ static void mythread_func(
 
         /* If accepting an incoming socket connection.
          */
-        if (selectdata.eventflags & OSAL_STREAM_ACCEPT_EVENT)
+        // if (selectdata.eventflags & OSAL_STREAM_ACCEPT_EVENT)
         {
             osal_console_write("accept event\n");
 
@@ -146,7 +145,7 @@ static void mythread_func(
             }
         }
 
-        if (selectdata.eventflags & OSAL_STREAM_CUSTOM_EVENT)
+        /* if (selectdata.eventflags & OSAL_STREAM_CUSTOM_EVENT)
         {
             osal_trace("custom event");
 
@@ -162,27 +161,7 @@ static void mythread_func(
                     handle[i] = OS_NULL;
                 }
             }
-        }
-
-        /* Show the event flags. For now, I do not recommend relying on these.
-           All socket wrapper implementations may not be complete.
-         */
-        if (selectdata.eventflags & OSAL_STREAM_CLOSE_EVENT)
-        {
-            osal_trace("close event");
-        }
-        if (selectdata.eventflags & OSAL_STREAM_CONNECT_EVENT)
-        {
-            osal_trace("connect event");
-        }
-        if (selectdata.eventflags & OSAL_STREAM_READ_EVENT)
-        {
-            osal_trace("read event");
-        }
-        if (selectdata.eventflags & OSAL_STREAM_WRITE_EVENT)
-        {
-            osal_console_write("write event\n");
-        }
+        } */
 
         /* Check for received data.
          */
@@ -196,7 +175,7 @@ static void mythread_func(
             {
                 osal_debug_error("read: connection broken");
                 osal_stream_close(st, OSAL_STREAM_DEFAULT);
-                handle[selectdata.stream_nr] = OS_NULL;
+                handle[i] = OS_NULL;
             }
             else if (n_read)
             {
@@ -216,7 +195,7 @@ static void mythread_func(
             if (osal_stream_flush(st, OSAL_STREAM_DEFAULT))
             {
                 osal_stream_close(st, OSAL_STREAM_DEFAULT);
-                handle[selectdata.stream_nr] = OS_NULL;
+                handle[i] = OS_NULL;
             }
         }
     }

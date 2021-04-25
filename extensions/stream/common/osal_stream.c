@@ -558,18 +558,10 @@ void osal_stream_set_parameter(
            of different stream types is not supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   selectdata Pointer to structure to fill in with information why select call
-           returned. The "stream_nr" member is stream number which triggered the return:
-           0 = first stream, 1 = second stream... Or one of OSAL_STREAM_NR_CUSTOM_EVENT,
-           OSAL_STREAM_NR_TIMEOUT_EVENT or OSAL_STREAM_NR_UNKNOWN_EVENT. These indicate
-           that event was triggered, wait timeout, and that stream implementation did
-           not provide reason.
   @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used (infinite).
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
-  @return  If successful, the function returns OSAL_SUCCESS and the selectdata tells which
-           socket or event triggered the thread to continue. Return value OSAL_STATUS_NOT_SUPPORTED
+  @return  If successful, the function returns OSAL_SUCCESS. Return value OSAL_STATUS_NOT_SUPPORTED
            indicates that select is not implemented. Other return values indicate an error.
-           See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
@@ -577,7 +569,6 @@ osalStatus osal_stream_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {
@@ -586,7 +577,7 @@ osalStatus osal_stream_select(
         if (streams[0]->iface->stream_select)
         {
             return streams[0]->iface->stream_select(streams, nstreams,
-                evnt, selectdata, timeout_ms, flags);
+                evnt, timeout_ms, flags);
         }
         else
         {

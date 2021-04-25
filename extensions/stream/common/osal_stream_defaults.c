@@ -150,7 +150,6 @@ osalStatus osal_stream_default_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {

@@ -81,7 +81,6 @@ static void mythread_func(
     MyThreadParams *mythreadprm;
     osalStream handle = OS_NULL;
     osalStatus status;
-    osalSelectData selectdata;
     os_char buf[64];
     os_memsz n_read;
 
@@ -123,9 +122,7 @@ static void mythread_func(
 
         /* Block here until something needs attention.
          */
-        status = osal_stream_select(&handle, 1, mythreadprm->myevent,
-            &selectdata, 0, OSAL_STREAM_DEFAULT);
-
+        status = osal_stream_select(&handle, 1, mythreadprm->myevent, 0, OSAL_STREAM_DEFAULT);
         if (status)
         {
             osal_debug_error("osal_stream_select failed\n");

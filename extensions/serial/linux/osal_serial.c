@@ -557,12 +557,6 @@ getout:
            of different stream types is supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   selectdata Pointer to structure to fill in with information why select call
-           returned. The "stream_nr" member is stream number which triggered the return:
-           0 = first stream, 1 = second stream... Or one of OSAL_STREAM_NR_CUSTOM_EVENT,
-           OSAL_STREAM_NR_TIMEOUT_EVENT or OSAL_STREAM_NR_UNKNOWN_EVENT. These indicate
-           that event was triggered, wait timeout, and that stream implementation did
-           not provide reason.
   @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
@@ -575,17 +569,14 @@ osalStatus osal_serial_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {
     osalSerial *myserial;
     fd_set rdset, wrset;
-    os_int i, handle, serial_nr, maxfd, pipefd, rval;
+    os_int i, handle, maxfd, pipefd, rval;
     struct timespec timeout, *to;
     OSAL_UNUSED(flags);
-
-    os_memclear(selectdata, sizeof(osalSelectData));
 
     FD_ZERO(&rdset);
     FD_ZERO(&wrset);
@@ -624,62 +615,20 @@ osalStatus osal_serial_select(
         to = &timeout;
     }
 
-    // errorcode = OSAL_SUCCESS;
     rval = pselect(maxfd+1, &rdset, &wrset, NULL, to, NULL);
     if (rval <= 0)
     {
         if (rval == 0)
         {
-            //selectdata->eventflags = OSAL_STREAM_TIMEOUT_EVENT;
-            selectdata->stream_nr = OSAL_STREAM_NR_TIMEOUT_EVENT;
             return OSAL_SUCCESS;
         }
-        // errorcode = OSAL_STATUS_FAILED;
     }
 
     if (pipefd >= 0) if (FD_ISSET(pipefd, &rdset))
     {
         osal_event_clearpipe(evnt);
-
-        // selectdata->eventflags = OSAL_STREAM_CUSTOM_EVENT;
-        selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
         return OSAL_SUCCESS;
     }
-
-    // eventflags = OSAL_STREAM_UNKNOWN_EVENT;
-
-    for (serial_nr = 0; serial_nr < nstreams; serial_nr++)
-    {
-        myserial = (osalSerial*)streams[serial_nr];
-        if (myserial)
-        {
-            handle = myserial->handle;
-
-            if (FD_ISSET (handle, &rdset))
-            {
-                // eventflags = OSAL_STREAM_READ_EVENT;
-                break;
-            }
-
-            if (myserial->write_blocked)
-            {
-                if (FD_ISSET (handle, &wrset))
-                {
-                    // eventflags = OSAL_STREAM_WRITE_EVENT;
-                    break;
-                }
-            }
-        }
-    }
-
-    if (serial_nr == nstreams)
-    {
-        serial_nr = OSAL_STREAM_NR_UNKNOWN_EVENT;
-    }
-
-    // selectdata->eventflags = eventflags;
-    selectdata->stream_nr = serial_nr;
-    // selectdata->errorcode = errorcode;
 
     return OSAL_SUCCESS;
 }

@@ -238,38 +238,6 @@ osalStreamParameterIx;
 /**
 ****************************************************************************************************
 
-  Data returned by osal_stream_select()
-
-****************************************************************************************************
-*/
-/*@{*/
-
-/* Values indicating custom event, timeout and unknown event in stream_nr of select data.
- */
-#define OSAL_STREAM_NR_CUSTOM_EVENT   -1
-#define OSAL_STREAM_NR_TIMEOUT_EVENT  -2
-#define OSAL_STREAM_NR_UNKNOWN_EVENT  -3
-
-/** Information back from select function. This tells if this is custom event triggered by
-    application to initiate writing data, select has timed out, or which of the streams
-    given as argument has triggered select to return.
- */
-typedef struct osalSelectData
-{
-    /** Zero based stream number, 0 = first stream, 1 = second stream... Value can also be
-        one of OSAL_STREAM_NR_CUSTOM_EVENT, OSAL_STREAM_NR_TIMEOUT_EVENT or
-        OSAL_STREAM_NR_UNKNOWN_EVENT.
-     */
-    os_int stream_nr;
-}
-osalSelectData;
-
-/*@}*/
-
-
-/**
-****************************************************************************************************
-
   Stream Interface structure.
 
   The interface structure contains set of function pointers. These function pointers point
@@ -371,7 +339,6 @@ typedef struct osalStreamInterface
         osalStream *streams,
         os_int nstreams,
         osalEvent evnt,
-        osalSelectData *selectdata,
         os_int timeout_ms,
         os_int flags);
 
@@ -527,7 +494,6 @@ osalStatus osal_stream_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags);
 
@@ -576,7 +542,7 @@ osalStatus osal_stream_receive_packet(
 #define osal_stream_read_value(s,c,f) osal_stream_default_read_value(s,c,f)
 #define osal_stream_get_parameter(s,i) osal_stream_default_get_parameter(s,i)
 #define osal_stream_set_parameter(s,i,v) osal_stream_default_set_parameter(s,i, v)
-#define osal_stream_select(s,n,e,d,t,f) osal_stream_default_select(s,n,e,d,t,f)
+#define osal_stream_select(s,n,e,t,f) osal_stream_default_select(s,n,e,t,f)
 #define osal_stream_send_packet(s,b,n,f) OSAL_STATUS_NOT_SUPPORTED
 #define osal_stream_receive_packet(s,b,n,nn,a,z,f) OSAL_STATUS_NOT_SUPPORTED
 #endif

@@ -1760,17 +1760,11 @@ void osal_socket_set_parameter(
            of different stream types is supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   selectdata Pointer to structure to fill in with information why select call
-           returned. The "stream_nr" member is stream number which triggered the return:
-           0 = first stream, 1 = second stream... Or one of OSAL_STREAM_NR_CUSTOM_EVENT,
-           OSAL_STREAM_NR_TIMEOUT_EVENT or OSAL_STREAM_NR_UNKNOWN_EVENT. These indicate
-           that event was triggered, wait timeout, and that stream implementation did
-           not provide reason.
   @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
   @return  None.
 
@@ -1780,7 +1774,6 @@ osalStatus osal_socket_select(
     osalStream *streams,
     os_int nstreams,
     osalEvent evnt,
-    osalSelectData *selectdata,
     os_int timeout_ms,
     os_int flags)
 {
@@ -1791,8 +1784,6 @@ osalStatus osal_socket_select(
     WSANETWORKEVENTS network_events;
     os_int i, n_sockets, n_events, event_nr;
     DWORD rval;
-
-    os_memclear(selectdata, sizeof(osalSelectData));
 
     if (nstreams < 1 || nstreams > OSAL_SOCKET_SELECT_MAX)
         return OSAL_STATUS_FAILED;
@@ -1827,7 +1818,7 @@ osalStatus osal_socket_select(
         return OSAL_SUCCESS;
     }
 
-    event_nr = (os_int)(rval - WSA_WAIT_EVENT_0);
+/*     event_nr = (os_int)(rval - WSA_WAIT_EVENT_0);
 
     if (evnt && event_nr == n_sockets)
     {
@@ -1847,7 +1838,7 @@ osalStatus osal_socket_select(
     }
 
     selectdata->stream_nr = ixtable[event_nr];
-
+*/
     return OSAL_SUCCESS;
 }
 #endif
