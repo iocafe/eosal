@@ -790,7 +790,8 @@ static osalStatus osal_mbedtls_read(
   @param   n_streams Number of stream pointers in "streams" array. Must be in range from 1 to
            OSAL_SOCKET_SELECT_MAX.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
+  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
+           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values

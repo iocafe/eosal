@@ -113,7 +113,7 @@ static void mythread_func(
            Like custom event by user key press or someting received from socket, etc.
          */
         status = osal_stream_select(handle, OSAL_SOCKET_SELECT_MAX, p->myevent,
-            0, OSAL_STREAM_DEFAULT);
+            OSAL_INFINITE, OSAL_STREAM_DEFAULT);
         if (status)
         {
             osal_debug_error("osal_stream_select failed");

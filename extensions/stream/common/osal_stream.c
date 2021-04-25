@@ -558,7 +558,8 @@ void osal_stream_set_parameter(
            of different stream types is not supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used (infinite).
+  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
+           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
   @return  If successful, the function returns OSAL_SUCCESS. Return value OSAL_STATUS_NOT_SUPPORTED
            indicates that select is not implemented. Other return values indicate an error.

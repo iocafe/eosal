@@ -1543,7 +1543,8 @@ getout:
            types cannot be mixed in select.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used (infinite).
+  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
+           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
   @return  If successful, the function returns OSAL_SUCCESS (0). Other return values indicate
            an error.
@@ -1597,7 +1598,7 @@ osalStatus osal_socket_select(
     }
 
     to = NULL;
-    if (timeout_ms)
+    if (timeout_ms > 0)
     {
         timeout.tv_sec = (time_t)(timeout_ms / 1000);
         timeout.tv_nsec	= (long)((timeout_ms % 1000) * 1000000);

@@ -557,7 +557,8 @@ getout:
            of different stream types is supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
+  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
+           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
@@ -608,7 +609,7 @@ osalStatus osal_serial_select(
     }
 
     to = NULL;
-    if (timeout_ms)
+    if (timeout_ms > 0)
     {
         timeout.tv_sec = (time_t)(timeout_ms / 1000);
         timeout.tv_nsec	= (long)((timeout_ms % 1000) * 1000000);

@@ -1760,7 +1760,8 @@ void osal_socket_set_parameter(
            of different stream types is supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
+  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
+           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
@@ -1784,6 +1785,7 @@ osalStatus osal_socket_select(
     WSANETWORKEVENTS network_events;
     os_int i, n_sockets, n_events, event_nr;
     DWORD rval;
+    OSAL_UNUSED(flags);
 
     if (nstreams < 1 || nstreams > OSAL_SOCKET_SELECT_MAX)
         return OSAL_STATUS_FAILED;
@@ -1810,7 +1812,7 @@ osalStatus osal_socket_select(
     }
 
     rval = WSAWaitForMultipleEvents(n_events,
-        events, FALSE, timeout_ms ? timeout_ms : WSA_INFINITE, FALSE);
+        events, FALSE, timeout_ms > 0 ? timeout_ms : WSA_INFINITE, FALSE);
 
     if (rval == WSA_WAIT_TIMEOUT)
     {

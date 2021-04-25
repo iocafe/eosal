@@ -287,7 +287,7 @@ getout:
      */
     if (tcpsocket)
     {
-        osal_socket_close(tcpsocket, OSAL_STREAM_DEFAULT);
+        osal_stream_close(tcpsocket, OSAL_STREAM_DEFAULT);
     }
 
     /* Set status code and return NULL pointer.
@@ -334,7 +334,7 @@ static void osal_openssl_close(
 
     /* Close the socket.
      */
-    osal_socket_close(sslsocket->tcpsocket, flags);
+    osal_stream_close(sslsocket->tcpsocket, flags);
 
 #if OSAL_DEBUG
     /* Mark the socket closed. This is used to detect if memory is accessed after it is freed.
@@ -393,11 +393,11 @@ static osalStream osal_openssl_accept(
 
     /* Try to accept as normal TCP socket. If no incoming socket to accept, return.
      */
-    newtcpsocket = osal_socket_accept(sslsocket->tcpsocket, remote_ip_addr,
+    newtcpsocket = osal_stream_accept(sslsocket->tcpsocket, remote_ip_addr,
         remote_ip_addr_sz, status, flags);
     if (newtcpsocket == OS_NULL)
     {
-        /* Status is already set by osal_socket_accept()
+        /* Status is already set by osal_stream_accept()
          */
         return OS_NULL;
     }
@@ -442,7 +442,7 @@ getout:
      */
     if (newtcpsocket)
     {
-        osal_socket_close(newtcpsocket, OSAL_STREAM_DEFAULT);
+        osal_stream_close(newtcpsocket, OSAL_STREAM_DEFAULT);
     }
 
     /* Set status code and return NULL pointer.
@@ -515,7 +515,7 @@ static osalStatus osal_openssl_flush(
 
         /* Flush the underlying socket buffers.
          */
-        s = osal_socket_flush(sslsocket->tcpsocket, flags);
+        s = osal_stream_flush(sslsocket->tcpsocket, flags);
         return s;
     }
     return OSAL_SUCCESS;
@@ -657,7 +657,7 @@ static osalStatus osal_openssl_read(
         freespace = OSAL_READ_BUF_SZ - sslsocket->read_buf_n;
         if (freespace > 0)
         {
-            s = osal_socket_read(sslsocket->tcpsocket,
+            s = osal_stream_read(sslsocket->tcpsocket,
                 sslsocket->read_buf + sslsocket->read_buf_n,
                 freespace, &nprocessed, OSAL_STREAM_DEFAULT);
             if (s) return s;
@@ -815,7 +815,7 @@ static osalStatus osal_openssl_select(
         tcpstreams[ntcpstreams++] = sslsocket->tcpsocket;
     }
 
-    return osal_socket_select(tcpstreams, ntcpstreams, evnt, timeout_ms, flags);
+    return osal_stream_select(tcpstreams, ntcpstreams, evnt, timeout_ms, flags);
 }
 #endif
 
@@ -1514,7 +1514,7 @@ static osalStatus osal_openssl_do_sock_write(
     os_memsz n;
     osalStatus s;
 
-    s = osal_socket_write(sslsocket->tcpsocket, sslsocket->write_buf,
+    s = osal_stream_write(sslsocket->tcpsocket, sslsocket->write_buf,
         sslsocket->write_len, &n, OSAL_STREAM_DEFAULT);
 
     if (n > 0)

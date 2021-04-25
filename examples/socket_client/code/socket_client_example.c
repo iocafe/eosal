@@ -122,7 +122,7 @@ static void mythread_func(
 
         /* Block here until something needs attention.
          */
-        status = osal_stream_select(&handle, 1, mythreadprm->myevent, 0, OSAL_STREAM_DEFAULT);
+        status = osal_stream_select(&handle, 1, mythreadprm->myevent, OSAL_INFINITE, OSAL_STREAM_DEFAULT);
         if (status)
         {
             osal_debug_error("osal_stream_select failed\n");

@@ -89,6 +89,10 @@ typedef os_char os_boolean;
 #define os_timer os_uint
 #endif
 
+/** Timeout to wait for forever.
+ */
+#define OSAL_INFINITE -1
+
 /** Default OS path buffer size in bytes.
  */
 #ifndef OSAL_PATH_SZ

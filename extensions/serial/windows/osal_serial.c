@@ -740,7 +740,8 @@ void osal_serial_set_parameter(
            of different stream types is supported.
   @param   n_streams Number of stream pointers in "streams" array.
   @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait in select, ms. If zero, timeout is not used.
+  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
+           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
@@ -759,8 +760,8 @@ osalStatus osal_serial_select(
     HANDLE events[OSAL_SERIAL_SELECT_MAX+1];
     DWORD dwWait;
     DWORD dwOvRes;
-    static DWORD dwEventMask = 0;
     os_int i, n_serials, n_events;
+    OSAL_UNUSED(flags);
 
     if (nstreams < 1 || nstreams > OSAL_SERIAL_SELECT_MAX)
         return OSAL_STATUS_FAILED;
@@ -787,7 +788,7 @@ osalStatus osal_serial_select(
         events[n_events++] = evnt;
     }
 
-    dwWait = WaitForMultipleObjects (n_events, events, FALSE, timeout_ms ? timeout_ms : INFINITE);
+    dwWait = WaitForMultipleObjects (n_events, events, FALSE, timeout_ms > 0 ? timeout_ms : INFINITE);
 
     if (dwWait >= WAIT_OBJECT_0 && dwWait < WAIT_OBJECT_0 + n_serials)
     {

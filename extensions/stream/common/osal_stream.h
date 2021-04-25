@@ -43,6 +43,10 @@ struct osalStreamHeader;
  */
 typedef struct osalStreamHeader *osalStream;
 
+/** Timeout to wait for forever.
+ */
+#define OSAL_INFINITE -1
+
 
 /**
 ****************************************************************************************************

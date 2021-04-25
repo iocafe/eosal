@@ -1583,7 +1583,7 @@ osalStatus osal_socket_select(
     }
 
     to = NULL;
-    if (timeout_ms)
+    if (timeout_ms > 0)
     {
         timeout.tv_sec = (time_t)(timeout_ms / 1000);
         timeout.tv_nsec	= (long)((timeout_ms % 1000) * 1000000);
