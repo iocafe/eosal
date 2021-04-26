@@ -4,7 +4,7 @@
   @brief   Get random number.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   In future this can be replaced with better alternative.
 

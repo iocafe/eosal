@@ -4,7 +4,7 @@
   @brief   Character conversion from UTF8 to UTF32.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Conversion of UTF8 character to UTF32 character. The UTF8 character to convert may take
   from 1 to 6 bytes, while the UTF32 character is always 32 bit unsigned integer.

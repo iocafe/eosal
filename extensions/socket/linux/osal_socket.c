@@ -4,7 +4,7 @@
   @brief   OSAL stream API implementation for linux sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Ethernet connectivity. Implementation of OSAL stream API and general network functionality
   using linux BSD sockets API. This implementation supports select functionality.

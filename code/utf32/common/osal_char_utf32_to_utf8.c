@@ -4,7 +4,7 @@
   @brief   Character conversion from UTF32 to UTF8.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Conversion of UTF32 character to UTF8 character string encoding. The UTF8 character may take
   from 1 to 6 bytes to store. If we need UTF8 support (define OSAL_UTF8 is nonzero), we need

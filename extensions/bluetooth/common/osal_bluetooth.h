@@ -4,7 +4,7 @@
   @brief   OSAL Bluetooths API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This header file contains function prototypes and definitions for OSAL bluetooths API.
   Osal bluetooths api is wrapper for operating system bluetooths.

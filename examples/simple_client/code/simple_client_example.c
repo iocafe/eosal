@@ -4,7 +4,7 @@
   @brief   Simple communication client example.
   @author  Pekka Lehtikoski
   @version 1.2
-  @date    8.1.2020
+  @date    26.4.2021
 
   Client to write something to socket or serial port and read from it. Extermely simple: No
   dynamic memory allocation, multithreading, socket select, etc. Just bare bones.

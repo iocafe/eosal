@@ -4,7 +4,7 @@
   @brief   OSAL stream API layer to use lwIP netconn API.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Ethernet/WiFi connectivity. Implementation of OSAL stream API and general network functionality
   using lwIP librarie's netconn API. This work in both single and multi threaded systems.

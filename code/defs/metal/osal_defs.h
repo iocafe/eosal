@@ -4,7 +4,7 @@
   @brief   Operating system specific defines for Linux.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This file contains platform specific defines for windows compilation. The platform specific
   defines here are defaults, which can be overwritten by compiler settings.

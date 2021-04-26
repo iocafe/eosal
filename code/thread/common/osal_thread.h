@@ -4,7 +4,7 @@
   @brief   Creating, terminating, scheduling and identifying threads.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This header file contains defines and function prototypes for eosal threads API.
 

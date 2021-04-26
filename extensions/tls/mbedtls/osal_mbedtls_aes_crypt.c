@@ -4,7 +4,7 @@
   @brief   Simple AES encryption/decryption function using Mbed TLS.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    20.1.2020
+  @date    26.4.2021
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

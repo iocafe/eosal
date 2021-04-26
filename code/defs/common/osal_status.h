@@ -4,7 +4,7 @@
   @brief   OSAL function return codes.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Many OSAL functions return status codes, which are enumerated here.
 

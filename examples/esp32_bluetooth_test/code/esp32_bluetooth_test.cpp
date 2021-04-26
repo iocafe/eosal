@@ -4,7 +4,7 @@
   @brief   Test how bluetooth serial works on ESP32.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Just simple ESP32 bluetooth serial communication test. Doesn't run on any other hardware/OS.
 

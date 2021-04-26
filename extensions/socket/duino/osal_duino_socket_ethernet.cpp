@@ -4,7 +4,7 @@
   @brief   OSAL stream API layer to use Arduino ethernet sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Ethernet connectivity. Implementation of OSAL stream API and general network functionality
   using Arduino's ethernet socket API. This work in both single and multi threaded systems,

@@ -4,7 +4,7 @@
   @brief   Memory allocation.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This header file contains functions prototypes for OSAL memory allocation. The OSAL implements
   it's own memory manager.

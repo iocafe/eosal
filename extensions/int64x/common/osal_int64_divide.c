@@ -4,7 +4,7 @@
   @brief   64 bit integer arithmetic, division.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Implements 64 bit division on platforms with 32 bit multiplication and division.
   Define OSAL_LONG_IS_64_BITS controls compiler's code generation for 64 bit integer arithmetic. 

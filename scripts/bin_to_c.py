@@ -1,4 +1,4 @@
-# bin_to_c.py 8.1.2020/pekka
+# bin_to_c.py 26.4.2021/pekka
 # Converts a binary file to C character array.
 import json
 import os

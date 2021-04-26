@@ -4,7 +4,7 @@
   @brief   Main OSAL header file with extensions.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This operating system abstraction layer (OSAL) base main header file with extensions.
   If further OSAL base and extension headers.

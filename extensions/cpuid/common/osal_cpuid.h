@@ -4,7 +4,7 @@
   @brief   Get unique CPU or computer identifier.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    20.1.2020
+  @date    26.4.2021
 
   This is most useful for saving user login and password on PC computer or android device
   running user interface. Merging CPU id with  hard coded application key prevents snooping

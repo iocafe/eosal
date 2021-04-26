@@ -4,7 +4,7 @@
   @brief   Save persistent parameters on Arduino SAM.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash
   for EEPROM emulation.

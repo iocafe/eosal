@@ -4,7 +4,7 @@
   @brief   Mutexes, synchronizing thread access to shared resources.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This header file contains functions prototypes and definitions for creating, deleting,
   locking and unlocking mutexes, plus of system mutex functions. Generally mutexes are used 

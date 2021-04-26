@@ -4,7 +4,7 @@
   @brief   OSAL sockets for bare metal with WizNet library.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Implementation of OSAL sockets for W5500 bare metal using Wiznet library.
 

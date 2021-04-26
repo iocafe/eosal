@@ -4,7 +4,7 @@
   @brief   OSAL stream API for windows files.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Implementation of OSAL stream API for Windows file IO.
 

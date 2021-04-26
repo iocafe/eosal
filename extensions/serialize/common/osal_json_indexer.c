@@ -4,7 +4,7 @@
   @brief   Access compressed binary JSON data.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Example, access compressed JSON data
 

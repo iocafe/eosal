@@ -4,7 +4,7 @@
   @brief   Store persistent parameters.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Micro-controllers store persistent board configuration parameters in EEPROM or flash. On Windows/Linux
   these parameters are usually saved in files within OS file system.

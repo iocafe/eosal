@@ -4,7 +4,7 @@
   @brief   Character conversion from UTF32 to UTF16.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Conversion of UTF32 character to UTF16 character. The UTF16 character takes 1 or 2 words
   (osal_ushorts) to store.

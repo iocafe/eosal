@@ -4,7 +4,7 @@
   @brief   Directory related functions.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Functions for listing, creating and removing a directory.
 

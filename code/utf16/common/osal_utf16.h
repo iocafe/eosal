@@ -4,7 +4,7 @@
   @brief   UTF16 support.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This OSAL utf16 module header file. This module includes conversions between UTF16 and
   UTF32 characters and between UTF16 and UTF8 strings. UTF-16 is the native character encoding

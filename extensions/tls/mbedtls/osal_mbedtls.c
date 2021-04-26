@@ -4,7 +4,7 @@
   @brief   OSAL stream API layer to use secure Mbed TLS sockets.
   @author  Pekka Lehtikoski
   @version 1.1
-  @date    28.2.2020
+  @date    26.4.2021
 
   Secure network connectivity. Implementation of OSAL stream API and general network functionality
   using Mbed TLS.

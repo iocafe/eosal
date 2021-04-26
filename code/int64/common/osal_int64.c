@@ -4,7 +4,7 @@
   @brief   64 bit integer arithmetic.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Basic 64 bit integer functions. Setting, getting and comparing values. Addition and substraction.
   Define OSAL_COMPILER_HAS_64_BIT_INTS controls compiler's code generation for 64 bit integer arithmetic.

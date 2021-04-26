@@ -4,7 +4,7 @@
   @brief   Get random number.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    20.1.2020
+  @date    26.4.2021
 
   Uses Linux system function getrandom to generate random numbers. This is based on linux
   /dev/urandom, which is seeded by entropy colledted by operating system and does provide

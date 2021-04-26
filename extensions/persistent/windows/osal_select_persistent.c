@@ -4,7 +4,7 @@
   @brief   Select persistent storage implementation.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   The windows/osal_select_persistent.c selects persistent storage implementation to use with
   Windows platform, by including the implementation code.

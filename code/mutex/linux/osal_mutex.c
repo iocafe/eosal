@@ -4,7 +4,7 @@
   @brief   Mutexes, synchronizing thread access to shared resources.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This file implements mutex related functionality for Linux. Generally mutexes are used to
   synchronize thread access of shared resources. A mutex is created by osal_mutex_create()

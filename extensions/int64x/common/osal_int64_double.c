@@ -4,7 +4,7 @@
   @brief   Conversions between 64 bit integers and floating point values.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Conversions between 64 bit integers and double precision floating point values.
   Define OSAL_LONG_IS_64_BITS controls compiler's code generation for 64 bit integer arithmetic. 

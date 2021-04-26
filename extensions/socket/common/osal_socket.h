@@ -4,7 +4,7 @@
   @brief   OSAL stream API for sockets.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Socket speficic function prototypes and definitions to implement OSAL stream API for sockets.
   OSAL stream API is abstraction which makes streams (including sockets) look similar to upper

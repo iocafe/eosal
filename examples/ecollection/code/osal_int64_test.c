@@ -4,7 +4,7 @@
   @brief   Test 64 bit integer arithmetic on operating system.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   Test 64 bit int artihmetic. Meaningfull only if compiler doesn't support 64 bit integern types.
 

@@ -4,7 +4,7 @@
   @brief   Cryptographic hash.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    20.1.2020
+  @date    26.4.2021
 
   Passwords are cryptographically hashed. Cryptographic hashes of two passwords can be used to
   check if passwords do match, but are not secret. One cannot get original password from

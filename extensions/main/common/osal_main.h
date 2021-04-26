@@ -4,7 +4,7 @@
   @brief   Calling generic entry point.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    8.1.2020
+  @date    26.4.2021
 
   This OSAL main process entry point header file. Generally the operating system calls entry
   point function to start the process. Unfortunately name, arguments and character encoding
