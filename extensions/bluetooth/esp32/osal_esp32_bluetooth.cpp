@@ -292,10 +292,6 @@ const osalStreamInterface osal_bluetooth_iface
     osal_stream_default_seek,
     osal_bluetooth_write,
     osal_bluetooth_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
-    osal_stream_default_set_parameter,
     osal_stream_default_select};
 
 #endif

@@ -179,12 +179,6 @@ typedef enum
      */
     OSAL_STATUS_CLOCK_SET_FAILED = 150,
 
-    /** Call would block. The stream functions osal_stream_read_value() and
-        osal_stream_write_value() return this code to indicate that no data was received
-        or sent, because it would otherwise block the calling thread.
-     */
-    OSAL_STATUS_STREAM_WOULD_BLOCK = 160,
-
     /** Writing program to device has failed.
      */
     OSAL_DEVICE_PROGRAMMING_FAILED = 166,

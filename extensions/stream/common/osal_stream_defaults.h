@@ -38,25 +38,6 @@ osalStatus osal_stream_default_seek(
     os_long *pos,
     os_int flags);
 
-osalStatus osal_stream_default_write_value(
-    osalStream stream,
-    os_ushort c,
-    os_int flags);
-
-osalStatus osal_stream_default_read_value(
-    osalStream stream,
-    os_ushort *c,
-    os_int flags);
-
-os_long osal_stream_default_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix);
-
-void osal_stream_default_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value);
-
 osalStatus osal_stream_default_select(
     osalStream *streams,
     os_int nstreams,

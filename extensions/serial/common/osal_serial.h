@@ -98,19 +98,6 @@ osalStatus osal_serial_read(
     os_memsz *n_read,
     os_int flags);
 
-/* Get serial parameter.
- */
-os_long osal_serial_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix);
-
-/* Set serial parameter.
- */
-void osal_serial_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value);
-
 /* Wait for new data to read, time to write or operating system event, etc.
  */
 #if OSAL_SERIAL_SELECT_SUPPORT

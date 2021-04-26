@@ -30,197 +30,10 @@
 /**
 ****************************************************************************************************
 
-  @brief Open a stream (connect, listen, open file, etc).
-  @anchor osal_stream_open
+  @brief Write data to stream with timeout.
+  @anchor osal_stream_timed_write
 
-  The osal_stream_open() function opens a stream. The iface argument select what kind of
-  stream. This function can be used to open files, connect or listen sockets, etc.
-
-  @param  iface Stream interface, pointer to structure containing implementation function pointers.
-  @param  parameters Parameter string, depends on stream type. See stream implementation
-          notes. Typically all sockets take similar parameters, as do all serial ports...
-  @param  option Set OS_NULL for now.
-  @param  status Pointer to integer into which to store the function status code. Value
-          OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
-          See @ref osalStatus "OSAL function return codes" for full list.
-          This parameter can be OS_NULL, if no status code is needed.
-  @param  flags Flags for creating the socket, useful flags depend on stream type.
-           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
-  @return Stream pointer (handle) representing the stream, or OS_NULL if the function failed.
-
-****************************************************************************************************
-*/
-osalStream osal_stream_open(
-    const osalStreamInterface *iface,
-    const os_char *parameters,
-    void *option,
-    osalStatus *status,
-    os_int flags)
-{
-
-/* ARDU TEST
- * os_char nbuf[OSAL_NBUF_SZ];
-    osal_sysconsole_write(iface ? "HEHE iface\n" : "HEHE NULL\n");
-osal_int_to_str(nbuf, sizeof(nbuf), (os_long)osal_serial_iface.stream_open);
-
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write(" ");
-osal_int_to_str(nbuf, sizeof(nbuf), (os_long)&osal_serial_open);
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write(" ");
-
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write(" ");
-osal_int_to_str(nbuf, sizeof(nbuf), (os_long)iface->stream_open);
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write("\n");
-*/
-
-    return iface->stream_open(parameters, option, status, flags);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Close a stream.
-  @anchor osal_stream_close
-
-  The osal_stream_close() function a strean closes a socket, which was opened by osal_strean_open()
-  function or osal_stream_accept(). All resource related to the socket are freed.
-
-  @param   stream Stream pointer representing the socket. After this call stream pointer will
-           point to invalid memory location.
-  @param   flags Reserver, set OSAL_STREAM_DEFAULT (0) for now.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_stream_close(
-    osalStream stream,
-    os_int flags)
-{
-    if (stream)
-    {
-        stream->iface->stream_close(stream, flags);
-    }
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Accept connection to listening socket.
-  @anchor osal_stream_accept
-
-  The osal_stream_accept() function accepts an incoming connection. This function can be used
-  only with TCP sockets (+TLS).
-
-  @param   stream Stream pointer representing the listening socket.
-  @param   remote_ip_address Pointer to string buffer into which to store the IP address
-           from which the incoming connection was accepted. Can be OS_NULL if not needed.
-  @param   remote_ip_addr_sz Size of remote IP address buffer in bytes.
-  @param   status Pointer to integer into which to store the function status code. Value
-           OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
-           The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
-           connection, was accepted.  All other nonzero values indicate an error,
-           See @ref osalStatus "OSAL function return codes" for full list.
-           This parameter can be OS_NULL, if no status code is needed.
-  @param   flags Flags for opening the the socket. Define OSAL_STREAM_DEFAULT for normal operation.
-           See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
-  @return  Stream pointer (handle) representing the stream, or OS_NULL if no new connection
-           was accepted.
-
-****************************************************************************************************
-*/
-osalStream osal_stream_accept(
-    osalStream stream,
-    os_char *remote_ip_addr,
-    os_memsz remote_ip_addr_sz,
-    osalStatus *status,
-    os_int flags)
-{
-    if (stream)
-    {
-        return stream->iface->stream_accept(stream, remote_ip_addr,
-            remote_ip_addr_sz, status, flags);
-    }
-    if (status) *status = OSAL_STATUS_FAILED;
-    return OS_NULL;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Flush writes to the stream.
-  @anchor osal_stream_flush
-
-  The osal_stream_flush() function flushes data to be written to stream.
-
-  IMPORTANT, FLUSH MUST BE CALLED FOR SOCKETS: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT)
-  must  be called when select call returns even after writing or even if nothing was written, or
-  periodically in in single thread mode. This is necessary even if no data was written
-  previously, the socket may have stored buffered data to avoid blocking.
-
-  @param   stream Stream pointer.
-  @param   flags Often OSAL_STREAM_DEFAULT. See @ref osalStreamFlags "Flags for Stream Functions"
-           for full list of flags.
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-****************************************************************************************************
-*/
-osalStatus osal_stream_flush(
-    osalStream stream,
-    os_int flags)
-{
-    if (stream)
-    {
-        return stream->iface->stream_flush(stream, flags);
-    }
-    return OSAL_STATUS_FAILED;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Get or set file seek position.
-  @anchor osal_stream_seek
-
-  The osal_stream_seek() function is used only for files, it can be used to get or set current
-  read or write position.
-
-  @param   stream Stream pointer representing open file.
-  @param   pos Position, both input and output.
-  @param   flags
-
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-****************************************************************************************************
-*/
-osalStatus osal_stream_seek(
-    osalStream stream,
-    os_long *pos,
-    os_int flags)
-{
-    if (stream)
-    {
-        return stream->iface->stream_seek(stream, pos, flags);
-    }
-    return OSAL_STATUS_FAILED;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Write data to stream.
-  @anchor osal_stream_write
-
-  The osal_stream_write() function writes up to n bytes of data from buffer to socket.
+  The osal_stream_timed_write() function writes up to n bytes of data from buffer to socket.
 
   Writes and reads are always non blocking. Blocking behaviour can be emulated by setting
   nonzero read and write timeouts. This is important for sockets and serial ports.
@@ -239,23 +52,22 @@ osalStatus osal_stream_seek(
 
 ****************************************************************************************************
 */
-osalStatus osal_stream_write(
+osalStatus osal_stream_timed_write(
     osalStream stream,
     const os_char *buf,
     os_memsz n,
     os_memsz *n_written,
+    os_int write_timeout_ms,
     os_int flags)
 {
     os_timer start_t, now_t;
     osalStatus rval;
     os_memsz n_written_now, total_written;
-    os_int write_timeout_ms;
     os_boolean use_timer;
 
     if (stream)
     {
-        write_timeout_ms = stream->write_timeout_ms;
-        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && write_timeout_ms > 0);
+        use_timer = (os_boolean) (write_timeout_ms > 0);
         if (use_timer) os_get_timer(&start_t);
         total_written = 0;
         do
@@ -290,10 +102,10 @@ osalStatus osal_stream_write(
 /**
 ****************************************************************************************************
 
-  @brief Read data from stream.
-  @anchor osal_stream_read
+  @brief Read data from stream with timeout.
+  @anchor osal_stream_timed_read
 
-  The osal_stream_read() function reads up to n bytes of data from socket into buffer.
+  The osal_stream_timed_read() function reads up to n bytes of data from socket into buffer.
 
   @param   stream Stream pointer.
   @param   buf Pointer to buffer to read into.
@@ -309,11 +121,12 @@ osalStatus osal_stream_write(
 
 ****************************************************************************************************
 */
-osalStatus osal_stream_read(
+osalStatus osal_stream_timed_read(
     osalStream stream,
     os_char *buf,
     os_memsz n,
     os_memsz *n_read,
+    os_int read_timeout_ms,
     os_int flags)
 {
     os_timer
@@ -327,16 +140,12 @@ osalStatus osal_stream_read(
         n_read_now,
         total_read;
 
-    os_int
-        read_timeout_ms;
-
     os_boolean
         use_timer;
 
     if (stream)
     {
-        read_timeout_ms = stream->read_timeout_ms;
-        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && read_timeout_ms > 0);
+        use_timer = (os_boolean) (read_timeout_ms > 0);
         if (use_timer) os_get_timer(&start_t);
         total_read = 0;
         do
@@ -365,263 +174,6 @@ osalStatus osal_stream_read(
 
     if (n_read) *n_read = 0;
     return OSAL_STATUS_FAILED;
-}
-
-
-#if OSAL_MICROCONTROLLER == 0
-/**
-****************************************************************************************************
-
-  @brief Write single value.
-  @anchor osal_stream_write_value
-
-  The osal_stream_write_value() function writes one byte value or control code to stream.
-  This function is used by eobjects for serialized object versioning, do not use from iocom, etc.
-
-  @param   stream Stream pointer.
-  @param   c Byte or control code to write.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
-
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-****************************************************************************************************
-*/
-osalStatus osal_stream_write_value(
-    osalStream stream,
-    os_ushort c,
-    os_int flags)
-{
-    os_timer
-        start_t,
-        now_t;
-
-    osalStatus
-        rval;
-
-    os_int
-        write_timeout_ms;
-
-    os_boolean
-        use_timer;
-
-    if (stream)
-    {
-        write_timeout_ms = stream->write_timeout_ms;
-        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && write_timeout_ms > 0);
-        if (use_timer) os_get_timer(&start_t);
-        do
-        {
-            if (use_timer) os_get_timer(&now_t);
-            rval = stream->iface->stream_write_value(stream, c, flags);
-            if (rval != OSAL_STATUS_STREAM_WOULD_BLOCK || !use_timer) break;
-
-            if (use_timer)
-            {
-                if (os_has_elapsed_since(&start_t, &now_t, write_timeout_ms)) break;
-            }
-
-            os_timeslice();
-        }
-        while (1);
-
-        return rval;
-    }
-    return OSAL_STATUS_FAILED;
-}
-#endif
-
-
-#if OSAL_MICROCONTROLLER == 0
-/**
-****************************************************************************************************
-
-  @brief Read single value.
-  @anchor osal_stream_read_value
-
-  The osal_stream_read_value() function reads one byte value or control code to stream.
-  This function is used by eobjects for serialized object versioning, do not use from iocom, etc.
-
-  @param   stream Stream pointer.
-  @param   c Byte or control code to write.
-  @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
-
-  @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
-
-****************************************************************************************************
-*/
-osalStatus osal_stream_read_value(
-    osalStream stream,
-    os_ushort *c,
-    os_int flags)
-{
-    os_timer start_t, now_t;
-    osalStatus rval;
-    os_int read_timeout_ms;
-    os_boolean use_timer;
-
-    if (stream)
-    {
-        read_timeout_ms = stream->read_timeout_ms;
-        use_timer = (os_boolean) ((flags & OSAL_STREAM_WAIT) != 0 && read_timeout_ms > 0);
-        if (use_timer) os_get_timer(&start_t);
-        do
-        {
-            if (use_timer) os_get_timer(&now_t);
-            rval = stream->iface->stream_read_value(stream, c, flags);
-            if (rval != OSAL_STATUS_STREAM_WOULD_BLOCK || read_timeout_ms == 0) break;
-
-            if (use_timer)
-            {
-                if (os_has_elapsed_since(&start_t, &now_t, read_timeout_ms)) break;
-            }
-
-            os_timeslice();
-        }
-        while (1);
-
-        return rval;
-    }
-
-    *c = 0;
-    return OSAL_STATUS_FAILED;
-}
-#endif
-
-
-/**
-****************************************************************************************************
-
-  @brief Get stream parameter.
-  @anchor osal_stream_get_parameter
-
-  The osal_stream_get_parameter() function gets stream parameter value.
-
-  @param   stream Stream pointer representing the serial.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @return  Parameter value.
-
-****************************************************************************************************
-*/
-os_long osal_stream_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix)
-{
-    if (stream)
-    {
-        return stream->iface->stream_get_parameter(stream, parameter_ix);
-    }
-    return 0;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set stream parameter.
-  @anchor osal_stream_set_parameter
-
-  The osal_stream_set_parameter() function sets a stream parameter.
-
-  @param   stream Stream pointer representing the serial.
-  @param   parameter_ix Index of parameter to set.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @param   value Parameter value.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_stream_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value)
-{
-    if (stream)
-    {
-        stream->iface->stream_set_parameter(stream, parameter_ix, value);
-    }
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Block thread until something is received from stream or event occurs.
-  @anchor osal_stream_select
-
-  The osal_stream_select() function blocks execution of the calling thread until something
-  is received from stream, we can write data to it, or event given as argument is triggered.
-
-  @param   streams Array of streams to wait for. These must be all the same type, mixing
-           of different stream types is not supported.
-  @param   n_streams Number of stream pointers in "streams" array.
-  @param   evnt Custom event to interrupt the select. OS_NULL if not needed.
-  @param   timeout_ms Maximum time to wait, ms. Function will return after this time even
-           there is no socket or custom event. Set OSAL_INFINITE (-1) to disable the timeout.
-  @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
-  @return  If successful, the function returns OSAL_SUCCESS. Return value OSAL_STATUS_NOT_SUPPORTED
-           indicates that select is not implemented. Other return values indicate an error.
-
-****************************************************************************************************
-*/
-osalStatus osal_stream_select(
-    osalStream *streams,
-    os_int nstreams,
-    osalEvent evnt,
-    os_int timeout_ms,
-    os_int flags)
-{
-    if (nstreams) if (streams[0])
-    {
-        if (streams[0]->iface->stream_select)
-        {
-            return streams[0]->iface->stream_select(streams, nstreams,
-                evnt, timeout_ms, flags);
-        }
-        else
-        {
-            return OSAL_STATUS_NOT_SUPPORTED;
-        }
-    }
-
-    return OSAL_STATUS_FAILED;
-}
-
-
-/* Write packet (UDP) to stream.
- */
-osalStatus osal_stream_send_packet(
-    osalStream stream,
-    const os_char *buf,
-    os_memsz n,
-    os_int flags)
-{
-    if (stream) if (stream->iface->stream_send_packet)
-    {
-        return stream->iface->stream_send_packet(stream, buf, n, flags);
-    }
-    return OSAL_STATUS_NOT_SUPPORTED;
-}
-
-/* Read packet (UDP) from stream.
- */
-osalStatus osal_stream_receive_packet(
-    osalStream stream,
-    os_char *buf,
-    os_memsz n,
-    os_memsz *n_read,
-    os_char *remote_addr,
-    os_memsz remote_addr_sz,
-    os_int flags)
-{
-    if (stream) if (stream->iface->stream_receive_packet)
-    {
-        return stream->iface->stream_receive_packet(stream, buf, n, n_read,
-            remote_addr, remote_addr_sz, flags);
-    }
-    return OSAL_STATUS_NOT_SUPPORTED;
 }
 
 #endif

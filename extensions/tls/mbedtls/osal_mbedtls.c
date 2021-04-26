@@ -1375,10 +1375,6 @@ OS_CONST osalStreamInterface osal_tls_iface
     osal_stream_default_seek,
     osal_mbedtls_write,
     osal_mbedtls_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_stream_default_get_parameter, /* This does not access parameters of contained TCP socket? */
-    osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
     osal_mbedtls_select};
 #else

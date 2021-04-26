@@ -623,58 +623,6 @@ osalStatus osal_socket_read(
 /**
 ****************************************************************************************************
 
-  @brief Get socket parameter.
-  @anchor osal_socket_get_parameter
-
-  The osal_socket_get_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @return  Parameter value.
-
-****************************************************************************************************
-*/
-os_long osal_socket_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix)
-{
-    /* Call the default implementation
-     */
-    return osal_stream_default_get_parameter(stream, parameter_ix);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set socket parameter.
-  @anchor osal_socket_set_parameter
-
-  The osal_socket_set_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @param   value Parameter value to set.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_socket_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value)
-{
-    /* Call the default implementation
-     */
-    osal_stream_default_set_parameter(stream, parameter_ix, value);
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Get first unused osal_socket.
   @anchor osal_get_unused_socket
 
@@ -996,10 +944,6 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_stream_default_seek,
     osal_socket_write,
     osal_socket_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_socket_get_parameter,
-    osal_socket_set_parameter,
-    OS_NULL};
+    osal_stream_default_select};
 
 #endif

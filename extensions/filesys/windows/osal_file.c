@@ -423,9 +423,5 @@ const osalStreamInterface osal_file_iface
     osal_stream_default_seek,
     osal_file_write,
     osal_file_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
-    osal_stream_default_set_parameter,
     osal_stream_default_select};
 

@@ -87,13 +87,6 @@ typedef struct osalStreamHeader *osalStream;
  */
 #define OSAL_STREAM_APPEND 0x0004
 
-/** Wait for operation to complete. The OSAL_STREAM_WAIT flag can be given to osal_stream_read(),
-    osal_stream_write(), osal_stream_read_value(), osal_stream_write_value() and osal_stream_seek()
-    functions. It will cause the stream to wait until operation can be fully completed or the
-    stream times out.
- */
-#define OSAL_STREAM_WAIT 0x0008
-
 /** oestream_flush, clear receive buffer.
  */
 #define OSAL_STREAM_CLEAR_RECEIVE_BUFFER 0x0010
@@ -191,38 +184,6 @@ typedef struct osalStreamHeader *osalStream;
 /**
 ****************************************************************************************************
 
-  @name Stream Parameter Enumeration
-  @anchor osalStreamParameterIx
-
-  This enumeration indexes stream parameters which can be accessed by osal_stream_get_parameter()
-  and osal_stream_set_parameter() functions.
-
-****************************************************************************************************
-*/
-typedef enum
-{
-    /** Timeout for writing data, milliseconds.
-     */
-    OSAL_STREAM_WRITE_TIMEOUT_MS,
-
-    /** Timeout for reading data, milliseconds.
-     */
-    OSAL_STREAM_READ_TIMEOUT_MS,
-
-    /** Amount of free spacee in TX buffer, bytes.
-     */
-    // OSAL_STREAM_TX_AVAILABLE,
-
-    /** Number of data bytes in RX buffer.
-     */
-    // OSAL_STREAM_RX_AVAILABLE
-}
-osalStreamParameterIx;
-
-
-/**
-****************************************************************************************************
-
   @name Stream interface flags (iflags).
 
   These flags pass general information about the stream, like is this secure TLS stream, which
@@ -310,33 +271,6 @@ typedef struct osalStreamInterface
         os_memsz *n_read,
         os_int flags);
 
-    /* Write single value to stream (this is for eobjects, do not use in iocom, etc)
-     */
-    osalStatus (*stream_write_value)(
-        osalStream stream,
-        os_ushort c,
-        os_int flags);
-
-    /* Read single value from stream (this is for eobjects, do not use in iocom, etc)
-     */
-    osalStatus (*stream_read_value)(
-        osalStream stream,
-        os_ushort *c,
-        os_int flags);
-
-    /* Get stream parameter, like timeout, etc.
-     */
-    os_long (*stream_get_parameter)(
-        osalStream stream,
-        osalStreamParameterIx parameter_ix);
-
-    /* Set stream parameter, like timeout, etc.
-     */
-    void (*stream_set_parameter)(
-        osalStream stream,
-        osalStreamParameterIx parameter_ix,
-        os_long value);
-
     /* Block thread until something is received from stream or event occurs.
      */
     osalStatus (*stream_select)(
@@ -385,14 +319,6 @@ typedef struct osalStreamHeader
     /** Pointer to stream interface is always first item of the handle
      */
     const osalStreamInterface *iface;
-
-    /** Timeout for writing data, milliseconds. Value -1 indicates infinite timeout.
-     */
-    os_int write_timeout_ms;
-
-    /** Timeout for reading data, milliseconds. Value -1 indicates infinite timeout.
-     */
-    os_int read_timeout_ms;
 }
 osalStreamHeader;
 
@@ -465,33 +391,6 @@ osalStatus osal_stream_read(
     os_memsz *n_read,
     os_int flags);
 
-/* Write single value to stream (this is for eobjects, do not use in iocom, etc)
- */
-osalStatus osal_stream_write_value(
-    osalStream stream,
-    os_ushort c,
-    os_int flags);
-
-/* Read single value from stream (this is for eobjects, do not use in iocom, etc)
- */
-/* osalStatus osal_stream_read_value(
-    osalStream stream,
-    os_ushort *c,
-    os_int flags); */
-
-/* Get stream parameter, like timeout, etc.
- */
-os_long osal_stream_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix);
-
-/* Set stream parameter, like timeout, etc.
- */
-void osal_stream_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value);
-
 /* Block thread until something is received from stream or event occurs.
  */
 osalStatus osal_stream_select(
@@ -520,8 +419,23 @@ osalStatus osal_stream_receive_packet(
     os_memsz remote_addr_sz,
     os_int flags);
 
-#endif
+osalStatus osal_stream_timed_write(
+    osalStream stream,
+    const os_char *buf,
+    os_memsz n,
+    os_memsz *n_written,
+    os_int write_timeout_ms,
+    os_int flags);
 
+osalStatus osal_stream_timed_read(
+    osalStream stream,
+    os_char *buf,
+    os_memsz n,
+    os_memsz *n_read,
+    os_int read_timeout_ms,
+    os_int flags);
+
+#endif
 
 /**
 ****************************************************************************************************
@@ -542,10 +456,6 @@ osalStatus osal_stream_receive_packet(
 #define osal_stream_seek(s,p,f) osal_stream_default_seek(s,p,f)
 #define osal_stream_write(s,b,n,nn,f) osal_serial_write(s,b,n,nn,f)
 #define osal_stream_read(s,b,n,nn,f) osal_serial_read(s,b,n,nn,f)
-/* #define osal_stream_write_value(s,c,f) osal_stream_default_write_value(s,c,f)
-#define osal_stream_read_value(s,c,f) osal_stream_default_read_value(s,c,f)
-#define osal_stream_get_parameter(s,i) osal_stream_default_get_parameter(s,i) */
-#define osal_stream_set_parameter(s,i,v) osal_stream_default_set_parameter(s,i, v)
 #define osal_stream_select(s,n,e,t,f) osal_stream_default_select(s,n,e,t,f)
 #define osal_stream_send_packet(s,b,n,f) OSAL_STATUS_NOT_SUPPORTED
 #define osal_stream_receive_packet(s,b,n,nn,a,z,f) OSAL_STATUS_NOT_SUPPORTED

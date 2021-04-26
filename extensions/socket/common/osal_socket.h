@@ -108,19 +108,6 @@ osalStatus osal_socket_read(
     os_memsz *n_read,
     os_int flags);
 
-/* Get socket parameter.
- */
-os_long osal_socket_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix);
-
-/* Set socket parameter.
- */
-void osal_socket_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value);
-
 /* Wait for new data to read, time to write or operating system event, etc.
  */
 #if OSAL_SOCKET_SELECT_SUPPORT

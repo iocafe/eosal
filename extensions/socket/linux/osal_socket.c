@@ -2161,10 +2161,6 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_stream_default_seek,
     osal_socket_write,
     osal_socket_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
-    osal_stream_default_set_parameter,
 #if OSAL_SOCKET_SELECT_SUPPORT
     osal_socket_select,
 #else

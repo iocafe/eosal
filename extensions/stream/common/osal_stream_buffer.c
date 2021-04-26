@@ -395,10 +395,6 @@ const osalStreamInterface osal_stream_buffer_iface
     osal_stream_buffer_seek,
     osal_stream_buffer_write,
     osal_stream_buffer_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
-    osal_stream_default_set_parameter,
     osal_stream_default_select};
 
 #endif

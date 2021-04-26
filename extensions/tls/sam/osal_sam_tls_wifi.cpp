@@ -612,58 +612,6 @@ osalStatus osal_tls_read(
 /**
 ****************************************************************************************************
 
-  @brief Get socket parameter.
-  @anchor osal_tls_get_parameter
-
-  The osal_tls_get_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @return  Parameter value.
-
-****************************************************************************************************
-*/
-os_long osal_tls_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix)
-{
-    /* Call the default implementation
-     */
-    return osal_stream_default_get_parameter(stream, parameter_ix);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set socket parameter.
-  @anchor osal_tls_set_parameter
-
-  The osal_tls_set_parameter() function gets a parameter value.
-
-  @param   stream Stream pointer representing the socket.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @param   value Parameter value to set.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_tls_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value)
-{
-    /* Call the default implementation
-     */
-    osal_stream_default_set_parameter(stream, parameter_ix, value);
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Get first unused osal_tls.
   @anchor osal_get_unused_socket
 
@@ -792,10 +740,6 @@ OS_CONST osalStreamInterface osal_tls_iface
     osal_stream_default_seek,
     osal_tls_write,
     osal_tls_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_tls_get_parameter,
-    osal_tls_set_parameter,
-    OS_NULL};
+    osal_stream_default_select};
 
 #endif

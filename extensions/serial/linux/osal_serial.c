@@ -751,10 +751,6 @@ OS_CONST osalStreamInterface osal_serial_iface
     osal_stream_default_seek,
     osal_serial_write,
     osal_serial_read,
-    osal_stream_default_write_value,
-    osal_stream_default_read_value,
-    osal_stream_default_get_parameter,
-    osal_stream_default_set_parameter,
 #if OSAL_SERIAL_SELECT_SUPPORT
     osal_serial_select,
 #else
