@@ -432,7 +432,7 @@ osalStatus osal_stream_write_value(
 #endif
 
 
-#if 0
+#if OSAL_MICROCONTROLLER == 0
 /**
 ****************************************************************************************************
 

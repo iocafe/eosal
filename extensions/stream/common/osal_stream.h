@@ -211,11 +211,11 @@ typedef enum
 
     /** Amount of free spacee in TX buffer, bytes.
      */
-    OSAL_STREAM_TX_AVAILABLE,
+    // OSAL_STREAM_TX_AVAILABLE,
 
     /** Number of data bytes in RX buffer.
      */
-    OSAL_STREAM_RX_AVAILABLE
+    // OSAL_STREAM_RX_AVAILABLE
 }
 osalStreamParameterIx;
 
@@ -474,10 +474,10 @@ osalStatus osal_stream_write_value(
 
 /* Read single value from stream (this is for eobjects, do not use in iocom, etc)
  */
-osalStatus osal_stream_read_value(
+/* osalStatus osal_stream_read_value(
     osalStream stream,
     os_ushort *c,
-    os_int flags);
+    os_int flags); */
 
 /* Get stream parameter, like timeout, etc.
  */
@@ -542,9 +542,9 @@ osalStatus osal_stream_receive_packet(
 #define osal_stream_seek(s,p,f) osal_stream_default_seek(s,p,f)
 #define osal_stream_write(s,b,n,nn,f) osal_serial_write(s,b,n,nn,f)
 #define osal_stream_read(s,b,n,nn,f) osal_serial_read(s,b,n,nn,f)
-#define osal_stream_write_value(s,c,f) osal_stream_default_write_value(s,c,f)
+/* #define osal_stream_write_value(s,c,f) osal_stream_default_write_value(s,c,f)
 #define osal_stream_read_value(s,c,f) osal_stream_default_read_value(s,c,f)
-#define osal_stream_get_parameter(s,i) osal_stream_default_get_parameter(s,i)
+#define osal_stream_get_parameter(s,i) osal_stream_default_get_parameter(s,i) */
 #define osal_stream_set_parameter(s,i,v) osal_stream_default_set_parameter(s,i, v)
 #define osal_stream_select(s,n,e,t,f) osal_stream_default_select(s,n,e,t,f)
 #define osal_stream_send_packet(s,b,n,f) OSAL_STATUS_NOT_SUPPORTED
