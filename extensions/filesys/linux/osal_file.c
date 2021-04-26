@@ -71,7 +71,6 @@ osalFile;
 
   @param  status Pointer to integer into which to store the function status code. Value
           OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
-          See @ref osalStatus "OSAL function return codes" for full list.
           This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the file. Bit fields, combination of:
@@ -256,7 +255,7 @@ void osal_file_close(
   @param   stream Stream pointer representing the file.
   @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -300,7 +299,7 @@ osalStatus osal_file_flush(
   @param   flags Flags for the function.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */

@@ -639,7 +639,6 @@ static os_short osal_memory_get_slice_ix(
   @return  If the function succeeds to allocate the chunk of memory, it returns OSAL_SUCCESS (0).
            Other values indicate failure, exspecially OSAL_STATUS_MEMORY_ALLOCATION_FAILED
            indicates that operating system memory allocation failed.
-           See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */

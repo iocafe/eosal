@@ -48,7 +48,6 @@ static os_boolean bluetooth_initialized;
 
   @param  status Pointer to integer into which to store the function status code. Value
           OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
-          See @ref osalStatus "OSAL function return codes" for full list.
           This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the bluetooth. Select is not supported in Arduino environment.
@@ -107,7 +106,7 @@ static void osal_bluetooth_close(
            buffer. Clearing transmit buffer is not implemented for Arduino.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -151,7 +150,7 @@ static osalStatus osal_bluetooth_flush(
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -204,7 +203,7 @@ static osalStatus osal_bluetooth_write(
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */

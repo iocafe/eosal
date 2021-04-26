@@ -50,7 +50,7 @@ static int osal_thread_priority_to_sys_priority(
   @return  If the thread priority is  succesfully set, the function returns OSAL_SUCCESS. If
            operating system fails to set thread priority, the function returns
            OSAL_STATUS_THREAD_SET_PRIORITY_FAILED. Basically all nonzero return values indicate
-           an error. See @ref osalStatus "OSAL function return codes" for full list.
+           an error. 
 
 ****************************************************************************************************
 */

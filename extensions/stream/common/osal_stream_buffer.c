@@ -244,7 +244,7 @@ osalStatus osal_stream_buffer_write(
   @param   flags Ignored, set OSAL_STREAM_DEFAULT (0).
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -349,7 +349,7 @@ os_char *osal_stream_buffer_content(
   The osal_stream_buffer_adopt_content() function returns pointer to stream buffer content and sets
   n to content size and n_alloc to memory allocation for content.
 
-  THIS FUNCTTION MOVES OWNERSHIP OF CONTENT BUFFER FROM STREAM TO CALLER. Caller is respobsible
+  THIS FUNCTTION MOVES OWNERSHIP OF CONTENT BUFFER FROM STREAM TO CALLER. Caller is responsible
   for releasing content buffer by os_free(content, n) or os_free(content, alloc_n). The stream
   is empty after this call. New writes to it will start a new buffer.
 

@@ -258,7 +258,7 @@ static os_short osal_get_unused_server(void);
 
   @param  status Pointer to integer into which to store the function status code. Value
           OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
-          See @ref osalStatus "OSAL function return codes" for full list.
+
           This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the socket. Bit fields, combination of:
@@ -631,7 +631,7 @@ void osal_socket_close(
            OSAL_SUCCESS (0) indicates that new connection was successfully accepted.
            The value OSAL_NO_NEW_CONNECTION indicates that no new incoming
            connection, was accepted.  All other nonzero values indicate an error,
-           See @ref osalStatus "OSAL function return codes" for full list.
+
            This parameter can be OS_NULL, if no status code is needed.
   @param   flags Flags for creating the socket. Define OSAL_STREAM_DEFAULT for normal operation.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
@@ -758,7 +758,7 @@ getout:
   @param   stream Stream pointer representing the socket.
   @param   flags See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -826,7 +826,7 @@ osalStatus osal_socket_flush(
   @param   flags Flags for the function.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -890,7 +890,7 @@ static osalStatus osal_socket_write2(
   @param   flags Flags for the function.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -1020,7 +1020,7 @@ osalStatus osal_socket_write(
   @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */

@@ -53,7 +53,7 @@ void os_time(
 
   @param   t Time to set. 64 bit integer, microseconds since epoc 1.1.1970.
   @return  If the system time is succesfully set OSAL_SUCCESS (0). Other return values 
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. 
 
 ****************************************************************************************************
 */

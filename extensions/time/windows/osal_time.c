@@ -90,7 +90,7 @@ void os_time(
   @param   t Time to set.
 
   @return  If the system time is succesfully set OSAL_SUCCESS (0). Other return values 
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error. 
 
 ****************************************************************************************************
 */

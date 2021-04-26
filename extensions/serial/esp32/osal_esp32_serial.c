@@ -93,7 +93,6 @@ static uart_port_t osal_get_esp32_uart_nr(
 
   @param  status Pointer to integer into which to store the function status code. Value
           OSAL_SUCCESS (0) indicates success and all nonzero values indicate an error.
-          See @ref osalStatus "OSAL function return codes" for full list.
           This parameter can be OS_NULL, if no status code is needed.
 
   @param  flags Flags for creating the serial. Bit fields, combination of:
@@ -249,7 +248,7 @@ void osal_serial_close(
            buffer. Clearing transmit buffer is not implemented for Arduino.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -290,7 +289,7 @@ osalStatus osal_serial_flush(
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -347,7 +346,7 @@ osalStatus osal_serial_write(
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */

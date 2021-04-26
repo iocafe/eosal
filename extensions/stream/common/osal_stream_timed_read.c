@@ -48,7 +48,7 @@
   @param   flags Flags for the function.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */
@@ -117,7 +117,7 @@ osalStatus osal_stream_timed_write(
   @param   flags Flags for the function, use OSAL_STREAM_DEFAULT (0) for default operation.
 
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
-           indicate an error. See @ref osalStatus "OSAL function return codes" for full list.
+           indicate an error.
 
 ****************************************************************************************************
 */

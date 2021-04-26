@@ -232,7 +232,6 @@ void OS_ISR_FUNC_ATTR osal_event_set(
            wait interval, the function will return OSAL_SUCCESS (0). If the function timed
            out and the event remained unsignaled, it will return OSAL_STATUS_TIMEOUT.
            Other values indicate failure, typically OSAL_STATUS_EVENT_FAILED.
-           See @ref osalStatus "OSAL function return codes" for full list.
 
 ****************************************************************************************************
 */
