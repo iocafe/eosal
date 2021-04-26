@@ -90,11 +90,11 @@ osalStatus osal_stream_timed_write(
         }
         while (1);
 
-        if (n_written) *n_written = total_written;
+        *n_written = total_written;
         return rval;
     }
 
-    if (n_written) *n_written = 0;
+    *n_written = 0;
     return OSAL_STATUS_FAILED;
 }
 
@@ -168,11 +168,11 @@ osalStatus osal_stream_timed_read(
         }
         while (1);
 
-        if (n_read) *n_read = total_read;
+        *n_read = total_read;
         return rval;
     }
 
-    if (n_read) *n_read = 0;
+    *n_read = 0;
     return OSAL_STATUS_FAILED;
 }
 

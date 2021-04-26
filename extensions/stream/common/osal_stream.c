@@ -57,25 +57,6 @@ osalStream osal_stream_open(
     osalStatus *status,
     os_int flags)
 {
-
-/* ARDU TEST
- * os_char nbuf[OSAL_NBUF_SZ];
-    osal_sysconsole_write(iface ? "HEHE iface\n" : "HEHE NULL\n");
-osal_int_to_str(nbuf, sizeof(nbuf), (os_long)osal_serial_iface.stream_open);
-
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write(" ");
-osal_int_to_str(nbuf, sizeof(nbuf), (os_long)&osal_serial_open);
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write(" ");
-
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write(" ");
-osal_int_to_str(nbuf, sizeof(nbuf), (os_long)iface->stream_open);
-osal_sysconsole_write(nbuf);
-osal_sysconsole_write("\n");
-*/
-
     return iface->stream_open(parameters, option, status, flags);
 }
 

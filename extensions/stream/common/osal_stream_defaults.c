@@ -49,6 +49,8 @@ osalStatus osal_stream_default_seek(
     return OSAL_STATUS_FAILED;
 }
 
+/* Return value OSAL_STATUS_NOT_SUPPORTED indicates that select is not implemented.
+ */
 osalStatus osal_stream_default_select(
     osalStream *streams,
     os_int nstreams,
@@ -56,8 +58,6 @@ osalStatus osal_stream_default_select(
     os_int timeout_ms,
     os_int flags)
 {
-    /* Return value OSAL_STATUS_NOT_SUPPORTED indicates that select is not implemented.
-     */
     return OSAL_STATUS_NOT_SUPPORTED;
 }
 
