@@ -408,7 +408,7 @@ getout:
   @anchor osal_socket_close
 
   The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
-  function. All resource related to the socket are freed. Any attemp to use the socket after
+  function. All resource related to the socket are freed. Any attempt to use the socket after
   this call may result crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will

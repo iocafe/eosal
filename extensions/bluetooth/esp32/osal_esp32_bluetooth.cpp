@@ -80,7 +80,7 @@ static osalStream osal_bluetooth_open(
   @anchor osal_bluetooth_close
 
   The osal_bluetooth_close() function closes a bluetooth port, earlier opened by the osal_bluetooth_open()
-  function. All resource related to the bluetooth port are freed. Any attemp to use the bluetooth after
+  function. All resource related to the bluetooth port are freed. Any attempt to use the bluetooth after
   this call may result in crash.
 
   @param   stream Stream pointer representing the bluetooth port. After this call stream

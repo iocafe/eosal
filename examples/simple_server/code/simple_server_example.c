@@ -35,11 +35,13 @@
  */
 #define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
 
-/* EXAMPLE_USE_SERIAL_PORT, define EXAMPLE_SERIAL_PORT: Serial port can be selected using Windows
+/* EXAMPLE_USE_SERIAL_PORT, define MY_SERIAL_PORT: Serial port can be selected using Windows
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
-#define EXAMPLE_SERIAL_PORT "COM3,baud=115200"
+#ifndef MY_SERIAL_PORT
+#define MY_SERIAL_PORT "COM3,baud=115200"
+#endif
 
 
 /* Handle for connected stream, and for the stream listening for connections.
@@ -143,15 +145,15 @@ osalStatus osal_loop(
     if (stream == OS_NULL)
     {
         #if EXAMPLE_USE==EXAMPLE_USE_TCP_SOCKET
-            stream = osal_stream_open(OSAL_SOCKET_IFACE, OS_NULL, OS_NULL,
+            stream = osal_stream_open(OSAL_SOCKET_IFACE, "*", OS_NULL,
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
         #if EXAMPLE_USE==EXAMPLE_USE_TLS_SOCKET
-            stream = osal_stream_open(OSAL_TLS_IFACE, OS_NULL, OS_NULL,
+            stream = osal_stream_open(OSAL_TLS_IFACE, "*", OS_NULL,
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
         #if EXAMPLE_USE==EXAMPLE_USE_SERIAL_PORT
-            stream = osal_stream_open(OSAL_SERIAL_IFACE, EXAMPLE_SERIAL_PORT, OS_NULL,
+            stream = osal_stream_open(OSAL_SERIAL_IFACE, MY_SERIAL_PORT, OS_NULL,
                 OS_NULL, OSAL_STREAM_LISTEN|OSAL_STREAM_NO_SELECT);
         #endif
 

@@ -405,7 +405,7 @@ osalStream osal_serial_open(
   @anchor osal_serial_close
 
   The osal_serial_close() function closes a serial port, earlier opened by the osal_serial_open()
-  function. All resource related to the serial port are freed. Any attemp to use the serial after
+  function. All resource related to the serial port are freed. Any attempt to use the serial after
   this call may result in crash.
 
   @param   stream Stream pointer representing the serial port. After this call stream
@@ -625,7 +625,7 @@ osalStatus osal_serial_read(
     if (stream == OS_NULL)
     {
         *n_read = 0;
-        return OSAL_STATUS_FAILED;;
+        return OSAL_STATUS_FAILED;
     }
     myserial =  (osalSerial*)stream;
 

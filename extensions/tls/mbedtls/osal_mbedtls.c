@@ -401,7 +401,7 @@ static int osal_verify_certificate_callback(
   @anchor osal_mbedtls_close
 
   The osal_mbedtls_close() function closes a socket, which was creted by osal_mbedtls_open()
-  function. All resource related to the socket are freed. Any attemp to use the socket after
+  function. All resource related to the socket are freed. Any attempt to use the socket after
   this call may result crash.
 
   @param   stream Stream pointer representing the socket. After this call stream pointer will

@@ -167,7 +167,7 @@ getout:
   @anchor osal_file_close
 
   The osal_file_close() function closes a file, which was opened by osal_file_open()
-  function. All resources related to the file are freed. Any attemp to use the file after
+  function. All resources related to the file are freed. Any attempt to use the file after
   this call may result crash.
 
   @param   stream Stream pointer representing the file. After this call stream pointer will

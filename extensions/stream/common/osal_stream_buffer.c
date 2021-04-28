@@ -99,7 +99,7 @@ getout:
   @anchor osal_stream_buffer_close
 
   The osal_socket_close() function closes the stream buffer and releases memory allocated for it.
-  Any attemp to use the stream buffer after this call may result crash.
+  Any attempt to use the stream buffer after this call may result crash.
 
   @param   stream Pointer to the stream buffer object.
   @return  None.
