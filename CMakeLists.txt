@@ -11,6 +11,9 @@ set(E_TLSLIB "mbedtls")
 # include build information common to all projects.
 include(osbuild/cmakedefs/eosal-defs.txt)
 
+# Build individual library projects.
+add_subdirectory($ENV{E_ROOT}/eosal/dependencies/eosal_jpeg "${CMAKE_CURRENT_BINARY_DIR}/eosal_jpeg")
+
 # Set path to where to keep libraries.
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
