@@ -21,69 +21,7 @@
 */
 #include "eosalx.h"
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
-
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
-
-#include "mbedtls/net_sockets.h"
-
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_time            time
-#define mbedtls_time_t          time_t
-#define mbedtls_fprintf         fprintf
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
-#endif /* MBEDTLS_PLATFORM_C */
-
-/* Break the build if we do not have all components.
- */
-#if !defined(MBEDTLS_ENTROPY_C) || \
-    !defined(MBEDTLS_SSL_TLS_C) || !defined(MBEDTLS_SSL_CLI_C) || \
-    !defined(MBEDTLS_NET_C) || !defined(MBEDTLS_CTR_DRBG_C)
-
-    *** UNABLE TO BUILD ***
-    MBEDTLS_ENTROPY_C and/or
-    MBEDTLS_SSL_TLS_C and/or MBEDTLS_SSL_CLI_C and/or
-    MBEDTLS_NET_C and/or MBEDTLS_CTR_DRBG_C and/or not defined.
-#endif
-
-#include "mbedtls/debug.h"
-#include "mbedtls/ssl.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/error.h"
-#include "mbedtls/certs.h"
-
-#include <signal.h>
-
-/** Mbed TLS specific global data related to TLS.
- */
-typedef struct osalTLS
-{
-    /** Random number generator context.
-     */
-    mbedtls_ctr_drbg_context ctr_drbg;
-    mbedtls_entropy_context entropy;
-
-    /** Certificate authority certificate
-     */
-    mbedtls_x509_crt cacert;
-
-    /** Server only
-     */
-    mbedtls_x509_crt srvcert;
-    mbedtls_pk_context pkey;
-}
-osalTLS;
+#include "extensions/tls/mbedtls/osal_mbedtls.h"
 
 
 /** MbedTLS specific socket data structure. OSAL functions cast their own stream structure
