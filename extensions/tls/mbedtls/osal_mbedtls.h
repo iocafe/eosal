@@ -19,6 +19,9 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_MBEDTLS_H_
+#define OSAL_MBEDTLS_H_
 #include "eosalx.h"
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
 
@@ -85,4 +88,5 @@ typedef struct osalTLS
 }
 osalTLS;
 
+#endif
 #endif
