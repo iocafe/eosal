@@ -39,6 +39,7 @@
 #if OSAL_DEBUG == 0
   #define osal_debug_error(text)
   #define osal_debug_error_int(text,v)
+  #define osal_debug_error_status(text,s)
   #define osal_debug_error_str(text,v)
   #define osal_debug_assert(cond)
 #endif
@@ -156,6 +157,12 @@
     void osal_debug_assert_func(
         os_long cond);
 #endif
+
+    /* Conditional error reporting, nothing is printed if s is OSAL_SUCCESS (0)
+       or other informative success code.
+     */
+    #define osal_debug_error_status(text,s) \
+        if (OSAL_IS_ERROR(s)) osal_debug_error_int(text,s)
 
 /*@}*/
 
