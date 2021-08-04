@@ -422,9 +422,14 @@
 #endif
 
 /** Can we get unique identifier of CPU or the computer?
+    Supported for AMD/Intel architecture, not for ARM.
  */
 #ifndef OSAL_CPUID_SUPPORT
-#define OSAL_CPUID_SUPPORT 1
+  #ifndef __aarch64__
+  #ifndef __arm__
+    #define OSAL_CPUID_SUPPORT 1
+  #endif
+  #endif
 #endif
 
 /** Having a console for testing makes sense in linux and windows PC environments,
