@@ -388,60 +388,6 @@ osalStatus osal_serial_read(
 /**
 ****************************************************************************************************
 
-  @brief Get serial port parameter.
-  @anchor osal_serial_get_parameter
-
-  The osal_serial_get_parameter() function gets a parameter value. Here we just call the default
-  implementation for streams.
-
-  @param   stream Stream pointer representing the serial.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @return  Parameter value.
-
-****************************************************************************************************
-*/
-os_long osal_serial_get_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix)
-{
-    /* Call the default implementation
-     */
-    return osal_stream_default_get_parameter(stream, parameter_ix);
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Set serial port parameter.
-  @anchor osal_serial_set_parameter
-
-  The osal_serial_set_parameter() function gets a parameter value. Here we just call the default
-  implementation for streams.
-
-  @param   stream Stream pointer representing the serial.
-  @param   parameter_ix Index of parameter to get.
-           See @ref osalStreamParameterIx "stream parameter enumeration" for the list.
-  @param   value Parameter value to set.
-  @return  None.
-
-****************************************************************************************************
-*/
-void osal_serial_set_parameter(
-    osalStream stream,
-    osalStreamParameterIx parameter_ix,
-    os_long value)
-{
-    /* Call the default implementation
-     */
-    osal_stream_default_set_parameter(stream, parameter_ix, value);
-}
-
-
-/**
-****************************************************************************************************
-
   @brief Get serial port number.
   @anchor osal_get_esp32_uart_nr
 

@@ -148,7 +148,7 @@ osalThread *osal_thread_create(
     /* Create event to wait until newly created thread has processed it's parameters. If creating
        the event failes, return the error code.
      */
-    thrprm.done = osal_event_create();
+    thrprm.done = osal_event_create(OSAL_EVENT_DEFAULT);
     if (thrprm.done == OS_NULL)
     {
         osal_debug_error("osal_thread,osal_event_create failed");
@@ -166,7 +166,7 @@ osalThread *osal_thread_create(
         if (handle == OS_NULL) return OS_NULL;
         os_memclear(handle, sizeof(osalArduinoThreadHandle));
 
-        handle->join_event = thrprm.join_event = osal_event_create();
+        handle->join_event = thrprm.join_event = osal_event_create(OSAL_EVENT_DEFAULT);
         if (thrprm.join_event == OS_NULL)
         {
             osal_event_delete(thrprm.done);
