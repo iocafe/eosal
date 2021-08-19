@@ -444,6 +444,8 @@ osalStatus os_persistent_write(
         return OSAL_STATUS_FAILED;
     }
 
+    /* Allocate buffer, or reallocate it to make it bigger.
+     */
     if (h->pos + buf_sz > h->buf_sz) {
         sz = h->buf_sz > 0 ? 3 * h->buf_sz / 2 : 256;
         if (h->pos + buf_sz > sz) {
@@ -462,6 +464,9 @@ osalStatus os_persistent_write(
         h->buf = newbuf;
         h->buf_sz = newsz;
     }
+
+    os_memcpy(h->buf + h->pos, buf, buf_sz);
+    h->pos += buf_sz;
 
     return OSAL_SUCCESS;
 }
