@@ -6,6 +6,8 @@
   @version 1.0
   @date    26.4.2021
 
+  The NVS API used here is the preferred choice for saving persistent parameters on ESP32.
+
   See https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spi_flash.html
   Especially chapter "Concurrency Constraints for flash on SPI1"
 
@@ -19,39 +21,28 @@
 #include "eosalx.h"
 #if (OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_NVS_STORAGE) || (OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_DEFAULT_STORAGE)
 
-// #include <Arduino.h>
-// #include <EEPROM.h>
-// #include "freertos/FreeRTOS.h"
-// #include "freertos/task.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
-// #include "driver/gpio.h"
-
 
 #define OSAL_STORAGE_NAMESPACE "eosal"
 
 static os_boolean os_persistent_lib_initialized = OS_FALSE;
 
-/** The persistent handle structure defined here is only for pointer type checking,
-    it is never used.
+/** The persistent handle structure stores some data about an open block.
  */
 typedef struct
 {
-    osPersistentBlockNr block_nr;
-    os_int flags;
+    osPersistentBlockNr block_nr;   /* Persistent block number, see osPersistentBlockNr enum.  */
+    os_int flags;       /* Flags given to os_persistent_open() */
 
-    os_char *buf;
-    os_memsz buf_sz;
+    os_char *buf;       /* Pointer to data buffer, OS_NULL if none */
+    os_memsz buf_sz;    /* Requested buffer size in bytes for reads. Allocated buffer size for
+                           writes. */
 
-    os_memsz pos;
+    os_memsz pos;       /* Read or write position */
 }
 osPersistentNvsHandle;
-
-
-/* Forward referred static functions.
- */
-
 
 
 /**
@@ -79,22 +70,24 @@ void os_persistent_initialze(
     os_persistent_lib_initialized = OS_TRUE;
 
     err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        osal_debug_error("nvs_flash_init() failed once");
+    if (err) {
+        osal_debug_error_int("nvs_flash_init() failed once, err=", err);
 
-        /* NVS partition was truncated and needs to be erased. Retry nvs_flash_init.
-         */
-        err = nvs_flash_erase();
-        if (err) {
-            osal_debug_error("nvs_flash_erase() failed");
-        }
+        if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
+        {
+            /* NVS partition was truncated and needs to be erased. Retry nvs_flash_init.
+             */
+            err = nvs_flash_erase();
+            if (err) {
+                osal_debug_error("nvs_flash_erase() failed");
+            }
 
-        err = nvs_flash_init();
-        if (err) {
-            osal_debug_error("nvs_flash_init() failed after erase");
+            err = nvs_flash_init();
+            if (err) {
+                osal_debug_error("nvs_flash_init() failed after erase");
+            }
         }
     }
-    ESP_ERROR_CHECK( err );
 }
 
 
@@ -181,7 +174,6 @@ osPersistentHandle *os_persistent_open(
     os_int flags)
 {
     osPersistentNvsHandle *h;
-    // os_ushort first_free, pos, cscalc, n, nnow, p, sz;
     esp_err_t err;
     os_char nbuf[OSAL_NBUF_SZ + 1];
     size_t required_size;
@@ -398,7 +390,9 @@ os_memsz os_persistent_read(
     if (h) if (h->pos < h->buf_sz)
     {
         n = h->buf_sz - h->pos;
-        if ((os_ushort)buf_sz < n) n = (os_ushort)buf_sz;
+        if ((os_ushort)buf_sz < n) {
+            n = (os_ushort)buf_sz;
+        }
         os_memcpy(buf, h->buf +  h->pos, n);
         h->pos += n;
         return n;

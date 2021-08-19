@@ -6,8 +6,8 @@
   @version 1.0
   @date    26.4.2021
 
-  Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash
-  for EEPROM emulation.
+  Arduino EEPROM API can be used in some cases, but it is bad idea to use it for ESP32: It is
+  obsoleted, and causes problems with flash caching.
 
   ONLY ONE BLOCK CAN BE OPEN AT THE TIME FOR WRITING.
 
