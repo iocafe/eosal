@@ -480,6 +480,7 @@ osalStatus os_persistent_write(
     const os_char *buf,
     os_memsz buf_sz)
 {
+    esp_err_t err;
     os_memsz sz, newsz;
     os_char *newbuf;
     os_char nbuf[OSAL_NBUF_SZ + 1];
@@ -504,7 +505,7 @@ osalStatus os_persistent_write(
         err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
         if (err != ESP_OK) {
             osal_debug_error_str("nvs_open failed for write on ", OSAL_STORAGE_NAMESPACE);
-            goto failed;
+            return OSAL_STATUS_FAILED;
         }
 
         /* Write the block.
