@@ -254,41 +254,9 @@ osPersistentHandle *os_persistent_open(
         }
         h->required_sz = required_size;
 
-        /* Allocate temporary buffer and read contnt.
-         */
-        /* h->buf = os_malloc(required_size, OS_NULL);
-        if (h->buf == OS_NULL) {
-            nvs_close(my_handle);
-            goto failed;
-        }
-        h->buf_sz = required_size;
-        err = nvs_get_blob(my_handle, nbuf, h->buf, &required_size);
-        if (err != ESP_OK) {
-            osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
-            nvs_close(my_handle);
-            goto failed;
-        } */
-
         /* Close NVS storage.
          */
         nvs_close(my_handle);
-
-        /* Verify checksum
-         */
-        /* n = h->sz;
-        p = block->pos;
-        cscalc = OSAL_CHECKSUM_INIT;
-        while (n > 0)
-        {
-            nnow = n;
-            if (sizeof(tmp) < nnow) nnow = sizeof(tmp);
-            os_persistent_read_internal(tmp, p, nnow);
-            os_checksum(tmp, nnow, &cscalc);
-            p += nnow;
-            n -= nnow;
-        }
-        if (cscalc != block->checksum) goto failed;
-        */
     }
 
     return (osPersistentHandle*)h;
@@ -397,6 +365,7 @@ os_memsz os_persistent_read(
     os_char *buf,
     os_memsz buf_sz)
 {
+    esp_err_t err;
     os_ushort n;
     os_char nbuf[OSAL_NBUF_SZ + 1];
     size_t required_size;
@@ -410,7 +379,7 @@ os_memsz os_persistent_read(
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
 
-    if (h == OS_NULL) {
+    if (h == OS_NULL || buf_sz <= 0) {
         return -1;
     }
 
@@ -419,7 +388,8 @@ os_memsz os_persistent_read(
     if (h->buf == OS_NULL)
     {
         if (h->pos) {
-            osal_debug_error_int("reading past end of block ", block_nr);
+            osal_debug_error_int("reading past end of block ", h->block_nr);
+            return -1;
         }
 
         /* Open NVS storage.
@@ -431,7 +401,7 @@ os_memsz os_persistent_read(
          }
 
         nbuf[0] = 'v';
-        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, block_nr);
+        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, h->block_nr);
 
         /* If we are reading whole block at once, we do not need temporary buffer.
          */
@@ -439,7 +409,7 @@ os_memsz os_persistent_read(
         {
             err = nvs_get_blob(my_handle, nbuf, buf, &required_size);
             if (err != ESP_OK) {
-                osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+                osal_debug_error_int("nvs_get_blob failed on block ", h->block_nr);
                 nvs_close(my_handle);
                 return -1;
             }
@@ -458,7 +428,7 @@ os_memsz os_persistent_read(
         h->buf_sz = h->required_sz;
         err = nvs_get_blob(my_handle, nbuf, h->buf, &required_size);
         if (err != ESP_OK) {
-            osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+            osal_debug_error_int("nvs_get_blob failed on block ", h->block_nr);
             nvs_close(my_handle);
             return -1;
         }
