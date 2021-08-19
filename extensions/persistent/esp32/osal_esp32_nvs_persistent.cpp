@@ -31,6 +31,8 @@
 
 #define OSAL_STORAGE_NAMESPACE "eosal"
 
+static os_boolean os_persistent_lib_initialized = OS_FALSE;
+
 /** The persistent handle structure defined here is only for pointer type checking,
     it is never used.
  */
@@ -70,8 +72,6 @@ osPersistentNvsHandle;
 void os_persistent_initialze(
     osPersistentParams *prm)
 {
-    os_ushort checksum;
-    os_char buf[OSAL_NBUF_SZ];
     esp_err_t err;
     
     /* Do not initialized again by load or save call.
@@ -80,10 +80,19 @@ void os_persistent_initialze(
 
     err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        // NVS partition was truncated and needs to be erased
-        // Retry nvs_flash_init
-        ESP_ERROR_CHECK(nvs_flash_erase());
+        osal_debug_error("nvs_flash_init() failed once");
+
+        /* NVS partition was truncated and needs to be erased. Retry nvs_flash_init.
+         */
+        err = nvs_flash_erase();
+        if (err) {
+            osal_debug_error("nvs_flash_erase() failed");
+        }
+
         err = nvs_flash_init();
+        if (err) {
+            osal_debug_error("nvs_flash_init() failed after erase");
+        }
     }
     ESP_ERROR_CHECK( err );
 }
@@ -174,8 +183,14 @@ osPersistentHandle *os_persistent_open(
     osPersistentNvsHandle *h;
     // os_ushort first_free, pos, cscalc, n, nnow, p, sz;
     esp_err_t err;
-    os_char nbuf[OSAL_NBUF_SIZE+1];
-    // int i;
+    os_char nbuf[OSAL_NBUF_SZ + 1];
+    size_t required_size;
+
+#if IDF_VERSION_MAJOR >= 4   /* esp-idf version 4 */
+    nvs_handle_t my_handle;
+#else                        /* esp-idf version 3 */
+    nvs_handle my_handle;
+#endif
 
     /* Return zero block size if the function fails.
      */
@@ -214,8 +229,8 @@ osPersistentHandle *os_persistent_open(
         return OS_NULL;
     }
     os_memclear(h, sizeof(osPersistentNvsHandle));
-    block->block_nr = block_nr;
-    block->flags = flags;
+    h->block_nr = block_nr;
+    h->flags = flags;
 
     /* If we are reading, read whole block immediately to buffer.
      */
@@ -223,7 +238,7 @@ osPersistentHandle *os_persistent_open(
     {
         /* Open NVS storage.
          */
-         err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
+         err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READONLY, &my_handle);
          if (err != ESP_OK) {
             osal_debug_error_str("nvs_open failed for read on ", OSAL_STORAGE_NAMESPACE);
             goto failed;
@@ -251,18 +266,19 @@ osPersistentHandle *os_persistent_open(
             goto failed;
         }
         h->buf_sz = required_size;
-        err = nvs_get_blob(my_handle, nbuf, h->buff, &required_size);
+        err = nvs_get_blob(my_handle, nbuf, h->buf, &required_size);
         if (err != ESP_OK) {
             osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
             goto failed;
         }
 
-        // Close
+        /* Close NVS storage.
+         */
         nvs_close(my_handle);
 
         /* Verify checksum
          */
-        /* n = block->sz;
+        /* n = h->sz;
         p = block->pos;
         cscalc = OSAL_CHECKSUM_INIT;
         while (n > 0)
@@ -305,8 +321,14 @@ void os_persistent_close(
     osPersistentHandle *handle,
     os_int flags)
 {
-    nvs_handle_t my_handle;
     esp_err_t err;
+    os_char nbuf[OSAL_NBUF_SZ + 1];
+
+#if IDF_VERSION_MAJOR >= 4   /* esp-idf version 4 */
+    nvs_handle_t my_handle;
+#else                        /* esp-idf version 3 */
+    nvs_handle my_handle;
+#endif
 
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
@@ -327,7 +349,7 @@ void os_persistent_close(
          */
         nbuf[0] = 'v';
         osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, h->block_nr);
-        err = nvs_set_blob(my_handle, xx "run_time", h->buf, h->pos);
+        err = nvs_set_blob(my_handle, nbuf, h->buf ? h->buf : "", h->pos);
         if (err != ESP_OK) {
             osal_debug_error_int("nvs_set_blob failed on block ", h->block_nr);
         }
@@ -373,11 +395,11 @@ os_memsz os_persistent_read(
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
 
-    if (h) if (hpos < h->buf_sz)
+    if (h) if (h->pos < h->buf_sz)
     {
         n = h->buf_sz - h->pos;
         if ((os_ushort)buf_sz < n) n = (os_ushort)buf_sz;
-        os_memcpy(buf, h->buf +  h->read_pos, n);
+        os_memcpy(buf, h->buf +  h->pos, n);
         h->pos += n;
         return n;
     }
@@ -395,7 +417,7 @@ os_memsz os_persistent_read(
   os_persistent_write() function appends buffer to data to write.
 
   @param   handle Persistant storage handle.
-  @param   buf Buffer into which data is written from.
+  @param   buf Buffer Pointer to data to write (append).
   @param   buf_sz block_sz Block size in bytes.
 
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
@@ -407,21 +429,35 @@ osalStatus os_persistent_write(
     const os_char *buf,
     os_memsz buf_sz)
 {
+    os_memsz sz, newsz;
+    os_char *newbuf;
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
 
-    if (h)
-    {
-        osal_control_interrupts(OS_FALSE);
-        os_persistent_write_internal(buf, block->pos + block->sz, buf_sz);
-        os_checksum(buf, buf_sz, &block->checksum);
-        block->sz += (os_ushort)buf_sz;
-        hdr.touched = 1;
-        osal_control_interrupts(OS_TRUE);
-        return OSAL_SUCCESS;
+    if (h == OS_NULL) {
+        return OSAL_STATUS_FAILED;
     }
 
-    return OSAL_STATUS_FAILED;
+    if (h->pos + buf_sz > h->buf_sz) {
+        sz = h->buf_sz > 0 ? 3 * h->buf_sz / 2 : 256;
+        if (h->pos + buf_sz > sz) {
+            sz = h->pos + buf_sz;
+        }
+        newbuf = os_malloc(sz, &newsz);
+        if (newbuf == OS_NULL) {
+            return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
+        }
+        if (h->pos) {
+            os_memcpy(newbuf, h->buf, h->pos);
+        }
+        if (h->buf) {
+            os_free(h->buf, h->buf_sz);
+        }
+        h->buf = newbuf;
+        h->buf_sz = newsz;
+    }
+
+    return OSAL_SUCCESS;
 }
 
 
@@ -443,19 +479,20 @@ osalStatus os_persistent_delete(
     osPersistentBlockNr block_nr,
     os_int flags)
 {
+    esp_err_t err;
+
     if (flags & OSAL_PERSISTENT_DELETE_ALL) {
-        os_memclear((os_char*)&hdr, sizeof(hdr));
-        osal_control_interrupts(OS_FALSE);
-        os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
-        EEPROM.commit();
-        osal_control_interrupts(OS_TRUE);
+        err = nvs_flash_erase();
+        if (err) {
+            osal_debug_error("nvs_flash_erase() failed");
+           return OSAL_STATUS_FAILED;
+        }
         return OSAL_SUCCESS;
     }
     else {
         return os_save_persistent(block_nr, OS_NULL, 0, OS_TRUE);
     }
 }
-
 
 
 #endif

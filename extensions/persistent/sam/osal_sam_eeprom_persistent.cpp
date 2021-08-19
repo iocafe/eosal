@@ -398,7 +398,7 @@ os_memsz os_persistent_read(
   os_persistent_write() function appends buffer to data to write.
 
   @param   handle Persistant storage handle.
-  @param   buf Buffer into which data is written from.
+  @param   buf Buffer Pointer to data to write (append).
   @param   buf_sz block_sz Block size in bytes.
 
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.

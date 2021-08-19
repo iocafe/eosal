@@ -22,7 +22,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_EEPROM_SUPPORT
+#if OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_EEPROM_STORAGE
 #include <Arduino.h>
 #include <EEPROM.h>
 
@@ -173,8 +173,8 @@ void os_persistent_shutdown(
   os_persistent_load() must be called to read the data to local RAM.
 
   @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to set to point then block (structure) in memory.
-  @param   block_sz Set to block size in bytes.
+  @param   block Pointer to block (structure) to load.
+  @param   block_sz Block size in bytes.
   @param   flags OSAL_PERSISTENT_SECRET flag enables accessing the secret. It must be only
            given in safe context.
   @return  OSAL_SUCCESS of successful. Value OSAL_STATUS_NOT_SUPPORTED indicates that
@@ -392,15 +392,15 @@ os_memsz os_persistent_read(
 /**
 ****************************************************************************************************
 
-  @brief Append data to persistent block.
-  @anchor os_persistent_write
+  @brief Save parameter block to persistent storage.
+  @anchor os_persistent_save
 
-  os_persistent_write() function appends buffer to data to write.
+  The os_persistent_save() function saves a parameter structure to persistent storage and
+  identifies it by block number.
 
-  @param   handle Persistant storage handle.
-  @param   buf Buffer into which data is written from.
-  @param   buf_sz block_sz Block size in bytes.
-
+  @param   block_nr Parameter block number, see osal_persistent.h.
+  @param   block Pointer to block (structure) to save.
+  @param   block_sz Block size in bytes.
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
 
 ****************************************************************************************************
