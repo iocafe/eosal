@@ -162,8 +162,13 @@ osalStatus os_persistent_get_ptr(
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   block_sz Pointer to integer where to store block size when reading the persistent block.
            This is intended to know memory size to allocate before reading.
-  @param   flags OSAL_PERSISTENT_READ or OSAL_PERSISTENT_WRITE. Flag OSAL_PERSISTENT_SECRET
-           enables reading or writing the secret, and must be only given in safe context.
+  @param   flags OSAL_PERSISTENT_READ, OSAL_PERSISTENT_WRITE, or OSAL_PERSISTENT_WRITE_AT_ONCE.
+           Difference between OSAL_PERSISTENT_WRITE and OSAL_PERSISTENT_WRITE_AT_ONCE is that
+           the os_persistent_write() can be called multiple times, but for
+           OSAL_PERSISTENT_WRITE_AT_ONCE only once. The latter doesn't need extra buffer
+           allocation, so it is faster.
+           Additional flag OSAL_PERSISTENT_SECRET enables reading or writing the secret, and must
+           be given to open confidential context.
 
   @return  Persistant storage block handle, or OS_NULL if the function failed.
 
@@ -303,7 +308,7 @@ osalStatus os_persistent_close(
         return OSAL_STATUS_FAILED;
     }
 
-    if (h->flags & OSAL_PERSISTENT_WRITE)
+    if ((h->flags & OSAL_PERSISTENT_WRITE) && (h->flags & OSAL_PERSISTENT_AT_ONCE) == 0)
     {
         /* Open NVS storage.
          */
@@ -334,6 +339,9 @@ osalStatus os_persistent_close(
         }
         nvs_close(my_handle);
     }
+
+    os_free(h->buf, h->buf_sz);
+    os_free(h, sizeof(osPersistentNvsHandle));
     return OSAL_SUCCESS;
 
 failed:
@@ -474,11 +482,52 @@ osalStatus os_persistent_write(
 {
     os_memsz sz, newsz;
     os_char *newbuf;
+    os_char nbuf[OSAL_NBUF_SZ + 1];
+
+#if IDF_VERSION_MAJOR >= 4   /* esp-idf version 4 */
+    nvs_handle_t my_handle;
+#else                        /* esp-idf version 3 */
+    nvs_handle my_handle;
+#endif
+
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
 
     if (h == OS_NULL) {
         return OSAL_STATUS_FAILED;
+    }
+
+    if ((h->flags & OSAL_PERSISTENT_AT_ONCE) == 1)
+    {
+        /* Open NVS storage.
+         */
+        err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
+        if (err != ESP_OK) {
+            osal_debug_error_str("nvs_open failed for write on ", OSAL_STORAGE_NAMESPACE);
+            goto failed;
+        }
+
+        /* Write the block.
+         */
+        nbuf[0] = 'v';
+        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, h->block_nr);
+        err = nvs_set_blob(my_handle, nbuf, buf ? buf : "", buf_sz);
+        if (err != ESP_OK) {
+            osal_debug_error_int("nvs_set_blob failed, code=", err);
+            nvs_close(my_handle);
+            return OSAL_STATUS_FAILED;
+        }
+
+        /* Commit data to flash and close then NVS storage.
+         */
+        err = nvs_commit(my_handle);
+        if (err != ESP_OK) {
+            osal_debug_error_int("nvs_commit failed on block ", h->block_nr);
+            nvs_close(my_handle);
+            return OSAL_STATUS_FAILED;
+        }
+        nvs_close(my_handle);
+        return OSAL_SUCCESS;
     }
 
     /* Allocate buffer, or reallocate it to make it bigger.

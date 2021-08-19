@@ -126,7 +126,7 @@ osalStatus osal_loop(
         os_strncat(prm_a.txt1, buf, TXT_SZ);
         os_strncpy(prm_a.txt2, "txt a2: ", TXT_SZ);
         os_strncat(prm_a.txt2, buf, TXT_SZ);
-        h = os_persistent_open(OS_PBNR_CUST_A, OS_NULL, OSAL_PERSISTENT_WRITE);
+        h = os_persistent_open(OS_PBNR_CUST_A, OS_NULL, OSAL_PERSISTENT_WRITE_AT_ONCE);
         if (h)
         {
             sz = sizeof(prm_a);

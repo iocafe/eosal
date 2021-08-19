@@ -40,7 +40,7 @@ osalStatus os_save_persistent(
     osPersistentHandle *h;
     osalStatus s, s2;
 
-    h = os_persistent_open(block_nr, OS_NULL, OSAL_PERSISTENT_WRITE|OSAL_PERSISTENT_SECRET);
+    h = os_persistent_open(block_nr, OS_NULL, OSAL_PERSISTENT_WRITE_AT_ONCE|OSAL_PERSISTENT_SECRET);
     if (h == OS_NULL) return OSAL_STATUS_FAILED;
 
     if (delete_block)

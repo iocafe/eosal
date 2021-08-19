@@ -35,7 +35,7 @@ typedef struct
     os_ushort sz;       /* Block size in bytes. */
     os_ushort read_ix;  /* Current read position */
     os_ushort checksum; /* Check sum. */
-    os_int flags;       /* Operation, OSAL_PERSISTENT_WRITE or OSAL_PERSISTENT_WRITE bits */
+    os_int flags;       /* Operation flags, OSAL_PERSISTENT_READ, OSAL_PERSISTENT_WRITE, etc bits */
 }
 myEEPROMBlock;
 
