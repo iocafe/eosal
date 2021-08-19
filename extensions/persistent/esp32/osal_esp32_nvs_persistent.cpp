@@ -35,6 +35,7 @@ typedef struct
 {
     osPersistentBlockNr block_nr;   /* Persistent block number, see osPersistentBlockNr enum.  */
     os_int flags;       /* Flags given to os_persistent_open() */
+    os_memsz required_sz; /* Read, number of bytes stored in NVS */
 
     os_char *buf;       /* Pointer to data buffer, OS_NULL if none */
     os_memsz buf_sz;    /* Requested buffer size in bytes for reads. Allocated buffer size for
@@ -64,7 +65,7 @@ void os_persistent_initialze(
     osPersistentParams *prm)
 {
     esp_err_t err;
-    
+
     /* Do not initialized again by load or save call.
      */
     os_persistent_lib_initialized = OS_TRUE;
@@ -251,10 +252,11 @@ osPersistentHandle *os_persistent_open(
         if (block_sz) {
             *block_sz = required_size;
         }
+        h->required_sz = required_size;
 
         /* Allocate temporary buffer and read contnt.
          */
-        h->buf = os_malloc(required_size, OS_NULL);
+        /* h->buf = os_malloc(required_size, OS_NULL);
         if (h->buf == OS_NULL) {
             nvs_close(my_handle);
             goto failed;
@@ -265,7 +267,7 @@ osPersistentHandle *os_persistent_open(
             osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
             nvs_close(my_handle);
             goto failed;
-        }
+        } */
 
         /* Close NVS storage.
          */
@@ -396,10 +398,75 @@ os_memsz os_persistent_read(
     os_memsz buf_sz)
 {
     os_ushort n;
+    os_char nbuf[OSAL_NBUF_SZ + 1];
+    size_t required_size;
+
+#if IDF_VERSION_MAJOR >= 4   /* esp-idf version 4 */
+    nvs_handle_t my_handle;
+#else                        /* esp-idf version 3 */
+    nvs_handle my_handle;
+#endif
+
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
 
-    if (h) if (h->pos < h->buf_sz)
+    if (h == OS_NULL) {
+        return -1;
+    }
+
+    /* Get block data from NVS.
+     */
+    if (h->buf == OS_NULL)
+    {
+        if (h->pos) {
+            osal_debug_error_int("reading past end of block ", block_nr);
+        }
+
+        /* Open NVS storage.
+         */
+         err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READONLY, &my_handle);
+         if (err != ESP_OK) {
+            osal_debug_error_str("nvs_open failed for read on ", OSAL_STORAGE_NAMESPACE);
+            return -1;
+         }
+
+        nbuf[0] = 'v';
+        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, block_nr);
+
+        /* If we are reading whole block at once, we do not need temporary buffer.
+         */
+        if (buf_sz == h->required_sz)
+        {
+            err = nvs_get_blob(my_handle, nbuf, buf, &required_size);
+            if (err != ESP_OK) {
+                osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+                nvs_close(my_handle);
+                return -1;
+            }
+
+            h->pos = buf_sz;
+            return buf_sz;
+        }
+
+        /* Allocate temporary buffer and read contnt.
+         */
+        h->buf = os_malloc(h->required_sz, OS_NULL);
+        if (h->buf == OS_NULL) {
+            nvs_close(my_handle);
+            return -1;
+        }
+        h->buf_sz = h->required_sz;
+        err = nvs_get_blob(my_handle, nbuf, h->buf, &required_size);
+        if (err != ESP_OK) {
+            osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+            nvs_close(my_handle);
+            return -1;
+        }
+
+        nvs_close(my_handle);
+    }
+
+    if (h->pos < h->buf_sz)
     {
         n = h->buf_sz - h->pos;
         if ((os_ushort)buf_sz < n) {
