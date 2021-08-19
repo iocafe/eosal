@@ -70,7 +70,7 @@ void os_persistent_initialze(
     os_persistent_lib_initialized = OS_TRUE;
 
     err = nvs_flash_init();
-    if (err) {
+    if (err != ESP_OK) {
         osal_debug_error_int("nvs_flash_init() failed once, err=", err);
 
         if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -78,12 +78,12 @@ void os_persistent_initialze(
             /* NVS partition was truncated and needs to be erased. Retry nvs_flash_init.
              */
             err = nvs_flash_erase();
-            if (err) {
+            if (err != ESP_OK) {
                 osal_debug_error("nvs_flash_erase() failed");
             }
 
             err = nvs_flash_init();
-            if (err) {
+            if (err != ESP_OK) {
                 osal_debug_error("nvs_flash_init() failed after erase");
             }
         }
@@ -242,9 +242,10 @@ osPersistentHandle *os_persistent_open(
         osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, block_nr);
         err = nvs_get_blob(my_handle, nbuf, NULL, &required_size);
         if (err != ESP_OK || required_size <= 0) {
-            if (err != ESP_ERR_NVS_NOT_FOUND) {
-                osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+            if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) {
+                osal_debug_error_int("nvs_get_blob failed, code=", err);
             }
+            nvs_close(my_handle);
             goto failed;
         }
         if (block_sz) {
@@ -255,12 +256,14 @@ osPersistentHandle *os_persistent_open(
          */
         h->buf = os_malloc(required_size, OS_NULL);
         if (h->buf == OS_NULL) {
+            nvs_close(my_handle);
             goto failed;
         }
         h->buf_sz = required_size;
         err = nvs_get_blob(my_handle, nbuf, h->buf, &required_size);
         if (err != ESP_OK) {
             osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+            nvs_close(my_handle);
             goto failed;
         }
 
@@ -343,7 +346,7 @@ void os_persistent_close(
         osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, h->block_nr);
         err = nvs_set_blob(my_handle, nbuf, h->buf ? h->buf : "", h->pos);
         if (err != ESP_OK) {
-            osal_debug_error_int("nvs_set_blob failed on block ", h->block_nr);
+            osal_debug_error_int("nvs_set_blob failed, code=", err);
         }
 
         /* Commit data to flash and close then NVS storage.
@@ -477,7 +480,7 @@ osalStatus os_persistent_delete(
 
     if (flags & OSAL_PERSISTENT_DELETE_ALL) {
         err = nvs_flash_erase();
-        if (err) {
+        if (err != ESP_OK) {
             osal_debug_error("nvs_flash_erase() failed");
            return OSAL_STATUS_FAILED;
         }
