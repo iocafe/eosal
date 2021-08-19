@@ -498,7 +498,7 @@ osalStatus os_persistent_write(
         return OSAL_STATUS_FAILED;
     }
 
-    if ((h->flags & OSAL_PERSISTENT_AT_ONCE) == 1)
+    if (h->flags & OSAL_PERSISTENT_AT_ONCE)
     {
         /* Open NVS storage.
          */
