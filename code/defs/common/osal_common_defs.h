@@ -290,6 +290,12 @@ typedef os_char os_boolean;
 #define OSAL_MAX_ERROR_HANDLERS 3
 #endif
 
+/* Constants for selecting persistent support.
+ */
+#define OSAL_PERSISTENT_DEFAULT_STORAGE 1
+#define OSAL_PERSISTENT_EEPROM_STORAGE 2
+#define OSAL_PERSISTENT_NVS_STORAGE 3
+
 /** Enumeration of bitmap format and color flag. Bitmap format enumeration value is number
     of bits per pixel, with OSAL_BITMAP_COLOR_FLAG (0x100) to indicate color or
     OSAL_BITMAP_ALPHA_CHANNEL_FLAG (0x200) to indicate that bitmap has alpha channel.

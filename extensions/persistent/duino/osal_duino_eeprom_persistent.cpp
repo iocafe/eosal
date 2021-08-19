@@ -389,15 +389,15 @@ os_memsz os_persistent_read(
 /**
 ****************************************************************************************************
 
-  @brief Save parameter block to persistent storage.
-  @anchor os_persistent_save
+  @brief Append data to persistent block.
+  @anchor os_persistent_write
 
-  The os_persistent_save() function saves a parameter structure to persistent storage and
-  identifies it by block number.
+  os_persistent_write() function appends buffer to data to write.
 
-  @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to save.
-  @param   block_sz Block size in bytes.
+  @param   handle Persistant storage handle.
+  @param   buf Buffer into which data is written from.
+  @param   buf_sz block_sz Block size in bytes.
+
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
 
 ****************************************************************************************************

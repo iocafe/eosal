@@ -1,10 +1,13 @@
 /**
 
-  @file    persistent/shared/filesystem/osal_fsys_persistent.c
-  @brief   Save persistent parameters on Linux/Windows.
+  @file    persistent/arduino/osal_esp32_nvs_persistent.c
+  @brief   Save persistent parameters on ESP32, uses NVS API.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021
+
+  See https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spi_flash.html
+  Especially chapter "Concurrency Constraints for flash on SPI1"
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -14,49 +17,39 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_PERSISTENT_SUPPORT
-#if OSAL_USE_SHARED_FSYS_PERSISTENT
+#if (OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_NVS_STORAGE) || (OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_DEFAULT_STORAGE)
 
-/* Default location where to keep persistent configuration data on Linux, Windows, etc.
-   This can be overridden by compiler define OSAL_PERSISTENT_ROOT. Location is important
-   since security seacret (persistent block 5) may be kept kept here and file permissions
-   must be set.
- */
-#ifndef OSAL_PERSISTENT_ROOT
-#ifdef OSAL_WINDOWS
-  #define OSAL_PERSISTENT_ROOT "c:\\coderoot\\data"
-#else
-  #define OSAL_PERSISTENT_ROOT "/coderoot/data"
-#endif
-#endif
+// #include <Arduino.h>
+// #include <EEPROM.h>
+// #include "freertos/FreeRTOS.h"
+// #include "freertos/task.h"
+#include "esp_system.h"
+#include "nvs_flash.h"
+#include "nvs.h"
+// #include "driver/gpio.h"
 
-/* STATIC VARIABLES HERE SHOULD BE MOVED TO GLOBAL STRUCTURE FOR WINDOWS DLLS */
 
-static os_char rootpath[OSAL_PERSISTENT_MAX_PATH] = OSAL_PERSISTENT_ROOT;
+#define OSAL_STORAGE_NAMESPACE "eosal"
 
-static os_boolean initialized = OS_FALSE;
-
-/* Persistent handle used with file system.
+/** The persistent handle structure defined here is only for pointer type checking,
+    it is never used.
  */
 typedef struct
 {
-    osalStream f;
-}
-osFsysPersistentHandle;
+    osPersistentBlockNr block_nr;
+    os_int flags;
 
-/* Maximum number of streamers when using static memory allocation.
- */
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
-static osFsysPersistentHandle osal_persistent_handle[OS_N_PBNR];
-#endif
+    os_char *buf;
+    os_memsz buf_sz;
+
+    os_memsz pos;
+}
+osPersistentNvsHandle;
 
 
 /* Forward referred static functions.
  */
-static void os_persistent_make_path(
-    osPersistentBlockNr block_nr,
-    os_char *path,
-    os_memsz path_sz);
+
 
 
 /**
@@ -65,7 +58,7 @@ static void os_persistent_make_path(
   @brief Initialize persistent storage for use.
   @anchor os_persistent_initialze
 
-  The os_persistent_initialze() function...
+  The os_persistent_initialze() function.
 
   @param   prm Pointer to parameters for persistent storage. For this implementation path
            member sets path to folder where to keep parameter files. Can be OS_NULL if not
@@ -77,26 +70,22 @@ static void os_persistent_make_path(
 void os_persistent_initialze(
     osPersistentParams *prm)
 {
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
-    os_memclear(osal_persistent_handle, sizeof(osal_persistent_handle));
-#endif
+    os_ushort checksum;
+    os_char buf[OSAL_NBUF_SZ];
+    esp_err_t err;
+    
+    /* Do not initialized again by load or save call.
+     */
+    os_persistent_lib_initialized = OS_TRUE;
 
-    if (prm)
-    {
-        if (prm->path) {
-            os_strncpy(rootpath, prm->path, sizeof(rootpath));
-        }
-        osal_mkdir(rootpath, 0);
-
-        if (prm->subdirectory) {
-            os_strncat(rootpath, "/", sizeof(rootpath));
-            os_strncat(rootpath, prm->subdirectory, sizeof(rootpath));
-            osal_mkdir(rootpath, 0);
-        }
+    err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        // NVS partition was truncated and needs to be erased
+        // Retry nvs_flash_init
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
     }
-
-    osal_mkdir(rootpath, 0);
-    initialized = OS_TRUE;
+    ESP_ERROR_CHECK( err );
 }
 
 
@@ -129,8 +118,8 @@ void os_persistent_shutdown(
   os_persistent_load() must be called to read the data to local RAM.
 
   @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Block pointer to set.
-  @param   block_sz Pointer to integer where to store block size.
+  @param   block Pointer to set to point then block (structure) in memory.
+  @param   block_sz Set to block size in bytes.
   @param   flags OSAL_PERSISTENT_SECRET flag enables accessing the secret. It must be only
            given in safe context.
   @return  OSAL_SUCCESS of successful. Value OSAL_STATUS_NOT_SUPPORTED indicates that
@@ -182,15 +171,23 @@ osPersistentHandle *os_persistent_open(
     os_memsz *block_sz,
     os_int flags)
 {
-    osFsysPersistentHandle *handle;
-    os_char path[OSAL_PERSISTENT_MAX_PATH];
-    osalStream f;
-    osalFileStat filestat;
-    osalStatus s;
+    osPersistentNvsHandle *h;
+    // os_ushort first_free, pos, cscalc, n, nnow, p, sz;
+    esp_err_t err;
+    os_char nbuf[OSAL_NBUF_SIZE+1];
+    // int i;
 
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
-    os_int count;
-#endif
+    /* Return zero block size if the function fails.
+     */
+    if (block_sz) {
+        *block_sz = 0;
+    }
+
+    /* This implementation doesn not support nor simulate flash programming.
+     */
+    if (block_nr == OS_PBNR_FLASH_PROGRAM) {
+        return OS_NULL;
+    }
 
 #if OSAL_RELAX_SECURITY == 0
     /* Reading or writing seacred block requires secret flag. When this function
@@ -204,62 +201,88 @@ osPersistentHandle *os_persistent_open(
     }
 #endif
 
-    if (!initialized) os_persistent_initialze(OS_NULL);
-    os_persistent_make_path(block_nr, path, sizeof(path));
-
-    /* If we need to get block size?
+    /* Make sure that NVS API is initialized.
      */
-    if (block_sz)
+    if (!os_persistent_lib_initialized) {
+        os_persistent_initialze(OS_NULL);
+    }
+
+    /* Allocate and clear handle, save block number and flags.
+     */
+    h = (osPersistentNvsHandle*)os_malloc(sizeof(osPersistentNvsHandle), OS_NULL);
+    if (h == OS_NULL) {
+        return OS_NULL;
+    }
+    os_memclear(h, sizeof(osPersistentNvsHandle));
+    block->block_nr = block_nr;
+    block->flags = flags;
+
+    /* If we are reading, read whole block immediately to buffer.
+     */
+    if ((flags & OSAL_PERSISTENT_WRITE) == 0)
     {
-        if (flags & OSAL_PERSISTENT_READ)
-        {
-            s = osal_filestat(path, &filestat);
-            if (s) return OS_NULL;
-            *block_sz = filestat.sz;
+        /* Open NVS storage.
+         */
+         err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
+         if (err != ESP_OK) {
+            osal_debug_error_str("nvs_open failed for read on ", OSAL_STORAGE_NAMESPACE);
+            goto failed;
+         }
+
+        /* Get block size within NVS.
+         */
+        nbuf[0] = 'v';
+        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, block_nr);
+        err = nvs_get_blob(my_handle, nbuf, NULL, &required_size);
+        if (err != ESP_OK || required_size <= 0) {
+            if (err != ESP_ERR_NVS_NOT_FOUND) {
+                osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+            }
+            goto failed;
         }
-        else
-        {
-            *block_sz = 0;
+        if (block_sz) {
+            *block_sz = required_size;
         }
+
+        /* Allocate temporary buffer and read contnt.
+         */
+        h->buf = os_malloc(required_size, OS_NULL);
+        if (h->buf == OS_NULL) {
+            goto failed;
+        }
+        h->buf_sz = required_size;
+        err = nvs_get_blob(my_handle, nbuf, h->buff, &required_size);
+        if (err != ESP_OK) {
+            osal_debug_error_int("nvs_get_blob failed on block ", block_nr);
+            goto failed;
+        }
+
+        // Close
+        nvs_close(my_handle);
+
+        /* Verify checksum
+         */
+        /* n = block->sz;
+        p = block->pos;
+        cscalc = OSAL_CHECKSUM_INIT;
+        while (n > 0)
+        {
+            nnow = n;
+            if (sizeof(tmp) < nnow) nnow = sizeof(tmp);
+            os_persistent_read_internal(tmp, p, nnow);
+            os_checksum(tmp, nnow, &cscalc);
+            p += nnow;
+            n -= nnow;
+        }
+        if (cscalc != block->checksum) goto failed;
+        */
     }
 
-    /* Open file.
-     */
-    f = osal_file_open(path, OS_NULL, OS_NULL,
-        (flags & OSAL_PERSISTENT_READ) ? OSAL_STREAM_READ : OSAL_STREAM_WRITE);
-    if (f == OS_NULL) goto getout;
+    return (osPersistentHandle*)h;
 
-    /* Allocate streamer structure, either dynamic or static.
-     */
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION
-    handle = (osFsysPersistentHandle*)os_malloc(sizeof(osFsysPersistentHandle), OS_NULL);
-    if (handle == OS_NULL) {
-        osal_file_close(f, OSAL_STREAM_DEFAULT);
-        goto getout;
-    }
-#else
-    handle = osal_persistent_handle;
-    count = OS_N_PBNR;
-    while (streamer->f != OS_NULL)
-    {
-        if (--count == 0)
-        {
-            handle = OS_NULL;
-            goto getout;
-        }
-        handle++;
-    }
-#endif
-
-    /* Initialize handle structure.
-     */
-    os_memclear(handle, sizeof(osFsysPersistentHandle));
-    handle->f = f;
-
-    return (osPersistentHandle*)handle;
-
-getout:
-    osal_debug_error_str("Reading persistent block from file failed: ", path);
+failed:
+    os_free(h->buf, h->buf_sz);
+    os_free(h, sizeof(osPersistentNvsHandle));
     return OS_NULL;
 }
 
@@ -270,7 +293,8 @@ getout:
   @brief Close persistent storage block.
   @anchor os_persistent_close
 
-  @param   handle Persistant storage handle.
+  @param   handle Persistant storage handle. It is ok to call the function with NULL handle,
+           just nothing happens.
   @param   flags OSAL_STREAM_DEFAULT (0) is all was written to persistant storage.
            OSAL_STREAM_INTERRUPT flag is set if transfer was interrupted.
   @return  None.
@@ -281,18 +305,45 @@ void os_persistent_close(
     osPersistentHandle *handle,
     os_int flags)
 {
-    osFsysPersistentHandle *h;
-    h = (osFsysPersistentHandle*)handle;
+    nvs_handle_t my_handle;
+    esp_err_t err;
 
-    if (h) if (h->f)
+    osPersistentNvsHandle *h;
+    h = (osPersistentNvsHandle*)handle;
+
+    if (h == OS_NULL) return;
+
+    if (h->flags & OSAL_PERSISTENT_WRITE)
     {
-        osal_file_close(h->f, OSAL_STREAM_DEFAULT);
-        h->f = OS_NULL;
+        /* Open NVS storage.
+         */
+        err = nvs_open(OSAL_STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
+        if (err != ESP_OK) {
+            osal_debug_error_str("nvs_open failed for write on ", OSAL_STORAGE_NAMESPACE);
+            goto failed;
+        }
+
+        /* Write the block.
+         */
+        nbuf[0] = 'v';
+        osal_int_to_str(nbuf + 1, sizeof(nbuf) - 1, h->block_nr);
+        err = nvs_set_blob(my_handle, xx "run_time", h->buf, h->pos);
+        if (err != ESP_OK) {
+            osal_debug_error_int("nvs_set_blob failed on block ", h->block_nr);
+        }
+
+        /* Commit data to flash and close then NVS storage.
+         */
+        err = nvs_commit(my_handle);
+        if (err != ESP_OK) {
+            osal_debug_error_int("nvs_commit failed on block ", h->block_nr);
+        }
+        nvs_close(my_handle);
     }
 
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION
-    os_free(handle, sizeof(osFsysPersistentHandle));
-#endif
+failed:
+    os_free(h->buf, h->buf_sz);
+    os_free(h, sizeof(osPersistentNvsHandle));
 }
 
 
@@ -306,7 +357,7 @@ void os_persistent_close(
   parameters when micro controller starts, not during normal operation.
 
   @param   handle Persistant storage handle.
-  @param   buf Pointer to buffer where to load persistent data.
+  @param   block Pointer to buffer where to load persistent data.
   @param   buf_sz Number of bytes to read to buffer.
   @return  Number of bytes read. Can be less than buf_sz if end of persistent block data has
            been reached. 0 is fine if at end. -1 Indicates an error.
@@ -318,19 +369,19 @@ os_memsz os_persistent_read(
     os_char *buf,
     os_memsz buf_sz)
 {
-    os_memsz n_read;
-    osalStatus s;
-    osFsysPersistentHandle *h;
-    h = (osFsysPersistentHandle*)handle;
+    os_ushort n;
+    osPersistentNvsHandle *h;
+    h = (osPersistentNvsHandle*)handle;
 
-    if (h) if (h->f)
+    if (h) if (hpos < h->buf_sz)
     {
-        s = osal_file_read(h->f, buf, buf_sz, &n_read, OSAL_STREAM_DEFAULT);
-        if (s) goto getout;
-        return n_read;
+        n = h->buf_sz - h->pos;
+        if ((os_ushort)buf_sz < n) n = (os_ushort)buf_sz;
+        os_memcpy(buf, h->buf +  h->read_pos, n);
+        h->pos += n;
+        return n;
     }
 
-getout:
     return -1;
 }
 
@@ -356,51 +407,21 @@ osalStatus os_persistent_write(
     const os_char *buf,
     os_memsz buf_sz)
 {
-    os_memsz n_written;
-    osalStatus s = OSAL_STATUS_FAILED;
-    osFsysPersistentHandle *h;
-    h = (osFsysPersistentHandle*)handle;
+    osPersistentNvsHandle *h;
+    h = (osPersistentNvsHandle*)handle;
 
-    if (h) if (h->f)
+    if (h)
     {
-        s = osal_file_write(h->f, buf, buf_sz, &n_written, OSAL_STREAM_DEFAULT);
-        if (s) goto getout;
-        return n_written == buf_sz ? OSAL_SUCCESS : OSAL_STATUS_DISC_FULL;
+        osal_control_interrupts(OS_FALSE);
+        os_persistent_write_internal(buf, block->pos + block->sz, buf_sz);
+        os_checksum(buf, buf_sz, &block->checksum);
+        block->sz += (os_ushort)buf_sz;
+        hdr.touched = 1;
+        osal_control_interrupts(OS_TRUE);
+        return OSAL_SUCCESS;
     }
 
-getout:
-    return s;
-}
-
-
-/**
-****************************************************************************************************
-
-  @brief Make path to parameter file.
-  @anchor os_persistent_make_path
-
-  The os_persistent_make_path() function generates path from root path given as argument
-  and block number.
-
-  @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   path Pointer to buffer where to store generated path.
-  @param   path_sz Size of path buffer.
-  @return  None.
-
-****************************************************************************************************
-*/
-static void os_persistent_make_path(
-    osPersistentBlockNr block_nr,
-    os_char *path,
-    os_memsz path_sz)
-{
-    os_char buf[OSAL_NBUF_SZ];
-
-    os_strncpy(path, rootpath, path_sz);
-    os_strncat(path, "/persistent-", path_sz);
-    osal_int_to_str(buf, sizeof(buf), block_nr);
-    os_strncat(path, buf, path_sz);
-    os_strncat(path, ".dat", path_sz);
+    return OSAL_STATUS_FAILED;
 }
 
 
@@ -422,19 +443,19 @@ osalStatus os_persistent_delete(
     osPersistentBlockNr block_nr,
     os_int flags)
 {
-    osalStatus s;
     if (flags & OSAL_PERSISTENT_DELETE_ALL) {
-        s = osal_remove_recursive(rootpath, "*.dat", 0);
-        if (s) {
-            osal_debug_error_int("os_persistent_delete failed ", s);
-        }
+        os_memclear((os_char*)&hdr, sizeof(hdr));
+        osal_control_interrupts(OS_FALSE);
+        os_persistent_write_internal((os_char*)&hdr, 0, sizeof(hdr));
+        EEPROM.commit();
+        osal_control_interrupts(OS_TRUE);
+        return OSAL_SUCCESS;
     }
     else {
-        s = os_save_persistent(block_nr, OS_NULL, 0, OS_TRUE);
+        return os_save_persistent(block_nr, OS_NULL, 0, OS_TRUE);
     }
-
-    return s;
 }
 
-#endif
+
+
 #endif

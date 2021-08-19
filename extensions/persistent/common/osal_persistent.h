@@ -173,21 +173,20 @@ osPersistentHandle *os_persistent_open(
     os_memsz *block_sz,
     os_int flags);
 
-/* Close persistent storage block. If this is flash program transfer, the boot bank
-   may also be switched, etc, depending on flags.
+/* Close persistent storage block.
  */
 void os_persistent_close(
     osPersistentHandle *handle,
     os_int flags);
 
-/* Read data from persisten storage.
+/* Read data from persisten block.
  */
 os_memsz os_persistent_read(
     osPersistentHandle *handle,
     os_char *buf,
     os_memsz buf_sz);
 
-/* Write data to persistent storage.
+/* Append data to persistent block.
  */
 osalStatus os_persistent_write(
     osPersistentHandle *handle,

@@ -87,7 +87,6 @@ osalStatus os_load_persistent_malloc(
      */
     n_read = os_persistent_read(h, p, block_sz);
     if (n_read != block_sz)
-    if (p == OS_NULL)
     {
         os_free(p, block_sz);
         os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);

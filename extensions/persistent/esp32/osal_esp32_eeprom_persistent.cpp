@@ -1,11 +1,10 @@
 /**
 
   @file    persistent/arduino/osal_arduino_eeprom_persistent.c
-  @brief   Save persistent parameters on Arduino EEPROM.
+  @brief   Save persistent parameters on ESP32, uses EEPROM API.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021
-
 
   Arduino EEPROM api is used because it is well standardized. Hardware underneath can be flash
   for EEPROM emulation.
@@ -13,18 +12,7 @@
   ONLY ONE BLOCK CAN BE OPEN AT THE TIME FOR WRITING.
 
   See https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spi_flash.html
-  Exspecially chapter "Concurrency Constraints for flash on SPI1"
-
-  TRY THIS
-    This function suspends the scheduler.  When it is called from vTask1 the
-    scheduler is already suspended, so this call creates a nesting depth of 2.
-    vTaskSuspendAll();
-
-    Perform an action here.
-
-    As calls to vTaskSuspendAll() are nested, resuming the scheduler here will
-    not cause the scheduler to re-enter the active state.
-    xTaskResumeAll();
+  Especially chapter "Concurrency Constraints for flash on SPI1"
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -34,7 +22,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_PERSISTENT_SUPPORT
+#if OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_EEPROM_SUPPORT
 #include <Arduino.h>
 #include <EEPROM.h>
 
@@ -185,8 +173,8 @@ void os_persistent_shutdown(
   os_persistent_load() must be called to read the data to local RAM.
 
   @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to load.
-  @param   block_sz Block size in bytes.
+  @param   block Pointer to set to point then block (structure) in memory.
+  @param   block_sz Set to block size in bytes.
   @param   flags OSAL_PERSISTENT_SECRET flag enables accessing the secret. It must be only
            given in safe context.
   @return  OSAL_SUCCESS of successful. Value OSAL_STATUS_NOT_SUPPORTED indicates that
@@ -404,15 +392,15 @@ os_memsz os_persistent_read(
 /**
 ****************************************************************************************************
 
-  @brief Save parameter block to persistent storage.
-  @anchor os_persistent_save
+  @brief Append data to persistent block.
+  @anchor os_persistent_write
 
-  The os_persistent_save() function saves a parameter structure to persistent storage and
-  identifies it by block number.
+  os_persistent_write() function appends buffer to data to write.
 
-  @param   block_nr Parameter block number, see osal_persistent.h.
-  @param   block Pointer to block (structure) to save.
-  @param   block_sz Block size in bytes.
+  @param   handle Persistant storage handle.
+  @param   buf Buffer into which data is written from.
+  @param   buf_sz block_sz Block size in bytes.
+
   @return  OSAL_SUCCESS indicates all fine, other return values indicate on error.
 
 ****************************************************************************************************
