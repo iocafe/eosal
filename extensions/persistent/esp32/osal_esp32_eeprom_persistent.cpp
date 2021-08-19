@@ -6,6 +6,8 @@
   @version 1.0
   @date    26.4.2021
 
+  THIS IMPLEMENTATION IS OBSOLETED, IT WILL BE REMOVED.
+
   Arduino EEPROM API can be used in some cases, but it is bad idea to use it for ESP32: It is
   obsoleted, and causes problems with flash caching.
 
@@ -23,8 +25,8 @@
 */
 #include "eosalx.h"
 #if OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_EEPROM_STORAGE
-#include <Arduino.h>
-#include <EEPROM.h>
+// #include <Arduino.h>
+#include "EEPROM.h"
 
 
 typedef struct
