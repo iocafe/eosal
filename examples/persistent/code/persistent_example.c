@@ -134,7 +134,10 @@ osalStatus osal_loop(
             {
                 osal_console_write("A written ok\n");
             }
-            os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
+            if (os_persistent_close(h, OSAL_PERSISTENT_DEFAULT) != OSAL_SUCCESS)
+            {
+                osal_console_write("A close failed\n");
+            }
         }
 
 
@@ -150,7 +153,10 @@ osalStatus osal_loop(
             {
                 osal_console_write("B written ok\n");
             }
-            os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
+            if (os_persistent_close(h, OSAL_PERSISTENT_DEFAULT) != OSAL_SUCCESS)
+            {
+                osal_console_write("B close failed\n");
+            }
         }
 
         os_get_timer(&t);

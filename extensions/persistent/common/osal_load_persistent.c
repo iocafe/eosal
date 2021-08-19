@@ -86,16 +86,15 @@ osalStatus os_load_persistent_malloc(
     /* Read the block.
      */
     n_read = os_persistent_read(h, p, block_sz);
-    if (n_read != block_sz)
+    s = os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
+    if (n_read != block_sz || s)
     {
         os_free(p, block_sz);
-        os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
         return OSAL_STATUS_FAILED;
     }
 
     /* Set the block content and size pointers, success.
      */
-    os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
     *pblock = p;
     *pblock_sz = block_sz;
     return OSAL_MEMORY_ALLOCATED;
@@ -122,7 +121,7 @@ osalStatus os_load_persistent(
     const os_uchar *sblock;
     os_memsz sblock_sz, n_read;
     osPersistentHandle *h;
-    osalStatus s;
+    osalStatus s, s2;
 
     /* In case of errors.
      */
@@ -149,8 +148,8 @@ osalStatus os_load_persistent(
         n_read = os_persistent_read(h, block, block_sz);
         if (n_read == block_sz) s = OSAL_SUCCESS;
     }
-    os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
-    return s;
+    s2 = os_persistent_close(h, OSAL_PERSISTENT_DEFAULT);
+    return s2 ? s2 : s;
 }
 
 #endif

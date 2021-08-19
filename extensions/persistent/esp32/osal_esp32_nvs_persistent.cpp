@@ -308,11 +308,12 @@ failed:
            just nothing happens.
   @param   flags OSAL_STREAM_DEFAULT (0) is all was written to persistant storage.
            OSAL_STREAM_INTERRUPT flag is set if transfer was interrupted.
-  @return  None.
+  @return  If all is fine, the function returns OSAL_SUCCESS. Other values can be returned
+           to indicate an error.
 
 ****************************************************************************************************
 */
-void os_persistent_close(
+osalStatus os_persistent_close(
     osPersistentHandle *handle,
     os_int flags)
 {
@@ -328,7 +329,9 @@ void os_persistent_close(
     osPersistentNvsHandle *h;
     h = (osPersistentNvsHandle*)handle;
 
-    if (h == OS_NULL) return;
+    if (h == OS_NULL) {
+        return OSAL_STATUS_FAILED;
+    }
 
     if (h->flags & OSAL_PERSISTENT_WRITE)
     {
@@ -347,6 +350,8 @@ void os_persistent_close(
         err = nvs_set_blob(my_handle, nbuf, h->buf ? h->buf : "", h->pos);
         if (err != ESP_OK) {
             osal_debug_error_int("nvs_set_blob failed, code=", err);
+            nvs_close(my_handle);
+            goto failed;
         }
 
         /* Commit data to flash and close then NVS storage.
@@ -354,13 +359,17 @@ void os_persistent_close(
         err = nvs_commit(my_handle);
         if (err != ESP_OK) {
             osal_debug_error_int("nvs_commit failed on block ", h->block_nr);
+            nvs_close(my_handle);
+            goto failed;
         }
         nvs_close(my_handle);
     }
+    return OSAL_SUCCESS;
 
 failed:
     os_free(h->buf, h->buf_sz);
     os_free(h, sizeof(osPersistentNvsHandle));
+    return OSAL_STATUS_FAILED;
 }
 
 

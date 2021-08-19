@@ -273,11 +273,12 @@ getout:
   @param   handle Persistant storage handle.
   @param   flags OSAL_STREAM_DEFAULT (0) is all was written to persistant storage.
            OSAL_STREAM_INTERRUPT flag is set if transfer was interrupted.
-  @return  None.
+  @return  If all is fine, the function returns OSAL_SUCCESS. Other values can be returned
+           to indicate an error.
 
 ****************************************************************************************************
 */
-void os_persistent_close(
+osalStatus os_persistent_close(
     osPersistentHandle *handle,
     os_int flags)
 {
@@ -293,6 +294,7 @@ void os_persistent_close(
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION
     os_free(handle, sizeof(osFsysPersistentHandle));
 #endif
+    return OSAL_SUCCESS;
 }
 
 

@@ -175,7 +175,7 @@ osPersistentHandle *os_persistent_open(
 
 /* Close persistent storage block.
  */
-void os_persistent_close(
+osalStatus os_persistent_close(
     osPersistentHandle *handle,
     os_int flags);
 
