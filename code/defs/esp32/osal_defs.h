@@ -89,6 +89,15 @@
 #define OSAL_DYNAMIC_MEMORY_ALLOCATION 1
 #endif
 
+/** PSRAM (pseudo static RAM) support define for eosal follows BOARD_HAS_PSRAM define
+    in platformio.ini.
+ */
+#ifdef BOARD_HAS_PSRAM
+#define OSAL_PSRAM_SUPPORT 1
+#else
+#define OSAL_PSRAM_SUPPORT 0
+#endif
+
 /** Include memory debug code. If OSAL_MEMORY_DEBUG flags is nonzero, the memory
     block overwflows and freed block size are checked.
  */

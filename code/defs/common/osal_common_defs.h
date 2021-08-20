@@ -129,6 +129,13 @@ typedef os_char os_boolean;
 #define OSAL_RING_BUFFER_SUPPORT OSAL_SOCKET_SUPPORT
 #endif
 
+/** No PSRAM (pseudo static RAM) support, unless it is defined in operating system
+    specific osal_defs.h.
+ */
+#ifndef OSAL_PSRAM_SUPPORT
+#define OSAL_PSRAM_SUPPORT 0
+#endif
+
 /* Decide if to include nick name support. By default we support nick names
  * we have sockets and we are not doing minimalistic build.
  */
