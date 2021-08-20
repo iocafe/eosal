@@ -411,7 +411,7 @@ os_memsz os_persistent_read(
 
         /* If we are reading whole block at once, we do not need temporary buffer.
          */
-if (buf_sz == h->required_sz && 0)
+        if (buf_sz == h->required_sz)
         {
             err = nvs_get_blob(my_handle, nbuf, buf, &required_size);
             if (err != ESP_OK) {
