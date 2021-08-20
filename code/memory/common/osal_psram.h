@@ -27,7 +27,8 @@
 /* Allocate a block of memory from PSRAM.
  */
 typedef os_char *osal_psram_alloc(
-    os_memsz request_bytes);
+    os_memsz request_bytes,
+    os_memsz *allocated_bytes);
 
 /* Release a block of memory from PSRAM.
  */
@@ -39,7 +40,7 @@ typedef void osal_psram_free(
 
 /* If there is no PSRAM support, fall back to os_malloc() and os_free().
  */
-#define osal_psram_alloc(n) os_malloc((n), OS_NULL)
+#define osal_psram_alloc(n, a) os_malloc((n), (a))
 #define osal_psram_free(b,n) os_free((b), (n))
 
 #endif

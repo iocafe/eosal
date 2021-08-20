@@ -267,7 +267,7 @@ osPersistentHandle *os_persistent_open(
     return (osPersistentHandle*)h;
 
 failed:
-    os_free(h->buf, h->buf_sz);
+    osal_psram_free(h->buf, h->buf_sz);
     os_free(h, sizeof(osPersistentNvsHandle));
     return OS_NULL;
 }
@@ -294,6 +294,7 @@ osalStatus os_persistent_close(
 {
     esp_err_t err;
     os_char nbuf[OSAL_NBUF_SZ + 1];
+    osalStatus s = OSA_STATUS_FAILED;
 
 #if IDF_VERSION_MAJOR >= 4   /* esp-idf version 4 */
     nvs_handle_t my_handle;
@@ -339,15 +340,12 @@ osalStatus os_persistent_close(
         }
         nvs_close(my_handle);
     }
-
-    os_free(h->buf, h->buf_sz);
-    os_free(h, sizeof(osPersistentNvsHandle));
-    return OSAL_SUCCESS;
+    s = OSAL_SUCCESS;
 
 failed:
-    os_free(h->buf, h->buf_sz);
+    osal_psram_free(h->buf, h->buf_sz);
     os_free(h, sizeof(osPersistentNvsHandle));
-    return OSAL_STATUS_FAILED;
+    return s;
 }
 
 
@@ -428,7 +426,7 @@ os_memsz os_persistent_read(
 
         /* Allocate temporary buffer and read contnt.
          */
-        h->buf = os_malloc(h->required_sz, OS_NULL);
+        h->buf = osal_psram_alloc(h->required_sz, OS_NULL);
         if (h->buf == OS_NULL) {
             nvs_close(my_handle);
             return -1;
@@ -538,7 +536,7 @@ osalStatus os_persistent_write(
         if (h->pos + buf_sz > sz) {
             sz = h->pos + buf_sz;
         }
-        newbuf = os_malloc(sz, &newsz);
+        newbuf = osal_psram_alloc(sz, &newsz);
         if (newbuf == OS_NULL) {
             return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
         }
@@ -546,7 +544,7 @@ osalStatus os_persistent_write(
             os_memcpy(newbuf, h->buf, h->pos);
         }
         if (h->buf) {
-            os_free(h->buf, h->buf_sz);
+            osal_psram_free(h->buf, h->buf_sz);
         }
         h->buf = newbuf;
         h->buf_sz = newsz;

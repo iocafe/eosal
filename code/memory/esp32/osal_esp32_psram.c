@@ -33,15 +33,25 @@
 
   @param   request_bytes The function allocates at least the amount of memory requested by this
            argument.
+
+  @param   allocated_bytes Pointer to long integer into which to store the actual size of the
+           allocated block (in bytes). The actual size is greater or equal to requested size.
+           If actual size is not needed, this parameter can be set to OS_NULL.
+
   @return  Pointer to the allocated memory block, or OS_NULL if the function failed (out of
            memory).
 
 ****************************************************************************************************
 */
 os_char *osal_psram_alloc(
-    os_memsz request_bytes)
+    os_memsz request_bytes,
+    os_memsz *allocated_bytes)
 {
     os_char *mem;
+
+    if (allocated_bytes) {
+        *allocated_bytes = request_bytes;
+    }
 
     mem = heap_caps_malloc(request_bytes, MALLOC_CAP_SPIRAM);
     if (mem == NULL) {
