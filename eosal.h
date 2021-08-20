@@ -102,6 +102,7 @@ OSAL_C_HEADER_BEGINS
 #include "code/int64/common/osal_int64.h"
 #include "code/memory/common/osal_memory.h"
 #include "code/memory/common/osal_sysmem.h"
+#include "code/memory/common/osal_psram.h"
 #include "code/string/common/osal_char.h"
 #include "code/defs/common/osal_status.h"
 #include "code/string/common/osal_string.h"

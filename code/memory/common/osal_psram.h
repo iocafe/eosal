@@ -26,13 +26,13 @@
 
 /* Allocate a block of memory from PSRAM.
  */
-typedef os_char *osal_psram_alloc(
+os_char *osal_psram_alloc(
     os_memsz request_bytes,
     os_memsz *allocated_bytes);
 
 /* Release a block of memory from PSRAM.
  */
-typedef void osal_psram_free(
+void osal_psram_free(
     void *memory_block,
     os_memsz bytes);
 

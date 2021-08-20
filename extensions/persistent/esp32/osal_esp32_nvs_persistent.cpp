@@ -294,7 +294,7 @@ osalStatus os_persistent_close(
 {
     esp_err_t err;
     os_char nbuf[OSAL_NBUF_SZ + 1];
-    osalStatus s = OSA_STATUS_FAILED;
+    osalStatus s = OSAL_STATUS_FAILED;
 
 #if IDF_VERSION_MAJOR >= 4   /* esp-idf version 4 */
     nvs_handle_t my_handle;
@@ -411,7 +411,7 @@ os_memsz os_persistent_read(
 
         /* If we are reading whole block at once, we do not need temporary buffer.
          */
-        if (buf_sz == h->required_sz)
+if (buf_sz == h->required_sz && 0)
         {
             err = nvs_get_blob(my_handle, nbuf, buf, &required_size);
             if (err != ESP_OK) {
