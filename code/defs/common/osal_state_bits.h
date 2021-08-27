@@ -39,6 +39,9 @@
   and IO device can set OSAL_STATE_ORANGE for it. Mask  OSAL_STATE_ERR_MASK is also defined
   with both error/warning bits set.
 
+  OSAL_STATE_NO_READ_SUPPORT: Indicates that actual IO pin is write only. This
+  is used only within pins library.
+
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
   or distribute this file you indicate that you have read the license and understand and accept
@@ -53,6 +56,7 @@
 
 #define OSAL_STATE_TOGGLE_1 64
 #define OSAL_STATE_TOGGLE_2 32
+#define OSAL_STATE_NO_READ_SUPPORT 16
 #define OSAL_STATE_YELLOW 8
 #define OSAL_STATE_ORANGE 4
 #define OSAL_STATE_RED (OSAL_STATE_ORANGE|OSAL_STATE_YELLOW)
