@@ -190,7 +190,7 @@ void osal_socket_initialize(
     os_memclear(&sg, sizeof(sg));
     os_memclear(&ans, sizeof(ans));
 
-    /* Do not keep wifi configuration on flagh.
+    /* Do not keep wifi configuration on flash.
      */
     esp_wifi_set_storage(WIFI_STORAGE_RAM);
 
