@@ -223,7 +223,6 @@ typedef os_char os_boolean;
 #define OSAL_OS_NAME OSAL_BIN_NAME
 #endif
 
-
 /** If operating system name is unspecified, default to bin directory name.
     (often same as operating system name)
  */

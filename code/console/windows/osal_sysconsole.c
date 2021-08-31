@@ -100,7 +100,7 @@ void osal_sysconsole_write(
     osal_sysmem_free(utf16_str, sz*sizeof(os_ushort));
 
 #if 0
-THIS IS WINDOWS IMPLEMENTATION. DOESN'T WORK WELL AT LEAST ON WIN 10
+THIS IS WINDOWS IMPLEMENTATION. IT DOES NOT WORK WELL AT LEAST ON WIN 10
     os_ushort
         *utf16_str;
 

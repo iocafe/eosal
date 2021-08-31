@@ -13,5 +13,19 @@
     "teensy", 
     "stm32",
     "esp32"
+  ],
+  
+  "build": {
+    "srcFilter": [
+      "+<code/*>",
+      "+<extensions/*>"
+    ],
+    "libLDFMode" : "chain"
+  },
+  
+  "dependencies": [
+    {
+        "name": "WiFi"
+    }  
   ]
 }
