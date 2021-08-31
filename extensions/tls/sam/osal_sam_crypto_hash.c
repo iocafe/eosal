@@ -18,7 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-
+#ifdef OSAL_ARDUINO
 #if OSAL_TLS_SUPPORT==OSAL_TLS_SAM_WRAPPER
 
 /*#include <openssl/sha.h>
@@ -56,5 +56,4 @@ void osal_sha256(
 }
 
 #endif
-
-
+#endif

@@ -1,6 +1,6 @@
 /**
 
-  @file    serialize/arduino/osal_float.c
+  @file    serialize/arduino/osal_esp32_float.c
   @brief   Convert floating point number to two integers and vice versa.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_SERIALIZE_SUPPORT
 
 
@@ -331,4 +332,5 @@ void osal_float2ints(
     *m = mu.i;
 }
 
+#endif
 #endif

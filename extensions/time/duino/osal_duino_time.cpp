@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_TIME_SUPPORT
 
 #include "Arduino.h"
@@ -65,4 +66,5 @@ osalStatus os_settime(
 	return OSAL_SUCCESS;
 }
 
+#endif
 #endif

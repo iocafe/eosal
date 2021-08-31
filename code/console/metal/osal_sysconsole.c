@@ -18,6 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_METAL
 #if OSAL_CONSOLE
 
 /**
@@ -100,4 +101,5 @@ os_uint osal_sysconsole_read(
     return 0;
 }
 
+#endif
 #endif

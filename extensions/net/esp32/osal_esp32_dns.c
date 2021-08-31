@@ -1,6 +1,6 @@
 /**
 
-  @file    net/arduino/osal_dns.c
+  @file    net/esp32/osal_esp32_dns.c
   @brief   Resolve host name or IP address string for arduino sockets.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) != OSAL_LWIP_SOCKET_API
 
 /**
@@ -63,4 +64,5 @@ osalStatus osal_gethostbyname(
     return osal_ip_from_str((os_uchar*)addr, addr_sz, name);
 }
 
+#endif
 #endif

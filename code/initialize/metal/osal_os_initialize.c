@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_METAL
 
 void NVIC_SystemReset(void);
 
@@ -78,3 +79,5 @@ void osal_reboot(
     os_sleep(200);
     NVIC_SystemReset();
 }
+
+#endif

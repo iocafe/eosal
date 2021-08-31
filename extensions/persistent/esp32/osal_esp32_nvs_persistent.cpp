@@ -19,6 +19,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if (OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_NVS_STORAGE) || (OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_DEFAULT_STORAGE)
 
 #include "esp_system.h"
@@ -591,4 +592,5 @@ osalStatus os_persistent_delete(
 }
 
 
+#endif
 #endif

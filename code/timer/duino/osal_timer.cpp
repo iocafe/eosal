@@ -18,7 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_ARDUINO
 #include "Arduino.h"
 
 
@@ -206,3 +206,4 @@ os_boolean OS_ISR_FUNC_ATTR os_timer_hit(
     return OS_TRUE;
 }
 
+#endif

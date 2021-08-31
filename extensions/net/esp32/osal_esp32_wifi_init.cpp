@@ -1,6 +1,6 @@
 /**
 
-  @file    net/arduino/osal_arduino_wifi_init.cpp
+  @file    net/esp32/osal_esp32_wifi_init.cpp
   @brief   OSAL Ardyino WiFi network initialization.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -32,6 +32,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_ARDUINO_WIFI_INIT
 
 /** Do we include code to automatically select one from known access points. Define 1 or 0.
@@ -477,4 +478,5 @@ void osal_socket_maintain(
 }
 #endif
 
+#endif
 #endif

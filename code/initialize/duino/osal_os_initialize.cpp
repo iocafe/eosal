@@ -15,8 +15,9 @@
 
 ****************************************************************************************************
 */
-#include <Arduino.h>
 #include "eosal.h"
+#ifdef OSAL_ARDUINO
+#include <Arduino.h>
 
 #ifndef OSAL_NVIC_RESET
   #ifdef STM32F4XX
@@ -100,3 +101,4 @@ void osal_reboot(
     NVIC_SystemReset();
 #endif
 }
+#endif

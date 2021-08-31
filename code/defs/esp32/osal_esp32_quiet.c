@@ -14,6 +14,8 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_ESP32
+
 /* #include "esp_log.h" */
 
 /**
@@ -41,3 +43,5 @@ os_boolean osal_quiet(
     esp_log_level_set("dhcpc", enable ? ESP_LOG_ERROR : ESP_LOG_INFO); */
     return prev_value;
 }
+
+#endif

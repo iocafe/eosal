@@ -1,7 +1,7 @@
 /**
 
-  @file    defs/common/osal_common_defs.h
-  @brief   Micellenous defines common to all operating systems.
+  @file    defs/common/osal_common_post_defs.h
+  @brief   Micellenous defines common to all operating systems (after OS specific osal_defs.h).
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021
@@ -17,8 +17,8 @@
 ****************************************************************************************************
 */
 #pragma once
-#ifndef OSAL_COMMON_DEFS_H_
-#define OSAL_COMMON_DEFS_H_
+#ifndef OSAL_COMMON_POST_DEFS_H_
+#define OSAL_COMMON_POST_DEFS_H_
 #include "eosal.h"
 
 /* EOSAL library version number.
@@ -59,6 +59,10 @@
 #define OSAL_CHECK_SERVER_CERT_EXPIRATION 0
 #endif
 
+/** Boolean type
+ */
+typedef os_char os_boolean;
+
 /** Null pointer.
  */
 #ifndef OS_NULL
@@ -69,18 +73,6 @@
 #endif
 #endif
 
-/** Value indication boolead condition TRUE.
- */
-#define OS_TRUE 1
-
-/** Value indication boolead condition FALSE.
- */
-#define OS_FALSE 0
-
-/** Boolean type
- */
-typedef os_char os_boolean;
-
 /** Timer value type
  */
 #if OSAL_TIMER_IS_64_BITS
@@ -88,10 +80,6 @@ typedef os_char os_boolean;
 #else
 #define os_timer os_uint
 #endif
-
-/** Timeout to wait for forever.
- */
-#define OSAL_INFINITE -1
 
 /** Default OS path buffer size in bytes.
  */
@@ -134,6 +122,12 @@ typedef os_char os_boolean;
  */
 #ifndef OSAL_PSRAM_SUPPORT
 #define OSAL_PSRAM_SUPPORT 0
+#endif
+
+/** Disable FreeRTOS use by default.
+ */
+#ifndef OSAL_FREE_RTOS
+#define OSAL_FREE_RTOS 0
 #endif
 
 /* Decide if to include nick name support. By default we support nick names
@@ -296,34 +290,5 @@ typedef os_char os_boolean;
 #ifndef OSAL_MAX_ERROR_HANDLERS
 #define OSAL_MAX_ERROR_HANDLERS 3
 #endif
-
-/* Constants for selecting persistent support.
- */
-#define OSAL_PERSISTENT_DEFAULT_STORAGE 1
-#define OSAL_PERSISTENT_EEPROM_STORAGE 2
-#define OSAL_PERSISTENT_NVS_STORAGE 3
-
-/** Enumeration of bitmap format and color flag. Bitmap format enumeration value is number
-    of bits per pixel, with OSAL_BITMAP_COLOR_FLAG (0x100) to indicate color or
-    OSAL_BITMAP_ALPHA_CHANNEL_FLAG (0x200) to indicate that bitmap has alpha channel.
-    Notice that the defined format values should not be changed, hard coded in egui.
- */
-#define OSAL_BITMAP_COLOR_FLAG 0x80
-#define OSAL_BITMAP_ALPHA_CHANNEL_FLAG 0x40
-#define OSAL_BITMAP_BYTES_PER_PIX(f) (((os_int)(f) & 0x3F) >> 3)
-typedef enum osalBitmapFormat
-{
-    OSAL_BITMAP_FORMAT_NOT_SET = 0,
-    OSAL_GRAYSCALE8 = 8,
-    OSAL_GRAYSCALE16 = 16,
-    OSAL_RGB24 = 24 | OSAL_BITMAP_COLOR_FLAG,
-    OSAL_RGB32 = 32 | OSAL_BITMAP_COLOR_FLAG,
-    OSAL_RGBA32 = 32 | OSAL_BITMAP_COLOR_FLAG | OSAL_BITMAP_ALPHA_CHANNEL_FLAG
-}
-osalBitmapFormat;
-
-/** Define either 0 or 1 depending if we use RGB or BGR color order in internal bitmaps.
- */
-#define OSAL_BGR_COLORS 0
 
 #endif

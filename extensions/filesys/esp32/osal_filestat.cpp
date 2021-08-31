@@ -1,6 +1,6 @@
 /**
 
-  @file    filesys/linux/osal_filefstat.c
+  @file    filesys/esp32/osal_filefstat.c
   @brief   Get file information.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_FILESYS_SUPPORT
 
 #include <sys/types.h>
@@ -71,4 +72,5 @@ osalStatus osal_filestat(
     return OSAL_SUCCESS;
 }
 
+#endif
 #endif

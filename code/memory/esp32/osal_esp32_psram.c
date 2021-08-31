@@ -20,6 +20,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_ESP32
 #if OSAL_PSRAM_SUPPORT
 
 /**
@@ -93,4 +94,5 @@ void osal_psram_free(
     }
 }
 
+#endif
 #endif

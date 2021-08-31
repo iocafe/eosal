@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_RAND_SUPPORT == OSAL_RAND_PLATFORM
 
 #include <Arduino.h>
@@ -98,4 +99,5 @@ os_long osal_rand(
     return min_value + (os_long)((os_ulong)x % (os_ulong)range);
 }
 
+#endif
 #endif

@@ -1,6 +1,6 @@
 /**
 
-  @file    tls/arduino/osal_tls_arduino_wifi.cpp
+  @file    tls/duino/osal_tls_duino_wifi.cpp
   @brief   OSAL stream API layer to use secure Arduino WiFi sockets.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -22,6 +22,7 @@
 // #define OSAL_TRACE 3
 
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_TLS_SUPPORT==OSAL_TLS_ARDUINO_WRAPPER
 
 #include <Arduino.h>
@@ -734,4 +735,5 @@ OS_CONST osalStreamInterface osal_tls_iface
     osal_tls_read,
     osal_stream_default_select};
 
+#endif
 #endif

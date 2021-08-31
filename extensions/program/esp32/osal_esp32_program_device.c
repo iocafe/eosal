@@ -39,6 +39,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
 #include "esp_system.h"
@@ -629,4 +630,5 @@ static void osal_print_sha256 (
 }
 #endif
 
+#endif
 #endif

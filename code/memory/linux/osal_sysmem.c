@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_LINUX
 #include <stdlib.h>
 
 /* #include <malloc.h> Needed for APPLE */
@@ -88,3 +89,5 @@ void osal_sysmem_free(
         osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
     }
 }
+
+#endif

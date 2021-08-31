@@ -33,7 +33,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-
+#ifdef OSAL_ARDUINO
 #if OSAL_SERIAL_SUPPORT
 #if OSAL_SERIAL_SUPPORT == OSAL_DUINO_SERIAL_NORMAL
 
@@ -493,5 +493,6 @@ OS_CONST osalStreamInterface osal_serial_iface
     osal_serial_read,
     osal_stream_default_select};
 
+#endif
 #endif
 #endif

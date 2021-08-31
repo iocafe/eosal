@@ -32,6 +32,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_SAM_WIFI_INIT
 
 #include <Arduino.h>
@@ -423,4 +424,5 @@ void osal_socket_maintain(
 }
 #endif
 
+#endif
 #endif

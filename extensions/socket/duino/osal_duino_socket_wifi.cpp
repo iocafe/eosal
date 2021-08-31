@@ -36,6 +36,7 @@
 /* #define OSAL_TRACE 3 */
 
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIFI
 
 
@@ -1254,4 +1255,5 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_socket_read,
     osal_stream_default_select};
 
+#endif
 #endif

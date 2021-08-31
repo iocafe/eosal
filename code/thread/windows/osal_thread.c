@@ -25,7 +25,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_WINDOWS
 #if OSAL_MULTITHREAD_SUPPORT
 
 /** Intermediate parameter structure when creating a new Windows thread.
@@ -335,4 +335,5 @@ void os_timeslice(void)
     Sleep(2);
 }
 
+#endif
 #endif

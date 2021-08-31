@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_CPUID_SUPPORT
 #include <intrin.h>
 
@@ -105,4 +106,5 @@ static void osal_xor_helper(
     *pos = i;
 }
 
+#endif
 #endif

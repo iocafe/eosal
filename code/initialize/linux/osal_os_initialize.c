@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_LINUX
 #include <signal.h>
 #include <sys/wait.h>
 
@@ -172,3 +173,5 @@ void osal_reboot(
     os_int flags)
 {
 }
+
+#endif

@@ -17,6 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_TLS_SUPPORT==OSAL_TLS_SAM_WRAPPER
 
 #include <Arduino.h>
@@ -742,4 +743,5 @@ OS_CONST osalStreamInterface osal_tls_iface
     osal_tls_read,
     osal_stream_default_select};
 
+#endif
 #endif

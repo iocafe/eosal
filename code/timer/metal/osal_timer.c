@@ -19,6 +19,7 @@
 */
 #define OSAL_INCLUDE_METAL_HEADERS
 #include "eosal.h"
+#ifdef OSAL_METAL
 
 
 /**
@@ -116,3 +117,5 @@ os_boolean os_has_elapsed_since(
     /* Important, do signed compare: without this iocom, etc. may fail */
     return (os_boolean)((os_int)diff > period_ms);
 }
+
+#endif

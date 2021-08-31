@@ -31,6 +31,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_DEVICE_PROGRAMMING_SUPPORT
 
 static os_char deb_path[] = "/tmp/iocomtempprog.deb";
@@ -360,4 +361,5 @@ static osalStatus osal_install_package(void)
 }
 
 
+#endif
 #endif

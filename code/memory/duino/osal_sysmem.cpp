@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_ARDUINO
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 
@@ -109,3 +110,5 @@ void os_memcpy_P(
 {
     memcpy_P(dest, src, n);
 }
+
+#endif

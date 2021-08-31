@@ -25,8 +25,9 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_LINUX
 #if OSAL_MULTITHREAD_SUPPORT
+
 #include <unistd.h>
 #include <sched.h>
 #include <pthread.h>
@@ -345,5 +346,6 @@ void os_timeslice(void)
     static const struct timespec ts = { .tv_sec = 0, .tv_nsec=2000000 };
     nanosleep(&ts, NULL);
 }
-#endif
 
+#endif
+#endif

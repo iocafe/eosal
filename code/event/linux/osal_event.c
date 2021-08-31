@@ -17,7 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_LINUX
 #if OSAL_MULTITHREAD_SUPPORT
 
 #define _GNU_SOURCE
@@ -438,4 +438,5 @@ void osal_event_clearpipe(
     pe->event_signaled = OS_FALSE;
 }
 
+#endif
 #endif

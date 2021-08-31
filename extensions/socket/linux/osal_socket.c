@@ -17,6 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_SOCKET_SUPPORT
 
 #include <sys/socket.h>
@@ -2169,4 +2170,5 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_socket_send_packet,
     osal_socket_receive_packet};
 
+#endif
 #endif

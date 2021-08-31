@@ -27,6 +27,7 @@
 */
 #define OSAL_INCLUDE_METAL_HEADERS
 #include "eosalx.h"
+#ifdef OSAL_METAL
 
 #if OSAL_SERIAL_SUPPORT
 
@@ -981,4 +982,5 @@ OS_CONST osalStreamInterface osal_serial_iface
     osal_stream_default_select};
 #endif
 
+#endif
 #endif

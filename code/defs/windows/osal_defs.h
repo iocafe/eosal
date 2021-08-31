@@ -275,12 +275,6 @@
  */
 #define OSAL_SOCKET_MAINTAIN_NEEDED 0
 
-/** Possible values for OSAL_TLS_SUPPORT (TLS wrapper implementation).
- */
-#define OSAL_TLS_NONE 0
-#define OSAL_TLS_OPENSSL_WRAPPER 1
-#define OSAL_TLS_MBED_WRAPPER 2
-
 /** Select TLS wrapper implementation to use.
  */
 #ifndef OSAL_TLS_SUPPORT

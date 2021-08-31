@@ -18,9 +18,8 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#include <stdio.h>
-
 #if OSAL_CONSOLE
+#ifdef OSAL_LINUX
 
 #include <stdio.h>
 #include <termios.h>
@@ -132,4 +131,5 @@ os_uint osal_sysconsole_read(
     return 0;
 }
 
+#endif
 #endif

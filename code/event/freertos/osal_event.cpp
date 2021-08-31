@@ -19,7 +19,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#if OSAL_FREE_RTOS
 #if OSAL_MULTITHREAD_SUPPORT
 
 #include <freertos/FreeRTOS.h>
@@ -262,4 +262,5 @@ osalStatus osal_event_wait(
 #endif
 }
 
+#endif
 #endif

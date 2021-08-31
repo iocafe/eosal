@@ -13,8 +13,10 @@
 
 ****************************************************************************************************
 */
+/// SHOULD _GNU_SOURCE define be moved after ifdef OSAL_LINUX
 #define _GNU_SOURCE
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_PROCESS_SUPPORT
 
 /* This must be 1 for now. Without it program will crash in signal handling if
@@ -196,4 +198,5 @@ osalStatus osal_create_process(
     return s;
 }
 
+#endif
 #endif

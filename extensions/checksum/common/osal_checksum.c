@@ -32,7 +32,6 @@
 */
 #include "eosalx.h"
 
-
 /* Set 1 to optimize size of code, 0 to optimize speed.
  */
 #define OSAL_CRC_OPTIMIZE_SIZE OSAL_MINIMALISTIC

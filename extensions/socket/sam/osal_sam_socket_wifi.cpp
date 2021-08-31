@@ -35,6 +35,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI_API
 
 #include <Arduino.h>
@@ -1640,4 +1641,5 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_socket_read,
     osal_stream_default_select};
 
+#endif
 #endif

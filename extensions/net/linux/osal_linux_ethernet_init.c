@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_SOCKET_SUPPORT
 
 #include "extensions/net/common/osal_shared_net_info.h"
@@ -124,4 +125,5 @@ osalStatus osal_are_sockets_initialized(
     return osal_global->socket_global ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
 
+#endif
 #endif

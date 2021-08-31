@@ -1,6 +1,6 @@
 /**
 
-  @file    console/arduino/osal_sysconsole.c
+  @file    console/duino/osal_sysconsole.c
   @brief   Operating system default console IO.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -18,6 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_CONSOLE
 #include "Arduino.h"
 
@@ -106,5 +107,5 @@ os_uint osal_sysconsole_read(
     return 0;
 }
 
-
+#endif
 #endif

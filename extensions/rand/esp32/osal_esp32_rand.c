@@ -1,6 +1,6 @@
 /**
 
-  @file    rand/arduino/osal_esp32_rand.c
+  @file    rand/esp32/osal_esp32_rand.c
   @brief   Random numbers.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -24,6 +24,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_RAND_SUPPORT == OSAL_RAND_PLATFORM
 
 #include "esp_system.h"
@@ -88,4 +89,5 @@ os_long osal_rand(
     return x;
 }
 
+#endif
 #endif

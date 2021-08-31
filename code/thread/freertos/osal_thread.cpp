@@ -25,6 +25,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#if OSAL_FREE_RTOS
 
 #include <Arduino.h>
 
@@ -343,4 +344,5 @@ void os_timeslice(void)
     vTaskDelay(1); /* 0 or vYieldTask will give no time to lower priottity */
 }
 
+#endif
 #endif

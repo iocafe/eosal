@@ -18,6 +18,7 @@
 #define POSIX_C_SOURCE 200112L
 
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_SERIAL_SUPPORT
 #include <termios.h>
 #include <errno.h>
@@ -760,4 +761,5 @@ OS_CONST osalStreamInterface osal_serial_iface
     OS_NULL};
 #endif
 
+#endif
 #endif

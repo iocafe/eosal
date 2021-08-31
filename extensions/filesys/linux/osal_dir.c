@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_FILESYS_SUPPORT
 
 #include <sys/stat.h>
@@ -271,5 +272,5 @@ osalStatus osal_rmdir(
     return OSAL_SUCCESS;
 }
 
-
+#endif
 #endif

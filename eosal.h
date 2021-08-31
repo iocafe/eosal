@@ -20,6 +20,10 @@
 #ifndef EOSAL_H_
 #define EOSAL_H_
 
+/* Include definitions common to all operating systems (before OS specific defines).
+ */
+#include "code/defs/common/osal_common_pre_defs.h"
+
 /* Include target operating system specific defines.
  */
 #ifdef E_OS_esp32
@@ -88,9 +92,9 @@
 #endif
 
 
-/* Include definitions common to all operating systems.
+/* Include definitions common to all operating systems (after OS specific defines).
  */
-#include "code/defs/common/osal_common_defs.h"
+#include "code/defs/common/osal_common_post_defs.h"
 
 /* If C++ compilation, all functions, etc. from this point on in this header file are
    plain C and must be left undecorated.

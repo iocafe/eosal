@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_TIME_SUPPORT
 
 
@@ -127,4 +128,5 @@ osalStatus os_settime(
 	return OSAL_SUCCESS;
 }
 
+#endif
 #endif

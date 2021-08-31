@@ -1,6 +1,6 @@
 /**
 
-  @file    console/esp/osal_sysconsole.c
+  @file    console/esp32/osal_sysconsole.c
   @brief   Operating system default console IO.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -18,6 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_CONSOLE
 
 #include <stdio.h>
@@ -102,4 +103,5 @@ os_uint osal_sysconsole_read(
     return ch != 0xff ? ch : 0;
 }
 
+#endif
 #endif

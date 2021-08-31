@@ -23,6 +23,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_SOCKET_SUPPORT
 
 #include <winsock2.h>
@@ -2379,4 +2380,5 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_socket_send_packet,
     osal_socket_receive_packet};
 
+#endif
 #endif

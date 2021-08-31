@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_FILESYS_SUPPORT
 #include <stdio.h>
 #include <errno.h>
@@ -67,4 +68,5 @@ osalStatus osal_remove(
     return OSAL_SUCCESS;
 }
 
+#endif
 #endif

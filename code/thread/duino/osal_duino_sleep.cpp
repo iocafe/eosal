@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_ARDUINO
 #include <Arduino.h>
 
 #if OSAL_MULTITHREAD_SUPPORT
@@ -80,3 +81,5 @@ void os_microsleep(
     delay(time_us / 1000);
 #endif
 }
+
+#endif

@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_ESP32
 
 #undef LOG_LOCAL_LEVEL
 #define LOG_LOCAL_LEVEL ESP_LOG_WARN
@@ -139,3 +140,5 @@ void osal_reboot(
 
     esp_restart();
 }
+
+#endif

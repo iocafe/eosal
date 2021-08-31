@@ -18,6 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_RAND_SUPPORT == OSAL_RAND_PLATFORM
 
 #ifndef _GNU_SOURCE
@@ -90,4 +91,5 @@ os_long osal_rand(
     return min_value + (os_long)((os_ulong)x % (os_ulong)range);
 }
 
+#endif
 #endif

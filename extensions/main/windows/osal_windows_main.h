@@ -36,6 +36,7 @@
 #ifndef OSAL_WINDOWS_MAIN_H_
 #define OSAL_WINDOWS_MAIN_H_
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 
 /* Prototype of operating system specific entry point code, UTF16.
  */
@@ -57,4 +58,5 @@ int eosal_entry_s(
     int main(int c, char **v) {return eosal_entry_s((c), (v)); } \
     OSAL_C_HEADER_ENDS
 
+#endif
 #endif

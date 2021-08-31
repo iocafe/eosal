@@ -16,7 +16,8 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_LINUX
+#if OSAL_MULTITHREAD_SUPPORT
 
 /**
 ****************************************************************************************************
@@ -39,10 +40,11 @@
 
 ****************************************************************************************************
 */
-#if OSAL_MULTITHREAD_SUPPORT
 osalStatus osal_thread_set_priority(
     osalThreadPriority priority)
 {
     return OSAL_SUCCESS;
 }
+
+#endif
 #endif

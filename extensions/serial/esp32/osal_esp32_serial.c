@@ -33,6 +33,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_SERIAL_SUPPORT
 
 #include "driver/uart.h"
@@ -506,4 +507,5 @@ OS_CONST osalStreamInterface osal_serial_iface
     osal_stream_default_select};
 #endif
 
+#endif
 #endif

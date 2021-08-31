@@ -1,6 +1,6 @@
 /**
 
-  @file    filesys/linux/osal_dir.c
+  @file    filesys/esp32/osal_dir.c
   @brief   Directory related functions.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_FILESYS_SUPPORT
 
 #include <sys/stat.h>
@@ -262,4 +263,5 @@ osalStatus osal_rmdir(
     return OSAL_SUCCESS;
 }
 
+#endif
 #endif

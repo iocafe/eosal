@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_SOCKET_SUPPORT
 
 #include <sys/socket.h>
@@ -147,4 +148,5 @@ getout:
     return s;
 }
 
+#endif
 #endif

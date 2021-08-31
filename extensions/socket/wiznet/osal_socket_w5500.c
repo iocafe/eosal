@@ -1,6 +1,6 @@
 /**
 
-  @file    socket/metal/osal_socket_w5500.c
+  @file    socket/wiznet/osal_socket_w5500.c
   @brief   OSAL sockets for bare metal with WizNet library.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -17,6 +17,7 @@
 */
 #define OSAL_INCLUDE_METAL_HEADERS
 #include "eosalx.h"
+#ifdef OSAL_METAL
 #if OSAL_SOCKET_SUPPORT
 
 #include "wizchip_conf.h"
@@ -1243,4 +1244,5 @@ OS_CONST osalStreamInterface osal_socket_iface
     osal_socket_read,
     osal_stream_default_select};
 
+#endif
 #endif

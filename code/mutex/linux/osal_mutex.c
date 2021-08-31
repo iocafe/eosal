@@ -34,6 +34,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_LINUX
 #if OSAL_MULTITHREAD_SUPPORT
 
 #include <pthread.h>
@@ -315,3 +316,5 @@ void os_unlock(
 }
 
 #endif
+#endif
+

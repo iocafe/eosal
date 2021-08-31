@@ -34,7 +34,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_WINDOWS
 #if OSAL_MULTITHREAD_SUPPORT
 
 #if OSAL_DEBUG
@@ -341,4 +341,5 @@ void os_unlock(
 #endif
 }
 
+#endif
 #endif

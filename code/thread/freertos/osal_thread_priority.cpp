@@ -1,12 +1,12 @@
 /**
 
-  @file    thread/arduino/osal_thread_priority.cpp
+  @file    thread/freestos/osal_thread_priority.cpp
   @brief   Thread priority and identification.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021
 
-  Thread priority identification for Arduino/FreeRTOS.
+  Thread priority identification for FreeRTOS.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -16,7 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#if OSAL_FREE_RTOS
 #if OSAL_MULTITHREAD_SUPPORT
 
 #include <FreeRTOS.h>
@@ -113,5 +113,5 @@ os_int osal_thread_priority_to_sys_priority(
     return rtpriority;
 }
 
-
+#endif
 #endif

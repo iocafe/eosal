@@ -1,6 +1,6 @@
 /**
 
-  @file    net/arduino/osal_dns.c
+  @file    net/duino/osal_duino/dns.c
   @brief   Resolve host name or IP address string for arduino sockets.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_SOCKET_SUPPORT
 #if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_ETHERNET_AP || \
     (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIFI_API || \
@@ -67,5 +68,6 @@ osalStatus osal_gethostbyname(
     return osal_ip_from_str((os_uchar*)addr, addr_sz, name);
 }
 
+#endif
 #endif
 #endif

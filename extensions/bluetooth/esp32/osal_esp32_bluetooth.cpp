@@ -19,7 +19,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-
+#ifdef OSAL_ESP32
 #if OSAL_BLUETOOTH_SUPPORT
 
 #include <Arduino.h>
@@ -293,4 +293,5 @@ const osalStreamInterface osal_bluetooth_iface
     osal_bluetooth_read,
     osal_stream_default_select};
 
+#endif
 #endif

@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 #if OSAL_FILESYS_SUPPORT
 
 #include <sys/types.h>
@@ -71,4 +72,5 @@ osalStatus osal_filestat(
     return OSAL_SUCCESS;
 }
 
+#endif
 #endif

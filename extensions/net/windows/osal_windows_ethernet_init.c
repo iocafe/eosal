@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_SOCKET_SUPPORT
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -179,4 +180,5 @@ osalStatus osal_are_sockets_initialized(
     return osal_global->sockets_shutdown_func ? OSAL_SUCCESS : OSAL_STATUS_FAILED;
 }
 
+#endif
 #endif

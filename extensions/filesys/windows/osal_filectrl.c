@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_FILESYS_SUPPORT
 
 /**
@@ -75,4 +76,5 @@ osalStatus osal_remove(
     return OSAL_SUCCESS;
 }
 
+#endif
 #endif

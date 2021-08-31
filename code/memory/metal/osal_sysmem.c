@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_METAL
 #include <stdlib.h>
 
 
@@ -86,3 +87,5 @@ void osal_sysmem_free(
         osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
     }
 }
+
+#endif

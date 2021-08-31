@@ -14,6 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_SOCKET_SUPPORT
 
 #include <winsock2.h>
@@ -200,4 +201,5 @@ getout:
     return s;
 }
 
+#endif
 #endif

@@ -1,6 +1,6 @@
 /**
 
-  @file    filesys/linux/osal_file.c
+  @file    filesys/esp32/osal_file.c
   @brief   OSAL stream API for Arduino files.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ESP32
 #if OSAL_FILESYS_SUPPORT
 
 #include <stdio.h>
@@ -386,4 +387,5 @@ const osalStreamInterface osal_file_iface
     osal_file_read,
     osal_stream_default_select};
 
+#endif
 #endif

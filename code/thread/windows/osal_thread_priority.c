@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_WINDOWS
 
 /* Forward referred static functions.
  */
@@ -132,3 +133,4 @@ static int osal_thread_priority_to_sys_priority(
 }
 #endif
 
+#endif

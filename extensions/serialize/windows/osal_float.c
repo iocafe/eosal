@@ -14,8 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-
-#include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_SERIALIZE_SUPPORT
 
 
@@ -333,4 +332,5 @@ void osal_float2ints(
     *m = mu.i;
 }
 
+#endif
 #endif

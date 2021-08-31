@@ -26,6 +26,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_SERIAL_SUPPORT
 
 /** Windows specific serial point state data structure. OSAL functions cast their own
@@ -888,4 +889,5 @@ OS_CONST osalStreamInterface osal_serial_iface
 #endif
 #endif
 
+#endif
 #endif

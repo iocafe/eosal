@@ -18,6 +18,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_LINUX
 #include <time.h>
 
 /**
@@ -239,3 +240,5 @@ os_boolean os_timer_hit(
 
     return OS_TRUE;
 }
+
+#endif

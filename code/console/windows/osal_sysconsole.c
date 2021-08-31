@@ -18,11 +18,12 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
+#ifdef OSAL_WINDOWS
+#if OSAL_CONSOLE
 #include <wchar.h>
 #include <conio.h>
 #include <stdlib.h>
 
-#if OSAL_CONSOLE
 
 /**
 ****************************************************************************************************
@@ -161,4 +162,5 @@ os_uint osal_sysconsole_read(
     return 0;
 }
 
+#endif
 #endif

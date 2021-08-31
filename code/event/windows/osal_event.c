@@ -17,7 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-
+#ifdef OSAL_WINDOWS
 #if OSAL_MULTITHREAD_SUPPORT
 
 /* Windows specific event structure.
@@ -233,4 +233,5 @@ osalStatus osal_event_wait(
     }
 }
 
+#endif
 #endif

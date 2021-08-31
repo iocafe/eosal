@@ -16,6 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #include <stdio.h>
 #include <errno.h>
 
@@ -424,3 +425,4 @@ const osalStreamInterface osal_file_iface
     osal_file_read,
     osal_stream_default_select};
 
+#endif

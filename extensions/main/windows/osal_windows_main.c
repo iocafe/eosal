@@ -33,7 +33,9 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_WINDOWS
 #if OSAL_MAIN_SUPPORT
+
 #include <shellapi.h>
 
 /**
@@ -126,4 +128,5 @@ int eosal_entry_s(
     return eosal_entry_w(argc, argv);
 }
 
+#endif
 #endif

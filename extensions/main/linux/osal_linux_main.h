@@ -33,6 +33,7 @@
 #ifndef OSAL_LINUX_MAIN_H_
 #define OSAL_LINUX_MAIN_H_
 #include "eosalx.h"
+#ifdef OSAL_LINUX
 
 /* Prototype of operating system specific entry point code/
  */
@@ -47,4 +48,5 @@ int eosal_entry(
     int main(int c, char **v) {return eosal_entry((c), (v)); } \
     OSAL_C_HEADER_ENDS
 
+#endif
 #endif

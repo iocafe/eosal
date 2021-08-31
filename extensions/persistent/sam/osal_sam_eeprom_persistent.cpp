@@ -19,6 +19,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_PERSISTENT_SUPPORT==OSAL_SAM_PERSISTENT
 #include <Arduino.h>
 
@@ -720,4 +721,5 @@ osalStatus os_persistent_delete(
         return os_save_persistent(block_nr, OS_NULL, 0, OS_TRUE);
     }
 }
+#endif
 #endif
