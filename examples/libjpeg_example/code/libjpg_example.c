@@ -14,7 +14,7 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#if IOC_USE_JPEG_COMPRESSION
+#if OSAL_USE_JPEG_LIBRARY
 #include "eosal_jpeg.h"
 
 /* If needed for the operating system, EOSAL_C_MAIN macro generates the actual C main() function.

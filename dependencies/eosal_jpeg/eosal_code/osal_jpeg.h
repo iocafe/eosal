@@ -39,7 +39,7 @@ typedef struct osalJpegMallocContext
 }
 osalJpegMallocContext;
 
-#if IOC_USE_JPEG_COMPRESSION
+#if OSAL_USE_JPEG_LIBRARY
 
 /* Convert a bitmap in memory to JPEG.
  */

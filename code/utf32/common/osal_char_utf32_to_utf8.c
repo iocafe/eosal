@@ -44,7 +44,7 @@
   @return  If the function succeeds, it returns number of bytes (1-6) stored into buffer
            (or number of bytes that would be needed if buf is OS_NULL). If the function
            fails to convert the character either becouse given buffer is too small or
-           character c32 is not legimate unicode character, the function returns 0.
+           character c32 is not legitimate unicode character, the function returns 0.
 
 ****************************************************************************************************
 */

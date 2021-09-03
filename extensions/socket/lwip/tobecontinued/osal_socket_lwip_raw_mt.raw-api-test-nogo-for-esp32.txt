@@ -119,7 +119,7 @@ typedef struct osalSocket
      */
     os_boolean is_ipv6;
 
-    /** Host name or IP addrss.
+    /** Host name or IP address.
      */
     os_char host[OSAL_IPADDR_SZ];
     os_int port_nr;
@@ -272,7 +272,7 @@ void osal_socket_initialize_2(
   @param  parameters Socket parameters, a list string or direct value.
           Address and port to connect to, or interface and port to listen for.
           Socket IP address and port can be specified either as value of "addr" item
-          or directly in parameter sstring. For example "192.168.1.55:20" or "localhost:12345"
+          or directly in parameter string. For example "192.168.1.55:20" or "localhost:12345"
           specify IPv4 addressed. If only port number is specified, which is often
           useful for listening socket, for example ":12345".
           IPv6 address is automatically recognized from numeric address like
@@ -402,7 +402,7 @@ getout:
   @brief Close socket.
   @anchor osal_socket_close
 
-  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
+  The osal_socket_close() function closes a socket, which was created by osal_socket_open()
   function. All resource related to the socket are freed. Any attempt to use the socket after
   this call may result crash.
 
@@ -906,8 +906,8 @@ static void osal_lwip_serve_socket(
   for connect, osal_lwip_connect_callback is for that.
 
   @param   w Socket structure pointer.
-  @return  OSAL_SUCCESS if connecti was successfully initiated. OSAL_PENDING indicates
-           that we are waiting for network initialization (wifi, etc.) to complete.
+  @return  OSAL_SUCCESS if connection was successfully initiated. OSAL_PENDING indicates
+           that we are waiting for network initialization (WiFi, etc.) to complete.
 
 ****************************************************************************************************
 */
@@ -1044,13 +1044,13 @@ static void osal_lwip_error_callback(
   @brief Close socket (lwip thread).
 
   The osal_lwip_close_socket function closes socket connection and frees PCB. If closing socket
-  failes, the function leaves PCB allocated, and returns error code. Thus applications
+  fails, the function leaves PCB allocated, and returns error code. Thus applications
   close function will not return to try later on again. In this case of error lwip will trigger
   it's own event to keep on retrying.
 
   @param   w Socket structure pointer.
-  @return  OSAL_SUCCESS if connecti was successfully closed. Other return values indicate that
-           closing socket failed and needs to be retried until successful.
+  @return  OSAL_SUCCESS if the connection was successfully closed. Other return values indicate
+           that closing socket failed and needs to be retried until successful.
 
 ****************************************************************************************************
 */
@@ -1481,7 +1481,7 @@ void osal_socket_initialize_2(void)
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
-    osal_trace("Commecting to Wifi network");
+    osal_trace("Commecting to WiFi network");
     osal_trace(wifi_net_name);
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
@@ -1528,13 +1528,13 @@ os_boolean osal_are_sockets_initialized(
             }
             return OS_FALSE;
         }
-        osal_trace("Wifi network connected");
+        osal_trace("WiFi network connected");
 
         /* Initialize LWIP library
          */
         // lwip_init();
 
-        /* Mark that Wifi is intialized.
+        /* Mark that WiFi is initialized.
          */
         osal_wifi_initialized = OS_TRUE;
     }

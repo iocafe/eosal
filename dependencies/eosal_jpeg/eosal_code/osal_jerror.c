@@ -20,7 +20,7 @@
 ****************************************************************************************************
 */
 #include "eosal_jpeg.h"
-#if IOC_USE_JPEG_COMPRESSION
+#if OSAL_USE_JPEG_LIBRARY
 #include "code/jversion.h"
 #include "code/jerror.h"
 

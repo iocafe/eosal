@@ -20,7 +20,7 @@
 ****************************************************************************************************
 */
 #include "eosal_jpeg.h"
-#if IOC_USE_JPEG_COMPRESSION
+#if OSAL_USE_JPEG_LIBRARY
 #include "eosal_code/osal_jpeg_dst.h"
 
 /** JPEG destination manager. This must start with jpeg_destination_mgr which sets up public

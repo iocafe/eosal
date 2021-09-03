@@ -37,7 +37,7 @@
   @param   str Input, IP address as string.
   @return  OSAL_SUCCESS if IP v4 address successfully parsed. Value OSAL_IS_IPV6
            indicate that IP v6 address was succesfully parsed. Other values indicate
-           that str could not be interprented.
+           that str could not be interpreted.
 
 ****************************************************************************************************
 */

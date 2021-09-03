@@ -43,7 +43,7 @@
   The osal_init_os_specific() function does operating system specific initialization
   OSAL library for use.
 
-  @param  flags Bit fields. OSAL_INIT_DEFAULT (0) for normal initalization.
+  @param  flags Bit fields. OSAL_INIT_DEFAULT (0) for normal initialization.
           OSAL_INIT_NO_LINUX_SIGNAL_INIT not to initialize linux signals.
 
   @return  None.

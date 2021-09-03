@@ -145,7 +145,7 @@ osalThread *osal_thread_create(
     }
 
     /* Create event to wait until newly created thread has processed it's parameters. If creating
-       the event failes, return the error code.
+       the event fails, return the error code.
      */
     thrprm.done = osal_event_create(OSAL_EVENT_DEFAULT);
     if (thrprm.done == OS_NULL)
@@ -217,7 +217,7 @@ osalThread *osal_thread_create(
         return OS_NULL;
     }
 
-    /* Inform resource monitor that thread has been succesfully creted.
+    /* Inform resource monitor that thread has been successfully created.
      */
     osal_resource_monitor_increment(OSAL_RMON_THREAD_COUNT);
 
@@ -275,7 +275,7 @@ static void osal_thread_intermediate_func(
         osal_global->thread_count--;
     }
 
-    /* Call OS to delete (terminate) the taskm and Inform resource monitor.
+    /* Call OS to delete (terminate) the task and inform resource monitor.
      */
     osal_resource_monitor_decrement(OSAL_RMON_THREAD_COUNT);
     vTaskDelete(NULL);
@@ -339,7 +339,7 @@ void osal_thread_join(
 */
 void os_timeslice(void)
 {
-    vTaskDelay(1); /* 0 or vYieldTask will give no time to lower priottity */
+    vTaskDelay(1); /* 0 or vYieldTask will give no time to lower priority  */
 }
 
 #endif

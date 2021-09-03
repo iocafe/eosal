@@ -150,7 +150,7 @@ osalThread *osal_thread_create(
     }
 
     /* Create event to wait until newly created thread has processed it's parameters.
-       If creating the event failes, return the error code.
+       If creating the event fails, return the error code.
      */
     linprm.done = osal_event_create(OSAL_EVENT_DEFAULT);
     if (linprm.done == OS_NULL) {
@@ -188,10 +188,10 @@ osalThread *osal_thread_create(
     }
 
     /* Call Posix function to create and start the new thread.
-     * SIGSTOP note: Some versions of QTcreator display a pop up window with SIGSTOP
+     * SIGSTOP note: Some versions of QT creator display a pop up window with SIGSTOP
        when pthreade_create is called during gdb debug and console output is set to
        separate window in "Project" setting, run configuration. Disable console
-       output to debug more conviniently.
+       output to debug more conveniently.
      */
     s = pthread_create(&threadh, &attrib,
         osal_thread_intermediate_func, &linprm);
@@ -208,7 +208,7 @@ osalThread *osal_thread_create(
         return OS_NULL;
     }
 
-    /* Inform resource monitor that thread has been succesfully creted.
+    /* Inform resource monitor that thread has been successfully created.
      */
     osal_resource_monitor_increment(OSAL_RMON_THREAD_COUNT);
 

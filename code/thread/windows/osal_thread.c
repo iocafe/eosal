@@ -150,7 +150,7 @@ osalThread *osal_thread_create(
     }
 
     /* Create event to wait until newly created thread has processed it's parameters. If creating
-       the event failes, return the error code.
+       the event fails, return the error code.
      */
     winprm.done = osal_event_create();
     if (winprm.done == OS_NULL)
@@ -195,7 +195,7 @@ osalThread *osal_thread_create(
         return OS_NULL;
     }
 
-    /* Inform resource monitor that thread has been succesfully creted.
+    /* Inform resource monitor that thread has been successfully created.
      */
     osal_resource_monitor_increment(OSAL_RMON_THREAD_COUNT);
 

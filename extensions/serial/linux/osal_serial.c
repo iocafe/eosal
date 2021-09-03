@@ -125,7 +125,7 @@ static void osal_get_linux_serial_port_name(
   @param  parameters Serial port name and parameters, for example "COM5,baud=115200" or
           "ttyUSB0,baud=57600". The parameters string must beging with serial port name.
           It can be either Windows like COMx port name or linux device name without preceeding
-          "/dev/". Windows like COM port names COM1 ... COM4 in are interprented as "/dev/tty0",
+          "/dev/". Windows like COM port names COM1 ... COM4 in are interpreted as "/dev/tty0",
            "/dev/tty1", "/dev/tty2" and "/dev/tty3" respectively. Similarly names COM5 ...
           COM8 correspond to "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2" and "/dev/ttyUSB3".
           If port name in parameters string isn't windows like COM port name, it is simply
@@ -647,7 +647,7 @@ osalStatus osal_serial_select(
   string, converts it to format which linux understands (like "/dev/tty0" or "/dev/ttyUSB0")
   and moves parameter pointer to position where additional parameters may begin.
 
-  Windows like COM port names COM1 ... COM4 in parameters string are interprented as
+  Windows like COM port names COM1 ... COM4 in parameters string are interpreted as
   "/dev/tty0", "/dev/tty1", "/dev/tty2" and "/dev/tty3" respectively. Similarly names
   COM5 ... COM8 correspond to "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2" and "/dev/ttyUSB3".
 

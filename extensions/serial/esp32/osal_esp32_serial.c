@@ -436,7 +436,7 @@ static uart_port_t osal_get_esp32_uart_nr(
         p++;
     }
 
-    /* Make sure that UART number is legimate.
+    /* Make sure that UART number is legitimate.
      */
     if (uart_nr < 0 || uart_nr >= OSAL_NRO_ESP32_UARTS)
     {

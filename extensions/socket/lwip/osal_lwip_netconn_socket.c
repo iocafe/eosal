@@ -340,7 +340,7 @@ osalStream osal_socket_open(
 
     /* Get host name or numeric IP address and TCP port number from parameters.
        The host buffer must be released by calling os_free() function,
-       unless if host is OS_NULL (unpecified).
+       unless if host is OS_NULL (unspecified).
      */
     osal_socket_get_ip_and_port(parameters,
         &w->port_nr, w->host, OSAL_IPADDR_SZ, &w->is_ipv6, flags, IOC_DEFAULT_SOCKET_PORT);
@@ -912,8 +912,8 @@ static void osal_lwip_serve_socket(
   for connect, osal_lwip_connect_callback is for that.
 
   @param   w Socket structure pointer.
-  @return  OSAL_SUCCESS if connecti was successfully initiated. OSAL_PENDING indicates
-           that we are waiting for network initialization (wifi, etc.) to complete.
+  @return  OSAL_SUCCESS if connection was successfully initiated. OSAL_PENDING indicates
+           that we are waiting for network initialization (WiFi, etc.) to complete.
 
 ****************************************************************************************************
 */
@@ -1050,13 +1050,13 @@ static void osal_lwip_error_callback(
   @brief Close socket (lwip thread).
 
   The osal_lwip_close_socket function closes socket connection and frees PCB. If closing socket
-  failes, the function leaves PCB allocated, and returns error code. Thus applications
+  fails, the function leaves PCB allocated, and returns error code. Thus applications
   close function will not return to try later on again. In this case of error lwip will trigger
   it's own event to keep on retrying.
 
   @param   w Socket structure pointer.
-  @return  OSAL_SUCCESS if connecti was successfully closed. Other return values indicate that
-           closing socket failed and needs to be retried until successful.
+  @return  OSAL_SUCCESS if the connection was successfully closed. Other return values indicate 
+           that closing socket failed and needs to be retried until successful.
 
 ****************************************************************************************************
 */

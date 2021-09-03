@@ -26,7 +26,7 @@
 */
 #define JPEG_INTERNALS
 #include "eosal_jpeg.h"
-#if IOC_USE_JPEG_COMPRESSION
+#if OSAL_USE_JPEG_LIBRARY
 #include "code/jmemsys.h"		/* import the system-dependent declarations */
 
 

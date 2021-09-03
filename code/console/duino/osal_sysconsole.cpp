@@ -25,7 +25,7 @@
 /**
 ****************************************************************************************************
 
-  @brief Inititalize system console.
+  @brief Initialize system console.
   @anchor osal_sysconsole_initialize
 
   The osal_sysconsole_initialize() function should do any initialization necessary to use the
@@ -66,7 +66,7 @@ void osal_sysconsole_shutdown(
   @brief Write text to system console.
   @anchor osal_sysconsole_write
 
-  The osal_sysconsole_write() function writes a string to process'es default console, if any.
+  The osal_sysconsole_write() function writes a string to the default console o fthe process, if any.
 
   @param   text Pointer to string to write.
 
