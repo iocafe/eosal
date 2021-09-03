@@ -26,6 +26,7 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
+#include "esp_heap_caps.h"
 #include "soc/rtc_wdt.h"
 
 
@@ -63,14 +64,14 @@ void osal_init_os_specific(
 
     /* No watchdog timers.
      */
-#ifdef OSAL_ESPIDF_FRAMEWORK
     rtc_wdt_protect_off();
     rtc_wdt_disable();
-#else
+
+    /* This was the original esp32-arduino only implementation.
     disableLoopWDT();
     disableCore0WDT();
     disableCore1WDT();
-#endif    
+     */
 
     /* Print some generic system information.
      */
@@ -91,10 +92,18 @@ void osal_init_os_specific(
 
     /* Print amount of heap and PS ram
      */
+#ifdef OSAL_ESPIDF_FRAMEWORK
+    osal_print_esp32_info("Total heap:  ", (os_long)heap_caps_get_total_size(MALLOC_CAP_8BIT));
+    osal_print_esp32_info("Free heap:   ", (os_long)heap_caps_get_free_size(MALLOC_CAP_8BIT));
+    osal_print_esp32_info("Total PSRAM: ", (os_long)heap_caps_get_total_size(MALLOC_CAP_SPIRAM)); 
+    osal_print_esp32_info("Free PSRAM:  ", (os_long)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+#else
     osal_print_esp32_info("Total heap:  ", (os_long)ESP.getHeapSize());
     osal_print_esp32_info("Free heap:   ", (os_long)ESP.getFreeHeap());
     osal_print_esp32_info("Total PSRAM: ", (os_long)ESP.getPsramSize());
     osal_print_esp32_info("Free PSRAM:  ", (os_long)ESP.getFreePsram());
+#endif    
+    osal_console_write("\n");
 }
 
 

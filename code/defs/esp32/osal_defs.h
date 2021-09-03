@@ -143,7 +143,7 @@
 
  /** Include UTF16 character encoding support, define 1 or 0. For most systems UTF16
      character encoding should be disabled. Enable UTF16 for Windows Unicode support.
-     Notice that OSAL_UTF8 must be enbaled to enable OSAL_UTF16.
+     Notice that OSAL_UTF8 must be enabled to enable OSAL_UTF16.
  */
 #ifndef OSAL_UTF16
 #define OSAL_UTF16 0
@@ -181,7 +181,7 @@
 /** Needed memory alignment. Some processors require that variables are allocated at
     type size boundary. For example ARM7 requires that 2 byte integers starts from
     pair addressess and 4 byte integers from addressess dividable by four. If so,
-    define "OSAL_MEMORY_TYPE_ALIGNMENT 4". If no aligment is needed define 0 here.
+    define "OSAL_MEMORY_TYPE_ALIGNMENT 4". If no alignment is needed define 0 here.
  */
 #ifndef OSAL_MEMORY_TYPE_ALIGNMENT
 #define OSAL_MEMORY_TYPE_ALIGNMENT 0

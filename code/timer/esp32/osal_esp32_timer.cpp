@@ -1,6 +1,6 @@
 /**
 
-  @file    timer/arduino/osal_timer.c
+  @file    timer/arduino/osal_esp32_timer.c
   @brief   System timer functions.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -20,9 +20,7 @@
 #include "eosal.h"
 #ifdef OSAL_ESP32
 
-#ifndef OSAL_ESPIDF_FRAMEWORK
 #include "esp_timer.h"
-#endif
 
 /**
 ****************************************************************************************************
@@ -31,9 +29,8 @@
   @anchor osal_timer_initialize
 
   The osal_timer_initialize() function initializes OSAL timer module. This function is called by
-  osal_initialize() and should not normally be called by application.
-
-  @return  None.
+  osal_initialize() and should not normally be called by application. For ESP32, the function
+  does nothing.
 
 ****************************************************************************************************
 */
@@ -54,8 +51,7 @@ void osal_timer_initialize(
 
   This function can be called from interrupt handler.
 
-  @param   start_t Pointer to integer into which to store current system timer value.
-  @return  None.
+  @param   t Pointer to integer into which to store current system timer value.
 
 ****************************************************************************************************
 */
