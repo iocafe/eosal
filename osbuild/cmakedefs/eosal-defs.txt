@@ -34,19 +34,23 @@ if("${IDF_TARGET}" STREQUAL "esp32")
 
   # Generic target operating system name like "esp". Used as folder name for OS specific code.
   if (NOT DEFINED ENV{E_OS})
-    set(ENV{E_OS} "esp")
+    set(ENV{E_OS} "esp32")
   endif()
 
   # Target operating system version "esp32" is used as name for banary folders and as part of
   # the installation package name.
   if (NOT DEFINED ENV{E_OSVER})
-    set(ENV{E_OSVER} "esp32")
+    set(ENV{E_OSVER} "espidf")
   endif()
 
   # Compiler name, used as part of library and temporary folder name.
   # For example "vs2015", "mingw", "gcc", "gccarm9"...
   if (NOT DEFINED ENV{E_COMPILER})
     set(ENV{E_COMPILER} "xtensa")
+  endif()
+
+  if (NOT DEFINED ENV{E_ARCH})
+    set(ENV{E_ARCH} "xtensa")
   endif()
 
   # Root path for build.
@@ -208,6 +212,10 @@ if($ENV{E_OS} MATCHES "linux")
   # set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};ssl${E_POSTFIX};crypto${E_POSTFIX}")
   set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};dl;pthread")
   set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};pthread")
+endif()
+if($ENV{E_OS} MATCHES "espidf")
+  set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS}")
+  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};mbedtls${E_POSTFIX};mbedx509${E_POSTFIX};mbedcrypto${E_POSTFIX}")
 endif()
 
 # Add defines to indicate target operating system and target OS version (at level needed for build).

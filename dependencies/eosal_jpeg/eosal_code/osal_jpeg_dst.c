@@ -20,6 +20,7 @@
 ****************************************************************************************************
 */
 #include "eosal_jpeg.h"
+#if IOC_USE_JPEG_COMPRESSION
 #include "eosal_code/osal_jpeg_dst.h"
 
 /** JPEG destination manager. This must start with jpeg_destination_mgr which sets up public
@@ -259,3 +260,4 @@ osalStatus osal_jpeg_destination_finished(
     return s;
 }
 
+#endif

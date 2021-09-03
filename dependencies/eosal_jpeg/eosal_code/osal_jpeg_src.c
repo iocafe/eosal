@@ -17,6 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosal_jpeg.h"
+#if IOC_USE_JPEG_COMPRESSION
 #include "eosal_code/osal_jpeg_src.h"
 
 /** Source manager structure for uncompressing JPEGs. This must start with jpeg_source_mgr
@@ -161,3 +162,4 @@ void osal_jpeg_setup_source(
     src->pub.bytes_in_buffer = (size_t)src_nbytes;
     src->pub.next_input_byte = (os_char*)src_buf;
 }
+#endif

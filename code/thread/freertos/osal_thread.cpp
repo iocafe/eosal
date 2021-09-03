@@ -27,8 +27,6 @@
 #include "eosal.h"
 #if OSAL_FREE_RTOS
 
-#include <Arduino.h>
-
 #if OSAL_MULTITHREAD_SUPPORT
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

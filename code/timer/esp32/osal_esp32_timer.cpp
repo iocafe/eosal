@@ -19,10 +19,10 @@
 */
 #include "eosal.h"
 #ifdef OSAL_ESP32
+
+#ifndef OSAL_ESPIDF_FRAMEWORK
 #include "esp_timer.h"
-
-// #include "Arduino.h"
-
+#endif
 
 /**
 ****************************************************************************************************

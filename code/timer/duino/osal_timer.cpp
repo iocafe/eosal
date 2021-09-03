@@ -19,7 +19,6 @@
 */
 #include "eosal.h"
 #ifdef OSAL_ARDUINO
-#include "Arduino.h"
 
 
 /**

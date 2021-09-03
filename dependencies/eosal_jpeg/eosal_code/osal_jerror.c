@@ -20,6 +20,7 @@
 ****************************************************************************************************
 */
 #include "eosal_jpeg.h"
+#if IOC_USE_JPEG_COMPRESSION
 #include "code/jversion.h"
 #include "code/jerror.h"
 
@@ -238,3 +239,5 @@ jpeg_std_error (struct jpeg_error_mgr * err)
 
     return err;
 }
+
+#endif

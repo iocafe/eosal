@@ -19,7 +19,6 @@
 #ifdef OSAL_LINUX
 #if OSAL_TIME_SUPPORT
 
-#include "Arduino.h"
 #include "TimeLib.h"
 
 /**

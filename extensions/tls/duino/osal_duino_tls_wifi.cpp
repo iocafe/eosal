@@ -25,7 +25,6 @@
 #ifdef OSAL_ARDUINO
 #if OSAL_TLS_SUPPORT==OSAL_TLS_ARDUINO_WRAPPER
 
-#include <Arduino.h>
 #include "WiFi.h"
 #include <WiFiClientSecure.h>
 

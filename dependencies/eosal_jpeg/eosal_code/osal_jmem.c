@@ -26,6 +26,7 @@
 */
 #define JPEG_INTERNALS
 #include "eosal_jpeg.h"
+#if IOC_USE_JPEG_COMPRESSION
 #include "code/jmemsys.h"		/* import the system-dependent declarations */
 
 
@@ -106,3 +107,5 @@ jpeg_mem_term (j_common_ptr cinfo)
 {
   /* no work */
 }
+
+#endif

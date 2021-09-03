@@ -24,7 +24,6 @@
 #include "eosalx.h"
 #if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_WIFI
 
-#include <Arduino.h>
 #include <WiFi.h>
 
 /* Global network setup. Micro-controllers typically have one (or two)

@@ -20,7 +20,7 @@
 #include "eosal.h"
 #ifdef OSAL_ARDUINO
 #if OSAL_CONSOLE
-#include "Arduino.h"
+
 
 /**
 ****************************************************************************************************

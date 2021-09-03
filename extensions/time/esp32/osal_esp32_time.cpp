@@ -19,7 +19,6 @@
 #ifdef OSAL_ESP32
 #if OSAL_TIME_SUPPORT
 
-#include "Arduino.h"
 #include "TimeLib.h"
 
 /**

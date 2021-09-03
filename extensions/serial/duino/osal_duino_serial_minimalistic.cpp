@@ -45,7 +45,6 @@
 #if OSAL_SERIAL_SUPPORT
 #if OSAL_SERIAL_SUPPORT == OSAL_DUINO_SERIAL_MINIMALISTIC
 
-#include <Arduino.h>
 #include <HardwareSerial.h>
 
 #ifndef OSAL_DUINO_SERIAL_PORT

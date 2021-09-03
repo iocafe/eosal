@@ -20,9 +20,11 @@
 
 #undef LOG_LOCAL_LEVEL
 #define LOG_LOCAL_LEVEL ESP_LOG_WARN
+
+#ifndef OSAL_ESPIDF_FRAMEWORK
 #include "esp_log.h"
 #include "esp_system.h"
-#include "Arduino.h"
+#endif
 
 /* Prototypes of forward referred static functions.
  */
@@ -40,7 +42,7 @@ static void osal_print_esp32_info(
   The osal_init_os_specific() function does operating system specific initialization
   OSAL library for use.
 
-  @param  flags Bit fields. OSAL_INIT_DEFAULT (0) for normal initalization.
+  @param  flags Bit fields. OSAL_INIT_DEFAULT (0) for normal initialization.
           OSAL_INIT_NO_LINUX_SIGNAL_INIT not to initialize linux signals.
 
   @return  None.

@@ -16,6 +16,10 @@
 
 ****************************************************************************************************
 */
+#pragma once
+#ifndef OSAL_JPEG_H_
+#define OSAL_JPEG_H_
+#include "eosal.h"
 
 /* Flags for os_compress_JPEG() and os_uncompress_JPEG() functions.
  */
@@ -34,6 +38,8 @@ typedef struct osalJpegMallocContext
     osalBitmapFormat format;
 }
 osalJpegMallocContext;
+
+#if IOC_USE_JPEG_COMPRESSION
 
 /* Convert a bitmap in memory to JPEG.
  */
@@ -57,3 +63,6 @@ osalStatus os_uncompress_JPEG(
     os_memsz src_nbytes,
     osalJpegMallocContext *alloc_context,
     os_int flags);
+
+#endif
+#endif

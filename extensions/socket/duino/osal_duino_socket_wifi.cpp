@@ -44,7 +44,6 @@
  */
 #define OSAL_WIFI_MULTI 1
 
-#include <Arduino.h>
 #include <WiFi.h>
 
 #if OSAL_WIFI_MULTI

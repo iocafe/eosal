@@ -37,7 +37,6 @@
 #if OSAL_SERIAL_SUPPORT
 #if OSAL_SERIAL_SUPPORT == OSAL_DUINO_SERIAL_NORMAL
 
-#include <Arduino.h>
 #include <HardwareSerial.h>
 
   /** Arduino specific serial point state data structure. OSAL functions cast their own

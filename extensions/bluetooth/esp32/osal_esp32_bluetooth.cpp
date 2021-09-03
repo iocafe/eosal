@@ -22,7 +22,6 @@
 #ifdef OSAL_ESP32
 #if OSAL_BLUETOOTH_SUPPORT
 
-#include <Arduino.h>
 #include <BluetoothSerial.h>
 
 static BluetoothSerial SerialBT;

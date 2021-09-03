@@ -38,7 +38,6 @@
 #ifdef OSAL_ARDUINO
 #if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_SAM_WIFI_API
 
-#include <Arduino.h>
 #include <WiFi101.h>
 
 

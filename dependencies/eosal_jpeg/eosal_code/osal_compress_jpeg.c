@@ -17,6 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosal_jpeg.h"
+#if IOC_USE_JPEG_COMPRESSION
 #include "code/jerror.h"
 #include "eosal_code/osal_jpeg_dst.h"
 
@@ -386,3 +387,5 @@ static void osal_jpeg_disaster_exit(
     err_manager = (osalJpegErrorManager*) ptr->err;
     longjmp(err_manager->jump_buffer, 1);
 }
+
+#endif

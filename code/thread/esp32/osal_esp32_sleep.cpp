@@ -15,12 +15,11 @@
 */
 #include "eosal.h"
 #ifdef OSAL_ESP32
-#include <Arduino.h>
 
-#if OSAL_MULTITHREAD_SUPPORT
+/* #if OSAL_MULTITHREAD_SUPPORT
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#endif
+#endif */
 
 
 /**

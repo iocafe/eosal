@@ -10,9 +10,8 @@
 
 ****************************************************************************************************
 */
-#include <Arduino.h>
-#include <BluetoothSerial.h>
 #include "eosalx.h"
+#include <BluetoothSerial.h>
 
 static BluetoothSerial SerialBT;
 

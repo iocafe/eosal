@@ -35,7 +35,6 @@
 #ifdef OSAL_ARDUINO
 #if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_SAM_WIFI_INIT
 
-#include <Arduino.h>
 #include <WiFi101.h>
 
 /* Global network adapter and wifi info

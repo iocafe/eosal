@@ -26,7 +26,8 @@
  */
 // #undef OSAL_TRACE
 // #define OSAL_TRACE 3
-#include <Arduino.h>
+#ifndef OSAL_ESPIDF_FRAMEWORK
+#endif
 
 extern "C"{
 #include "lwip/opt.h"

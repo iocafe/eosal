@@ -21,7 +21,6 @@
 #include "eosalx.h"
 #ifdef OSAL_ARDUINO
 #if OSAL_PERSISTENT_SUPPORT==OSAL_ARDUINO_EEPROM_API
-#include <Arduino.h>
 #include <EEPROM.h>
 
 

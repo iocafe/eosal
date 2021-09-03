@@ -26,7 +26,6 @@
 #include "eosalx.h"
 #ifdef OSAL_ESP32
 #if OSAL_PERSISTENT_SUPPORT == OSAL_PERSISTENT_EEPROM_STORAGE
-// #include <Arduino.h>
 #include "EEPROM.h"
 
 

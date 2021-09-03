@@ -26,7 +26,10 @@
  */
 #define OSAL_ESP32
 
-#include <freertos/FreeRTOS.h>
+#ifndef OSAL_ESPIDF_FRAMEWORK
+  #include "Arduino.h"
+  #include "freertos/FreeRTOS.h"
+#endif  
 
 /* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.
@@ -243,8 +246,10 @@
     and for functions called from interrupt handler. Global data accessed from ISR
     must have DRAM_ATTR flag.
  */
-#define OS_ISR_FUNC_ATTR IRAM_ATTR
-#define OS_ISR_DATA_ATTR DRAM_ATTR
+#ifndef OSAL_ESPIDF_FRAMEWORK
+  #define OS_ISR_FUNC_ATTR IRAM_ATTR
+  #define OS_ISR_DATA_ATTR DRAM_ATTR
+#endif  
 
 /* If socket support if not selected by compiler define, select now.
  * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
