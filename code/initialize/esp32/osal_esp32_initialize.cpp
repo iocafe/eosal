@@ -21,8 +21,8 @@
 #undef LOG_LOCAL_LEVEL
 #define LOG_LOCAL_LEVEL ESP_LOG_WARN
 
-#ifndef OSAL_ESPIDF_FRAMEWORK
 #include "esp_log.h"
+#ifndef OSAL_ESPIDF_FRAMEWORK
 #include "esp_system.h"
 #endif
 

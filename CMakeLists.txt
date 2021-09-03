@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.5)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "eosal")
+project(${E_PROJECT})
 
 # Select which TLS library, mbedtls or openssl to use for the OS.
 set(E_TLSLIB "mbedtls")
 
 # include build information common to all projects.
 include(osbuild/cmakedefs/eosal-defs.txt)
-project(${E_PROJECT})
 
 # Build individual library projects.
 add_subdirectory($ENV{E_ROOT}/eosal/dependencies/eosal_jpeg "${CMAKE_CURRENT_BINARY_DIR}/eosal_jpeg")

@@ -18,19 +18,8 @@ endmacro()
 # Espressif IoT Development Framework ***************************
 if("${IDF_TARGET}" STREQUAL "esp32")
 
-  # Create idf::esp32 and idf::freertos static libraries
-  # Try and trim the build; additional components  will be included as needed based on dependency tree
-  # although esptool_py does not generate static library, processing the component is needed for flashing
-  # related targets and file generation.
-#  idf_build_process(esp32
-#    COMPONENTS esp32 freertos esptool_py log
-
-
-
-#   set(SDKCONFIG /coderoot/eosal/build/esp-idf/menuconfig/sdkconfig)
-
-#    BUILD_DIR ${CMAKE_BINARY_DIR})
-# list(APPEND EXTRA_COMPONENT_DIRS "${CMAKE_HOME_DIRECTORY}/code")  
+# ???????????????????????????????????????????????????????????????
+  set(SDKCONFIG /coderoot/eosal/osbuild/esp-idf/menuconfig/sdkconfig)
 
   # Generic target operating system name like "esp". Used as folder name for OS specific code.
   if (NOT DEFINED ENV{E_OS})
@@ -59,11 +48,13 @@ if("${IDF_TARGET}" STREQUAL "esp32")
   endif()
 
   # Set up ESP32 include directories (this is not propably right way to do this)
-  # include_directories("/coderoot/eosal/build/esp-idf/menuconfig/build/config")
-  # include_directories("$ENV{IDF_PATH}/components/xtensa/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_common/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_rom/include")
-  # include_directories("$ENV{IDF_PATH}/components/log/include")
+  include_directories("/coderoot/eosal/osbuild/esp-idf/menuconfig")
+  include_directories("$ENV{IDF_PATH}/components/xtensa/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_common/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_rom/include")
+  include_directories("$ENV{IDF_PATH}/components/log/include")
+  include_directories("$ENV{IDF_PATH}/components/mbedtls/port/include")
+  include_directories("$ENV{IDF_PATH}/mbedtls/mbedtls/include")
 
 # Windows ***************************
 elseif(WIN32)
