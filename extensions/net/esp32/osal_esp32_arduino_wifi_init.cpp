@@ -1,12 +1,10 @@
 /**
 
-  @file    net/esp32/osal_esp32_wifi_init.cpp
-  @brief   OSAL Ardyino WiFi network initialization.
+  @file    net/esp32/osal_esp32_arduino_wifi_init.cpp
+  @brief   ESP32 WiFi network initialization for Arduino framework.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    1.3.2020
-
-  WiFi connectivity. Wifi network initialization.
+  @date    3.9.2021
 
   Features:
   - WiFiMulti to allows automatic switching between two known wifi networks. Notice that if
@@ -33,6 +31,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_ESP32
+#ifndef OSAL_ESPIDF_FRAMEWORK
 #if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_ARDUINO_WIFI_INIT
 
 /** Do we include code to automatically select one from known access points. Define 1 or 0.
@@ -477,5 +476,6 @@ void osal_socket_maintain(
 }
 #endif
 
+#endif
 #endif
 #endif

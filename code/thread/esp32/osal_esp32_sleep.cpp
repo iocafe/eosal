@@ -16,10 +16,10 @@
 #include "eosal.h"
 #ifdef OSAL_ESP32
 
-/* #if OSAL_MULTITHREAD_SUPPORT
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#endif */
+#if OSAL_MULTITHREAD_SUPPORT
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#endif 
 
 
 /**

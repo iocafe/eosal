@@ -1,7 +1,6 @@
 # eosal-defs.txt - Set cmake build environment variables common to all projects.
 # 1.9.2021/pekka
 
-
 macro(print_all_variables)
     message(STATUS "print_all_variables------------------------------------------{")
     get_cmake_property(_variableNames VARIABLES)
@@ -48,6 +47,7 @@ if("${IDF_TARGET}" STREQUAL "esp32")
   endif()
 
   # Set up ESP32 include directories (this is probably not the right way to do this).
+  # /esp32/ may need to be /esp32s3/ for new silicon?
   include_directories("/coderoot/eosal/osbuild/esp-idf/menuconfig")
   include_directories("$ENV{IDF_PATH}/components/xtensa/include")
   include_directories("$ENV{IDF_PATH}/components/esp_common/include")
@@ -58,11 +58,21 @@ if("${IDF_TARGET}" STREQUAL "esp32")
   include_directories("$ENV{IDF_PATH}/components/esp_hw_support/include")
   include_directories("$ENV{IDF_PATH}/components/soc/include")
   include_directories("$ENV{IDF_PATH}/components/soc/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/xtensa/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/hal/esp32/include")
   include_directories("$ENV{IDF_PATH}/components/spi_flash/include")
   include_directories("$ENV{IDF_PATH}/components/heap/include")
   include_directories("$ENV{IDF_PATH}/components/freertos/include")
+  include_directories("$ENV{IDF_PATH}/components/freertos/port/xtensa/include")
+  include_directories("$ENV{IDF_PATH}/components/newlib/platform_include")
+  include_directories("$ENV{IDF_PATH}/components/hal/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_hw_support/include")
   include_directories("$ENV{IDF_PATH}/components/mbedtls/port/include")
   include_directories("$ENV{IDF_PATH}/mbedtls/mbedtls/include")
+  include_directories("$ENV{IDF_PATH}/components/lwip/port/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/lwip/lwip/src/include")
+  include_directories("$ENV{IDF_PATH}/components/nvs_flash/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_event/include")
 
 # Windows ***************************
 elseif(WIN32)
