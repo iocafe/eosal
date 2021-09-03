@@ -275,7 +275,7 @@
 #define OSAL_SUPPORT_MAC_CONF 0
 #endif
 
-/** Include code for WiFI network onfiguration?
+/** Include code for WiFI network configuration?
  */
 #ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
 #define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_SOCKET_SUPPORT
@@ -292,7 +292,7 @@
 #endif
 
 /** Calling "maintain socket" is periodically necessary in some single thread mode
-    network implemntations. This may be necessary to keep up with DHCP leases, etc.
+    network implementations. This may be necessary to keep up with DHCP leases, etc.
  */
 #ifndef OSAL_SOCKET_MAINTAIN_NEEDED
   #if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_WIZ ||  OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_LWIP
@@ -388,10 +388,10 @@
 #define OSAL_TYPEID_SUPPORT 1
 #endif
 
-/** OSAL extensions: Define 0 if there is no perststant storage support. Define 1 to use the
-    default persistant storage implemetation for the platform. Values >= 2 select alternate
-    persistant storage implemetations, for example if we have EEPROM chip on STM32F407 board.
-    The alternate implementation numbers are platform specific and the C implemetations may
+/** OSAL extensions: Define 0 if there is no persistent  storage support. Define 1 to use the
+    default persistant storage implementation for the platform. Values >= 2 select alternate
+    persistant storage implementations, for example if we have EEPROM chip on STM32F407 board.
+    The alternate implementation numbers are platform specific and the C implementations may
     be board specific.
  */
 #ifndef OSAL_PERSISTENT_SUPPORT

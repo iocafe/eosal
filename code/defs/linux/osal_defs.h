@@ -266,7 +266,7 @@
 #define OSAL_SUPPORT_MAC_CONF 0
 #endif
 
-/** Include code for WiFI network onfiguration?
+/** Include code for WiFI network configuration?
  */
 #ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
 #define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_SOCKET_SUPPORT
@@ -387,9 +387,9 @@
 #endif
 
 /** OSAL extensions: Define 0 if there is no perststant storage support. Define 1 to use the
-    default persistant storage implemetation for the platform. Values >= 2 select alternate
-    persistant storage implemetations, for example if we have EEPROM chip on STM32F407 board.
-    The alternate implementation numbers are platform specific and the C implemetations may
+    default persistant storage implementation for the platform. Values >= 2 select alternate
+    persistant storage implementations, for example if we have EEPROM chip on STM32F407 board.
+    The alternate implementation numbers are platform specific and the C implementations may
     be board specific.
  */
 #ifndef OSAL_PERSISTENT_SUPPORT

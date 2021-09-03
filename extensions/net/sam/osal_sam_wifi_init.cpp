@@ -146,7 +146,7 @@ static String DisplayAddress(IPAddress address)
   because wifi SSID (wifi net name) and password are required to connect.
 
   @param   nic Pointer to array of network interface structures. A network interface is needed,
-           and The arduino Wifi implemetation
+           and The arduino Wifi implementation
            supports only one network interface.
   @param   n_nics Number of network interfaces in nic array. 1 or more, only first NIC used.
   @param   wifi Pointer to array of WiFi network structures. This contains wifi network name (SSID)
