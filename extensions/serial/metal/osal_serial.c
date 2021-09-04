@@ -442,7 +442,7 @@ void osal_serial_close(
 ****************************************************************************************************
 
   Some implementations of the osal_serial_flush() function flushes data to be written to stream
-  or clear the transmit/receive buffers. The Arguino implementation can clear RX and TX buffers.
+  or clear the transmit/receive buffers. The Arduino implementation can clear RX and TX buffers.
 
   IMPORTANT, GENERALLY FLUSH MUST BE CALLED: The osal_stream_flush(<stream>, OSAL_STREAM_DEFAULT)
   must be called when select call returns even after writing or even if nothing was written, or

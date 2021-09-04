@@ -52,7 +52,7 @@ static void osal_jpeg_disaster_exit(
   @param   src_buf Pointer to source JPEG data.
   @param   src_nbytes Size of JPEG data in bytes.
   @param   dst_nbytes Pointer where to store resulting JPEG size upon successful compression.
-  @oaram   alloc_context Sturcture for managing allocation. Clear before calling this structure
+  @param   alloc_context Sturcture for managing allocation. Clear before calling this structure
            and optionally set buf and buf_sz.
            Calling application can optionally set row_nbytes and format in alloc_context
            structure: row_nbytes is needed bitmap rows are aligned to even, etc memory addressess,

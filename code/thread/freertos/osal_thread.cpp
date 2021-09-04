@@ -327,7 +327,7 @@ void osal_thread_join(
 ****************************************************************************************************
 
   @brief Suspend thread execution until end of time slice.
-  @anchor os_sleep
+  @anchor osal_sleep
 
   The os_timeslice() function suspends the execution of the current thread for a very short
   period, typically until end of processor time slice. If multi-threading is not supported,

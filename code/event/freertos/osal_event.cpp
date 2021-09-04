@@ -63,7 +63,7 @@ osalEvent osal_event_create(
 #if OSAL_OS_EVENT_LIST_SUPPORT
     osalFreeRtosEvent *evnt;
 
-    /* Allocate event handle stricture and mark it initially not signaled. Pipes are not
+    /* Allocate event handle structure and mark it initially not signaled. Pipes are not
      * created by default.
      */
     evnt = (osalFreeRtosEvent*)osal_sysmem_alloc(sizeof(osalFreeRtosEvent), OS_NULL);
@@ -72,7 +72,7 @@ osalEvent osal_event_create(
     }
     os_memclear(evnt, sizeof(osalFreeRtosEvent));
 
-    /* Use semaphora as event
+    /* Use semaphore as event
      */
     evnt->m = xSemaphoreCreateBinary();
     if (evnt->m == NULL)
@@ -93,7 +93,7 @@ osalEvent osal_event_create(
 #else
     SemaphoreHandle_t m;
 
-    /* Use semaphora as event
+    /* Use semaphore as event
      */
     m = xSemaphoreCreateBinary();
     if (m == NULL)
@@ -224,7 +224,7 @@ void OS_ISR_FUNC_ATTR osal_event_set(
 
   @param   evnt Event pointer returned by osal_event_create() function.
   @param   timeout_ms Wait timeout. If event is not signaled within this time, then the
-           function will return OSAL_STATUS_TIMEOUT. To wait infinetly give
+           function will return OSAL_STATUS_TIMEOUT. To wait infinitely give
            OSAL_EVENT_INFINITE (-1) here. To check event state and to reset event to non
            signaled state without waiting set timeout_ms to 0.
 
@@ -257,7 +257,7 @@ osalStatus osal_event_wait(
     return ((xSemaphoreTake(((osalFreeRtosEvent*)evnt)->m, tout_ticks) == pdTRUE)
             ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
 #else
-    return ((xSemaphoreTake(evnt, tout_ticks) == pdTRUE)
+    return ((xSemaphoreTake((QueueHandle_t)evnt, tout_ticks) == pdTRUE)
             ? OSAL_SUCCESS : OSAL_STATUS_TIMEOUT);
 #endif
 }

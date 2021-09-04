@@ -59,11 +59,11 @@ void osal_attached_thread_example(void)
 
     /* Do the work, not much here.
      */
-    os_sleep(5000);
+    osal_sleep(5000);
     osal_console_write("parent thread runs\n");
-    os_sleep(500);
+    osal_sleep(500);
     osal_event_set(myprm.thread_event);
-    os_sleep(5000);
+    osal_sleep(5000);
 
     /* Request the worker thread to exit and wait until done.
      */

@@ -39,3 +39,11 @@ file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
 # Generate the static library
 # add_library(${E_PROJECT}${E_POSTFIX} STATIC ${MAIN_HEADERS} ${BB_CM_HEADERS} ${BB_OS_HEADERS} ${EX_CM_HEADERS} ${EX_OS_HEADERS} ${BB_CM_SOURCES} ${BB_OS_SOURCES} ${EX_CM_SOURCES} ${EX_OS_SOURCES})
+
+
+# component_compile_options("-DINCLUDE_vTaskDelay=1")
+
+
+# idf_build_set_property(COMPILE_OPTIONS "-DINCLUDE_vTaskDelay=1" APPEND)
+
+# add_definitions("-DINCLUDE_vTaskDelay=1")

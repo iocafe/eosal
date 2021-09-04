@@ -115,7 +115,7 @@ static void mythread_func(
             else
             {
                 osal_debug_error("connect failed");
-                os_sleep(100);
+                osal_sleep(100);
                 continue;
             }
         }

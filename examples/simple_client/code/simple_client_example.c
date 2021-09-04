@@ -98,7 +98,7 @@ osalStatus osal_main(
 {
     osalWifiNetwork wifi;
 
-    os_sleep(7000);
+    osal_sleep(7000);
 
     os_memclear(&wifi, sizeof(wifi));
 

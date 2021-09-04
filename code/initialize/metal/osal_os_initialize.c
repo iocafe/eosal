@@ -76,7 +76,7 @@ void osal_shutdown_os_specific(
 void osal_reboot(
     os_int flags)
 {
-    os_sleep(200);
+    osal_sleep(200);
     NVIC_SystemReset();
 }
 

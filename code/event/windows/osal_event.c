@@ -52,7 +52,7 @@ osalEvent osal_event_create(
 {
     osalWindowsEvent *evnt;
 
-    /* Allocate event handle stricture and mark it initially not signaled. Pipes are not
+    /* Allocate event handle structure and mark it initially not signaled. Pipes are not
      * created by default.
      */
     evnt = (osalWindowsEvent*)osal_sysmem_alloc(sizeof(osalWindowsEvent), OS_NULL);
@@ -187,7 +187,7 @@ void osal_event_set(
 
   @param   evnt Event pointer returned by osal_event_create() function.
   @param   timeout_ms Wait timeout. If event is not signaled within this time, then the
-           function will return OSAL_STATUS_TIMEOUT. To wait infinetly give
+           function will return OSAL_STATUS_TIMEOUT. To wait infinitely give
            OSAL_EVENT_INFINITE (-1) here. To check event state or to reset event to non
            signaled state without waiting set timeout_ms to 0.
 

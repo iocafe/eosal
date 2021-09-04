@@ -252,7 +252,7 @@ os_int osal_thread_priority_to_sys_priority(
  */
 /* Suspend thread execution for a specific time, milliseconds.
  */
-void os_sleep(
+void osal_sleep(
     os_long time_ms);
 
 /* Suspend thread execution for a specific time, microseconds.

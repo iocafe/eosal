@@ -41,7 +41,7 @@ osalStatus osal_main(
     os_int argc,
     os_char *argv[])
 {
-    // os_sleep(7000);
+    // osal_sleep(7000);
     osal_detached_thread_example();
     // osal_attached_thread_example();
     // return osal_int64_test(argc, argv);

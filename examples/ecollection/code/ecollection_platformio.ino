@@ -1,8 +1,4 @@
-#include <Arduino.h>
 #include <eosalx.h>
-#if OSAL_MULTITHREAD_SUPPORT
-#include <FreeRTOS.h>
-#endif
 
 /*
   ecollection_platformio.ino
@@ -30,6 +26,6 @@ void loop()
     /* ESP-IDF 3.X/MELIFE test board : We cannot write too fast through WiFi, WiFi will lock up.
      */
 #ifdef ESP_PLATFORM
-    os_sleep(20);
+    osal_sleep(20);
 #endif
 }

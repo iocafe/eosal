@@ -26,9 +26,9 @@
 ****************************************************************************************************
 
   @brief Suspend thread execution for a specific time, milliseconds.
-  @anchor os_sleep
+  @anchor osal_sleep
 
-  The os_sleep() function suspends the execution of the current thread for a specified
+  The osal_sleep() function suspends the execution of the current thread for a specified
   interval. The function is used for both to create timed delays and to force scheduler to give
   processor time to lower priority threads. If time_ms is zero the function suspends execution
   of the thread until end of current processor time slice.
@@ -39,7 +39,7 @@
 
 ****************************************************************************************************
 */
-void os_sleep(
+void osal_sleep(
     os_long time_ms)
 {
 #if OSAL_MULTITHREAD_SUPPORT
@@ -75,7 +75,7 @@ void os_microsleep(
     os_long time_us)
 {
 #if OSAL_MULTITHREAD_SUPPORT
-    os_sleep(time_us / (portTICK_PERIOD_MS * 1000));
+    osal_sleep(time_us / (portTICK_PERIOD_MS * 1000));
 #else
     delay(time_us / 1000);
 #endif

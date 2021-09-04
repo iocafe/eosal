@@ -304,7 +304,7 @@ getout:
   @brief Close socket.
   @anchor osal_socket_close
 
-  The osal_socket_close() function closes a socket, which was creted by osal_socket_open()
+  The osal_socket_close() function closes a socket, which was created by osal_socket_open()
   function. All resource related to the socket are freed. Any attempt to use the socket after
   this call may result crash.
 

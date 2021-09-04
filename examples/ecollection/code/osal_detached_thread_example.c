@@ -57,7 +57,7 @@ void osal_detached_thread_example(void)
      */
     for (i = 0; i < 10; i++) {
         osal_console_write("detached thread example running\n");
-        os_sleep(1000);
+        osal_sleep(1000);
     }
 
     osal_console_write("detached thread example exited\n");

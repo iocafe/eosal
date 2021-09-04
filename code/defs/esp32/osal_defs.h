@@ -28,12 +28,11 @@
 
 #ifndef OSAL_ESPIDF_FRAMEWORK
   #include "Arduino.h"
-  #if OSAL_MULTITHREAD_SUPPORT
-    #include "freertos/FreeRTOS.h"
-    #include "freertos/task.h"
-  #endif
-  #include "esp_timer.h"
 #endif  
+#if OSAL_MULTITHREAD_SUPPORT
+  #include "freertos/FreeRTOS.h"
+  #include "freertos/task.h"
+#endif
 
 /* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.

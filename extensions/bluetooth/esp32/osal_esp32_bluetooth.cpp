@@ -98,7 +98,7 @@ static void osal_bluetooth_close(
 ****************************************************************************************************
 
   Some implementations of the osal_bluetooth_flush() function flushes data to be written to stream
-  or clear the transmit/receive buffers. The Arguino implementation can clear RX and TX buffers.
+  or clear the transmit/receive buffers. The Arduino implementation can clear RX and TX buffers.
 
   @param   stream Stream pointer representing the bluetooth port.
   @param   flags Bit fields. OSAL_STREAM_CLEAR_RECEIVE_BUFFER clears receive

@@ -165,8 +165,28 @@ void osal_reboot(
     osal_control_interrupts(OS_FALSE);
 #endif
 
-    os_sleep(200);
+    osal_sleep(200);
     esp_restart();
 }
 
+
+#ifdef OSAL_DUMMY_ESPIDF_APP_MAIN
+/**
+****************************************************************************************************
+
+  @brief Dummy main function to allow testing eosal ESPIDF build configuration.
+  @anchor app_main
+
+  Dummy app_main() function allows compiling eosal separately as application (which does
+  nothing) and allows to test ESPIDF/platformio build.
+
+****************************************************************************************************
+*/
+extern "C" void app_main(void)
+{
+    osal_initialize(OSAL_INIT_DEFAULT);
+}
 #endif
+
+#endif
+

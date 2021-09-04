@@ -52,7 +52,7 @@
   @name Debug Functions
 
   These functions exists only when compiling with nonzero OSAL_DEBUG define. If the define
-  is zero, empty macros will take palce of these functions.
+  is zero, empty macros will take place of these functions.
 
 ****************************************************************************************************
  */

@@ -92,7 +92,7 @@ void osal_reboot(
 {
 #if OSAL_INTERRUPT_LIST_SUPPORT
     osal_control_interrupts(OS_FALSE);
-    os_sleep(200);
+    osal_sleep(200);
 #endif
 
 

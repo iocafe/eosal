@@ -13,9 +13,8 @@
 
 ****************************************************************************************************
 */
-#include "eosal.h"
+#include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "eosal_jpeg.h"
 
 /* If needed for the operating system, EOSAL_C_MAIN macro generates the actual C main() function.
  */
@@ -89,7 +88,7 @@ osalStatus osal_loop(
     os_free(alloc_context.buf, alloc_context.buf_sz);
 
     os_free(jpeg_buf, jpeg_sz);
-    os_sleep(10);
+    osal_sleep(10);
     return OSAL_SUCCESS;
 }
 

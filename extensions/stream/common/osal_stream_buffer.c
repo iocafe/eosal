@@ -395,7 +395,10 @@ const osalStreamInterface osal_stream_buffer_iface
     osal_stream_buffer_seek,
     osal_stream_buffer_write,
     osal_stream_buffer_read,
-    osal_stream_default_select};
+    osal_stream_default_select,
+    OS_NULL,
+    OS_NULL
+    };
 
 #endif
 

@@ -338,7 +338,7 @@ static int osal_verify_certificate_callback(
   @brief Close socket.
   @anchor osal_mbedtls_close
 
-  The osal_mbedtls_close() function closes a socket, which was creted by osal_mbedtls_open()
+  The osal_mbedtls_close() function closes a socket, which was created by osal_mbedtls_open()
   function. All resource related to the socket are freed. Any attempt to use the socket after
   this call may result crash.
 
@@ -457,7 +457,7 @@ static osalStream osal_mbedtls_accept(
     os_memclear(newso, sizeof(osalTlsSocket));
 
     /* Save socket stucture pointer, open flags and interface pointer.
-     * Set alwys OSAL_STREAM_LISTEN flag. We use it to decide how to do handshake.
+     * Set always OSAL_STREAM_LISTEN flag. We use it to decide how to do handshake.
      */
     t = osal_global->tls;
     newso->tcpsocket = tcpsocket;
@@ -913,7 +913,7 @@ static void osal_mbedtls_init(
   @param   default_block_nr If reading from persistent storage, this is default block
            number for the case when file name doesn't specify one.
   @param   cert_dir Directory from where certificates are read, if using file system.
-  @oaram   file_name Specifies file name or persistent block number.
+  @param   file_name Specifies file name or persistent block number.
   @return  OSAL_SUCCESS if certificate or key was loaded. Other return values indicate that it
            was not loaded (missing or error).
 
@@ -1085,8 +1085,8 @@ static void osal_mbedtls_cleanup(void)
   The osal_net_recv() function implement BIO (basic IO) receive function for Mbed TLS. This reads
   data to underlying socket trough eosal stream interface.
 
-  @param   ctx The eosal strem for TCP socket.
-  @oaram   buf The buffer to where to store the data.
+  @param   ctx The eosal stream for TCP socket.
+  @param   buf The buffer to where to store the data.
   @param   len Size of the buffer.
 
   @return  The number of bytes received, or a non-zero error code. With a non-blocking
@@ -1133,8 +1133,8 @@ static int osal_net_recv(
   The osal_net_send() function implement BIO (basic IO) send function for Mbed TLS. This sends
   data to underlying socket trough eosal stream interface.
 
-  @param   ctx The eosal strem for TCP socket.
-  @oaram   buf Pointer to data to send.
+  @param   ctx The eosal stream for TCP socket.
+  @param   buf Pointer to data to send.
   @param   len Size of the buffer.
 
   @return  The number of bytes sent, or a non-zero error code; with a non-blocking socket,
@@ -1314,9 +1314,11 @@ OS_CONST osalStreamInterface osal_tls_iface
     osal_mbedtls_write,
     osal_mbedtls_read,
 #if OSAL_SOCKET_SELECT_SUPPORT
-    osal_mbedtls_select};
+    osal_mbedtls_select,
 #else
-    osal_stream_default_select};
+    osal_stream_default_select,
 #endif
+    OS_NULL,
+    OS_NULL};
 
 #endif

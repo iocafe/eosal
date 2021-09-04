@@ -82,15 +82,19 @@ os_double osal_str_to_double(
 	{             
 		case '-': 
 			negative = 1; 
-			/* Fall through to increment position.
+
+			/* Fall through to increment position (without compiler warning).
 			 */
+			goto nowhere;
 
 		case '+': 
+		nowhere:
 			p++;
 
 			/* Skip white space between sign and first digit.
 			 */
 			while (osal_char_isspace(*p)) p++;
+			break;
 	}
 
 	number = 0.;
@@ -144,11 +148,12 @@ os_double osal_str_to_double(
 		{   
 			case '-': 
 				negative = 1;   
-				/* Fall through to increment pos.
-				 */
+				p++;
+				break;			
 
 			case '+': 
 				p++;
+				break;			
 		}
 
 		/* Process string of digits.

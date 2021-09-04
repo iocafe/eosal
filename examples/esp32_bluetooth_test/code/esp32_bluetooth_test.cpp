@@ -47,7 +47,7 @@ osalStatus osal_loop(
     void *app_context)
 {
     SerialBT.println("Hello World");
-    os_sleep(1000);
+    osal_sleep(1000);
 
     return OSAL_SUCCESS;
 }

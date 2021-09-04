@@ -53,11 +53,11 @@ osalStatus osal_timer_test(
         os_timeslice();
     }
 
-    osal_debug_error("Starting os_sleep() test, press 'x' to quit (takes up to 10 seconds)");
+    osal_debug_error("Starting osal_sleep() test, press 'x' to quit (takes up to 10 seconds)");
     while (osal_console_read() != 'x')
     {
         os_get_timer(&start_t);
-        os_sleep(10000);
+        osal_sleep(10000);
         os_get_timer(&end_t);
         elapsed_ms = os_get_ms_elapsed(&start_t, &end_t);
 
