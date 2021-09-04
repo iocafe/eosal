@@ -29,7 +29,6 @@
 #include "esp_heap_caps.h"
 #include "soc/rtc_wdt.h"
 
-
 /* Prototypes of forward referred static functions.
  */
 static void osal_print_esp32_info(
@@ -92,16 +91,16 @@ void osal_init_os_specific(
 
     /* Print amount of heap and PS ram
      */
-#ifdef OSAL_ESPIDF_FRAMEWORK
-    osal_print_esp32_info("Total heap:  ", (os_long)heap_caps_get_total_size(MALLOC_CAP_8BIT));
-    osal_print_esp32_info("Free heap:   ", (os_long)heap_caps_get_free_size(MALLOC_CAP_8BIT));
-    osal_print_esp32_info("Total PSRAM: ", (os_long)heap_caps_get_total_size(MALLOC_CAP_SPIRAM)); 
-    osal_print_esp32_info("Free PSRAM:  ", (os_long)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
-#else
+#ifndef OSAL_ESPIDF_FRAMEWORK
     osal_print_esp32_info("Total heap:  ", (os_long)ESP.getHeapSize());
     osal_print_esp32_info("Free heap:   ", (os_long)ESP.getFreeHeap());
     osal_print_esp32_info("Total PSRAM: ", (os_long)ESP.getPsramSize());
     osal_print_esp32_info("Free PSRAM:  ", (os_long)ESP.getFreePsram());
+#else
+    osal_print_esp32_info("Total heap:  ", (os_long)heap_caps_get_total_size(MALLOC_CAP_8BIT));
+    osal_print_esp32_info("Free heap:   ", (os_long)heap_caps_get_free_size(MALLOC_CAP_8BIT));
+    osal_print_esp32_info("Total PSRAM: ", (os_long)heap_caps_get_total_size(MALLOC_CAP_SPIRAM)); 
+    osal_print_esp32_info("Free PSRAM:  ", (os_long)heap_caps_get_free_size(MALLOC_CAP_SPIRAM)); 
 #endif    
     osal_console_write("\n");
 }

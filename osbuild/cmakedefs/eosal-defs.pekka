@@ -25,7 +25,7 @@ if("${IDF_TARGET}" STREQUAL "esp32")
     set(ENV{E_OS} "esp32")
   endif()
 
-  # Target operating system version "esp32" is used as name for binary folders and as part of
+  # Target operating system version "esp32" is used as name for banary folders and as part of
   # the installation package name.
   if (NOT DEFINED ENV{E_OSVER})
     set(ENV{E_OSVER} "espidf")
@@ -48,42 +48,41 @@ if("${IDF_TARGET}" STREQUAL "esp32")
 
   # Set up ESP32 include directories (this is probably not the right way to do this).
   # /esp32/ may need to be /esp32s3/ for new silicon?
-  
-  # include_directories("/coderoot/eosal/osbuild/esp-idf/menuconfig")
-  # include_directories("$ENV{IDF_PATH}/components/xtensa/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_common/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_rom/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_system/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_timer/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_pm/include")
-  # include_directories("$ENV{IDF_PATH}/components/log/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_hw_support/include")
-  # include_directories("$ENV{IDF_PATH}/components/soc/include")
-  # include_directories("$ENV{IDF_PATH}/components/soc/esp32/include")
-  # include_directories("$ENV{IDF_PATH}/components/xtensa/esp32/include")
-  # include_directories("$ENV{IDF_PATH}/components/hal/esp32/include")
-  # include_directories("$ENV{IDF_PATH}/components/spi_flash/include")
-  # include_directories("$ENV{IDF_PATH}/components/heap/include")
-  # include_directories("$ENV{IDF_PATH}/components/freertos/include")
-  # include_directories("$ENV{IDF_PATH}/components/freertos/port/xtensa/include")
-  # include_directories("$ENV{IDF_PATH}/components/newlib/platform_include")
-  # include_directories("$ENV{IDF_PATH}/components/hal/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_hw_support/include")
-  # include_directories("$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
-  # include_directories("$ENV{IDF_PATH}/components/mbedtls/port/include")
-  # include_directories("$ENV{IDF_PATH}/components/lwip/port/esp32/include")
-  # include_directories("$ENV{IDF_PATH}/components/lwip/lwip/src/include")
-  # include_directories("$ENV{IDF_PATH}/components/nvs_flash/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_event/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_wifi/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_netif/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_eth/include")
-  # include_directories("$ENV{IDF_PATH}/components/tcpip_adapter/include")
-  # include_directories("$ENV{IDF_PATH}/components/lwip/include/apps")
-  # include_directories("$ENV{IDF_PATH}/components/driver/include")
-  # include_directories("$ENV{IDF_PATH}/components/app_update/include")
-  # include_directories("$ENV{IDF_PATH}/components/esp_ringbuf/include")
-  # include_directories("$ENV{IDF_PATH}/components/bootloader_support/include")
+  include_directories("/coderoot/eosal/osbuild/esp-idf/menuconfig")
+  include_directories("$ENV{IDF_PATH}/components/xtensa/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_common/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_rom/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_system/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_timer/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_pm/include")
+  include_directories("$ENV{IDF_PATH}/components/log/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_hw_support/include")
+  include_directories("$ENV{IDF_PATH}/components/soc/include")
+  include_directories("$ENV{IDF_PATH}/components/soc/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/xtensa/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/hal/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/spi_flash/include")
+  include_directories("$ENV{IDF_PATH}/components/heap/include")
+  include_directories("$ENV{IDF_PATH}/components/freertos/include")
+  include_directories("$ENV{IDF_PATH}/components/freertos/port/xtensa/include")
+  include_directories("$ENV{IDF_PATH}/components/newlib/platform_include")
+  include_directories("$ENV{IDF_PATH}/components/hal/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_hw_support/include")
+  include_directories("$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
+  include_directories("$ENV{IDF_PATH}/components/mbedtls/port/include")
+  include_directories("$ENV{IDF_PATH}/components/lwip/port/esp32/include")
+  include_directories("$ENV{IDF_PATH}/components/lwip/lwip/src/include")
+  include_directories("$ENV{IDF_PATH}/components/nvs_flash/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_event/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_wifi/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_netif/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_eth/include")
+  include_directories("$ENV{IDF_PATH}/components/tcpip_adapter/include")
+  include_directories("$ENV{IDF_PATH}/components/lwip/include/apps")
+  include_directories("$ENV{IDF_PATH}/components/driver/include")
+  include_directories("$ENV{IDF_PATH}/components/app_update/include")
+  include_directories("$ENV{IDF_PATH}/components/esp_ringbuf/include")
+  include_directories("$ENV{IDF_PATH}/components/bootloader_support/include")
 
 # Windows ***************************
 elseif(WIN32)
@@ -152,7 +151,7 @@ else()
   endif()
 
   # Generic target operating system version "win32", "win64", "ubuntu16064", "linux", etc.
-  # Used as name for binary folders and as part of installation package name.
+  # Used as name for banary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
     if ($ENV{E_ARCH} MATCHES "arm")
       set(ENV{E_OSVER} "pi")
@@ -184,14 +183,9 @@ else()
   set(E_POSTFIX "")
 endif()
 
-#  KEKEKKEKEKEKEK
-
-
-
-# Include paths. KEKEKKEKEKEKEK
-# message(FATAL_ERROR "HERE ********** $ENV{E_ROOT}/eosal")
-# include_directories("$ENV{E_ROOT}/eosal")
-# include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
+# Include paths.
+include_directories("$ENV{E_ROOT}/eosal")
+include_directories("$ENV{E_ROOT}/eosal/dependencies/eosal_jpeg")
 
 # Library path.
 set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
@@ -244,12 +238,9 @@ if($ENV{E_OS} STREQUAL "espidf")
 endif()
 
 # Add defines to indicate target operating system and target OS version (at level needed for build).
-
-
-#  KEKEKKEKEKEKEK
-# add_definitions(-DE_OS_$ENV{E_OS})
-# add_definitions(-DE_OSVER_$ENV{E_OSVER})
-# add_definitions(-DE_ARCH_$ENV{E_ARCH})
+add_definitions(-DE_OS_$ENV{E_OS})
+add_definitions(-DE_OSVER_$ENV{E_OSVER})
+add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
 # Add gcc compiler warnings and -fPIC (position independent code) flags.
 if($ENV{E_COMPILER} MATCHES "(gcc)")

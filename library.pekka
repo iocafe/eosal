@@ -1,0 +1,28 @@
+{
+  "name": "eosal",
+  "version": "1.0.0",
+  "keywords": "abstraction, os, osal",
+  "description": "Operating system abstraction layer",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/iocafe/eosal.git"
+  },
+  "frameworks": [
+     "arduino", 
+     "espidf"
+  ],
+  "platforms": [
+    "teensy", 
+    "stm32",
+    "esp32"
+  ],
+  
+  "build": {
+    "srcFilter": [
+      "+<code/*>",
+      "+<extensions/*>"
+    ],
+    "libLDFMode" : "chain"
+  }
+}

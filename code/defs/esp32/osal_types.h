@@ -28,11 +28,10 @@
 /*@{*/
 
 /** 8 bit signed character. In practise this is always same as char, one byte.
-    We use #define instead of typedef for character type, since enables debuggger
+    We use #define instead of typedef for character type, since enables debugger
     to show whole string, not just the first character.
  */
 #define os_char char
-/* WAS: typedef char os_char; */
 
 /** 8 bit signed character. This is forced to be always signed. Use this for type conversions
     instead of os_char.
@@ -80,7 +79,7 @@ typedef unsigned long os_ulong;
 #endif
 
 /** 64 bit signed integer. If OS/compiler doesn't support 64 integers, then os_longlong is
-    undefined. (The os_longlong/os_ulonglogn should not be used in application.
+    undefined. (The os_longlong/os_ulonglong should not be used in application.
     Use type os_int64 if you need always 64 bit byte)
     For older Microsoft compilers this is "__int64" and for GNU and most new compilers "long long".
  */
@@ -118,7 +117,7 @@ typedef void *os_pointer;
    all hardware architectures. Notes:
    - Rare microcontroller environments have no compiler 64 bit integer
      support -> the OS_LONG_MIN and OS_LONG_MAX will not work. Avoid using
-     these in code whicn needs to run in such environments.
+     these in code which needs to run in such environments.
    - Avoid using OS_FLOAT_MAX and OS_DOUBLE_MAX. These are floating point
      hardware specififc (values here work for most, but not all).
    - For now some defines are missing. These may be added later.

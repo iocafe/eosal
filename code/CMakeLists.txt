@@ -1,19 +1,28 @@
+# ESP-IDF build only: The second CMakeLists.txt in src_dir is responsible for controlling 
+# the build process of the component and its integration into the overall project. 
+# The minimal component CMakeLists.txt file simply registers the component to the build 
+# system using idf_component_register 
+#
+# idf_component_register(SRCS "main.c" INCLUDE_DIRS "" REQUIRES idf::mbedtls)
+
+# idf_component_register(SRCS "osal_espidf_dummy_app_main.c" "*/esp32/*.cpp" INCLUDE_DIRS "." REQUIRES idf::mbedtls REQUIRES "idf::log" REQUIRES "idf::freertos" REQUIRES "idf::esp_system")
+
 # The following lines of boilerplate have to be in your project's CMakeLists
 # in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16.0)
 
-include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-# project(project-name)
+# include($ENV{IDF_PATH}/tools/cmake/idf.cmake)
 
 set(E_PROJECT "eosal")
-project(${E_PROJECT})
 
 # include build information common to all projects.
-include(osbuild/cmakedefs/eosal-defs.txt)
+set(ENV{E_ROOT} "/coderoot")
+set(ENV{E_OS} "esp32")
+include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs.txt")
 
 # Set path to where to keep libraries.
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
+# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
 
 # Select which TLS library, mbedtls or openssl to use for the OS.
 set(E_TLSLIB "mbedtls")
@@ -37,5 +46,13 @@ file(GLOB BB_OS_HEADERS "${BACKBONE}/*/$ENV{E_OS}/*.h")
 file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c")
 file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
-# Generate the static library
-# add_library(${E_PROJECT}${E_POSTFIX} STATIC ${MAIN_HEADERS} ${BB_CM_HEADERS} ${BB_OS_HEADERS} ${EX_CM_HEADERS} ${EX_OS_HEADERS} ${BB_CM_SOURCES} ${BB_OS_SOURCES} ${EX_CM_SOURCES} ${EX_OS_SOURCES})
+
+set(srcs "osal_espidf_dummy_app_main.c")
+
+list(APPEND srcs ${BB_CM_SOURCES})
+list(APPEND srcs ${EX_CM_SOURCES})
+list(APPEND srcs ${BB_OS_SOURCES})
+list(APPEND srcs ${EX_OS_SOURCES})
+# message(FATAL_ERROR "HERE ********** ${srcs}")
+ 
+idf_component_register(SRCS "${srcs}" INCLUDE_DIRS "." REQUIRES "idf::mbedtls" REQUIRES "idf::log" REQUIRES "idf::freertos")

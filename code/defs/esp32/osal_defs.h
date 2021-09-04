@@ -28,18 +28,20 @@
 
 #ifndef OSAL_ESPIDF_FRAMEWORK
   #include "Arduino.h"
+  #if OSAL_MULTITHREAD_SUPPORT
+    #include "freertos/FreeRTOS.h"
+    #include "freertos/task.h"
+  #endif
+  #include "esp_timer.h"
 #endif  
-#if OSAL_MULTITHREAD_SUPPORT
-  #include "freertos/FreeRTOS.h"
-#endif
 
 /* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.
  */
 #if defined __has_include
-#if __has_include ("eosal_esp_config.h")
-#include "eosal_esp_config.h"
-#endif
+  #if __has_include ("eosal_esp_config.h")
+    #include "eosal_esp_config.h"
+  #endif
 #endif
 
 /* If we want the default defines for a minimalistic serial communication device.
@@ -210,7 +212,6 @@
 #ifndef OSAL_TIMER_IS_64_BITS
 #define OSAL_TIMER_IS_64_BITS OSAL_COMPILER_HAS_64_BIT_INTS
 #endif
-
 
 /** OSAL proces cleanup code needed flag. If OSAL_PROCESS_CLEANUP_SUPPORT flags is nonzero,
     then code to do memory, etc. cleanup when process exists or restarts is included.
