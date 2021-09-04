@@ -17,8 +17,8 @@
 #define JPEG_INTERNALS
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "code/jinclude.h"
-#include "code/jpeglib.h"
+#include "extensions/jpeg/common/jinclude.h"
+#include "extensions/jpeg/common/jpeglib.h"
 
 /* Block smoothing is only applicable for progressive JPEG, so: */
 #ifndef D_PROGRESSIVE_SUPPORTED

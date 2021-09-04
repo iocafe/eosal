@@ -12,7 +12,7 @@
  * machine-dependent tuning (e.g., assembly coding).
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 /*
  * A forward DCT routine is given a pointer to a work area of type DCTELEM[];
@@ -176,4 +176,4 @@ EXTERN(void) jpeg_idct_1x1
 #define MULTIPLY16V16(var1,var2)  ((var1) * (var2))
 #endif
 
-#endif
+// #endif

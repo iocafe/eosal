@@ -28,9 +28,9 @@
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
 #define AM_MEMORY_MANAGER	/* we define jvirt_Xarray_control structs */
-#include "code/jinclude.h"
-#include "code/jpeglib.h"
-#include "code/jmemsys.h"		/* import the system-dependent declarations */
+#include "extensions/jpeg/common/jinclude.h"
+#include "extensions/jpeg/common/jpeglib.h"
+#include "extensions/jpeg/common/jmemsys.h"		/* import the system-dependent declarations */
 
 
 /*

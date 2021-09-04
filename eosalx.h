@@ -118,6 +118,11 @@ OSAL_C_HEADER_BEGINS
   #include "extensions/cpuid/common/osal_cpuid.h"
 #endif
 
+#if OSAL_USE_JPEG_LIBRARY
+  #include "extensions/jpeg/common/eosal_jpeg.h"
+#endif
+
+
 /* If C++ compilation, end the undecorated code.
  */
 OSAL_C_HEADER_ENDS

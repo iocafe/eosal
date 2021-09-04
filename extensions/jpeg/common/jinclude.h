@@ -19,7 +19,7 @@
 
 /* Include auto-config file to find out which system include files we need. */
 
-#include "code/jconfig.h"		/* auto configuration options */
+#include "extensions/jpeg/common/jconfig.h"		/* auto configuration options */
 #define JCONFIG_INCLUDED	/* so that jpeglib.h doesn't do it again */
 
 #include "eosal.h"

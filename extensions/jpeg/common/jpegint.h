@@ -10,7 +10,7 @@
  * applications using the library shouldn't need to include this file.
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 /* Declarations for both compression & decompression */
 
@@ -392,4 +392,4 @@ struct jvirt_barray_control { long dummy; };
 #endif
 #endif /* INCOMPLETE_TYPES_BROKEN */
 
-#endif
+// #endif

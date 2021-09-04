@@ -48,8 +48,8 @@
 #define JPEG_INTERNALS
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "code/jinclude.h"
-#include "code/jpeglib.h"
+#include "extensions/jpeg/common/jinclude.h"
+#include "extensions/jpeg/common/jpeglib.h"
 
 
 /* Pointer to routine to downsample a single component */

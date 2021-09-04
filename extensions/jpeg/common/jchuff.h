@@ -16,7 +16,7 @@
  * Hence the magnitude should always fit in 10 or 14 bits respectively.
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 #if BITS_IN_JSAMPLE == 8
 #define MAX_COEF_BITS 10
@@ -48,4 +48,4 @@ EXTERN(void) jpeg_make_c_derived_tbl
 EXTERN(void) jpeg_gen_optimal_table
     JPP((j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[]));
 
-#endif
+// #endif

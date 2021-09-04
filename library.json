@@ -5,5 +5,23 @@
   {
     "type": "git",
     "url": "https://github.com/iocafe/eosal.git"
+  },
+  
+  "frameworks": [
+     "arduino", 
+     "espidf"
+  ],
+  "platforms": [
+    "teensy", 
+    "stm32",
+    "espressif32"
+  ],
+  
+  "build": {
+    "srcFilter": [
+      "+<code/*>",
+      "+<extensions/*>"
+    ],
+    "libLDFMode" : "chain"
   }
 }

@@ -12,7 +12,7 @@
 
 /* Short forms of external names for systems with brain-damaged linkers. */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 #ifdef NEED_SHORT_EXTERNAL_NAMES
 #define jpeg_make_d_derived_tbl	eosal_jMkDDerived
@@ -202,4 +202,4 @@ EXTERN(int) jpeg_huff_decode
     JPP((bitread_working_state * state, register bit_buf_type get_buffer,
          register int bits_left, d_derived_tbl * htbl, int min_bits));
 
-#endif
+// #endif

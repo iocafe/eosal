@@ -1,0 +1,85 @@
+# eosal-defs.txt - Set cmake build environment variables common to all projects.
+# 1.9.2021/pekka
+
+macro(print_all_variables)
+    message(STATUS "print_all_variables------------------------------------------{")
+    get_cmake_property(_variableNames VARIABLES)
+    foreach (_variableName ${_variableNames})
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach()
+    message(STATUS "print_all_variables------------------------------------------}")
+endmacro()
+
+# print_all_variables()
+# set(SUPPORTED_TARGETS esp32)
+# message(FATAL_ERROR "HERE ********** ${IDF_TARGET}")
+
+# ???????????????????????????????????????????????????????????????
+set(SDKCONFIG /coderoot/eosal/osbuild/esp-idf/menuconfig/sdkconfig)
+
+# Generic target operating system name "esp32". Used as folder name for OS specific code.
+if (NOT DEFINED ENV{E_OS})
+set(ENV{E_OS} "esp32")
+endif()
+
+# Target operating system version "espidf" is used as name for binary folders and as part of
+# the installation package name.
+if (NOT DEFINED ENV{E_OSVER})
+set(ENV{E_OSVER} "espidf")
+endif()
+
+# Compiler name, used as part of library and temporary folder name.
+if (NOT DEFINED ENV{E_COMPILER})
+set(ENV{E_COMPILER} "xtensa")
+endif()
+
+if (NOT DEFINED ENV{E_ARCH})
+set(ENV{E_ARCH} "xtensa")
+endif()
+
+# Root path for build.
+if (NOT DEFINED ENV{E_ROOT})
+set(ENV{E_ROOT} "/coderoot")
+endif()
+
+# Postfix letter "d" for debug libraries and binaries.
+if (CMAKE_BUILD_TYPE MATCHES "(Debug)")
+  set(E_POSTFIX "d")
+else()
+  set(E_POSTFIX "")
+endif()
+
+# Library path.
+set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
+set(ENV{E_LIBOUT} "$ENV{E_LIB}")
+
+# Binary path.
+set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OS}")
+
+# Set path to operating system specific scripts by build environment.
+if (NOT DEFINED ENV{E_BUILD_BIN})
+  if(WIN32)
+    set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/windows")
+    set(ENV{PATH} "$ENV{PATH};$ENV{E_BUILD_BIN}")
+  else()
+    set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/linux")
+    set(ENV{PATH} "$ENV{PATH}:$ENV{E_BUILD_BIN}")
+  endif()
+endif()
+
+# Temporary file path.
+set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_COMPILER}")
+
+# Commonly used libraries for eosal console application.
+set(ENV{OSAL_CONSOLE_APP_LIBS} "eosal${E_POSTFIX}")
+
+# Commonly used libraries for eosal application with TLS communication.
+set(ENV{OSAL_TLS_APP_LIBS} "eosal_jpeg${E_POSTFIX};eosal${E_POSTFIX}")
+
+# Commonly used libraries for objects console application.
+set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
+
+# Add defines to indicate target operating system, OS version, and architecture (at level needed for build).
+add_definitions(-DE_OS_$ENV{E_OS})
+add_definitions(-DE_OSVER_$ENV{E_OSVER})
+add_definitions(-DE_ARCH_$ENV{E_ARCH})

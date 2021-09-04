@@ -30,7 +30,6 @@
 #ifndef EOSAL_JPEG_
 #define EOSAL_JPEG_
 #include "eosalx.h"
-#if OSAL_USE_JPEG_LIBRARY
 
 
 /* If C++ compilation, all functions, etc. from this point on included headers are
@@ -38,12 +37,12 @@
  */
 OSAL_C_HEADER_BEGINS
 
-#include "code/jinclude.h"
-#include "code/jpeglib.h"
-#include "code/jerror.h"		/* get library error codes too */
-s
+#if OSAL_USE_JPEG_LIBRARY
+#include "extensions/jpeg/common/jinclude.h"
+#include "extensions/jpeg/common/jpeglib.h"
+#include "extensions/jpeg/common/jerror.h"		/* get library error codes too */
 
-#include "eosal.h"
+#endif
 
 /* Flags for os_compress_JPEG() and os_uncompress_JPEG() functions.
  */

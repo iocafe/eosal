@@ -11,7 +11,6 @@ cmake_minimum_required(VERSION 3.16.0)
 set(E_PROJECT "eosal")
 set(ENV{E_ROOT} "/coderoot")
 set(ENV{E_OS} "esp32")
-include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs.txt")
 
 # We always use mbedtls and FreeRTOS libraries with ESP-IDF, select related files to build.
 set(E_TLSLIB "mbedtls")
@@ -41,9 +40,6 @@ set(srcs ${BB_CM_SOURCES})
 list(APPEND srcs ${EX_CM_SOURCES})
 list(APPEND srcs ${BB_OS_SOURCES})
 list(APPEND srcs ${EX_OS_SOURCES})
-
-# add_definitions("-DINCLUDE_vTaskDelay=1")
-# component_compile_options("-DINCLUDE_vTaskDelay=1")
 
 # The eosal library depends on: 
 set(requires, "idf::mbedtls")

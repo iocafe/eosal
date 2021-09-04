@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal_jpeg/eosal_code/osal_jpeg_src.c
+  @file    jpeg/common/osal_jpeg_src.c
   @brief   eosal API for libjpeg.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -18,7 +18,7 @@
 */
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "eosal_code/osal_jpeg_src.h"
+#include "extensions/jpeg/common/osal_jpeg_src.h"
 
 /** Source manager structure for uncompressing JPEGs. This must start with jpeg_source_mgr
     which sets up public fields needed by libjpeg.

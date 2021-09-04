@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal_jpeg/eosal_code/osal_jpeg_src.h
+  @file    jpeg/common/osal_jpeg_src.h
   @brief   eosal API for libjpeg.
   @author  Pekka Lehtikoski
   @version 1.0

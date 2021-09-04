@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal_jpeg/eosal_code/osal_compress_jpeg.c
+  @file    jpeg/common/osal_compress_jpeg.c
   @brief   eosal API for libjpeg.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -18,8 +18,9 @@
 */
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "extensions/jpeg/code/jerror.h"
-#include "extensions/jpeg/eosal_code/osal_jpeg_dst.h"
+#include "extensions/jpeg/common/jpeglib.h"
+#include "extensions/jpeg/common/jerror.h"
+#include "extensions/jpeg/common/osal_jpeg_dst.h"
 
 #include <setjmp.h>
 

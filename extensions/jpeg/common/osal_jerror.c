@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal_jpeg/eosal_code/osal_jerror.c
+  @file    jpeg/common/osal_jerror.c
   @brief   eosal API for libjpeg.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -21,8 +21,8 @@
 */
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "code/jversion.h"
-#include "code/jerror.h"
+#include "extensions/jpeg/common/jversion.h"
+#include "extensions/jpeg/common/jerror.h"
 
 /* Create the message string table. We do this from the master message list in jerror.h by
    re-reading  * jerror.h with a suitable definition for macro JMESSAGE. The message table
@@ -35,7 +35,7 @@
 #define JMESSAGE(code,string)	string ,
 
 const char * const jpeg_std_message_table[] = {
-#include "code/jerror.h"
+#include "extensions/jpeg/common/jerror.h"
   NULL
 };
 

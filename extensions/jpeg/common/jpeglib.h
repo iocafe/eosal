@@ -10,7 +10,7 @@
  * and perhaps jerror.h if they want to know the exact error codes.
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 #ifndef JPEGLIB_H
 #define JPEGLIB_H
@@ -23,9 +23,9 @@
  */
 
 #ifndef JCONFIG_INCLUDED	/* in case jinclude.h already did */
-#include "code/jconfig.h"		/* widely used configuration options */
+#include "extensions/jpeg/common/jconfig.h"		/* widely used configuration options */
 #endif
-#include "code/jmorecfg.h"		/* seldom changed options */
+#include "extensions/jpeg/common/jmorecfg.h"		/* seldom changed options */
 
 
 /* Version ID for the JPEG library.
@@ -1091,10 +1091,10 @@ struct jpeg_color_quantizer { long dummy; };
  */
 
 #ifdef JPEG_INTERNALS
-#include "code/jpegint.h"		/* fetch private declarations */
-#include "code/jerror.h"		/* fetch error codes too */
+#include "extensions/jpeg/common/jpegint.h"		/* fetch private declarations */
+#include "extensions/jpeg/common/jerror.h"		/* fetch error codes too */
 #endif
 
 #endif /* JPEGLIB_H */
 
-#endif
+// #endif

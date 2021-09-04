@@ -13,7 +13,7 @@
  * and/or the macros.
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 /*
  * To define the enum list of message codes, include this file without
@@ -292,4 +292,4 @@ JMESSAGE(JWRN_TOO_MUCH_DATA, "Application transferred too many scanlines")
 
 #endif /* JERROR_H */
 
-#endif
+// #endif

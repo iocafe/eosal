@@ -2,7 +2,7 @@
 /* jconfig.cfg --- source file edited by configure script */
 /* see jconfig.doc for explanations */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 #undef HAVE_PROTOTYPES
 #undef HAVE_UNSIGNED_CHAR
@@ -46,4 +46,4 @@
 
 #endif /* JPEG_CJPEG_DJPEG */
 
-#endif
+// #endif

@@ -10,7 +10,7 @@
  * optimizations.  Most users will not need to touch this file.
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 /*
  * Define BITS_IN_JSAMPLE as either
@@ -313,4 +313,4 @@ typedef int boolean;
 
 #endif /* JPEG_INTERNAL_OPTIONS */
 
-#endif
+// #endif

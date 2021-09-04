@@ -18,7 +18,7 @@
  * and USE_MAC_MEMMGR.
  */
 
-#if OSAL_USE_JPEG_LIBRARY
+// #if OSAL_USE_JPEG_LIBRARY
 
 /* Short forms of external names for systems with brain-damaged linkers. */
 
@@ -164,4 +164,4 @@ EXTERN(void) jpeg_open_backing_store JPP((j_common_ptr cinfo,
 EXTERN(long) jpeg_mem_init JPP((j_common_ptr cinfo));
 EXTERN(void) jpeg_mem_term JPP((j_common_ptr cinfo));
 
-#endif
+// #endif

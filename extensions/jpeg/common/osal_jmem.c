@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal_jpeg/eosal_code/osal_jmem.c
+  @file    jpeg/common/osal_jmem.c
   @brief   eosal API for libjpeg.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -27,7 +27,7 @@
 #define JPEG_INTERNALS
 #include "eosalx.h"
 #if OSAL_USE_JPEG_LIBRARY
-#include "code/jmemsys.h"		/* import the system-dependent declarations */
+#include "extensions/jpeg/common/jmemsys.h"		/* import the system-dependent declarations */
 
 
 /*
