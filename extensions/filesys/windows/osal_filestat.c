@@ -15,6 +15,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_WINDOWS
+#if OSAL_FILESYS_SUPPORT
 
 /**
 ****************************************************************************************************
@@ -70,4 +71,5 @@ osalStatus osal_filestat(
     return rval;
 }
 
+#endif
 #endif

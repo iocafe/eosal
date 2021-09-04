@@ -36,13 +36,13 @@
 
 /** Do we include code to automatically select one from known access points. Define 1 or 0.
  */
-#define OSAL_SUPPORT_WIFI_MULTI 1
+#define OSAL_SUPPORT_WIFI_MULTI 0
 
-#include "WiFi.h"
+// #include "WiFi.h"
 
 #if OSAL_SUPPORT_WIFI_MULTI
-#include <WiFiMulti.h>
-WiFiMulti wifiMulti;
+// #include <WiFiMulti.h>
+// WiFiMulti wifiMulti;
 #endif
 
 #include <esp_pm.h>
@@ -51,9 +51,7 @@ WiFiMulti wifiMulti;
 
 /* Global network adapter and wifi info
  */
-extern "C" {
 #include "extensions/net/common/osal_shared_net_info.h"
-}
 static osalSocketGlobal sg;
 
 /** Which NIC index we use for WiFi, for now we always assume that the first NIC is WiFi.
@@ -72,11 +70,11 @@ typedef struct
 {
     os_char ip_address[OSAL_HOST_BUF_SZ];
 
-    IPAddress
+/*     IPAddress
         dns_address,
         dns_address_2,
         gateway_address,
-        subnet_mask;
+        subnet_mask; */
 
     os_boolean no_dhcp;
 
@@ -120,7 +118,7 @@ static osalArduinoNetStruct ans;
 
 ****************************************************************************************************
 */
-static void osal_arduino_ip_from_str(
+/* static void osal_arduino_ip_from_str(
     IPAddress& ip,
     const os_char *str)
 {
@@ -140,7 +138,7 @@ static String DisplayAddress(IPAddress address)
         String(address[1]) + "." +
         String(address[2]) + "." +
         String(address[3]);
-}
+} */
 
 
 /**
@@ -225,10 +223,10 @@ void osal_socket_initialize(
     }
 
     os_strncpy(ans.ip_address, nic[0].ip_address, OSAL_HOST_BUF_SZ);
-    osal_arduino_ip_from_str(ans.dns_address, nic[0].dns_address);
+    /* osal_arduino_ip_from_str(ans.dns_address, nic[0].dns_address);
     osal_arduino_ip_from_str(ans.dns_address_2, nic[0].dns_address_2);
     osal_arduino_ip_from_str(ans.gateway_address, nic[0].gateway_address);
-    osal_arduino_ip_from_str(ans.subnet_mask, nic[0].subnet_mask);
+    osal_arduino_ip_from_str(ans.subnet_mask, nic[0].subnet_mask); */
     ans.no_dhcp = nic[0].no_dhcp;
 
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
@@ -275,8 +273,6 @@ osalStatus osal_are_sockets_initialized(
 
     if (osal_global->socket_global == OS_NULL) return OSAL_STATUS_FAILED;
 
-// SYNCHRONIZE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
     s = ans.wifi_init_failed_once
         ? OSAL_STATUS_FAILED : OSAL_PENDING;
 
@@ -290,11 +286,11 @@ osalStatus osal_are_sockets_initialized(
                the ESP32 wifi after soft reboot. I assume that this will be fixed and
                become unnecessary at some point.
              */
-            WiFi.mode(WIFI_OFF);
+/*             WiFi.mode(WIFI_OFF);
             WiFi.mode(WIFI_STA);
             WiFi.disconnect();
             WiFi.getMode();
-            WiFi.status();
+            WiFi.status(); */
 
             ans.network_connected = ans.wifi_was_connected = OS_FALSE;
             ans.wifi_init_failed_now = OS_FALSE;
@@ -321,25 +317,25 @@ osalStatus osal_are_sockets_initialized(
                     {
                         /* Some default network parameters.
                          */
-                        IPAddress ip_address(192, 168, 1, 195);
-                        osal_arduino_ip_from_str(ip_address, ans.ip_address);
+                        //IPAddress ip_address(192, 168, 1, 195);
+                        //osal_arduino_ip_from_str(ip_address, ans.ip_address);
 
                         /* Warning: ESP does not follow same argument order as arduino,
                            one below is for ESP32.
                          */
-                        if (!WiFi.config(ip_address, ans.gateway_address,
+                        /* if (!WiFi.config(ip_address, ans.gateway_address,
                             ans.subnet_mask,
                             ans.dns_address, ans.dns_address_2))
                         {
                             osal_debug_error("Static IP configuration failed");
-                        }
+                        } */
                     }
 
                     osal_get_network_state_str(OSAL_NS_WIFI_NETWORK_NAME, 0,
                         wifi_net_name, sizeof(wifi_net_name));
                     osal_get_network_state_str(OSAL_NS_WIFI_PASSWORD, 0,
                         wifi_net_password, sizeof(wifi_net_password));
-                    WiFi.begin(wifi_net_name, wifi_net_password);
+                    // WiFi.begin(wifi_net_name, wifi_net_password);
                 }
 
                 os_get_timer(&ans.wifi_step_timer);
@@ -359,7 +355,8 @@ osalStatus osal_are_sockets_initialized(
                 ans.network_connected = (os_boolean) (wifiMulti.run() == WL_CONNECTED);
             }
 #else
-            ans.network_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
+            // ans.network_connected = (os_boolean) (WiFi.status() == WL_CONNECTED);
+            ans.network_connected = OS_FALSE;
 #endif
 
             /* If no change in connection status:
@@ -405,18 +402,18 @@ osalStatus osal_are_sockets_initialized(
             if (ans.network_connected)
             {
                 s = OSAL_SUCCESS;
-                osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
+                //osal_trace_str("Wifi network connected: ", WiFi.SSID().c_str());
 
                 /* SETUP TO RECEIVE multicasts from this IP address.
                  */
-                IPAddress ip = WiFi.localIP();
+                /* IPAddress ip = WiFi.localIP();
                 String addrstr = DisplayAddress(ip);
                 const os_char *p = addrstr.c_str();
-                os_strncpy(sg.nic[OSAL_WIFI_NIC_IX].ip_address, p, OSAL_IPADDR_SZ);
-                osal_error(OSAL_CLEAR_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, p);
+                os_strncpy(sg.nic[OSAL_WIFI_NIC_IX].ip_address, p, OSAL_IPADDR_SZ); 
+                osal_error(OSAL_CLEAR_ERROR, eosal_mod, OSAL_STATUS_NO_WIFI, p); */
                 osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_TRUE);
 #if OSAL_TRACE
-                osal_trace(addrstr.c_str());
+                // osal_trace(addrstr.c_str());
 #endif
             }
 
@@ -476,7 +473,7 @@ void osal_socket_maintain(
 }
 #endif
 
-
+#if 0
 /* DPP Enrollee Example
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)
@@ -646,6 +643,8 @@ void app_main(void)
 
     dpp_enrollee_init();
 }
+#endif
+
 
 #endif
 #endif

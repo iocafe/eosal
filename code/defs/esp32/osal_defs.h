@@ -7,7 +7,7 @@
   @date    21fs.4.2020
 
   This file contains platform specific defines for building with Arduino compatible libraries
-  like ESP32/Arduino, TeensyDuino and STMduino. The defaults can be overridden by compiler settings.
+  like ESP32/Arduino, TeensyDuino and STM duino. The defaults can be overridden by compiler settings.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eobjects project and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -21,7 +21,7 @@
 #define OSAL_DEFS_H_
 
 /** Operating system identifier define. There is define for each supported operating system,
-    for example OEAL_WINDOWS, OSAL_LINUX, OSAL_ARDUINO, OSAL_METAL... Compilation can be conditioned
+    for example OSAL_WINDOWS, OSAL_LINUX, OSAL_ARDUINO, OSAL_METAL... Compilation can be conditioned
     by the define, for example "#ifdef OSAL_ESP_IDF".
  */
 #define OSAL_ESP32
@@ -104,7 +104,7 @@
 #endif
 
 /** Include memory debug code. If OSAL_MEMORY_DEBUG flags is nonzero, the memory
-    block overwflows and freed block size are checked.
+    block overflows and freed block size are checked.
  */
 #ifndef OSAL_MEMORY_DEBUG
 #define OSAL_MEMORY_DEBUG 1

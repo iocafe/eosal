@@ -85,7 +85,7 @@
 #endif
 
 /** Include memory debug code. If OSAL_MEMORY_DEBUG flags is nonzero, the memory
-    block overwflows and freed block size are checked.
+    block overflows and freed block size are checked.
  */
 #ifndef OSAL_MEMORY_DEBUG
 #define OSAL_MEMORY_DEBUG 1
