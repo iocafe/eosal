@@ -1430,7 +1430,7 @@ static osalSSLStatus osal_openssl_do_ssl_handshake(
   will be queued for later socket write.
 
   @param   sslsocket Stream pointer representing the SSL socket.
-  @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
+  @return  The function returns OSAL_SUCCESS if some data was successfully encrypted.
            Return value OSAL_NOTHING_TO_DO indicates that there is nothing to
            encrypt. Other return values indicate an error.
 
@@ -1502,7 +1502,7 @@ static osalStatus osal_openssl_do_encrypt(
   The osal_openssl_do_sock_write() function...
 
   @param   sslsocket Stream pointer representing the SSL socket.
-  @return  The function returns OSAL_SUCCESS if some data was succesfully encrypted.
+  @return  The function returns OSAL_SUCCESS if some data was successfully encrypted.
            Return value OSAL_NOTHING_TO_DO indicates that there is nothing to
            encrypt. Other return values indicate an error.
 

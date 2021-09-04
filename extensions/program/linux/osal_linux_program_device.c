@@ -148,7 +148,7 @@ osalStatus osal_program_device(
 /**
 ****************************************************************************************************
 
-  @brief Install succesfully transferred debian package.
+  @brief Install successfully transferred debian package.
   @anchor osal_finish_device_programming
 
   The osal_finish_device_programming() function is called when all data in debian package has
@@ -189,7 +189,7 @@ void osal_finish_device_programming(
   returned, if the IO device can reboots on successfull completion
 
   @return  OSAL_PENDING Installer still running.
-           OSAL_COMPLETED Installation succesfully completed.
+           OSAL_COMPLETED Installation successfully completed.
            Other values indicate an device programming error.
 
 ****************************************************************************************************

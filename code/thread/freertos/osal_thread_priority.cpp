@@ -41,7 +41,7 @@
            OSAL_THREAD_PRIORITY_HIGH or OSAL_THREAD_PRIORITY_TIME_CRITICAL.
            See @ref osalThreadPriority "enumeration of thread priorities" for more information.
 
-  @return  If the thread priority is  succesfully set, the function returns OSAL_SUCCESS. If
+  @return  If the thread priority is successfully set, the function returns OSAL_SUCCESS. If
            operating system fails to set thread priority, the function returns
            OSAL_STATUS_THREAD_SET_PRIORITY_FAILED. Basically all nonzero return values indicate
            an error.
@@ -91,8 +91,8 @@ os_int osal_thread_priority_to_sys_priority(
 
         default:
             osal_debug_error("Unknown thread priority");
-            /* continues...
-             */
+            rtpriority = 3;
+            break;
 
         case OSAL_THREAD_PRIORITY_NORMAL:
             rtpriority = 3;

@@ -52,7 +52,7 @@ void os_time(
   The os_settime() function sets computer's clock. 
 
   @param   t Time to set. 64 bit integer, microseconds since epoc 1.1.1970.
-  @return  If the system time is succesfully set OSAL_SUCCESS (0). Other return values 
+  @return  If the system time is successfully set OSAL_SUCCESS (0). Other return values 
            indicate an error. 
 
 ****************************************************************************************************

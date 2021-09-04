@@ -494,7 +494,7 @@ osalStatus osal_serial_write(
                 switch (WaitForSingleObject(ov.hEvent, INFINITE))
                 {
                     case WAIT_OBJECT_0:
-                        /* The overlapped operation has succesfully completed.
+                        /* The overlapped operation has successfully completed.
                          */
                         if (!GetOverlappedResult(h, &ov, &nwr, FALSE))
                         {
@@ -619,7 +619,7 @@ osalStatus osal_serial_read(
                 switch (WaitForSingleObject(ov.hEvent, INFINITE))
                 {
                     case WAIT_OBJECT_0:
-                        /* The overlapped operation has succesfully completed.
+                        /* The overlapped operation has successfully completed.
                          */
                         if (!GetOverlappedResult(h, &ov, &nr, FALSE))
                         {

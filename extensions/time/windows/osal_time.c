@@ -90,7 +90,7 @@ void os_time(
 
   @param   t Time to set.
 
-  @return  If the system time is succesfully set OSAL_SUCCESS (0). Other return values 
+  @return  If the system time is successfully set OSAL_SUCCESS (0). Other return values 
            indicate an error. 
 
 ****************************************************************************************************

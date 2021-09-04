@@ -343,7 +343,7 @@ getout:
 /**
 ****************************************************************************************************
 
-  @brief Install succesfully transferred the .bin firmvare.
+  @brief Install successfully transferred the .bin firmvare.
   @anchor osal_finish_device_programming
 
   The osal_finish_device_programming() function is called when all data in firmvare program has
@@ -411,7 +411,7 @@ getout:
   returned, if the IO device can reboots on successfull completion
 
   @return  OSAL_PENDING Installer still running.
-           OSAL_COMPLETED Installation succesfully completed.
+           OSAL_COMPLETED Installation successfully completed.
            Other values indicate an device programming error.
 
 ****************************************************************************************************
