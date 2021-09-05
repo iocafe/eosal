@@ -1,4 +1,4 @@
-# eosal/CmakeLists.txt - Cmake build for eosal library.
+# eosal/CmakeLists.txt - Cmake build for the EOSAL library, 5.9.2021/pekka.
 cmake_minimum_required(VERSION 3.5)
 
 # Set project name (= project root folder name).
@@ -6,11 +6,6 @@ set(E_PROJECT "eosal")
 
 # Select which TLS library, mbedtls or openssl to use for the OS.
 set(E_TLSLIB "mbedtls")
-
-# if (NOT DEFINED IDF_TARGET{IDF_TARGET})
-#    set({IDF_TARGET} "none")
-# endif()
-
 
 if("${IDF_TARGET}" STREQUAL "esp32")
   # ESP-IFD only: Include IDF project setup and declare the project.

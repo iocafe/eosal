@@ -170,11 +170,11 @@ void osal_reboot(
 }
 
 
-#ifdef OSAL_DUMMY_ESPIDF_APP_MAIN
+#ifdef OSAL_DUMMY_ESP32_APP_MAIN
 /**
 ****************************************************************************************************
 
-  @brief Dummy main function to allow testing eosal ESPIDF build configuration.
+  @brief Dummy main function to allow testing eosal ESP32 build configuration.
   @anchor app_main
 
   Dummy app_main() function allows compiling eosal separately as application (which does
@@ -182,10 +182,21 @@ void osal_reboot(
 
 ****************************************************************************************************
 */
+#ifdef OSAL_ESPIDF_FRAMEWORK
 extern "C" void app_main(void)
 {
     osal_initialize(OSAL_INIT_DEFAULT);
 }
+
+#else
+void setup()
+{
+    osal_initialize(OSAL_INIT_DEFAULT);
+}
+void loop()
+{
+}
+#endif
 #endif
 
 #endif

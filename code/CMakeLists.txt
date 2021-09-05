@@ -1,9 +1,9 @@
 # eosal/code/CmakeLists.txt, 4.9.2021/pekka
 #
-# ESP-IDF build only: The second CMakeLists.txt in src_dir is responsible for controlling 
+# ESP-IDF build only: The second CMakeLists.txt in src_dir (code) sis responsible for controlling 
 # the build process of the component and its integration into the overall project. 
-# The minimal component CMakeLists.txt file simply registers the component to the build 
-# system using idf_component_register 
+# The component CMakeLists.txt file lists source files and registers the component to the build 
+# system using idf_component_register.
 #
 cmake_minimum_required(VERSION 3.16.0)
 
