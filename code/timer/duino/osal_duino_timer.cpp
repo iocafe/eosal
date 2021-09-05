@@ -1,6 +1,6 @@
 /**
 
-  @file    timer/esp32/osal_esp32_timer.c
+  @file    timer/duino/osal_duino_timer.c
   @brief   System timer functions.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -18,9 +18,8 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#ifdef OSAL_ESP32
+#ifdef OSAL_ARDUINO
 
-#include "esp_timer.h"
 
 /**
 ****************************************************************************************************
@@ -29,8 +28,9 @@
   @anchor osal_timer_initialize
 
   The osal_timer_initialize() function initializes OSAL timer module. This function is called by
-  osal_initialize() and should not normally be called by application. For ESP32, the function
-  does nothing.
+  osal_initialize() and should not normally be called by application.
+
+  @return  None.
 
 ****************************************************************************************************
 */
@@ -51,14 +51,15 @@ void osal_timer_initialize(
 
   This function can be called from interrupt handler.
 
-  @param   t Pointer to integer into which to store current system timer value.
+  @param   start_t Pointer to integer into which to store current system timer value.
+  @return  None.
 
 ****************************************************************************************************
 */
 void OS_ISR_FUNC_ATTR os_get_timer(
     os_timer *t)
 {
-    *t = (os_timer)esp_timer_get_time();
+    *t = (os_timer)millis();
 }
 
 	
@@ -83,7 +84,11 @@ os_boolean OS_ISR_FUNC_ATTR os_has_elapsed(
     os_timer *start_t,
     os_int period_ms)
 {
-    return (os_boolean)(esp_timer_get_time() >= *start_t + 1000 * (os_timer)period_ms);
+    os_uint diff;
+
+    if (period_ms < 0) return OS_TRUE;
+    diff = (os_uint)millis() - (os_uint)*start_t;
+    return (os_boolean)((os_int)diff > period_ms);
 }
 
 
@@ -110,7 +115,14 @@ os_boolean OS_ISR_FUNC_ATTR os_has_elapsed_since(
     os_timer *now_t,
     os_int period_ms)
 {
-    return (os_boolean)(*now_t >= *start_t + 1000 * (os_timer)period_ms);
+    os_uint diff;
+
+    if (period_ms < 0) return OS_TRUE;
+    diff = (os_uint)*now_t - (os_uint)*start_t;
+
+    /* Important, do signed compare: without this iocom, etc. may fail!
+     */
+    return (os_boolean)((os_int)diff > period_ms);
 }
 
 
@@ -134,7 +146,10 @@ os_long OS_ISR_FUNC_ATTR os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t)
 {
-    return (os_long)((*now_t - *start_t) / 1000);
+    os_uint diff;
+
+    diff = (os_uint)*now_t - (os_uint)*start_t;
+    return (os_long)diff;
 }
 
 
@@ -163,27 +178,27 @@ os_boolean OS_ISR_FUNC_ATTR os_timer_hit(
     os_timer *now_t,
     os_int period_ms)
 {
-    os_int64 diff, n, m, period_us;
+    os_uint diff, u, m, n;
 
     if (period_ms <= 0) return OS_TRUE;
+    u = (os_uint)*now_t;
+    m = (os_uint)*memorized_t;
+    diff = u - m;
 
-    /* If not enough time has elapsed.
+    /* Important, do signed compare: without this iocom, etc. may fail.
      */
-    m = *memorized_t;
-    diff = *now_t - m;
-    period_us = 1000 * (os_timer)period_ms;
-    if (diff < (os_timer)period_us) return OS_FALSE;
+    if ((os_int)diff < period_ms) return OS_FALSE;
 
     /* If we have a skew more than a period, skip hit times.
      */
-    if (diff >= 2 * period_us)
+    if (diff >= (os_uint)2*period_ms)
     {
-        n = diff / period_us;
-        m += n * period_us;
+        n = diff / period_ms;
+        m += n * period_ms;
     }
     else
     {
-        m += period_us;
+        m += (os_uint)period_ms;
     }
 
     *memorized_t = m;

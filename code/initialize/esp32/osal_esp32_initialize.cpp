@@ -1,6 +1,6 @@
 /**
 
-  @file    initialize/esp/osal_esp32_initialize.c
+  @file    initialize/esp32/osal_esp32_initialize.c
   @brief   Operating system specific initialization.
   @author  Pekka Lehtikoski
   @version 1.0

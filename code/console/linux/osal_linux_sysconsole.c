@@ -1,6 +1,6 @@
 /**
 
-  @file    console/esp32/osal_esp32_sysconsole.c
+  @file    console/linux/osal_linux_sysconsole.c
   @brief   Operating system default console IO.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -17,12 +17,17 @@
 
 ****************************************************************************************************
 */
-#include "eosalx.h"
-#ifdef OSAL_ESP32
+#include "eosal.h"
 #if OSAL_CONSOLE
+#ifdef OSAL_LINUX
 
 #include <stdio.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
+const int osal_stdin_fno = STDIN_FILENO;
+static struct termios osal_console_attr;
 
 /**
 ****************************************************************************************************
@@ -40,6 +45,13 @@
 void osal_sysconsole_initialize(
     void)
 {
+    struct termios attr;
+
+    tcgetattr(osal_stdin_fno, &attr);
+    osal_console_attr = attr;
+    attr.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(osal_stdin_fno, TCSANOW, &attr);
+    /* This doesn't seem necessary: setbuf(stdin, NULL); */
 }
 
 
@@ -58,6 +70,7 @@ void osal_sysconsole_initialize(
 void osal_sysconsole_shutdown(
     void)
 {
+    tcsetattr(osal_stdin_fno, TCSANOW, &osal_console_attr);
 }
 #endif
 
@@ -71,14 +84,18 @@ void osal_sysconsole_shutdown(
   The osal_sysconsole_write() function writes a string to process'es default console, if any.
 
   @param   text Pointer to string to write.
-  @return  None
+
+  @return  Pointer to the allocated memory block, or OS_NULL if the function failed (out of
+           memory).
 
 ****************************************************************************************************
 */
 void osal_sysconsole_write(
     const os_char *text)
 {
-    printf ("%s", text);
+    /* Should wide character version fputws be used? */
+    fputs(text, stdout);
+    fflush(stdout);
 }
 
 
@@ -89,7 +106,10 @@ void osal_sysconsole_write(
   @anchor osal_sysconsole_run
 
   The osal_sysconsole_read() function reads the input from system console. If there are any
-  input, the callbacks monitoring the input from this console will get called.
+  input, the callbacks monitoring the input from this console will get called. The function
+  always returns immediately.
+
+  Linux implementation works only on ASCII.
 
   @return  UTF32 character or 0 if none.
 
@@ -98,9 +118,17 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
-    os_uchar ch;
-    ch = fgetc(stdin);
-    return ch != 0xff ? ch : 0;
+    int nbytes = 0;
+    os_uchar c;
+
+    ioctl(osal_stdin_fno, FIONREAD, &nbytes);
+    if (nbytes <= 0) return 0;
+
+    if (read(fileno(stdin), &c, 1) > 0) {
+        return c;
+    }
+
+    return 0;
 }
 
 #endif

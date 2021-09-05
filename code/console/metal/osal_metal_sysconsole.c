@@ -1,6 +1,6 @@
 /**
 
-  @file    console/esp32/osal_esp32_sysconsole.c
+  @file    console/metal/osal_metal_sysconsole.c
   @brief   Operating system default console IO.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -17,12 +17,9 @@
 
 ****************************************************************************************************
 */
-#include "eosalx.h"
-#ifdef OSAL_ESP32
+#include "eosal.h"
+#ifdef OSAL_METAL
 #if OSAL_CONSOLE
-
-#include <stdio.h>
-
 
 /**
 ****************************************************************************************************
@@ -71,14 +68,17 @@ void osal_sysconsole_shutdown(
   The osal_sysconsole_write() function writes a string to process'es default console, if any.
 
   @param   text Pointer to string to write.
-  @return  None
+
+  @return  Pointer to the allocated memory block, or OS_NULL if the function failed (out of
+           memory).
 
 ****************************************************************************************************
 */
 void osal_sysconsole_write(
     const os_char *text)
 {
-    printf ("%s", text);
+    /* Should wide character version fputws be used? */
+//    Serial.write(text);
 }
 
 
@@ -98,9 +98,7 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
-    os_uchar ch;
-    ch = fgetc(stdin);
-    return ch != 0xff ? ch : 0;
+    return 0;
 }
 
 #endif

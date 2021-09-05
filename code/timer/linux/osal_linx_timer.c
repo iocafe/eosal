@@ -1,6 +1,6 @@
 /**
 
-  @file    timer/esp32/osal_esp32_timer.c
+  @file    timer/linux/osal_linux_timer.c
   @brief   System timer functions.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -18,9 +18,8 @@
 ****************************************************************************************************
 */
 #include "eosal.h"
-#ifdef OSAL_ESP32
-
-#include "esp_timer.h"
+#ifdef OSAL_LINUX
+#include <time.h>
 
 /**
 ****************************************************************************************************
@@ -29,8 +28,9 @@
   @anchor osal_timer_initialize
 
   The osal_timer_initialize() function initializes OSAL timer module. This function is called by
-  osal_initialize() and should not normally be called by application. For ESP32, the function
-  does nothing.
+  osal_initialize() and should not normally be called by application.
+
+  @return  None.
 
 ****************************************************************************************************
 */
@@ -49,16 +49,35 @@ void osal_timer_initialize(
   The os_get_timer() function get current system timer value. System timer counts microseconds,
   typically since computer was booted.
 
-  This function can be called from interrupt handler.
-
-  @param   t Pointer to integer into which to store current system timer value.
+  @param   start_t Pointer to 64 bit integer into which to store current system timer value, us.
+  @return  None.
 
 ****************************************************************************************************
 */
-void OS_ISR_FUNC_ATTR os_get_timer(
+void os_get_timer(
     os_timer *t)
 {
-    *t = (os_timer)esp_timer_get_time();
+    struct timespec ts;
+
+#ifdef CLOCK_MONOTONIC_COARSE
+    if (clock_gettime(CLOCK_MONOTONIC_COARSE, &ts))
+    {
+        if (clock_gettime(CLOCK_MONOTONIC, &ts))
+        {
+            osal_debug_error("os_get_timer: Get system timer failed");
+            *t = 0;
+            return;
+        }
+    }
+#else
+    if (clock_gettime(CLOCK_MONOTONIC, &ts))
+    {
+        osal_debug_error("os_get_timer: Get system timer failed");
+        *t = 0;
+        return;
+    }
+#endif
+    *t = 1000000 * (os_long)ts.tv_sec + (os_long)ts.tv_nsec / 1000;
 }
 
 	
@@ -71,19 +90,33 @@ void OS_ISR_FUNC_ATTR os_get_timer(
   The os_has_elapsed() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
-  This function can be called from interrupt handler.
-
-  @param   start_t Start timer value as set to t by the os_get_timer() function.
+  @param   start_t Pointer to 64 bit integer which contains start timer value as returned by 
+           the os_get_timer() function.
   @param   period_ms Period length in milliseconds.
   @return  OS_TRUE (1) if specified time period has elapsed, or OS_FALSE (0) if not.
 
 ****************************************************************************************************
 */
-os_boolean OS_ISR_FUNC_ATTR os_has_elapsed(
+os_boolean os_has_elapsed(
     os_timer *start_t,
     os_int period_ms)
 {
-    return (os_boolean)(esp_timer_get_time() >= *start_t + 1000 * (os_timer)period_ms);
+    os_timer now_t, end_t;
+
+	/* Calculate period end timer value in microseconds.
+	 */
+	osal_int64_set_long(&end_t, period_ms);
+	osal_int64_multiply(&end_t, &osal_int64_1000);
+	osal_int64_add(&end_t, start_t);
+
+	/* Get current system timer value.
+	 */
+    os_get_timer(&now_t);
+
+	/* If current timer value is past period end, then return OS_TRUE, or
+	   OS_FALSE otherwise.
+	 */
+	return (os_boolean)(osal_int64_compare(&now_t, &end_t) >= 0);
 }
 
 
@@ -96,21 +129,31 @@ os_boolean OS_ISR_FUNC_ATTR os_has_elapsed(
   The os_has_elapsed_since() function checks if time period given as argument has elapsed since
   start time was recorded by os_get_timer() function.
 
-  This function can be called from interrupt handler.
-
-  @param   start_t Start timer value as set to t by the os_get_timer() function.
-  @param   now_t Current system timer value as set to t by the os_get_timer() function.
+  @param   start_t Pointer to 64 bit integer which contains start timer value as returned by 
+           the os_get_timer() function.
+  @param   now_t Pointer to 64 bit integer holding current system timer value.
   @param   period_ms Period length in milliseconds.
   @return  OS_TRUE (1) if specified time period has elapsed, or OS_FALSE (0) if not.
 
 ****************************************************************************************************
 */
-os_boolean OS_ISR_FUNC_ATTR os_has_elapsed_since(
+os_boolean os_has_elapsed_since(
     os_timer *start_t,
     os_timer *now_t,
     os_int period_ms)
 {
-    return (os_boolean)(*now_t >= *start_t + 1000 * (os_timer)period_ms);
+	os_int64 end_t;
+
+	/* Calculate period end timer value in microseconds.
+	 */
+	osal_int64_set_long(&end_t, period_ms);
+	osal_int64_multiply(&end_t, &osal_int64_1000);
+	osal_int64_add(&end_t, start_t);
+
+	/* If current timer value is past period end, then return OS_TRUE, or
+	   OS_FALSE otherwise.
+	 */
+	return (os_boolean)(osal_int64_compare(now_t, &end_t) >= 0);
 }
 
 
@@ -122,19 +165,25 @@ os_boolean OS_ISR_FUNC_ATTR os_has_elapsed_since(
 
   The os_os_get_ms_elapsed() function...
 
-  This function can be called from interrupt handler.
-
   @param   start_t Start timer value as set to t by the os_get_timer() function.
   @param   now_t Current system timer value as set to t by the os_get_timer() function.
   @return  Number of milliseconds.
 
 ****************************************************************************************************
 */
-os_long OS_ISR_FUNC_ATTR os_get_ms_elapsed(
+os_long os_get_ms_elapsed(
     os_timer *start_t,
     os_timer *now_t)
 {
-    return (os_long)((*now_t - *start_t) / 1000);
+    os_int64 tv;
+
+    /* Calculate period end timer value in microseconds.
+     */
+    osal_int64_copy(&tv, now_t);
+    osal_int64_subtract(&tv, start_t);
+
+    osal_int64_divide(&tv, &osal_int64_1000);
+    return osal_int64_get_long(&tv);
 }
 
 
@@ -142,14 +191,12 @@ os_long OS_ISR_FUNC_ATTR os_get_ms_elapsed(
 ****************************************************************************************************
 
   @brief If it time for a periodic event?
-  @anchor os_has_elapsed_since
+  @anchor os_timer_hit
 
   The os_timer_hit() function returns OS_TRUE if it is time to do a periodic event. The function
   keeps events times to be divisible by period (from initialization of memorized_t). If this
   function is called that rarely that skew is one or more whole periods, events what happended
   on that time will be skipped.
-
-  This function can be called from interrupt handler.
 
   @param   memorized_t Memorized timer value to keep track of events, can be zero initially.
   @param   now_t Current system timer value as set to t by the os_get_timer() function.
@@ -158,35 +205,39 @@ os_long OS_ISR_FUNC_ATTR os_get_ms_elapsed(
 
 ****************************************************************************************************
 */
-os_boolean OS_ISR_FUNC_ATTR os_timer_hit(
+os_boolean os_timer_hit(
     os_timer *memorized_t,
     os_timer *now_t,
     os_int period_ms)
 {
-    os_int64 diff, n, m, period_us;
+    os_int64 diff, p, p2;
 
     if (period_ms <= 0) return OS_TRUE;
 
+    osal_int64_set_long(&p, period_ms);
+    osal_int64_multiply(&p, &osal_int64_1000);
+    osal_int64_copy(&diff, now_t);
+    osal_int64_subtract(&diff, memorized_t);
+
     /* If not enough time has elapsed.
      */
-    m = *memorized_t;
-    diff = *now_t - m;
-    period_us = 1000 * (os_timer)period_ms;
-    if (diff < (os_timer)period_us) return OS_FALSE;
+    if (osal_int64_compare(&diff, &p) < 0) return OS_FALSE;
 
     /* If we have a skew more than a period, skip hit times.
      */
-    if (diff >= 2 * period_us)
+    osal_int64_copy(&p2, &p);
+    osal_int64_add(&p2, &p);
+    if (osal_int64_compare(&diff, &p2) >= 0)
     {
-        n = diff / period_us;
-        m += n * period_us;
+        osal_int64_divide(&diff, &p);
+        osal_int64_multiply(&diff, &p);
+        osal_int64_add(memorized_t, &diff);
     }
     else
     {
-        m += period_us;
+        osal_int64_add(memorized_t, &p);
     }
 
-    *memorized_t = m;
     return OS_TRUE;
 }
 

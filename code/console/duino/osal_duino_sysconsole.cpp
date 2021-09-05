@@ -1,6 +1,6 @@
 /**
 
-  @file    console/esp32/osal_esp32_sysconsole.c
+  @file    console/duino/osal_duino_sysconsole.c
   @brief   Operating system default console IO.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -17,17 +17,15 @@
 
 ****************************************************************************************************
 */
-#include "eosalx.h"
-#ifdef OSAL_ESP32
+#include "eosal.h"
+#ifdef OSAL_ARDUINO
 #if OSAL_CONSOLE
-
-#include <stdio.h>
 
 
 /**
 ****************************************************************************************************
 
-  @brief Inititalize system console.
+  @brief Initialize system console.
   @anchor osal_sysconsole_initialize
 
   The osal_sysconsole_initialize() function should do any initialization necessary to use the
@@ -68,17 +66,20 @@ void osal_sysconsole_shutdown(
   @brief Write text to system console.
   @anchor osal_sysconsole_write
 
-  The osal_sysconsole_write() function writes a string to process'es default console, if any.
+  The osal_sysconsole_write() function writes a string to the default console o fthe process, if any.
 
   @param   text Pointer to string to write.
-  @return  None
+
+  @return  Pointer to the allocated memory block, or OS_NULL if the function failed (out of
+           memory).
 
 ****************************************************************************************************
 */
 void osal_sysconsole_write(
     const os_char *text)
 {
-    printf ("%s", text);
+    Serial.write(text);
+    Serial.flush();
 }
 
 
@@ -98,9 +99,12 @@ void osal_sysconsole_write(
 os_uint osal_sysconsole_read(
     void)
 {
-    os_uchar ch;
-    ch = fgetc(stdin);
-    return ch != 0xff ? ch : 0;
+    if (Serial.available())
+    {
+        return Serial.read();
+    }
+
+    return 0;
 }
 
 #endif

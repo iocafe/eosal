@@ -8,8 +8,6 @@ On Windows or Linux this is usually simple, we can just save board configuration
 
 The "persistent" directory contains persistent storage interface header osal_persistent.h, which declares how the persistent storage access functions look like. The actual implementations are in subdirectories for different platforms, boards and setups.
 
-The subdirectories named after platform, like "arduino", "linux" or "windows" contain either the persistent storage implementations for the platform or include C code from "shared" directory, when a generic implementation can be used. The "metal" subdirectory is used typically with micro-controller without any operating system.
-
 Warning: Do not use micro-controller flash to save any data which changes during normal run time operation, it will eventually burn out the flash (death of the micro controller).
 
 
