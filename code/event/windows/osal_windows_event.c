@@ -72,7 +72,7 @@ osalEvent osal_event_create(
 
     /* If failed.
      */
-    if (evnt->handle)
+    if (evnt->handle == NULL)
     {
         osal_debug_error("CreateEvent failed");
         osal_sysmem_free(evnt, sizeof(osalWindowsEvent));
