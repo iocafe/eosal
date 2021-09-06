@@ -1716,8 +1716,6 @@ getout:
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
            indicate an error.
 
-  @return  None.
-
 ****************************************************************************************************
 */
 osalStatus osal_socket_select(
@@ -1731,8 +1729,7 @@ osalStatus osal_socket_select(
     osalSocket *sockets[OSAL_SOCKET_SELECT_MAX+1];
     WSAEVENT events[OSAL_SOCKET_SELECT_MAX+1];
     os_int ixtable[OSAL_SOCKET_SELECT_MAX+1];
-    WSANETWORKEVENTS network_events;
-    os_int i, n_sockets, n_events, event_nr;
+    os_int i, n_sockets, n_events;
     DWORD rval;
     OSAL_UNUSED(flags);
 
@@ -1765,31 +1762,9 @@ osalStatus osal_socket_select(
 
     if (rval == WSA_WAIT_TIMEOUT)
     {
-        selectdata->stream_nr = OSAL_STREAM_NR_TIMEOUT_EVENT;
         return OSAL_SUCCESS;
     }
 
-/*     event_nr = (os_int)(rval - WSA_WAIT_EVENT_0);
-
-    if (evnt && event_nr == n_sockets)
-    {
-        selectdata->stream_nr = OSAL_STREAM_NR_CUSTOM_EVENT;
-        return OSAL_SUCCESS;
-    }
-
-    if (event_nr < 0 || event_nr >= n_sockets)
-    {
-        return OSAL_STATUS_FAILED;
-    }
-
-    if (WSAEnumNetworkEvents(sockets[event_nr]->handle,
-        events[event_nr], &network_events) == SOCKET_ERROR)
-    {
-        return OSAL_STATUS_FAILED;
-    }
-
-    selectdata->stream_nr = ixtable[event_nr];
-*/
     return OSAL_SUCCESS;
 }
 #endif

@@ -31,7 +31,7 @@
 */
 #include "eosalx.h"
 #if OSAL_RING_BUFFER_SUPPORT
-
+#include <malloc.h>
 
 /**
 ****************************************************************************************************
@@ -168,8 +168,10 @@ void osal_ringbuf_make_continuous(
 {
     if (r->head < r->tail)
     {
-        os_char tmpbuf[r->buf_sz], *buf;
+        os_char *tmpbuf, *buf;
         os_int n;
+
+        tmpbuf = _alloca(r->buf_sz);
 
         buf = r->buf;
 

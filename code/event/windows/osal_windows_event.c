@@ -43,12 +43,17 @@ osalWindowsEvent;
 
   Resource monitor's event count is incremented, if resource monitor is enabled.
 
+  @param   eflags Flags for osal_event_create function: If OSAL_EVENT_SET_AT_EXIT bit is set,
+           the osal_event_add_to_atexit() is called to add the event to global list of events
+           to set when exit process is requested. Use OSAL_EVENT_DEFAULT to indicate standard
+           operation.
+
   @return  evnt Event pointer. If the function fails, it returns OS_NULL.
 
 ****************************************************************************************************
 */
 osalEvent osal_event_create(
-    void)
+    os_short eflags)
 {
     osalWindowsEvent *evnt;
 
@@ -76,7 +81,7 @@ osalEvent osal_event_create(
 
 #if OSAL_OS_EVENT_LIST_SUPPORT
     if (eflags & OSAL_EVENT_SET_AT_EXIT) {
-        osal_event_add_to_list(&osal_global->atexit_events_list, (osalEvent)pe);
+        osal_event_add_to_list(&osal_global->atexit_events_list, (osalEvent)evnt);
     }
 #endif
 
@@ -108,15 +113,14 @@ osalEvent osal_event_create(
 void osal_event_delete(
     osalEvent evnt)
 {
-    osalWindowsEvent *e;
-
     if (evnt == NULL)
     {
         osal_debug_error("NULL event pointer");
         return;
     }
+
 #if OSAL_OS_EVENT_LIST_SUPPORT
-    osal_event_remove_from_list(&osal_global->atexit_events_list, evnt);
+    osal_event_remove_from_list(evnt);
 #endif
 
     /* Call Windows to delete the event.
@@ -132,7 +136,7 @@ void osal_event_delete(
         /* continue despite of error to free memory. */
     }
 
-    osal_sysmem_free(evnt, sizeof(osalFreeRtosEvent));
+    osal_sysmem_free(evnt, sizeof(osalWindowsEvent));
 }
 
 
