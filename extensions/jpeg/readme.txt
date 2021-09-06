@@ -1,5 +1,4 @@
-eosal_jpeg - libjpeg 
-notes 3.5.2021/pekka
+jpeg, notes 6.9.2021/pekka
 
 This is the original old libjpeg, jpegsr6.zip, dated 6b of 27.3.1998 with minor changes to organization.
 

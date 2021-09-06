@@ -130,7 +130,7 @@ set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_CO
 set(ENV{OSAL_CONSOLE_APP_LIBS} "eosal${E_POSTFIX}")
 
 # Commonly used libraries for eosal application with TLS communication.
-set(ENV{OSAL_TLS_APP_LIBS} "eosal_jpeg${E_POSTFIX};eosal${E_POSTFIX}")
+set(ENV{OSAL_TLS_APP_LIBS} "eosal${E_POSTFIX}")
 
 # Commonly used libraries for objects console application.
 set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
