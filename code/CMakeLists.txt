@@ -5,20 +5,12 @@
 # The component CMakeLists.txt file lists source files and registers the component to the build 
 # system using idf_component_register.
 #
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.5)
 
 # Project name, development root folder E_ROOT and eosal name for operatig system.
 set(E_PROJECT "eosal")
 set(ENV{E_OS} "esp32")
-include("../osbuild/cmakedefs/eosal-root-path.txt")
-
-# if (NOT DEFINED ENV{E_ROOT})
-#   if(WIN32)
-#     set(ENV{E_ROOT} "c:/coderoot")
-#   else()
-#     set(ENV{E_ROOT} "/coderoot")
-#   endif()
-# endif()
+include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-root-path.txt")
 
 # We always use mbedtls and FreeRTOS libraries with ESP-IDF, select related files to build.
 set(E_TLSLIB "mbedtls")

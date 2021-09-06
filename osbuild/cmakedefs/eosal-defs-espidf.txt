@@ -1,28 +1,6 @@
 # eosal-defs-espidf.txt - Set cmake build environment variables for ESP-IDF project.
 # 1.9.2021/pekka
 
-macro(print_all_variables)
-    message(STATUS "print_all_variables------------------------------------------{")
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach()
-    message(STATUS "print_all_variables------------------------------------------}")
-endmacro()
-
-# print_all_variables()
-# set(SUPPORTED_TARGETS esp32)
-# message(FATAL_ERROR "HERE ********** ${IDF_TARGET}")
-
-# Root path for build.
-if (NOT DEFINED ENV{E_ROOT})
-  if(WIN32)
-    set(ENV{E_ROOT} "c:/coderoot")
-  else()
-    set(ENV{E_ROOT} "/coderoot")
-  endif()
-endif()
-
 # ???????????????????????????????????????????????????????????????
 set(SDKCONFIG $ENV{E_ROOT}/eosal/osbuild/esp-idf/menuconfig/sdkconfig)
 

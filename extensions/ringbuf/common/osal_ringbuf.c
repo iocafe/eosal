@@ -31,7 +31,9 @@
 */
 #include "eosalx.h"
 #if OSAL_RING_BUFFER_SUPPORT
+#ifdef OSAL_WINDOWS
 #include <malloc.h>
+#endif
 
 /**
 ****************************************************************************************************
@@ -151,10 +153,10 @@ os_int osal_ringbuf_put(
 
   @brief Reorganize data in ring buffer to be continuous.
 
-  Rotate ring buffer so that all buffered data is in continous memory.
+  Rotate ring buffer so that all buffered data is in continuous memory.
 
   Warning: This function cannot be used if ring buffer is used to move data from thread to
-  another (unless syncronozation is used).
+  another (unless synchronization is used).
 
   Warning: This function should not be used in small microcontroller socket wrappers.
   It uses > 1420 bytes of stack.
@@ -168,11 +170,15 @@ void osal_ringbuf_make_continuous(
 {
     if (r->head < r->tail)
     {
-        os_char *tmpbuf, *buf;
+        os_char *buf;
         os_int n;
 
+#ifdef OSAL_WINDOWS
+        os_char *tmpbuf;
         tmpbuf = _alloca(r->buf_sz);
-
+#else
+        os_char tmpbuf[r->buf_sz];
+#endif        
         buf = r->buf;
 
         n = r->buf_sz - r->tail;
