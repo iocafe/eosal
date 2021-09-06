@@ -14,8 +14,17 @@ endmacro()
 # set(SUPPORTED_TARGETS esp32)
 # message(FATAL_ERROR "HERE ********** ${IDF_TARGET}")
 
+# Root path for build.
+if (NOT DEFINED ENV{E_ROOT})
+  if(WIN32)
+    set(ENV{E_ROOT} "c:/coderoot")
+  else()
+    set(ENV{E_ROOT} "/coderoot")
+  endif()
+endif()
+
 # ???????????????????????????????????????????????????????????????
-set(SDKCONFIG /coderoot/eosal/osbuild/esp-idf/menuconfig/sdkconfig)
+set(SDKCONFIG $ENV{E_ROOT}/eosal/osbuild/esp-idf/menuconfig/sdkconfig)
 
 # Generic target operating system name "esp32". Used as folder name for OS specific code.
 if (NOT DEFINED ENV{E_OS})
@@ -35,11 +44,6 @@ endif()
 
 if (NOT DEFINED ENV{E_ARCH})
 set(ENV{E_ARCH} "xtensa")
-endif()
-
-# Root path for build.
-if (NOT DEFINED ENV{E_ROOT})
-set(ENV{E_ROOT} "/coderoot")
 endif()
 
 # Postfix letter "d" for debug libraries and binaries.

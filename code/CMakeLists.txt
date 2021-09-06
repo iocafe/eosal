@@ -9,8 +9,14 @@ cmake_minimum_required(VERSION 3.16.0)
 
 # Project name, development root folder and eosal name for operatig system.
 set(E_PROJECT "eosal")
-set(ENV{E_ROOT} "/coderoot")
 set(ENV{E_OS} "esp32")
+if (NOT DEFINED ENV{E_ROOT})
+  if(WIN32)
+    set(ENV{E_ROOT} "c:/coderoot")
+  else()
+    set(ENV{E_ROOT} "/coderoot")
+  endif()
+endif()
 
 # We always use mbedtls and FreeRTOS libraries with ESP-IDF, select related files to build.
 set(E_TLSLIB "mbedtls")
@@ -35,14 +41,16 @@ file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E
 # file(GLOB BB_OS_HEADERS "${BACKBONE}/*/$ENV{E_OS}/*.h")
 # file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
-# Merge the .c files as one list.
+# Merge the .c files as one list. On Windows it may be necessary to get rid of backslashes 
+# (especially if coderoot is set as environment variable)
 set(srcs ${BB_CM_SOURCES})
 list(APPEND srcs ${EX_CM_SOURCES})
 list(APPEND srcs ${BB_OS_SOURCES})
 list(APPEND srcs ${EX_OS_SOURCES})
+cmake_path(CONVERT "${srcs}" TO_CMAKE_PATH_LIST srcs_nobackslashes)
 
 # The eosal library depends on: 
 set(requires, "idf::mbedtls")
 
 # Register eosal as ESP-IDEF component.
-idf_component_register(SRCS "${srcs}" INCLUDE_DIRS "." REQUIRES "${requires}" )
+idf_component_register(SRCS "${srcs_nobackslashes}" INCLUDE_DIRS "." REQUIRES "${requires}" )

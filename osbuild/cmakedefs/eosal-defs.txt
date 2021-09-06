@@ -13,7 +13,6 @@ endmacro()
 # print_all_variables()
 # message(FATAL_ERROR "HERE ********** ${IDF_TARGET}")
 
-
 # Windows ***************************
 if(WIN32)
   # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.

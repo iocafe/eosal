@@ -44,7 +44,20 @@ else()
   file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c")
   file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
+  # Merge to single list. On Windows it may be necessary to get rid of backslashes 
+  # (especially if coderoot is set as environment variable)
+  set(srcs ${MAIN_HEADERS}) 
+  list(APPEND srcs ${BB_CM_HEADERS})
+  list(APPEND srcs ${BB_OS_HEADERS}) 
+  list(APPEND srcs ${EX_CM_HEADERS})
+  list(APPEND srcs ${EX_OS_HEADERS})
+  list(APPEND srcs ${BB_CM_SOURCES})
+  list(APPEND srcs ${BB_OS_SOURCES})
+  list(APPEND srcs ${EX_CM_SOURCES})
+  list(APPEND srcs ${EX_OS_SOURCES})
+  cmake_path(CONVERT "${srcs}" TO_CMAKE_PATH_LIST srcs_nobackslashes)
+
   # Generate the static library
-  add_library(${E_PROJECT}${E_POSTFIX} STATIC ${MAIN_HEADERS} ${BB_CM_HEADERS} ${BB_OS_HEADERS} ${EX_CM_HEADERS} ${EX_OS_HEADERS} ${BB_CM_SOURCES} ${BB_OS_SOURCES} ${EX_CM_SOURCES} ${EX_OS_SOURCES})
+  add_library(${E_PROJECT}${E_POSTFIX} STATIC ${srcs_nobackslashes})
 
 endif()
