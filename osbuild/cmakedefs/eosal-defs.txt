@@ -37,9 +37,9 @@ if(WIN32)
   endif()
 
   # Root path for build.
-  if (NOT DEFINED ENV{E_ROOT})
-    set(ENV{E_ROOT} "c:/coderoot")
-  endif()
+#  if (NOT DEFINED ENV{E_ROOT}) XXXXXXXXXXXXXXXXXXXXXXXX
+#    set(ENV{E_ROOT} "c:/coderoot")
+#  endif()
 
 # Linux or other unix like operating system ***************************
 else()
@@ -94,10 +94,10 @@ else()
     set(ENV{E_COMPILER} "gcc")
   endif()
 
-  # Root path for build.
-  if (NOT DEFINED ENV{E_ROOT})
-    set(ENV{E_ROOT} "/coderoot")
-  endif()
+  # Root path for build. XXXXXXXXXXXXXXXXXXXXXX
+  #   if (NOT DEFINED ENV{E_ROOT})
+  #     set(ENV{E_ROOT} "/coderoot")
+  #   endif()
 
   # DO not compile rpaths in. This allows installing to separate location
   # if (NOT $ENV{E_OSVER} STREQUAL "pi")

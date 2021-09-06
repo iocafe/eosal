@@ -7,19 +7,22 @@ set(E_PROJECT "eosal")
 # Select which TLS library, mbedtls or openssl to use for the OS.
 set(E_TLSLIB "mbedtls")
 
+# Set build root environment variable E_ROOT
+include("osbuild/cmakedefs/eosal-root-path.txt")
+
 if("${IDF_TARGET}" STREQUAL "esp32")
   # ESP-IFD only: Include IDF project setup and declare the project.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
   project(${E_PROJECT})
 
   # include build information common to all projects.
-  include(osbuild/cmakedefs/eosal-defs-espidf.txt)
+  include("osbuild/cmakedefs/eosal-defs-espidf.txt")
 
 else()
   project(${E_PROJECT})
 
   # include build information common to all projects.
-  include(osbuild/cmakedefs/eosal-defs.txt)
+  include("osbuild/cmakedefs/eosal-defs.txt")
 
   # Set path to where to keep libraries.
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
@@ -44,8 +47,7 @@ else()
   file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c")
   file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
-  # Merge to single list. On Windows it may be necessary to get rid of backslashes 
-  # (especially if coderoot is set as environment variable)
+  # Merge to single list. 
   set(srcs ${MAIN_HEADERS}) 
   list(APPEND srcs ${BB_CM_HEADERS})
   list(APPEND srcs ${BB_OS_HEADERS}) 
@@ -55,9 +57,8 @@ else()
   list(APPEND srcs ${BB_OS_SOURCES})
   list(APPEND srcs ${EX_CM_SOURCES})
   list(APPEND srcs ${EX_OS_SOURCES})
-  cmake_path(CONVERT "${srcs}" TO_CMAKE_PATH_LIST srcs_nobackslashes)
 
   # Generate the static library
-  add_library(${E_PROJECT}${E_POSTFIX} STATIC ${srcs_nobackslashes})
+  add_library(${E_PROJECT}${E_POSTFIX} STATIC ${srcs})
 
 endif()

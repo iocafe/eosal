@@ -1,4 +1,4 @@
-# eosal-defs.txt - Set cmake build environment variables common to all projects.
+# eosal-defs-espidf.txt - Set cmake build environment variables for ESP-IDF project.
 # 1.9.2021/pekka
 
 macro(print_all_variables)

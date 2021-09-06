@@ -1,0 +1,19 @@
+# eosal-root-path.txt - Set environment variable E_ROOT, make sure it doesn't contain backslashes (Windows).
+# 1.9.2021/pekka
+
+# message(FATAL_ERROR "HERE ***************************** $ENV{E_ROOT}")
+
+if(WIN32)
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "c:/coderoot")
+  else()
+    file(TO_CMAKE_PATH $ENV{E_ROOT} e_root_no_backslashes)
+    if (NOT $ENV{E_ROOT} STREQUAL ${e_root_no_backslashes})
+       set(ENV{E_ROOT} ${e_root_no_backslashes})
+    endif()
+  endif()
+else()
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "/coderoot")
+  endif()
+endif()
