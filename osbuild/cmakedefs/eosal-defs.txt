@@ -106,7 +106,11 @@ endif()
 include_directories("$ENV{E_ROOT}/eosal")
 
 # Library path.
-set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
+if(WIN32)
+  set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OSVER}_$ENV{E_COMPILER}")
+else()
+  set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
+endif()
 set(ENV{E_LIBOUT} "$ENV{E_LIB}")
 
 # Binary path.
@@ -139,8 +143,8 @@ set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
 if($ENV{E_OS} STREQUAL "windows")
   include_directories("$ENV{E_ROOT}/eosal/dependencies/linux/include")
   set(ENV{E_LIB} "$ENV{E_ROOT}/eosal/dependencies/windows/$ENV{E_OSVER}_$ENV{E_COMPILER};$ENV{E_LIB}")
-  set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};WS2_32")
-  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_TLS_APP_LIBS};mbedtls${E_POSTFIX}")
+  set(ENV{OSAL_CONSOLE_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};ep_usbcamera${E_POSTFIX};WS2_32")
+  set(ENV{OSAL_TLS_APP_LIBS} "$ENV{OSAL_CONSOLE_APP_LIBS};mbedtls${E_POSTFIX}")
   set(ENV{E_COMMON_CONSOLE_APP_LIBS} "$ENV{E_COMMON_CONSOLE_APP_LIBS};WS2_32")
 endif()
 if($ENV{E_OS} STREQUAL "linux")
@@ -175,15 +179,14 @@ if($ENV{E_COMPILER} MATCHES "(gcc)")
    endif()
 endif()
 
-# if($ENV{E_OS} STREQUAL "windows")
-#   # Force to always compile with W4
-#   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-#     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#   else()
-#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-#   endif()
-# elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-#   # Update if necessary
-#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
-# endif()
+if($ENV{E_OS} STREQUAL "windows")
+
+  set(E_UNICODE_FLAGS "/D _UNICODE /D UNICODE /Zc:wchar_t")
+  set(CMAKE_CXX_FLAGS_RELEASE "/MT ${E_UNICODE_FLAGS}")
+  set(CMAKE_CXX_FLAGS_DEBUG "/MTd ${E_UNICODE_FLAGS}")
+  set(CMAKE_C_FLAGS_RELEASE "/MT ${E_UNICODE_FLAGS}")
+  set(CMAKE_C_FLAGS_DEBUG "/MTd ${E_UNICODE_FLAGS}")
+# message(FATAL_ERROR "HERE ********** ${CMAKE_CXX_FLAGS}")
+
+endif()
 

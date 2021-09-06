@@ -48,7 +48,7 @@ osalStatus osal_remove(
        Release buffer after open.
      */
     path_utf16 = osal_str_utf8_to_utf16_malloc(path, &sz);
-    ok = DeleteFile(path_utf16);
+    ok = DeleteFileW(path_utf16);
     os_free(path_utf16, sz);
 
     if (!ok)

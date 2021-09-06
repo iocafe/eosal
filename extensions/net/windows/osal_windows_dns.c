@@ -154,7 +154,7 @@ static osalStatus osal_gethostbyname_sys(
     *is_ipv6  = OS_FALSE;
  
     if ((status = getaddrinfo(name, NULL, &hints, &res)) != 0) {
-        osal_str_utf16_to_utf8(buf, sizeof(buf), gai_strerror(status));
+        osal_str_utf16_to_utf8(buf, sizeof(buf), gai_strerrorW(status));
         osal_debug_error_str("getaddrinfo: ", buf);
         return OSAL_STATUS_FAILED;
     }
