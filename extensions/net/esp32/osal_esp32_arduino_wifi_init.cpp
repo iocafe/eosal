@@ -14,10 +14,10 @@
   Notes:
   - Wifi.config() function in ESP does not follow same argument order as arduino. This
     can create problem if using static IP address.
-  - Static WiFi IP address doesn't work for ESP32. This seems to be a bug in espressif Arduino
+  - Static WiFi IP address doesn't work for ESP32/Arduino. This seems to be a bug in espressif Arduino
     support (replacing success check with 15 sec delay will patch it). Wait for espressif
     updates, ESP32 is still quite new.
-  - esp_wifi_set_ps(WIFI_PS_NONE);  // XXXXXXXXXXXXXXXXXXXXXX REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL
+  - esp_wifi_set_ps(WIFI_PS_NONE) is IMPORTANT, OTHERWISE WIFI WILL CRAWL.
 
   MISSING - TO BE DONE
   - DNS to resolve host names
