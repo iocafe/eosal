@@ -75,6 +75,11 @@ typedef struct
 
     esp_netif_t *sta_netif;
 
+    /* Current status of the WiFi connection.
+     */
+    volatile osalStatus s;
+    volatile osalStatus got_ip;
+
     //os_char ip_address[OSAL_HOST_BUF_SZ];
 
 /*     IPAddress
@@ -110,42 +115,8 @@ static osalWifiNetworkState wifistate;
 
 
 
-/**
-****************************************************************************************************
-
-  @brief Convert string to binary IP address.
-  @anchor osal_arduino_ip_from_str
-
-  The osal_arduino_ip_from_str() converts string representation of IP address to binary.
-  If the function fails, binary IP address is left unchanged.
-
-  @param   ip Pointer to Arduino IP address to set.
-  @param   str Input, IP address as string.
-  @return  None.
-
-****************************************************************************************************
-*/
-/* static void osal_arduino_ip_from_str(
-    IPAddress& ip,
-    const os_char *str)
-{
-    os_uchar buf[4];
-    os_short i;
-
-    if (osal_ip_from_str(buf, sizeof(buf), str) == OSAL_SUCCESS)
-    {
-        for (i = 0; i < sizeof(buf); i++) ip[i] = buf[i];
-    }
-}
-
-
-static String DisplayAddress(IPAddress address)
-{
- return String(address[0]) + "." +
-        String(address[1]) + "." +
-        String(address[2]) + "." +
-        String(address[3]);
-} */
+static void osal_wifi_event_handler(void* arg, esp_event_base_t event_base,
+		int32_t event_id, void* event_data);
 
 
 /**
@@ -177,7 +148,7 @@ void osal_socket_initialize(
 {
     os_int i;
     osalNetworkInterface defaultnic;
-    esp_err_t rval;
+    esp_err_t rval, rval2;
 
     if (nic == OS_NULL && n_nics < 1)
     {
@@ -192,48 +163,42 @@ void osal_socket_initialize(
     if (osal_global->socket_global) return;
     os_memclear(&sg, sizeof(sg));
     os_memclear(&wifistate, sizeof(wifistate));
+    wifistate.s = OSAL_PENDING;
+    wifistate.got_ip = OSAL_PENDING;
 
     /* Initialize the underlying TCP/IP stack.
      */
 	rval = esp_netif_init();
-    if (rval != ESP_OK) {
-        osal_debug_error("esp_netif_init failed");
-        return;            
-    }
+    osal_debug_assert(rval == ESP_OK);
 
     /* Create event loop to pass WiFi related events. ?????? SHOULD THERE BE ONLY ONE PER APP ??????
      */
-	// wifistate.wifi_event_group = xEventGroupCreate();
 	rval = esp_event_loop_create_default();
-    if (rval != ESP_OK) {
-        osal_debug_error("esp_event_loop_create_default failed");
-        return;            
-    }
+    osal_debug_assert(rval == ESP_OK);
 
     /* Create default WIFI STA. In case of any init error this API aborts. 
      */
 	wifistate.sta_netif = esp_netif_create_default_wifi_sta();
-    if (wifistate.sta_netif == 0) {
-        osal_debug_error("esp_netif_create_default_wifi_sta failed");
-        return;            
-    }
+    osal_debug_assert(wifistate.sta_netif != 0);
 
     /* Initialize WiFi. 
      */
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     rval = esp_wifi_init(&cfg);    
-    if (rval != ESP_OK) {
-        osal_debug_error("esp_wifi_init failed");
-        return;            
-    }
+    osal_debug_assert(rval == ESP_OK);
 
     /* Add event handlers.
      */
-    // rval = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL);
-	// rval = esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL);
+    rval = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
+        &osal_wifi_event_handler, NULL);
+    osal_debug_assert(rval == ESP_OK);
+	rval = esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, 
+        &osal_wifi_event_handler, NULL);
+    osal_debug_assert(rval == ESP_OK);
 #if EXAMPLE_WIFI_RSSI_THRESHOLD
 	rval = esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_BSS_RSSI_LOW,
 				&esp_bss_rssi_low_handler, NULL);
+    osal_debug_assert(rval == ESP_OK);
 #endif
 
     /* Do not keep WiFi configuration on flash.
@@ -241,7 +206,7 @@ void osal_socket_initialize(
     rval = esp_wifi_set_storage(WIFI_STORAGE_RAM);
     osal_debug_assert(rval == ESP_OK);
 
-    /* Power management off. REALLY REALLY IMPORTANT, OTHERWISE WIFI WILL CRAWL.
+    /* Power management off. IMPORTANT, OTHERWISE WIFI WILL CRAWL.
      */
     rval = esp_wifi_set_ps(WIFI_PS_NONE);
     osal_debug_assert(rval == ESP_OK);
@@ -257,10 +222,7 @@ void osal_socket_initialize(
 
     osal_trace_str("WiFi: ", (os_char*)wifi_config.sta.ssid);
 	rval = esp_wifi_set_mode(WIFI_MODE_STA);
-    if (rval != ESP_OK) {
-        osal_debug_error("esp_wifi_set_mode failed");
-        return;            
-    }
+    osal_debug_assert(rval == ESP_OK);
 	rval = esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
     if (rval != ESP_OK) {
         osal_debug_error("esp_wifi_set_config failed");
@@ -323,9 +285,50 @@ void osal_socket_initialize(
     osal_global->socket_global = &sg;
     osal_global->sockets_shutdown_func = osal_socket_shutdown;
 
-    /* Call wifi init once to move once to start it.
-     */
-    osal_are_sockets_initialized();
+    return;
+}
+
+
+static void osal_wifi_event_handler(
+    void *arg, 
+    esp_event_base_t event_base,
+    int32_t event_id, 
+    void *event_data)
+{
+	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) 
+    {
+		esp_wifi_connect();
+        osal_trace("WIFI_EVENT_STA_START");
+	}
+    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+		wifi_event_sta_disconnected_t *disconn = event_data;
+		if (disconn->reason == WIFI_REASON_ROAMING) {
+			osal_trace("station roaming, do nothing");
+		} 
+        else {
+            osal_trace("WIFI_EVENT_STA_DISCONNECTED");
+            wifistate.s = OSAL_STATUS_FAILED;
+            wifistate.got_ip = OSAL_PENDING; 
+			esp_wifi_connect();
+		}
+	} 
+    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED) 
+    {
+            osal_trace("WIFI_EVENT_STA_CONNECTED");
+#if EXAMPLE_WIFI_RSSI_THRESHOLD
+		if (EXAMPLE_WIFI_RSSI_THRESHOLD) {
+			ESP_LOGI(TAG, "setting rssi threshold as %d\n", EXAMPLE_WIFI_RSSI_THRESHOLD);
+			esp_wifi_set_rssi_threshold(EXAMPLE_WIFI_RSSI_THRESHOLD);
+		}
+#endif
+        wifistate.s = OSAL_SUCCESS;
+	}
+
+    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) 
+    {
+        osal_trace("IP_EVENT_STA_GOT_IP");
+        wifistate.got_ip = OSAL_SUCCESS;
+    }
 }
 
 
@@ -350,7 +353,11 @@ osalStatus osal_are_sockets_initialized(
 {
     osalStatus s;
 
-    return OSAL_STATUS_FAILED;
+    if (wifistate.s == OSAL_SUCCESS) {
+        return wifistate.got_ip;
+    }
+
+    return wifistate.s; 
 #if 0
     os_char wifi_net_name[OSAL_WIFI_PRM_SZ];
     os_char wifi_net_password[OSAL_WIFI_PRM_SZ];
