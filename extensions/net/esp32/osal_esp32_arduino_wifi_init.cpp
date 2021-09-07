@@ -262,7 +262,7 @@ void osal_socket_initialize(
 
   @return  OSAL_SUCCESS if we are connected to a wifi network.
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
-           OSAL_STATUS_FALED No connection, at least for now.
+           OSAL_STATUS_FAILED No connection, at least for now.
 
 ****************************************************************************************************
 */

@@ -1530,7 +1530,7 @@ void osal_socket_initialize_2(void)
 
   @return  OSAL_SUCCESS if we are connected to a wifi network.
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
-           OSAL_STATUS_FALED No connection, at least for now.
+           OSAL_STATUS_FAILED No connection, at least for now.
 
 ****************************************************************************************************
 */
@@ -1549,7 +1549,7 @@ osalStatus osal_are_sockets_initialized(
                 osal_trace2("Waiting for wifi");
                 os_get_timer(&osal_wifi_init_timer);
             }
-            return OSAL_STATUS_FALED;
+            return OSAL_STATUS_FAILED;
         }
         osal_trace("Wifi network connected");
 

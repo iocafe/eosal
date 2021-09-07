@@ -115,7 +115,7 @@ void osal_socket_shutdown(
 
   @return  OSAL_SUCCESS if we are connected to a wifi network (always returned in Linux).
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
-           OSAL_STATUS_FALED No network, at least for now.
+           OSAL_STATUS_FAILED No network, at least for now.
 
 ****************************************************************************************************
 */

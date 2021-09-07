@@ -507,7 +507,7 @@ static osalStatus osal_socket_really_listen(
   @return  OSAL_SUCCESS if we are connected to a wifi network, proceed with operation.
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
                 Return OSAL_SUCCESS with no bytes transferred.
-           OSAL_STATUS_FALED No wifi connection of socket has been closed because of
+           OSAL_STATUS_FAILED No wifi connection of socket has been closed because of
                 break in wifi connection.
 
 ****************************************************************************************************
@@ -1340,7 +1340,7 @@ static void osal_socket_start_wifi_init(void)
 
   @return  OSAL_SUCCESS if we are connected to a wifi network.
            OSAL_PENDING If currently connecting and have not never failed to connect so far.
-           OSAL_STATUS_FALED No connection, at least for now.
+           OSAL_STATUS_FAILED No connection, at least for now.
 
 ****************************************************************************************************
 */
