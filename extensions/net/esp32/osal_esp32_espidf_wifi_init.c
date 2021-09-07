@@ -313,7 +313,7 @@ void osal_socket_initialize(
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
-    // osal_trace("Commecting to Wifi network");
+    // osal_trace("Connecting to Wifi network");
 
     /* Set socket library initialized flag, now waiting for wifi initialization. We do not lock
      * the code here to allow IO sequence, etc to proceed even without wifi.

@@ -1504,7 +1504,7 @@ void osal_socket_initialize_2(void)
     /* Start the WiFi. Do not wait for the results here, we wish to allow IO to run even
        without WiFi network.
      */
-    osal_trace("Commecting to Wifi network");
+    osal_trace("Connecting to Wifi network");
     osal_trace(wifi_net_name);
     //WiFi.mode(WIFI_STA);
     //WiFi.disconnect();
