@@ -6,7 +6,7 @@
   @version 1.0
   @date    3.9.2021
 
-  TODO, WHAT COULD BE DONE
+  TODO, WHAT COULD BE DONE HERE
   - DNS to resolve host names.
   - Static IP address support.
   - Multi to allows automatic switching between two known wifi networks. Optionally roaming.
@@ -130,7 +130,7 @@ void osal_socket_initialize(
 	rval = esp_netif_init();
     osal_debug_assert(rval == ESP_OK);
 
-    /* Create event loop to pass WiFi related events. ?????? SHOULD THERE BE ONLY ONE PER APP ??????
+    /* Create event loop to pass WiFi related events.
      */
 	rval = esp_event_loop_create_default();
     osal_debug_assert(rval == ESP_OK);
@@ -151,7 +151,7 @@ void osal_socket_initialize(
     rval = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
         &osal_wifi_event_handler, NULL);
     osal_debug_assert(rval == ESP_OK);
-	rval = esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID /* IP_EVENT_STA_GOT_IP */, 
+	rval = esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID, 
         &osal_ip_event_handler, NULL);
     osal_debug_assert(rval == ESP_OK);
 
@@ -174,8 +174,10 @@ void osal_socket_initialize(
     os_memclear(&wifi_config, sizeof(wifi_config));
     wifi_config.sta.rm_enabled = 1;
     wifi_config.sta.btm_enabled = 1;
-    os_strncpy((os_char*)wifi_config.sta.ssid, wifi[0].wifi_net_name, sizeof(wifi_config.sta.ssid));
-    os_strncpy((os_char*)wifi_config.sta.password, wifi[0].wifi_net_password, sizeof(wifi_config.sta.password));
+    os_strncpy((os_char*)wifi_config.sta.ssid, wifi[0].wifi_net_name,
+        sizeof(wifi_config.sta.ssid));
+    os_strncpy((os_char*)wifi_config.sta.password, wifi[0].wifi_net_password,
+        sizeof(wifi_config.sta.password));
     osal_trace_str("WiFi: ", (os_char*)wifi_config.sta.ssid);
 	rval = esp_wifi_set_mode(WIFI_MODE_STA);
     osal_debug_assert(rval == ESP_OK);
