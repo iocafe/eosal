@@ -26,14 +26,6 @@
  */
 #define OSAL_ESP32
 
-#ifndef OSAL_ESPIDF_FRAMEWORK
-  #include "Arduino.h"
-#endif  
-#if OSAL_MULTITHREAD_SUPPORT
-  #include "freertos/FreeRTOS.h"
-  #include "freertos/task.h"
-#endif
-
 /* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.
  */
@@ -424,6 +416,20 @@
  */
 #ifndef OSAL_CONTROL_CONSOLE_SUPPORT
 #define OSAL_CONTROL_CONSOLE_SUPPORT 1
+#endif
+
+/** We do not normally use our own jpeg library on ESP32.
+ */
+#ifndef OSAL_USE_JPEG_LIBRARY
+#define OSAL_USE_JPEG_LIBRARY 0
+#endif
+
+#ifndef OSAL_ESPIDF_FRAMEWORK
+  #include "Arduino.h"
+#endif  
+#if OSAL_MULTITHREAD_SUPPORT
+  #include "freertos/FreeRTOS.h"
+  #include "freertos/task.h"
 #endif
 
 #endif

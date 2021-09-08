@@ -168,7 +168,7 @@ typedef os_char os_boolean;
  */
 #define OSAL_OS_EVENT_LIST_SUPPORT (OSAL_PROCESS_CLEANUP_SUPPORT && OSAL_MULTITHREAD_SUPPORT)
 
-/* Do we want to enable JPEG compression for brick data transfers.
+/** Do we want to enable JPEG compression for brick data transfers.
  */
 #ifndef OSAL_USE_JPEG_LIBRARY
   #if OSAL_MICROCONTROLLER

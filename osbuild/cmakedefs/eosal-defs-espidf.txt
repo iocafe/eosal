@@ -65,3 +65,5 @@ set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
 add_definitions(-DE_OS_$ENV{E_OS})
 add_definitions(-DE_OSVER_$ENV{E_OSVER})
 add_definitions(-DE_ARCH_$ENV{E_ARCH})
+
+
