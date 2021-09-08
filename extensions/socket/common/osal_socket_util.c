@@ -41,7 +41,7 @@
   @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow
            storing IPv6 address. Negative addr_size indicates that we want address string
            back.
-  @param   is_ipv6 Pointer to boolean to set to OS_TRUE if this is IPv6 address or OE_FALSE
+  @param   is_ipv6 Pointer to boolean to set to OS_TRUE if this is IPv6 address or OS_FALSE
            if this is IPv4 address.
   @param   port_nr Pointer to integer into which to store the port number.
   @param   is_ipv6 Flag to set if IP v6 address has been selected.

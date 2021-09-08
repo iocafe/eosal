@@ -131,7 +131,7 @@ osalThread;
 
   This parameter structure can be given when creating a new thread. It contains opetional
   and some platform dependent settings for a new thread. Allocate this structure from stack,
-  ose oe_memclear to fill it with zeros and set only parameters you want to modify from defaults.
+  use os_memclear to fill it with zeros and set only parameters you want to modify from defaults.
 
 ****************************************************************************************************
  */
