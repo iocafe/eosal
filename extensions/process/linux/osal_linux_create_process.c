@@ -13,11 +13,14 @@
 
 ****************************************************************************************************
 */
-/// SHOULD _GNU_SOURCE define be moved after ifdef OSAL_LINUX
-#define _GNU_SOURCE
 #include "eosalx.h"
 #ifdef OSAL_LINUX
 #if OSAL_PROCESS_SUPPORT
+
+/// Is _GNU_SOURCE good here, it was at beginning of the file. 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE 1
+#endif
 
 /* This must be 1 for now. Without it program will crash in signal handling if
    it has not root privilige (otherwise works with 0 also).
