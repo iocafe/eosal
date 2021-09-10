@@ -176,7 +176,7 @@ void osal_secret_bin2str(
     /* Setup source data so that it has 33 bytes. 32 data bited and one 0 byte
      */
     os_memclear(md, sizeof(md));
-    if (data_sz > sizeof(md))
+    if (data_sz > (os_memsz)sizeof(md))
     {
         osal_debug_error("Too much data for password");
         data_sz = sizeof(md);
@@ -228,16 +228,20 @@ void osal_secret_bin2str(
 */
 void osal_make_random_secret(void)
 {
-    #define OSAL_RAND_SECRET_N 4 /* 4 * 64 bits = 256 bits */
+    #define OSAL_RAND_SECRET_N (OSAL_SECRET_STR_SZ/4) /* = 4, 4 * 64 bits = 256 bits */
+    #define OSAL_RAND_UNIQUE_ID_N (OSAL_UNIQUE_ID_BIN_SZ/4) /* = 3, 3 * 64 bits = 96 bits */
     os_long binbuf[OSAL_RAND_SECRET_N];
     os_short i;
 
-    for (i = 0; i < OSAL_RAND_SECRET_N; i++)
-    {
+    for (i = 0; i < OSAL_RAND_SECRET_N; i++) {
         binbuf[i] = osal_rand(0, 0);
     }
+    os_memcpy(osal_global->saved.secret_bin, binbuf, OSAL_SECRET_BIN_SZ);
 
-    os_memcpy(osal_global->secret_bin, binbuf, OSAL_SECRET_BIN_SZ);
+    for (i = 0; i < OSAL_RAND_UNIQUE_ID_N; i++) {
+        binbuf[i] = osal_rand(0, 0);
+    }
+    os_memcpy(osal_global->saved.unique_id_bin, binbuf, OSAL_UNIQUE_ID_BIN_SZ);
 }
 
 
@@ -259,7 +263,7 @@ void osal_initialize_secret(void)
     osalStatus s;
 
     /* If already initialized, do nothing. Mark immediately as initialized before loading
-       secret to avoid recustion with persistent code.
+       secret to avoid recursion with persistent code.
      */
     if (osal_global->secret_initialized) return;
     osal_global->secret_initialized = OS_TRUE;
@@ -287,13 +291,13 @@ void osal_initialize_secret(void)
     /* Generate secret using cryptographic hash of the binary number.
      */
     os_memclear(md, sizeof(md));
-    osal_sha256((const os_uchar*)osal_global->secret_bin, OSAL_SECRET_BIN_SZ, md);
+    osal_sha256((const os_uchar*)osal_global->saved.secret_bin, OSAL_SECRET_BIN_SZ, md);
     osal_secret_bin2str(osal_global->secret_str, OSAL_SECRET_STR_SZ, md, OSAL_HASH_SZ, OS_FALSE);
 
     /* Modify the binary a bit and generate password.
      */
     os_memclear(md, sizeof(md));
-    os_memcpy(password_bin, osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
+    os_memcpy(password_bin, osal_global->saved.secret_bin, OSAL_SECRET_BIN_SZ);
     password_bin[1] ^= 5;
     osal_sha256((const os_uchar*)password_bin, OSAL_SECRET_BIN_SZ, md);
     osal_secret_bin2str(osal_global->auto_password, OSAL_SECRET_STR_SZ, md, OSAL_HASH_SZ, OS_FALSE);
@@ -312,7 +316,7 @@ void osal_initialize_secret(void)
 */
 static osalStatus ioc_load_secret(void)
 {
-    return os_load_persistent(OS_PBNR_SECRET,  osal_global->secret_bin, OSAL_SECRET_BIN_SZ);
+    return os_load_persistent(OS_PBNR_SECRET, (os_char*)&osal_global->saved, sizeof(osalSecretStorage));
 }
 
 
@@ -330,8 +334,8 @@ static osalStatus ioc_load_secret(void)
 */
 static osalStatus ioc_save_secret(os_boolean delete_secret)
 {
-    return os_save_persistent(OS_PBNR_SECRET, osal_global->secret_bin,
-        OSAL_SECRET_BIN_SZ, delete_secret);
+    return os_save_persistent(OS_PBNR_SECRET, (os_char*)&osal_global->saved,
+        sizeof(osalSecretStorage), delete_secret);
 }
 
 #endif

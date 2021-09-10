@@ -42,9 +42,28 @@ typedef void osal_shutdown_func(void);
  */
 #define OSAL_SECRET_BIN_SZ 32
 
-/** Size of string buffer for storing the secret or passowrd.
+/** Size of string buffer for storing the secret or password.
  */
 #define OSAL_SECRET_STR_SZ 46
+
+/** Size of unique ID (96 bits, big enough that we can reasonably assume not to get two same 
+    ones in same network, but small enough to avoid increasing message size).
+ */
+#define OSAL_UNIQUE_ID_BIN_SZ 12
+
+/* Structure for storing secret and unique id.
+ */
+typedef struct osalSecretStorage
+{
+    /** Secret as string.
+     */
+    os_char secret_bin[OSAL_SECRET_BIN_SZ];
+
+    /** Unique ID of the device.
+     */
+    os_char unique_id_bin[OSAL_UNIQUE_ID_BIN_SZ];
+}
+osalSecretStorage;
 
 /** Sizeof nickname buffer.
  */
@@ -54,7 +73,6 @@ typedef void osal_shutdown_func(void);
  */
 extern OS_CONST_H os_char osal_str_asterisk[];
 extern OS_CONST_H os_char osal_str_empty[];
-
 
 /**
 ****************************************************************************************************
@@ -142,9 +160,9 @@ typedef struct
      */
     os_boolean secret_initialized;
 
-    /** Secret as string.
+    /** Secret and unique ID as binary.
      */
-    os_char secret_bin[OSAL_SECRET_BIN_SZ];
+    osalSecretStorage saved;
 
     /** Secret as string. This is used for encrypting private key of TLS server
         so it can be saved as normal data, etc.
