@@ -60,11 +60,17 @@ typedef enum
 
   /** System memory allocation. Total number of bytes allocated from operating system.
    */
-  OSAL_RMON_SYSTEM_MEMORY_ALLOCATION ,
+  OSAL_RMON_SYSTEM_MEMORY_ALLOCATION,
 
   /** System memory use. Number of bytes currently used trough eosal.
    */
   OSAL_RMON_SYSTEM_MEMORY_USE,
+
+  /** Pseudo-static RAM allocation, for example SPI RAM with ESP32. Total bytes.
+   */
+#ifdef OSAL_PSRAM_SUPPORT
+  OSAL_RMON_PSRAM_ALLOCATION,
+#endif  
 
 #if OSAL_MULTITHREAD_SUPPORT
 

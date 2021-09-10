@@ -61,7 +61,7 @@ os_char *osal_psram_alloc(
         return NULL;
     }
 
-    osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, request_bytes);
+    osal_resource_monitor_update(OSAL_RMON_PSRAM_ALLOCATION, request_bytes);
     return mem;
 }
 
@@ -88,7 +88,7 @@ void osal_psram_free(
 {
     if (memory_block) {
         free(memory_block);
-        osal_resource_monitor_update(OSAL_RMON_SYSTEM_MEMORY_ALLOCATION, -bytes);
+        osal_resource_monitor_update(OSAL_RMON_PSRAM_ALLOCATION, -bytes);
     }
 }
 
