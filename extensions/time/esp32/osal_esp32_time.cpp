@@ -1,6 +1,6 @@
 /**
 
-  @file    time/linux/osal_time.c
+  @file    time/esp32/osal_esp32_time.c
   @brief   Get and set system time.
   @author  Pekka Lehtikoski
   @version 1.0

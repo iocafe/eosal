@@ -864,11 +864,13 @@ void osal_socket_initialize(
     /* Set socket library initialized flag.
      */
     osal_sockets_initialized = OS_TRUE;
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_socket_shutdown;
+#endif
 }
 
 
-
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -889,6 +891,7 @@ void osal_socket_shutdown(
         osal_sockets_initialized = OS_FALSE;
     }
 }
+#endif
 
 /* Are sockets initialized (most important with wifi, call always when opening the
    socket to maintain wifi state).

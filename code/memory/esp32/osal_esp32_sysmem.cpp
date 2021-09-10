@@ -74,8 +74,6 @@ os_char *osal_sysmem_alloc(
            the function does nothing.
   @param   bytes Either requested or allocated size of memory block.
 
-  @return  None.
-
 ****************************************************************************************************
 */
 void osal_sysmem_free(

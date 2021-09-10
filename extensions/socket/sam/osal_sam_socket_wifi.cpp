@@ -1290,7 +1290,9 @@ void osal_socket_initialize(
     /* Set socket library initialized flag.
      */
     osal_sockets_initialized = OS_TRUE;
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_socket_shutdown;
+#endif
 }
 #endif
 
@@ -1579,6 +1581,7 @@ void osal_socket_on_wifi_disconnect(
 #endif
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -1601,6 +1604,7 @@ void osal_socket_shutdown(
         osal_sockets_initialized = OS_FALSE;
     }
 }
+#endif
 #endif
 
 

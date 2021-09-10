@@ -672,7 +672,9 @@ void osal_tls_initialize(
     }
 
     osal_socket_initialize(nic, n_nics, wifi, n_wifi);
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_tls_shutdown;
+#endif
     osal_tls_initialized = OS_TRUE;
 
     /* Set TLS library initialized flag, now waiting for wifi initialization. We do not bllock
@@ -683,6 +685,7 @@ void osal_tls_initialize(
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -706,7 +709,7 @@ static void osal_tls_shutdown(
     }
 //#endif
 }
-
+#endif
 
 /**
 ****************************************************************************************************

@@ -19,7 +19,7 @@
 
 /* Default location where to keep persistent configuration data on Linux, Windows, etc.
    This can be overridden by compiler define OSAL_PERSISTENT_ROOT. Location is important
-   since security seacret (persistent block 5) may be kept kept here and file permissions
+   since security secret (persistent block 5) may be kept kept here and file permissions
    must be set.
  */
 #ifndef OSAL_PERSISTENT_ROOT
@@ -59,18 +59,17 @@ static void os_persistent_make_path(
 ****************************************************************************************************
 
   @brief Initialize persistent storage for use.
-  @anchor os_persistent_initialze
+  @anchor os_persistent_initialize
 
-  The os_persistent_initialze() function...
+  The os_persistent_initialize() function...
 
   @param   prm Pointer to parameters for persistent storage. For this implementation path
            member sets path to folder where to keep parameter files. Can be OS_NULL if not
            needed.
-  @return  None.
 
 ****************************************************************************************************
 */
-void os_persistent_initialze(
+void os_persistent_initialize(
     osPersistentParams *prm)
 {
 #if OSAL_DYNAMIC_MEMORY_ALLOCATION == 0
@@ -103,7 +102,6 @@ void os_persistent_initialze(
   @anchor os_persistent_shutdown
 
   The os_persistent_shutdown() function is just place holder for future implementations.
-  @return  None.
 
 ****************************************************************************************************
 */
@@ -200,7 +198,7 @@ osPersistentHandle *os_persistent_open(
     }
 #endif
 
-    if (!initialized) os_persistent_initialze(OS_NULL);
+    if (!initialized) os_persistent_initialize(OS_NULL);
     os_persistent_make_path(block_nr, path, sizeof(path));
 
     /* If we need to get block size?
@@ -383,7 +381,6 @@ getout:
   @param   block_nr Parameter block number, see osal_persistent.h.
   @param   path Pointer to buffer where to store generated path.
   @param   path_sz Size of path buffer.
-  @return  None.
 
 ****************************************************************************************************
 */

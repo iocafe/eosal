@@ -1,7 +1,7 @@
 /**
 
   @file    defs/linux/osal_types.h
-  @brief   Definition of OS dependent primitive types for Arduino Platform.
+  @brief   OS independent primitive types for Arduino Platform.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    12.8.2020

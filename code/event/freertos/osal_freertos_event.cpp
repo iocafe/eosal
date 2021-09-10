@@ -121,8 +121,6 @@ osalEvent osal_event_create(
 
   @param   evnt Pointer to event to delete.
 
-  @return  None.
-
 ****************************************************************************************************
 */
 void osal_event_delete(
@@ -178,8 +176,6 @@ void osal_event_delete(
            Report an error for app use. If this function is called from interrupt handler,
            be sure that evnt is not NULL before calling the function: osal_debug_error()
            function is likely to crash the microcontroller if called from ISR.
-
-  @return  None.
 
 ****************************************************************************************************
 */

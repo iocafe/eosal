@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal/extensions/program/linux/osal_linux_program_device.c
+  @file    program/linux/osal_linux_program_device.c
   @brief   Write IO device program to executables.
   @author  Pekka Lehtikoski
   @version 1.0

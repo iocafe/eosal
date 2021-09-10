@@ -728,10 +728,13 @@ void osal_socket_initialize(
     osal_sockets_initialized = OS_TRUE;
     osal_w5500_chip_initialized = OS_FALSE;
     osal_network_configured = OS_FALSE;
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_socket_shutdown;
+#endif
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -748,7 +751,7 @@ void osal_socket_shutdown(
     void)
 {
 }
-
+#endif
 
 /**
 ****************************************************************************************************

@@ -233,7 +233,7 @@
     all application interrupts by one function call.
  */
 #ifndef OSAL_INTERRUPT_LIST_SUPPORT
-#define OSAL_INTERRUPT_LIST_SUPPORT 1
+#define OSAL_INTERRUPT_LIST_SUPPORT 0
 #endif
 
 /** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code

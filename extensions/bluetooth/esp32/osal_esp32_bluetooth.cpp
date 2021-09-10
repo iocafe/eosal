@@ -1,12 +1,13 @@
 /**
 
-  @file    bluetooth/arduino/osal_bluetooth_esp32.cpp
-  @brief   OSAL bluetooth API - Arduino implementation.
+  @file    bluetooth/esp32/osal_esp32_bluetooth_esp32.cpp
+  @brief   OSAL bluetooth API - ESP32 arduino framework implementation.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021
 
-  Arduino bluetooth wrapper to provide OSAL stream interface.
+  Bluetooth wrapper to provide OSAL stream interface.
+  *** NO ESP-IDF support, only Arduino framework ****
 
   IMPORTANT
   We need RX buffer of 256 bytes.
@@ -84,7 +85,6 @@ static osalStream osal_bluetooth_open(
 
   @param   stream Stream pointer representing the bluetooth port. After this call stream
            pointer will point to invalid memory location.
-  @return  None.
 
 ****************************************************************************************************
 */
@@ -242,7 +242,6 @@ static osalStatus osal_bluetooth_read(
   @anchor osal_bluetooth_initialize
 
   The osal_bluetooth_initialize() just makes sure that initialized flag is false.
-  @return  None.
 
 ****************************************************************************************************
 */
@@ -263,7 +262,6 @@ void osal_bluetooth_initialize(
   Called by osal_shutdown().
 
   The osal_bluetooth_shutdown() closes blue tooth, if it has been opened.
-  @return  None.
 
 ****************************************************************************************************
 */

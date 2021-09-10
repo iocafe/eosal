@@ -22,7 +22,7 @@
   - An application using /SUBSYSTEM:CONSOLE calls wmain, set wmainCRTStartup linker option
     and link with osal_maind.lib (debug) or osal_main.lib (release).
   - An application using /SUBSYSTEM:WINDOWS; calls wWinMain, which must be defined with
-    __stdcall, set wWinMainCRTStartup as entry point. Link with ?
+    __stdcall, set wWinMainCRTStartup as entry point. 
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

@@ -80,8 +80,6 @@ os_char *osal_psram_alloc(
   @param   bytes Not needed here, but allocated block size must be still given to enable
            fallback to os_malloc/os_free when PSRAM is not available.
 
-  @return  None.
-
 ****************************************************************************************************
 */
 void osal_psram_free(

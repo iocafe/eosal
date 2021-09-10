@@ -1,7 +1,7 @@
 /**
 
-  @file    defs/arduino/osal_types.h
-  @brief   Definition of OS dependent primitive types for Linux.
+  @file    defs/eso32/osal_types.h
+  @brief   OS independent primitive types for ESP32.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021

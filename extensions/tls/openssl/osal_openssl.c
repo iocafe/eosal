@@ -855,10 +855,13 @@ void osal_tls_initialize(
     os_memclear(osal_global->tls, sizeof(osalTLS));
 
     osal_openssl_init(prm);
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_tls_shutdown;
+#endif
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -879,7 +882,7 @@ static void osal_tls_shutdown(
 
     osal_socket_shutdown();
 }
-
+#endif
 
 /**
 ****************************************************************************************************

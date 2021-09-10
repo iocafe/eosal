@@ -621,7 +621,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             goto getout;
         }
 
-        /* Inititalize a request to join to a multicast group.
+        /* Initialize a request to join to a multicast group.
          */
         if (!opt_is_ipv6)
         {

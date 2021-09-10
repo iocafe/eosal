@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal/extensions/process/linux/osal_linux_create_process.h
+  @file    process/linux/osal_linux_create_process.h
   @brief   Start new process.
   @author  Pekka Lehtikoski
   @version 1.0

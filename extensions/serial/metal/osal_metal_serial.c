@@ -941,29 +941,7 @@ void osal_serial_initialize(
     {
         osal_serial_port[i].uart = OS_NULL;
     }
-
-    /* osal_global->serial_shutdown_func = osal_serial_shutdown; */
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Shut down the serial communication.
-  @anchor osal_serial_shutdown
-
-  The osal_serial_shutdown() shuts down the underlying serial communication library.
-  This is not needed for Arduino, just empty function to allow linking with code which
-  calls this function for some other OS.
-
-  @return  None.
-
-****************************************************************************************************
-static void osal_serial_shutdown(
-    void)
-{
-}
-*/
 
 
 #if OSAL_MINIMALISTIC == 0

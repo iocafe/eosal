@@ -658,7 +658,7 @@ static osalStatus osal_setup_socket_for_udp_multicasts(
             iface_list_str = osal_stream_buffer_content(interface_list, OS_NULL);
         }
 
-        /* Inititalize a request to join to a multicast group.
+        /* Initialize a request to join to a multicast group.
          */
         if (opt_is_ipv6)
         {

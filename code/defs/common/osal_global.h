@@ -200,15 +200,17 @@ typedef struct
     osal_shutdown_func *sockets_shutdown_func;
 #endif
 
-#if OSAL_SERIAL_SUPPORT
-    /** Shut down function to close library. Set if sockets library
+#if OSAL_PROCESS_CLEANUP_SUPPORT
+  #if OSAL_SERIAL_SUPPORT
+    /** Shut down function to close library. Set if serial communication library
         is initialized. osal_shutdown() function calls this.
      */
     osal_shutdown_func *serial_shutdown_func;
-#endif
+  #endif
 
-#if OSAL_BLUETOOTH_SUPPORT
+  #if OSAL_BLUETOOTH_SUPPORT
     osal_shutdown_func *bluetooth_shutdown_func;
+  #endif
 #endif
 
 #if OSAL_INTERRUPT_LIST_SUPPORT

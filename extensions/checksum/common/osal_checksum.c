@@ -7,7 +7,7 @@
   @date    26.4.2021
 
   The checksum used by EOSAL and IOCOM libraries is 16 bit modbus CRC. The implementation comes
-  in two flavord, one optimized for speed and other for RAM size.
+  in two flavors, one optimized for speed and other for RAM size.
 
   See osal_test_checksum function at end of this file for test code for ensure that the CRC
   is calculated correctly (there are errornous implementations in net).

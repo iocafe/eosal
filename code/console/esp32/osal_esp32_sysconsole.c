@@ -6,9 +6,8 @@
   @version 1.0
   @date    26.4.2021
 
-  The osal_sysconsole_write() function writes text to the console or serial port designated
-  for debug output, and the osal_sysconsole_read() prosesses input from system console or
-  serial port.
+  The osal_sysconsole_write() function writes text to the console/serial port designated for debug
+  output, and the osal_sysconsole_read() reads character input from system console/serial port.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -27,13 +26,11 @@
 /**
 ****************************************************************************************************
 
-  @brief Inititalize system console.
+  @brief Initialize system console.
   @anchor osal_sysconsole_initialize
 
   The osal_sysconsole_initialize() function should do any initialization necessary to use the
-  system console, for example to set serial port.
-
-  @return  None
+  system console, for example to set serial port. Meaningless for ESP32.
 
 ****************************************************************************************************
 */
@@ -50,8 +47,7 @@ void osal_sysconsole_initialize(
   @brief Shut down system console.
   @anchor osal_sysconsole_shutdown
 
-  The osal_sysconsole_shutdown() function restores console state as it was.
-  @return  None
+  The osal_sysconsole_shutdown() function restores console state as it was. Meaningless for ESP32.
 
 ****************************************************************************************************
 */
@@ -71,7 +67,6 @@ void osal_sysconsole_shutdown(
   The osal_sysconsole_write() function writes a string to process'es default console, if any.
 
   @param   text Pointer to string to write.
-  @return  None
 
 ****************************************************************************************************
 */
@@ -86,7 +81,7 @@ void osal_sysconsole_write(
 ****************************************************************************************************
 
   @brief Read character from system console.
-  @anchor osal_sysconsole_run
+  @anchor osal_sysconsole_read
 
   The osal_sysconsole_read() function reads the input from system console. If there are any
   input, the callbacks monitoring the input from this console will get called.

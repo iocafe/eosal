@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal/extensions/process/windows/osal_windows_create_process.h
+  @file    process/windows/osal_windows_create_process.h
   @brief   Start new process.
   @author  Pekka Lehtikoski
   @version 1.0

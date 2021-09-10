@@ -50,7 +50,7 @@
  */
 #define OSAL_PERSISTENT_MAX_PATH 128
 
-/** Parameters structure for os_persistent_initialze() function.
+/** Parameters structure for os_persistent_initialize() function.
  */
 typedef struct
 {
@@ -149,7 +149,7 @@ osPersistentHandle;
 
 /* Initialize persistent storage for use.
  */
-void os_persistent_initialze(
+void os_persistent_initialize(
     osPersistentParams *prm);
 
 /* Release any resources.

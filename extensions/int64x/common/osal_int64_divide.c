@@ -20,7 +20,6 @@
 */
 #include "eosal.h"
 
-
 /* We need the code from this file only if compiler doesn't support 64 bit integers.
  */
 #if OSAL_LONG_IS_64_BITS == 0

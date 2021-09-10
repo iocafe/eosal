@@ -1,7 +1,7 @@
 /**
 
   @file    defs/metal/osal_types.h
-  @brief   Definition of OS dependent primitive types for bare metal micro-controller.
+  @brief   OS independent primitive types for bare metal micro-controller.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021

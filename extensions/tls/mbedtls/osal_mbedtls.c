@@ -92,8 +92,6 @@ static osalStatus osal_report_load_error(
     osPersistentBlockNr block_nr,
     const os_char *file_name);
 
-static void osal_mbedtls_cleanup(void);
-
 static int osal_net_recv(
     void *ctx,
     unsigned char *buf,
@@ -114,8 +112,12 @@ static void osal_mbedtls_debug(
     int line,
     const char *str);
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
+static void osal_mbedtls_cleanup(void);
+
 static void osal_tls_shutdown(
     void);
+#endif
 
 
 /**
@@ -799,10 +801,13 @@ void osal_tls_initialize(
     os_memclear(osal_global->tls, sizeof(osalTLS));
 
     osal_mbedtls_init(prm);
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_tls_shutdown;
+#endif
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -823,6 +828,7 @@ static void osal_tls_shutdown(
 
     osal_socket_shutdown();
 }
+#endif
 
 
 /**
@@ -1041,6 +1047,8 @@ static osalStatus osal_report_load_error(
     return s;
 }
 
+
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -1074,6 +1082,7 @@ static void osal_mbedtls_cleanup(void)
     mbedtls_ctr_drbg_free(&t->ctr_drbg);
     mbedtls_entropy_free(&t->entropy);
 }
+#endif
 
 
 /**

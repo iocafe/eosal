@@ -227,7 +227,6 @@ void osal_type_range(
         *max_value = osal_typeinfo[itype_id].max_value;
     }
 }
-
 #endif
 
 

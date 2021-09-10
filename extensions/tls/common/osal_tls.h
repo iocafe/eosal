@@ -17,7 +17,7 @@
   This complex hand shake is taken care by TLS library.
 
   Server certificate and client certificate chain are public information and can be published
-  to anyone. The seacret to be protected here is the server's private key.
+  to anyone. The secret to be protected here is the server's private key.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,

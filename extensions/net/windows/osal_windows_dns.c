@@ -44,7 +44,7 @@ static osalStatus osal_gethostbyname_sys(
   @param   name Computer name or IP address string.
   @param   addr Pointer where to store the binary IP address. IP address is stored in
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
-           depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
+           depending if this is IPv4 or IPv6 address. Unused bytes in buffer are zeroed.
   @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow
            storing IPv6 address.
   @param   is_ipv6 Pointer to boolean. At input this is hint wether the caller prefers IPv4
@@ -121,7 +121,7 @@ getout:
   @param   name Computer name or IP address string.
   @param   addr Pointer where to store the binary IP address. IP address is stored in
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
-           depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
+           depending if this is IPv4 or IPv6 address. Unused bytes in buffer are zeroed.
   @param   is_ipv6 Pointer to boolean. At input this is hint wether the caller prefers IPv4
            or IPv6 address. Host names may have both IPv4 and IPv6 address assigned. 
            The function sets this to OS_TRUE if IPv6 address is selected, or to OS_FALSE for 

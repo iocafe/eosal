@@ -1,12 +1,12 @@
 /**
 
-  @file    serial/arduino/osal_serial.cpp
-  @brief   OSAL stream API implementation for Arduino serial communication.
+  @file    serial/esp32/osal_esp32_serial.cpp
+  @brief   OSAL stream API implementation for ESP32  serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    26.4.2021
 
-  Serial communication. Implementation of OSAL stream API for Arduino serial ports.
+  Serial communication. Implementation of OSAL stream API.
 
   IMPORTANT
   We need RX buffer of 256 bytes and SERIAL_RX_BUFFER_SIZE is 64 by default.
@@ -467,28 +467,7 @@ static uart_port_t osal_get_esp32_uart_nr(
 void osal_serial_initialize(
     void)
 {
-    /* osal_global->serial_shutdown_func = osal_serial_shutdown; */
 }
-
-
-/**
-****************************************************************************************************
-
-  @brief Shut down the serial communication.
-  @anchor osal_serial_shutdown
-
-  The osal_serial_shutdown() shuts down the underlying serial communication library.
-  This is not needed for Arduino, just empty function to allow linking with code which
-  calls this function for some other OS.
-
-  @return  None.
-
-****************************************************************************************************
-static void osal_serial_shutdown(
-    void)
-{
-}
-*/
 
 
 #if OSAL_MINIMALISTIC == 0

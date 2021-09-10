@@ -9,7 +9,7 @@
   Ring buffers are commonly used to buffer data for communication, to combine multiple small
   writes into one TCP package, or transfer data from thread to another.
 
-  The osal_rinngbuf is simple general purpose ring buffer implementation, with typical head and
+  The osal_ringbuf is simple general purpose ring buffer implementation, with typical head and
   tail indices. The ting buffer state is maintained in osalRingBuf structure (head, tail, buffer
   pointer and size)
 

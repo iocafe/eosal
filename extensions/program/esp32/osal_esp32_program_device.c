@@ -1,6 +1,6 @@
 /**
 
-  @file    eosal/extensions/program/linux/osal_esp32_program_device.c
+  @file    program/linux/osal_esp32_program_device.c
   @brief   Write IO device firmware to flash.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -231,7 +231,9 @@ osalStatus osal_start_device_programming(void)
 
     osal_trace("start programming");
 
+#if OSAL_INTERRUPT_LIST_SUPPORT
     osal_control_interrupts(OS_FALSE);
+#endif    
 
     osal_istate.configured = esp_ota_get_boot_partition();
     osal_istate.running = esp_ota_get_running_partition();
@@ -252,7 +254,9 @@ osalStatus osal_start_device_programming(void)
 
     osal_istate.buf = (uint8_t*)os_malloc(OSAL_PROG_BLOCK_SZ, OS_NULL);
     if (osal_istate.buf == OS_NULL) {
+#if OSAL_INTERRUPT_LIST_SUPPORT
         osal_control_interrupts(OS_TRUE);
+#endif        
         return OSAL_STATUS_MEMORY_ALLOCATION_FAILED;
     }
     osal_istate.n = 0;
@@ -442,7 +446,9 @@ void osal_cancel_device_programming(void)
         osal_trace("programming buffer released");
         os_free(osal_istate.buf, OSAL_PROG_BLOCK_SZ);
         osal_istate.buf = OS_NULL;
+#if OSAL_INTERRUPT_LIST_SUPPORT
         osal_control_interrupts(OS_TRUE);
+#endif        
     }
 }
 

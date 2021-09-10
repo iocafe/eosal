@@ -20,11 +20,11 @@
 ****************************************************************************************************
 
   @brief Select device number to use.
-  @anchor osal_cmdline_devicenr
+  @anchor osal_command_line_device_nr
 
   If we are not running in microcontroller, we may want to allow setting device number
   from command line, like "-n=7". This function checks if device number is specified on
-  command line arguments argx/argv. If so, it will be returned. If not, device number
+  command line arguments argc/argv. If so, it will be returned. If not, device number
   given as argument is returned.
 
   @return  Selected device number.
@@ -48,6 +48,5 @@ os_int osal_command_line_device_nr(
     }
     return device_nr;
 }
-
 
 #endif

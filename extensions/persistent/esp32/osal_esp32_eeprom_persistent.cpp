@@ -1,6 +1,6 @@
 /**
 
-  @file    persistent/arduino/osal_arduino_eeprom_persistent.c
+  @file    persistent/esp32/osal_arduino_eeprom_persistent.c
   @brief   Save persistent parameters on ESP32, uses EEPROM API.
   @author  Pekka Lehtikoski
   @version 1.0
@@ -88,9 +88,9 @@ static void os_persistent_move(
 ****************************************************************************************************
 
   @brief Initialize persistent storage for use.
-  @anchor os_persistent_initialze
+  @anchor os_persistent_initialize
 
-  The os_persistent_initialze() function.
+  The os_persistent_initialize() function.
 
   @param   prm Pointer to parameters for persistent storage. For this implementation path
            member sets path to folder where to keep parameter files. Can be OS_NULL if not
@@ -99,7 +99,7 @@ static void os_persistent_move(
 
 ****************************************************************************************************
 */
-void os_persistent_initialze(
+void os_persistent_initialize(
     osPersistentParams *prm)
 {
     os_ushort checksum;
@@ -254,7 +254,7 @@ osPersistentHandle *os_persistent_open(
 
     if (!os_persistent_lib_initialized)
     {
-        os_persistent_initialze(OS_NULL);
+        os_persistent_initialize(OS_NULL);
     }
 
     block = hdr.blk + block_nr;

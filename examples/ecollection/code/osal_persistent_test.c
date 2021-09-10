@@ -85,7 +85,7 @@ osalStatus osal_persistent_test(
 
     /* Initialize persistent storage
      */
-    os_persistent_initialze(OS_NULL);
+    os_persistent_initialize(OS_NULL);
 
     /* Save and load block in micellenous order to test it
      */

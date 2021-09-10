@@ -242,7 +242,9 @@ void osal_socket_initialize(
     ans.wifi_init_step = OSAL_WIFI_INIT_STEP1;
     ans.wifi_init_failed_once = OS_FALSE;
     osal_global->socket_global = &sg;
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_socket_shutdown;
+#endif
 
     /* Call wifi init once to move once to start it.
      */
@@ -436,6 +438,7 @@ osalStatus osal_are_sockets_initialized(
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -452,8 +455,9 @@ void osal_socket_shutdown(
     void)
 {
     osal_global->socket_global = OS_NULL;
+    #warning Unnecessary OSAL_PROCESS_CLEANUP_SUPPORT=1 define, remove to save a few bytes
 }
-
+#endif
 
 #if OSAL_SOCKET_MAINTAIN_NEEDED
 /**

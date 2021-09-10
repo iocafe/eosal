@@ -35,7 +35,7 @@
            number to listen to.
   @param   addr Pointer where to store the binary IP address. IP address is stored in
            network byte order (most significant byte first). Either 4 or 16 bytes are stored
-           depending if this is IPv4 or IPv6 address. Entire buffer is anythow cleared.
+           depending if this is IPv4 or IPv6 address. Unused bytes in buffer are zeroed.
            Addr can be OS_NULL if not needed (makes the function OS independent).
            THis can be also address, string, if addr_sz is negative.
   @param   addr_sz Address buffer size in bytes. This should be minimum 16 bytes to allow

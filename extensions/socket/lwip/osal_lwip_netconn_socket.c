@@ -1632,10 +1632,13 @@ void osal_socket_initialize(
 #else
     osal_socket_initialize_2();
 #endif
+#if OSAL_PROCESS_CLEANUP_SUPPORT
     osal_global->sockets_shutdown_func = osal_socket_shutdown;
+#endif
 }
 
 
+#if OSAL_PROCESS_CLEANUP_SUPPORT
 /**
 ****************************************************************************************************
 
@@ -1652,7 +1655,7 @@ void osal_socket_shutdown(
     void)
 {
 }
-
+#endif
 
 #if OSAL_SOCKET_MAINTAIN_NEEDED
 /**

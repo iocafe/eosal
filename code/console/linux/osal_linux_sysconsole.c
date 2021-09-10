@@ -32,7 +32,7 @@ static struct termios osal_console_attr;
 /**
 ****************************************************************************************************
 
-  @brief Inititalize system console.
+  @brief Initialize system console.
   @anchor osal_sysconsole_initialize
 
   The osal_sysconsole_initialize() function should do any initialization necessary to use the
