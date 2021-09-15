@@ -76,7 +76,7 @@ osalStatus osal_xor_cpuid(
     os_uchar *buf,
     os_memsz buf_sz)
 {
-    unsigned int eax, ebx, ecx, edx, i;
+    unsigned int eax = 0, ebx = 0, ecx = 0, edx = 0, i;
     os_int pos = 0;
 
     if (__get_cpuid (0, &eax, &ebx, &ecx, &edx) == -1) {

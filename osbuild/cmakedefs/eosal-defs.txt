@@ -20,6 +20,10 @@ if(WIN32)
     set(ENV{E_OS} "windows")
   endif()
 
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "c:/coderoot")
+  endif()
+
   # Generic target operating system version "win32", "win64", "ubuntu16064", "mint18", etc.
   # Used as name for binary folders and as part of installation package name.
   if (NOT DEFINED ENV{E_OSVER})
@@ -41,6 +45,10 @@ else()
   # Generic target operating system name like "windows" or "linux". Used as folder name for OS specific code.
   if (NOT DEFINED ENV{E_OS})
     set(ENV{E_OS} "linux")
+  endif()
+
+  if (NOT DEFINED ENV{E_ROOT})
+    set(ENV{E_ROOT} "/coderoot")
   endif()
 
   # Check for Android build
