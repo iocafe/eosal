@@ -25,9 +25,10 @@
 
 #include "esp_log.h"
 #include "esp_system.h"
-#include "esp_spi_flash.h"
+#include "spi_flash_mmap.h"
 #include "esp_heap_caps.h"
-#include "soc/rtc_wdt.h"
+#include "esp_chip_info.h"
+#include "bootloader_random.h"
 
 /* Prototypes of forward referred static functions.
  */
