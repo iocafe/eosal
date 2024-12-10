@@ -28,7 +28,9 @@
 #include "spi_flash_mmap.h"
 #include "esp_heap_caps.h"
 #include "esp_chip_info.h"
+#include "esp_flash.h"
 #include "bootloader_random.h"
+#include "rtc_wdt.h"
 
 /* Prototypes of forward referred static functions.
  */
@@ -55,6 +57,7 @@ void osal_init_os_specific(
     os_int flags)
 {
     esp_chip_info_t chip_info;
+    uint32_t size_flash_chip;
 
     /* Set esp-idf event logging levels.
      */
@@ -87,8 +90,9 @@ void osal_init_os_specific(
     }
     osal_console_write("\n");
     osal_print_esp32_info("Silicon rev: ", chip_info.revision);
+    esp_flash_get_size(NULL, &size_flash_chip);
     osal_print_esp32_info((chip_info.features & CHIP_FEATURE_EMB_FLASH) 
-      ? "Flash emb:"    : "Flash ext:   ", spi_flash_get_chip_size());
+      ? "Flash emb:"    : "Flash ext:   ", size_flash_chip);
 
     /* Print amount of heap and PS ram
      */

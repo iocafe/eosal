@@ -28,6 +28,7 @@
 #if OSAL_RAND_SUPPORT == OSAL_RAND_PLATFORM
 
 #include "esp_system.h"
+#include "esp_random.h"
 
 
 /**
