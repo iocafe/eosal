@@ -614,7 +614,8 @@ static osalStatus osal_mbedtls_write(
 
     /* Finish handshake first.
      */
-    if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
+    if (!mbedtls_ssl_is_handshake_over(&so->ssl)) {
+    //if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
         s = osal_mbedtls_handshake(so);
         if (s == OSAL_PENDING) return OSAL_SUCCESS;
         if (s) return s;
@@ -682,7 +683,8 @@ static osalStatus osal_mbedtls_read(
 
     /* Finish handshake first.
      */
-    if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
+    if (!mbedtls_ssl_is_handshake_over(&so->ssl)) {
+    // if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
         s = osal_mbedtls_handshake(so);
         if (s == OSAL_PENDING) return OSAL_SUCCESS;
         if (s) return s;
@@ -978,7 +980,7 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
     }
     else
     {
-        ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, (size_t)block_sz, NULL, 0);
+        ret = mbedtls_pk_parse_key(pkey, (const unsigned char *)block, (size_t)block_sz, NULL /*pwd */, 0 /* pwdlen */, NULL, 0);
     }
 
     if (s == OSAL_MEMORY_ALLOCATED)
@@ -1244,7 +1246,8 @@ static osalStatus osal_mbedtls_handshake(
         return OSAL_STATUS_CONNECTION_REFUSED;
     }
 
-    if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
+    if (!mbedtls_ssl_is_handshake_over(&so->ssl)) {
+    // if (so->ssl.state != MBEDTLS_SSL_HANDSHAKE_OVER) {
         return OSAL_PENDING;
     }
 

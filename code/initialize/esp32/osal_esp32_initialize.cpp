@@ -25,7 +25,7 @@
 
 #include "esp_log.h"
 #include "esp_system.h"
-#include "spi_flash_mmap.h"
+//#include "spi_flash_mmap.h"
 #include "esp_heap_caps.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"

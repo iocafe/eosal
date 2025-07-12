@@ -292,36 +292,25 @@ void osal_memory_free_static_block(
   @name Memory Manipulation Functions
 
   The os_memclear() function clears and the os_memcpy() function copies a range of 
-  memory.
+  memory. os_memcmp() compares if two memory blocks are the same. os_memmove() moves memory
+  which may have overlapping regions, like moving short FIFO buffer, etc.
+  
+  Macro implementations map to underlying C library functionality. These are often used to clear
+  or copy C structures, so compiler warning about non-trivial type is disabled by casting pointer
+  to structure to (void *). Underlying C library functionality is much more optimized than our
+  C code implementation, so it is preferred. 
 
 ****************************************************************************************************
  */
 /*@{*/
 
-#ifdef OSAL_WINDOWS
+#if defined(LINUX) || defined(OSAL_ESP32) || defined(OSAL_WINDOWS)
   #define OSAL_MEMORY_OS_CLR_AND_CPY
-  #define os_memclear(d,c) memset((d),0,(size_t)(c))
-  #define os_memcpy(d,s,c) memcpy((d),(s),(size_t)(c))
-  #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
-  #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
+  #define os_memclear(d,c) memset((void*)(d),0,(size_t)(c))
+  #define os_memcpy(d,s,c) memcpy((void*)(d),(void*)(s),(size_t)(c))
+  #define os_memcmp(d,s,c) memcmp((void*)(d),(void*)(s),(size_t)(c))
+  #define os_memmove(d,s,c) memmove((void*)(d),(void*)(s),(size_t)(c))
 #endif
-
-#ifdef OSAL_LINUX
-  #define OSAL_MEMORY_OS_CLR_AND_CPY
-  #define os_memclear(d,c) memset((d),0,(size_t)(c))
-  #define os_memcpy(d,s,c) memcpy((d),(s),(size_t)(c))
-  #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
-  #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
-#endif
-
-#ifdef OSAL_ESP32
-  #define OSAL_MEMORY_OS_CLR_AND_CPY
-  #define os_memclear(d,c) memset((d),0,(size_t)(c))
-  #define os_memcpy(d,s,c) memcpy((d),(s),(size_t)(c))
-  #define os_memcmp(d,s,c) memcmp((d),(s),(size_t)(c))
-  #define os_memmove(d,s,c) memmove((d),(s),(size_t)(c))
-#endif
-
 
 #ifndef OSAL_MEMORY_OS_CLR_AND_CPY
 /* Clear memory.
