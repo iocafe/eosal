@@ -12,17 +12,20 @@ include("osbuild/cmakedefs/eosal-root-path.txt")
 
 if("${IDF_TARGET}" STREQUAL "esp32")
   # ESP-IFD only: Include IDF project setup and declare the project.
-  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+#  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+  include($ENV{IDF_PATH}/tools/cmake/ldgen.cmake)
   project(${E_PROJECT})
 
-  # include build information common to all projects.
+  # include build information common to all ESP32 projects.
   include("osbuild/cmakedefs/eosal-defs-espidf.txt")
+
 
 else()
   project(${E_PROJECT})
 
   # include build information common to all projects.
   include("osbuild/cmakedefs/eosal-defs.txt")
+endif()
 
   # Set path to where to keep libraries.
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
@@ -61,4 +64,3 @@ else()
   # Generate the static library
   add_library(${E_PROJECT}${E_POSTFIX} STATIC ${srcs})
 
-endif()

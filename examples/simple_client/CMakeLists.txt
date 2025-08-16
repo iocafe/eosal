@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "simple_client")
-set(E_UP "../../eosal/osbuild/cmakedefs")
+set(E_UP "/coderoot/eosal/osbuild/cmakedefs")
 
 # Set build root environment variable E_ROOT
 include("${E_UP}/eosal-root-path.txt")
