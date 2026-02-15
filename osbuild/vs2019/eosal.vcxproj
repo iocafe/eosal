@@ -101,7 +101,7 @@
     <ClInclude Include="..\..\extensions\tls\common\osal_aes_crypt.h" />
     <ClInclude Include="..\..\extensions\tls\common\osal_crypto_hash.h" />
     <ClInclude Include="..\..\extensions\tls\common\osal_tls.h" />
-    <ClInclude Include="..\..\extensions\tls\mbedtls\osal_mbedtls.h" />
+    <ClInclude Include="..\..\extensions\tls\mbedtls36\osal_mbedtls36.h" />
     <ClInclude Include="..\..\extensions\typeid\common\osal_typeid.h" />
   </ItemGroup>
   <ItemGroup>
@@ -250,9 +250,9 @@
     <ClCompile Include="..\..\extensions\stringx\common\osal_str_to_bin.c" />
     <ClCompile Include="..\..\extensions\time\windows\osal_windows_time.c" />
     <ClCompile Include="..\..\extensions\tls\common\osal_aes_crypt.c" />
-    <ClCompile Include="..\..\extensions\tls\mbedtls\osal_mbedtls.c" />
-    <ClCompile Include="..\..\extensions\tls\mbedtls\osal_mbedtls_aes_crypt.c" />
-    <ClCompile Include="..\..\extensions\tls\mbedtls\osal_mbedtls_hash.c" />
+    <ClCompile Include="..\..\extensions\tls\mbedtls36\osal_mbedtls36.c" />
+    <ClCompile Include="..\..\extensions\tls\mbedtls36\osal_mbedtls36_aes_crypt.c" />
+    <ClCompile Include="..\..\extensions\tls\mbedtls36\osal_mbedtls36_hash.c" />
     <ClCompile Include="..\..\extensions\typeid\common\osal_typeid.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -21,7 +21,7 @@
 */
 #include "eosalx.h"
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
-#include "extensions/tls/mbedtls/osal_mbedtls.h"
+#include "extensions/tls/mbedtls36/osal_mbedtls36.h"
 
 
 /** MbedTLS specific socket data structure. OSAL functions cast their own stream structure
@@ -956,7 +956,28 @@ static osalStatus osal_mbedtls_setup_cert_or_key(
         }
         else
         {
-            ret = mbedtls_pk_parse_keyfile(pkey, path, 0);
+            /* The mbedtls_pk_parse_keyfile() function is a high - level utility in the Mbed TLS
+            library used to load and parse a private key from a file. It's part of the Public 
+            Key (PK) abstraction layer.
+
+            This function handles the file I/O, decodes the key from its storage format 
+            (like PEM or DER), and initializes an Mbed TLS key context, making it ready 
+            for cryptographic operations.
+            Note: The last two parameters(f_rng, p_rng) are a random number generator(RNG) 
+            callback and its context.
+            These were added in a 2021 API change and are necessary for parsing some key 
+            formats, such as encrypted private keys or EC keys that require computation 
+            of the public key from the private one .
+
+            Parameters :
+            ctx : A pointer to an initialized mbedtls_pk_context structure. This context must 
+            be empty before the call(initialized with mbedtls_pk_init() or freed with mbedtls_pk_free()) .
+            path : The file path to the private key file .
+            pwd : The password used to decrypt the key file, or NULL if the key is not encrypted .
+            f_rng : The RNG function(e.g., mbedtls_ctr_drbg_random).
+            p_rng : The RNG context(e.g., mbedtls_ctr_drbg_context).
+            */
+            ret = mbedtls_pk_parse_keyfile(pkey, path, 0, 0, 0);
             if (!ret) return OSAL_SUCCESS;
 
         }
