@@ -13,6 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>eosald.lib;iocomd.lib;mbedTLSd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

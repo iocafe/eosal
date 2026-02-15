@@ -129,12 +129,12 @@ void osal_aes_crypt(
     {
         mbedtls_aes_setkey_enc(&aes, key, OSAL_AES_BITS);
         mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT,
-            data_sz, iv, data, target_buf);
+            (size_t)data_sz, iv, data, target_buf);
     }
     else {
         mbedtls_aes_setkey_dec(&aes, key, OSAL_AES_BITS);
         mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT,
-            data_sz, iv, data, target_buf);
+            (size_t)data_sz, iv, data, target_buf);
     }
     mbedtls_aes_free(&aes);
 

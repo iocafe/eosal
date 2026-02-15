@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>c:\coderoot\lib\win64_vs2019\</OutDir>
+    <OutDir>c:\coderoot\lib\win64_vs\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
