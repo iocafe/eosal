@@ -35,9 +35,9 @@ if(WIN32)
   endif()
 
   # Compiler name, used as part of library and temporary folder name.
-  # For example "vs2019", "mingw", "gcc", "gccarm9"...
+  # For example "vs", "mingw", "gcc", "gccarm9"...
   if (NOT DEFINED ENV{E_COMPILER})
-    set(ENV{E_COMPILER} "vs2019")
+    set(ENV{E_COMPILER} "vs")
   endif()
 
 # Linux or other unix like operating system ***************************

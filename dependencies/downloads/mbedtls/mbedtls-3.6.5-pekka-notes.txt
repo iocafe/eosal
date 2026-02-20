@@ -27,4 +27,7 @@ Note: MbedTLS 3.6.x includes all necessary components within its own library Mbe
 
 - Copy include header files for use. Copy mbedtls and psa directories from C:\Users\<user>\mbed-tls-build\mbedtls-3.6.5\include to C:\coderoot\eosal\dependencies\windows\include
 
-Appendix 1: 
+
+Compiling eosal and iocom
+Open C:\coderoot\eosal\osbuild\vs and build, then C:\coderoot\iocom\osbuild\vs
+Open 

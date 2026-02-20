@@ -71,23 +71,23 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\win32-executable.props" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\debug-vs2019.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\win32-executable.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\debug-vs.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\win32-executable.props" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\release-vs2019.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\win32-executable.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\release-vs.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\win64-executable.props" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\debug-vs2019.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\win64-executable.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\debug-vs.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\win64-executable.props" />
-    <Import Project="..\..\..\..\..\eosal\osbuild\vs2019\release-vs2019.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\win64-executable.props" />
+    <Import Project="..\..\..\..\..\eosal\osbuild\vs\release-vs.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
