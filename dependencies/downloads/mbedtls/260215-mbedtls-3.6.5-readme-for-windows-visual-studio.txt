@@ -1,14 +1,10 @@
-MbedTLS 3.6.5 notes, 19.2.2026/pekka
+MbedTLS 3.6.5 Windows build with Visual Studio 2026 community edition
+19.2.2026/pekka
 -------------------------------------------------------------------------
 
-Installing Visual Studio 2026 community edition
-
-- Select "Desktop Development with C++"
-- Select "Python Development" and manually select all subitems
-
-MbedTLS 3.6.5 Windows build with Visual Studio 2026 community edition
-
 Note: MbedTLS 3.6.x includes all necessary components within its own library MbedTLS.lib, allowing it to function independently. No longer separate libraries
+
+Note:Select C++ and Python packages in Visual Studio 2026 installer: Select "Desktop Development with C++" and select "Python Development" and manually select all subitems
 
 - Download mbedtls-3.6.5.zip from MbedTLS github releases page.
 - Create folder C:\Users\<user>\mbed-tls-build and unzip mbedtls-3.6.5.zip into it.
@@ -28,6 +24,4 @@ Note: MbedTLS 3.6.x includes all necessary components within its own library Mbe
 - Copy include header files for use. Copy mbedtls and psa directories from C:\Users\<user>\mbed-tls-build\mbedtls-3.6.5\include to C:\coderoot\eosal\dependencies\windows\include
 
 
-Compiling eosal and iocom
-Open C:\coderoot\eosal\osbuild\vs and build, then C:\coderoot\iocom\osbuild\vs
-Open 
+ 

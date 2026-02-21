@@ -1,0 +1,29 @@
+MbedTLS 3.6.5 Linux build with Cmake
+22.2.2026/pekka
+
+Install Build Dependencies:
+
+	sudo apt update
+	sudo apt install build-essential cmake git
+
+Uncompress source code 
+
+	I uncompressed mbedtls-3.6.5.tar.bz2 to /home/iocafe/mbedtls/mbedtls-3.6.5
+	(now this is the MbedTLS source root folder). 
+
+Run cmake and build/install with GNU make
+
+	I created directory /home/iocafe/mbedtls/build to be used as build directory:
+	
+	cd /home/iocafe/mbedtls
+	mkdir build
+	cd build
+	cmake -DUSE_STATIC_MBEDTLS_LIBRARY=On -DUSE_SHARED_MBEDTLS_LIBRARY=Off ../mbedtls-3.6.5
+	make
+	sudo make install
+
+Update Library Cache:
+
+	sudo ldconfig
+
+
