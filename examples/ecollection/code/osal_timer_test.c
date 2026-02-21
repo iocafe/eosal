@@ -36,7 +36,8 @@ osalStatus osal_timer_test(
     os_char *argv[])
 {
     os_timer start_t, end_t;
-    os_int count = 0, elapsed_ms;
+    os_int count = 0;
+    os_long elapsed_ms;
     OSAL_UNUSED(argc);
     OSAL_UNUSED(argv);
 

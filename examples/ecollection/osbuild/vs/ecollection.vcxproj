@@ -19,13 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\code\osal_attached_thread_example.c" />
+    <ClCompile Include="..\..\code\osal_detached_thread_example.c" />
     <ClCompile Include="..\..\code\osal_example_collection_main.c" />
     <ClCompile Include="..\..\code\osal_float_int_conv_test.c" />
     <ClCompile Include="..\..\code\osal_int64_test.c" />
     <ClCompile Include="..\..\code\osal_intser_test.c" />
     <ClCompile Include="..\..\code\osal_json_compress_test.c" />
-    <ClCompile Include="..\..\code\osal_threads_example.c" />
-    <ClCompile Include="..\..\code\osal_threads_example_2.c" />
+    <ClCompile Include="..\..\code\osal_password_test.c" />
+    <ClCompile Include="..\..\code\osal_persistent_test.c" />
+    <ClCompile Include="..\..\code\osal_rand_test.c" />
+    <ClCompile Include="..\..\code\osal_timer_test.c" />
+    <ClCompile Include="..\..\code\osal_type_test.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\osal_example_collection_main.h" />
@@ -41,26 +46,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

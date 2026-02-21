@@ -42,8 +42,8 @@ osalStatus osal_main(
     os_char *argv[])
 {
     // osal_sleep(7000);
-    osal_detached_thread_example();
-    // osal_attached_thread_example();
+    // osal_detached_thread_example();
+    osal_attached_thread_example();
     // return osal_int64_test(argc, argv);
     // return osal_intser_test(argc, argv);
     // return osal_json_compress_test(argc, argv);

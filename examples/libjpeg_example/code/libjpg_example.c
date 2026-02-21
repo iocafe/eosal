@@ -1,7 +1,7 @@
 /**
 
   @file    eosal/examples/libjpeg_example/code/libjpeg_example.c
-  @brief   Example code about threads.
+  @brief   JPEG compression, uncompression example.
   @author  Pekka Lehtikoski
   @version 1.0
   @date    5.6.2020
@@ -72,7 +72,7 @@ osalStatus osal_loop(
         osal_debug_error_int("os_compress_JPEG() failed s=", s);
     }
     else {
-        osal_debug_error_int("compressed bytes ", jpeg_nbytes);
+        osal_debug_trace_int("compressed bytes ", jpeg_nbytes);
     }
     os_free(buf, bytes);
 
@@ -82,7 +82,7 @@ osalStatus osal_loop(
         osal_debug_error_int("os_uncompress_JPEG() failed s=", s);
     }
     else {
-        osal_debug_error_int("uncompressed bytes ", alloc_context.nbytes);
+        osal_debug_trace_int("uncompressed bytes ", alloc_context.nbytes);
     }
 
     os_free(alloc_context.buf, alloc_context.buf_sz);

@@ -253,7 +253,7 @@ osalStatus osal_main(
     /* Create worker thread to do actual coommunication.
      */
     os_memclear(&mythreadprm, sizeof(mythreadprm));
-    mythreadprm.myevent = osal_event_create();
+    mythreadprm.myevent = osal_event_create(OSAL_EVENT_DEFAULT);
     mythread = osal_thread_create(mythread_func, &mythreadprm, OS_NULL, OSAL_THREAD_ATTACHED);
 
     /* Read keyboard and set event if key pressed.
