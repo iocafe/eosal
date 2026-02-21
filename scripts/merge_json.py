@@ -42,6 +42,20 @@ def process_source_file(merged, path):
     else:
         print ("Opening file " + path + " failed")
 
+# Write a file only if content has changed
+def write_file_only_if_changed(filepath, content):
+    if (os.path.isfile(filepath)):
+        hfile = open(filepath, "r")
+        old_content = hfile.read()
+        hfile.close()
+        if (content == old_content):
+            return
+
+    print("Writing merged file " + filepath)
+    hfile = open(filepath, "w")
+    hfile.write(content)
+    hfile.close()
+
 def mymain():
     n = len(sys.argv)
     sourcefiles = []
@@ -62,13 +76,6 @@ def mymain():
         print("No source files")
         exit()
 
-#        sourcefiles.append('/coderoot/iocom/examples/candy/config/parameters/parameters.json')
-#        sourcefiles.append('/coderoot/iocom/config/parameters/wifi_dhcp_device_network_parameters.json')
-
-#        sourcefiles.append('/coderoot/iocom/examples/candy/config/signals/signals.json')
-#        sourcefiles.append('/coderoot/iocom/config/signals/device_conf_signals.json')
-#        sourcefiles.append('/coderoot/iocom/config/signals/camera_buf8k_signals.json')
-
     # If output path is not given as argument.
     if outpath is None:
         path, file_extension = os.path.splitext(sourcefiles[0])
@@ -81,14 +88,12 @@ def mymain():
         os.makedirs(dir_path)
     except FileExistsError:
         pass
-
-    print("Writing file " + outpath)
-
+  
     merged = {}
     for path in sourcefiles:
         process_source_file(merged, path)
 
-    with open(outpath, "w") as outfile:
-        json.dump(merged, outfile, indent=4)
+    content = json.dumps(merged, indent=4)
+    write_file_only_if_changed(outpath, content)
 
 mymain()
