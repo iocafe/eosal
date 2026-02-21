@@ -21,7 +21,7 @@
 */
 #include "eosalx.h"
 #if OSAL_TLS_SUPPORT==OSAL_TLS_MBED_WRAPPER
-#include "extensions/tls/mbedtls36/osal_mbedtls36.h"
+#include "extensions/tls/mbedtls/osal_mbedtls36.h"
 
 
 /** MbedTLS specific socket data structure. OSAL functions cast their own stream structure
