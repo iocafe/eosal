@@ -33,13 +33,13 @@ Optional, install to operating sysem
 
 Copy libraries to use (for 64 bit PC linux computer)
  
-	- Copy libmbedtls.a, libcrypto.a, and libmbedx509.a 
+        - Copy libmbedtls.a, libmbedcrypto.a, and libmbedx509.a
 	  from /home/iocafe/mbedtls/build/library 
 	  to /coderoot/eosal/dependencies/linux/linux_generic_amd64_gcc.
 	
-	- Rename libmbedtls.a, libcrypto.a, and libmbedx509.a 
+        - Rename libmbedtls.a, libmbedcrypto.a, and libmbedx509.a
 	  in /home/iocafe/mbedtls/build/library directory 
-	  to libmbedtlsd.a, libcryptod.a, and libmbedx509d.a 
+          to libmbedtlsd.a, libmbedcryptod.a, and libmbedx509d.a
 	  Then copy the renamed files t 
 	  to /coderoot/eosal/dependencies/linux/linux_generic_amd64_gcc.
 	  
