@@ -11,6 +11,7 @@ eosal_version.*
 *.o
 *.a
 !dependencies/linux/*/*.a
+!dependencies/windows/*/*.lib
 *.la
 *.lai
 *.so
