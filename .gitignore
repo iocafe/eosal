@@ -12,6 +12,7 @@ eosal_version.*
 *.a
 !dependencies/linux/*/*.a
 # !dependencies/linux/linux_generic_x86_gcc/*.a
+# !dependencies/linux/linux_generic_amd64_gcc/*.a
 # !dependencies/linux/linux_pi_arm_gcc/*.a
 *.la
 *.lai
