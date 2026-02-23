@@ -11,7 +11,7 @@ def write_file_only_if_changed(filepath, content):
         old_content = hfile.read()
         hfile.close()
         if (content == old_content):
-            return
+            exit(None)
 
     hfile = open(filepath, "w")
     hfile.write(content)
@@ -40,7 +40,9 @@ def set_version():
     version_time = "XXXX"
     write_version_h()
     write_version_txt()
+    exit(None)
 
 if __name__ == "__main__":
     # execute only if run as a script
     set_version()
+    

@@ -24,10 +24,17 @@ def mymakedir(path):
         pass
 
 def runcmd(cmd):
-    stream = os.popen(cmd)
-    output = stream.read()
-    print(output)    
+    try:
+        stream = os.popen(cmd)
+        output = stream.read()
+        exit_status = stream.close()
 
+        if exit_status is not None:
+            print ("make_debian_package.py: Command \'" + cmd + "\'failed with status " + str(exit_status))
+
+    except Exception as e:
+        print(f"make_debian_package.py: os.popen(\'" + cmd + "\') failed, exception:" + str(e))
+ 
 def write_control_file(DEBIAN_path, appname, description, arch, organization, version):
     tmpctrl = '/tmp/' + organization + '-' + appname + '-' + version + '-' + arch + '-control.tmp'
     finalctrl = DEBIAN_path + "/control"
