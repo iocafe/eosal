@@ -16,7 +16,7 @@
 
 ****************************************************************************************************
 */
-#include "eosal.h"
+#include "eosalx.h"
 
 static os_timer t;
 static os_int count;
