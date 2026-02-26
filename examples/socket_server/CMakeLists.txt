@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "socket_server")
-set(E_UP "../../eosal/osbuild/cmakedefs")
+set(E_UP "../../../eosal/osbuild/cmakedefs")
 
 # Set build root environment variable E_ROOT
 include("${E_UP}/eosal-root-path.txt")
@@ -21,6 +21,9 @@ else()
 
   # include build information common to all projects.
   include("${E_UP}/eosal-defs.txt")
+
+  # List of libraries for linker
+  set(E_APPLIBS "$ENV{OSAL_TLS_APP_LIBS}")
 
   # Build individual library projects.
   add_subdirectory($ENV{E_ROOT}/eosal "${CMAKE_CURRENT_BINARY_DIR}/eosal")
@@ -40,6 +43,6 @@ else()
   # Build executable. Set library folder and libraries to link with
   link_directories($ENV{E_LIB})
   add_executable(${E_PROJECT}${E_POSTFIX} ${SOURCES})
-  target_link_libraries(${E_PROJECT}${E_POSTFIX} $ENV{OSAL_TLS_APP_LIBS})
+  target_link_libraries(${E_PROJECT}${E_POSTFIX} ${E_APPLIBS})
 
 endif()

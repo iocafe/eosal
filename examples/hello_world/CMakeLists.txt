@@ -22,9 +22,12 @@ else()
   # include build information common to all projects.
   include("${E_UP}/eosal-defs.txt")
 
+  # List of libraries for linker
+  set(E_APPLIBS "$ENV{OSAL_TLS_APP_LIBS}")
+  
   # Build individual library projects.
   add_subdirectory($ENV{E_ROOT}/eosal "${CMAKE_CURRENT_BINARY_DIR}/eosal")
-
+ 
   # Set path to where to keep libraries.
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $ENV{E_BIN})
 
@@ -39,7 +42,7 @@ else()
 
   # Build executable. Set library folder and libraries to link with
   link_directories($ENV{E_LIB})
-  add_executable(${E_PROJECT}${E_POSTFIX} ${SOURCES})
-  target_link_libraries(${E_PROJECT}${E_POSTFIX} $ENV{OSAL_CONSOLE_APP_LIBS})
+  add_executable(${E_PROJECT}${E_POSTFIX} ${HEADERS} ${SOURCES})
+  target_link_libraries(${E_PROJECT}${E_POSTFIX} ${E_APPLIBS})
 
 endif()
