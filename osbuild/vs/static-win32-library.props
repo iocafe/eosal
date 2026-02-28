@@ -11,6 +11,9 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>c:\coderoot\eosal;C:\coderoot\eosal\dependencies\eosal_jpeg;c:\coderoot\iocom;C:\coderoot\iocom\extensions\nodeconf;C:\coderoot\iocom\extensions\devicedir;C:\coderoot\iocom\extensions\selectwifi;C:\coderoot\iocom\extensions\ioserver;C:\coderoot\iocom\extensions\iodevice;C:\coderoot\iocom\extensions\deviceinfo;C:\coderoot\iocom\extensions\lighthouse;c:\coderoot\pins;$(ProjectDir)..\..;C:\coderoot\eosal\dependencies\windows\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\coderoot\lib\win32_vs;C:\coderoot\eosal\dependencies\windows\lib_win32_vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
