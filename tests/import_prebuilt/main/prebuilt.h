@@ -1,4 +1,4 @@
-/* Multiple build configurations example
+/* Import Prebuilt Library Example
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)
 
@@ -6,11 +6,6 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
+#pragma once
 
-#include <stdio.h>
-#include "func.h"
-
-void func(void)
-{
-    printf("func() from func_prod.c (Production) called.\n");
-}
+void prebuilt_func(void);

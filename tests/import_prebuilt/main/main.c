@@ -1,4 +1,4 @@
-/* Multiple build configurations example
+/* Import Prebuilt Library Example
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)
 
@@ -7,10 +7,11 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 
-#include <stdio.h>
-#include "func.h"
+// Include the prebuilt library's header file so as to be able
+// to reference `prebuilt_func` here.
+#include "prebuilt.h"
 
-void func(void)
+void app_main(void)
 {
-    printf("func() from func_dev.c (Development) called.\n");
+    prebuilt_func();
 }
