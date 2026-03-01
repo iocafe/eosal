@@ -61,6 +61,26 @@ cmake_install.cmake
 .vs
 x64
 CMakeFiles
+# Virtual environment folders
+venv/
+.venv/
+env/
+
+# Language Servers
+.clangd/
+.ccls-cache/
+compile_commands.json
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# User-specific configuration files
+*.user
+*.workspace # General workspace files, can be from various tools
+*.suo       # Visual Studio Solution User Options
+*.sln.docstates # Visual Studio
 *.dir
 *.vcxproj.*
 *.VC.db
@@ -78,3 +98,18 @@ CMakeCache.txt
 **/.vscode/launch.json
 **/.vscode/ipch
 **/menuconfig/build
+
+# Temporary files
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Python environment files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+
