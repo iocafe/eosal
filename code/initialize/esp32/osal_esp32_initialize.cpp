@@ -167,7 +167,7 @@ void osal_reboot(
     esp_restart();
 }
 
-#ifdef OSAL_DUMMY_ESP32_APP_MAIN
+// #ifdef OSAL_DUMMY_ESP32_APP_MAIN
 
 /**
 ****************************************************************************************************
@@ -185,7 +185,7 @@ extern "C" void app_main(void)
     osal_initialize(OSAL_INIT_DEFAULT);
 }
 
-#endif
+// #endif
 
 #endif
 
