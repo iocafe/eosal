@@ -22,7 +22,6 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_ESP32
-#ifdef OSAL_ESPIDF_FRAMEWORK
 #if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_ESPIDF_WIFI_INIT
 
 #include "esp_pm.h"
@@ -405,6 +404,5 @@ void osal_socket_maintain(
 }
 #endif
 
-#endif
 #endif
 #endif

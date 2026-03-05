@@ -7,6 +7,7 @@
 #
 cmake_minimum_required(VERSION 3.5)
 
+
 # Project name, development root folder E_ROOT and eosal name for operatig system.
 set(E_PROJECT "eosal")
 set(ENV{E_OS} "esp32")
@@ -15,6 +16,14 @@ include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-root-path.txt")
 # We always use mbedtls and FreeRTOS libraries with ESP-IDF, select related files to build.
 set(E_TLSLIB "mbedtls")
 set(E_MTLIB "freertos")
+
+# include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-defs-espidf.txt")
+
+
+# Add defines to indicate target operating system, OS version, and architecture (at level needed for build).
+# add_definitions(-DE_OS_$ENV{E_OS})
+# add_definitions(-DE_OSVER_$ENV{E_OSVER})
+# add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
 # Set path to source files.
 set(BACKBONE "$ENV{E_ROOT}/${E_PROJECT}/code")
@@ -43,7 +52,23 @@ list(APPEND srcs ${BB_OS_SOURCES})
 list(APPEND srcs ${EX_OS_SOURCES})
 
 # The eosal library depends on: 
-set(requires, "idf::mbedtls")
+set(requires, "mbedtls")
+list(APPEND requires "freertos")
+list(APPEND requires "spi_flash")
+list(APPEND requires "bootloader_support")
+list(APPEND requires "esp_timer")
+list(APPEND requires "nvs_flash")
+list(APPEND requires "esp_pm")
+list(APPEND requires "esp_event")
+list(APPEND requires "esp_wifi")
+list(APPEND requires "app_update")
+list(APPEND requires "esp_driver_gpio")
+list(APPEND requires "esp_driver_uart")
+
+
+set(includes, "$ENV{E_ROOT}/eosal")
+list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
+
 
 # Register eosal as ESP-IDEF component.
-idf_component_register(SRCS "${srcs}" INCLUDE_DIRS "." REQUIRES "${requires}" )
+idf_component_register(SRCS "${srcs}" INCLUDE_DIRS "${includes}" REQUIRES "${requires}" )

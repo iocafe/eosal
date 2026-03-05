@@ -7,25 +7,29 @@ set(E_PROJECT "eosal")
 # Select which TLS library, mbedtls or openssl to use for the OS.
 set(E_TLSLIB "mbedtls")
 
+# If we are building for esp 
+# if (NOT DEFINED ESP_PLATFORM)
+#  message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+#else()
+#  message("xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
+# endif()
+
+# set(ENV{E_ESPIDF} 1)
+
 # Set build root environment variable E_ROOT
 include("osbuild/cmakedefs/eosal-root-path.txt")
 
-if("${IDF_TARGET}" STREQUAL "esp32")
-  # ESP-IFD only: Include IDF project setup and declare the project.
-#  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-  include($ENV{IDF_PATH}/tools/cmake/ldgen.cmake)
+if(false)
+  # Cmake Source Directories
+  set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/code)
+
+  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
   project(${E_PROJECT})
-
-  # include build information common to all ESP32 projects.
-  include("osbuild/cmakedefs/eosal-defs-espidf.txt")
-
-
 else()
   project(${E_PROJECT})
 
   # include build information common to all projects.
   include("osbuild/cmakedefs/eosal-defs.txt")
-endif()
 
   # Set path to where to keep libraries.
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
@@ -64,3 +68,4 @@ endif()
   # Generate the static library
   add_library(${E_PROJECT}${E_POSTFIX} STATIC ${srcs})
 
+endif()

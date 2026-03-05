@@ -26,8 +26,7 @@
  */
 // #undef OSAL_TRACE
 // #define OSAL_TRACE 3
-#ifndef OSAL_ESPIDF_FRAMEWORK
-#endif
+
 
 extern "C"{
 #include "lwip/opt.h"

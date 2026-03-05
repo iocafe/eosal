@@ -239,11 +239,11 @@
 /** On ESP32 we need to have IRAM_ATTR attribute for interrupt handler function code
     and for functions called from interrupt handler. Global data accessed from ISR
     must have DRAM_ATTR flag.
- */
 #ifndef OSAL_ESPIDF_FRAMEWORK
   #define OS_ISR_FUNC_ATTR IRAM_ATTR
   #define OS_ISR_DATA_ATTR DRAM_ATTR
 #endif  
+ */
 
 /* If socket support if not selected by compiler define, select now.
  * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
@@ -424,9 +424,6 @@
 #define OSAL_USE_JPEG_LIBRARY 0
 #endif
 
-#ifndef OSAL_ESPIDF_FRAMEWORK
-  #include "Arduino.h"
-#endif  
 #if OSAL_MULTITHREAD_SUPPORT
   #include "freertos/FreeRTOS.h"
   #include "freertos/task.h"
