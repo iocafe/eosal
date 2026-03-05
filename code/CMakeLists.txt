@@ -17,11 +17,11 @@ include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-root-path.txt")
 set(E_TLSLIB "mbedtls")
 set(E_MTLIB "freertos")
 
-# include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-defs-espidf.txt")
+include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-defs-espidf.txt")
 
 
 # Add defines to indicate target operating system, OS version, and architecture (at level needed for build).
-# add_definitions(-DE_OS_$ENV{E_OS})
+# add_definitions("-DE_OS_$ENV{E_OS}"")
 # add_definitions(-DE_OSVER_$ENV{E_OSVER})
 # add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
@@ -66,9 +66,8 @@ list(APPEND requires "esp_driver_gpio")
 list(APPEND requires "esp_driver_uart")
 
 
-set(includes, "$ENV{E_ROOT}/eosal")
+set(includes $ENV{E_ROOT}/eosal)
 list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
-
 
 # Register eosal as ESP-IDEF component.
 idf_component_register(SRCS "${srcs}" INCLUDE_DIRS "${includes}" REQUIRES "${requires}" )
