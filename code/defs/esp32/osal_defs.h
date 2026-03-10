@@ -352,7 +352,7 @@
     the platform, define 1.
  */
 #ifndef OSAL_MAIN_SUPPORT
-#define OSAL_MAIN_SUPPORT 0
+#define OSAL_MAIN_SUPPORT 1
 #endif
 
 /** OSAL extensions: If osal_rand() is supported for the platform, define 1.

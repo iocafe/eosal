@@ -152,7 +152,7 @@ void osal_shutdown_os_specific(
   @brief Restart the microcontroller.
   @anchor osal_reboot
 
-  @param   flags Reserved for future, set 0 for now.
+  @param   flags Reserved for future, set 0 for now. 
 
 ****************************************************************************************************
 */
@@ -166,26 +166,6 @@ void osal_reboot(
     osal_sleep(200);
     esp_restart();
 }
-
-// #ifdef OSAL_DUMMY_ESP32_APP_MAIN
-
-/**
-****************************************************************************************************
-
-  @brief Dummy main function to allow testing eosal ESP32 build configuration.
-  @anchor app_main
-
-  Dummy app_main() function allows compiling eosal separately as application (which does
-  nothing) and allows to test ESPIDF/platformio build.
-
-****************************************************************************************************
-*/
-extern "C" void app_main(void)
-{
-    osal_initialize(OSAL_INIT_DEFAULT);
-}
-
-// #endif
 
 #endif
 

@@ -1,11 +1,18 @@
-# eosal/code/CmakeLists.txt, 4.9.2021/pekka
+# eosal/eosal_esp32/CmakeLists.txt, 4.9.2021/pekka
 #
-# ESP-IDF build only: The second CMakeLists.txt in src_dir (code) sis responsible for controlling 
+# ESP-IDF build only: The second CMakeLists.txt in src_dir (code) is responsible for controlling 
 # the build process of the component and its integration into the overall project. 
 # The component CMakeLists.txt file lists source files and registers the component to the build 
 # system using idf_component_register.
 #
-cmake_minimum_required(VERSION 3.5)
+# In ESP_IDFthe directory name is component name: The ESP-IDF build system identifies components 
+# based on the name of the directory containing the CMakeLists.txt file. Here, a directory named 
+# eosal_esp32 is treated as the component eosal_esp32.
+#
+# Since eosal code is placed in "code" and "extensions" folders for other build system, new directory 
+# eosal_esp32 holds the CmakeList.txt which compiles files in code and extensions directories.
+#
+cmake_minimum_required(VERSION 3.9)
 
 
 # Project name, development root folder E_ROOT and eosal name for operatig system.
@@ -70,7 +77,7 @@ set(includes $ENV{E_ROOT}/eosal)
 list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
 
 # Register eosal as ESP-IDEF component.
-set(COMPONENT_NAME "${E_PROJECT}")
+# set(COMPONENT_NAME "${E_PROJECT}")
 idf_component_register(SRCS "${srcs}" 
     INCLUDE_DIRS "${includes}" 
     REQUIRES "${requires}" )

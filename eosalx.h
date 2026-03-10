@@ -51,6 +51,9 @@ OSAL_C_HEADER_BEGINS
 #ifdef E_OS_windows
   #include "extensions/main/windows/osal_windows_main.h"
 #endif
+#ifdef E_OS_esp32
+  #include "extensions/main/esp32/osal_esp32_main.h"
+#endif
 #ifndef EOSAL_C_MAIN
   #define EOSAL_C_MAIN
 #endif

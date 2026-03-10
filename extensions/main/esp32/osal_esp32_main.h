@@ -1,10 +1,10 @@
 /**
 
-  @file    main/linux/osal_linux_main.h
-  @brief   Linux process entry point function.
+  @file    main/linux/osal_esp32_main.h
+  @brief   ESP32 process entry point.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    26.4.2021
+  @date    10.3.2026
 
   This OSAL main process entry point header file.
 
@@ -16,12 +16,12 @@
 ****************************************************************************************************
 */
 #pragma once
-#ifndef OSAL_LINUX_MAIN_H_
-#define OSAL_LINUX_MAIN_H_
+#ifndef OSAL_ESP32_MAIN_H_
+#define OSAL_ESP32_MAIN_H_
 #include "eosalx.h"
-#ifdef OSAL_LINUX
+#ifdef OSAL_ESP32
 
-/* Prototype of operating system specific entry point code.
+/* Prototype of operating system specific entry point code/
  */
 int eosal_entry(
     int argc,
@@ -31,7 +31,7 @@ int eosal_entry(
  */
 #define EOSAL_C_MAIN  \
     OSAL_C_HEADER_BEGINS \
-    int main(int c, char **v) {return eosal_entry((c), (v)); } \
+    void app_main(void) {eosal_entry(OS_NULL, 0); } \
     OSAL_C_HEADER_ENDS
 
 #endif

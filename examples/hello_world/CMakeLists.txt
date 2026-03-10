@@ -8,13 +8,19 @@ set(E_UP "../../../eosal/osbuild/cmakedefs")
 # Set build root environment variable E_ROOT
 include("${E_UP}/eosal-root-path.txt")
 
-if("${IDF_TARGET}" STREQUAL "esp32")
-  # ESP-IFD only: Include IDF project setup and declare the project.
+if (DEFINED ESP_PLATFORM)
+  set(E_EXTRA_DIRS $ENV{E_ROOT}/eosal/eosal_esp32)
+  list(APPEND E_EXTRA_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
+  set(EXTRA_COMPONENT_DIRS ${E_EXTRA_DIRS})
+  # set(EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/code)
+  # set(EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
+
+ # ESP-IFD only: Include IDF project setup and declare the project.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
   project(${E_PROJECT})
 
   # include build information common to all projects.
-  include("${E_UP}/eosal-defs-espidf.txt")
+  # include("${E_UP}/eosal-defs-espidf.txt")
 
 else()
   project(${E_PROJECT})

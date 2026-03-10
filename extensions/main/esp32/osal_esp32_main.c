@@ -1,10 +1,10 @@
 /**
 
-  @file    main/linux/osal_linux_main.c
-  @brief   Linux process entry point function.
+  @file    main/linux/osal_esp32_main.c
+  @brief   ESP32 process entry point function.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    26.4.2021
+  @date    10.3.2026
 
   This OSAL main process entry point function. Generally the operating system calls entry
   point function to start the process. Unfortunately name, arguments and character encoding
@@ -12,15 +12,14 @@
 
   To be start a process in generic way we write osal_main() function in our application
   and then link with osal_main, etc. library which contains appropriate operating system
-  dependent entry point, converts the arguments to UTF8 and passes these on to osal_main()
-  Use macro EOSAL_C_MAIN in application to generate actual C main() function code.
+  dependent entry point.
 
   Notice that using osal_main() function to enter the process is optional, you can start the
   process in any way you like.
 
-  Linux notes:
-  - On linux terminating '\r' on command line is removed. This is typically caused by
-    editing scripts on windows.
+  ESP32 notes:
+  - The app_main function takes no arguments. Dummy argument "C" is passed to application
+    to application entry point.
 
   Copyright 2020 Pekka Lehtikoski. This file is part of the eosal and shall only be used,
   modified, and distributed under the terms of the project licensing. By continuing to use, modify,
@@ -30,7 +29,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#ifdef OSAL_LINUX
+#ifdef OSAL_ESP32
 #if OSAL_MAIN_SUPPORT
 
 /**
@@ -54,54 +53,21 @@ int eosal_entry(
     int argc,
     char **argv)
 {
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION
-    os_char **myargv, *p, *q;
-    os_memsz sz;
-    os_int i;
-#endif
-    int rval;
+    static os_char *arglist[1] = {"C"};
 
     /* Initialize operating system abstraction layer.
      */
     osal_initialize(OSAL_INIT_DEFAULT);
 
-#if OSAL_DYNAMIC_MEMORY_ALLOCATION
-    /* Copy pointers to command line arguments. If command line argument contains '\r'
-       character, make copy and terminate ar '\r'. These memory allocations will be
-       cleaned up when osal_shutdown runs at exit, and all memory is released.
+    /* Call the application entry point function
      */
-    myargv = (os_char**)os_malloc(argc*sizeof(os_char*), OS_NULL);
-    for (i = 0; i < argc; i++)
-    {
-        myargv[i] = argv[i];
-        p = myargv[i];
-        if (os_strchr(p, '\r'))
-        {
-            sz = os_strlen(p);
-            q = os_malloc(sz, OS_NULL);
-            os_memcpy(q, p, sz);
-            myargv[argc-1] = q;
-            p = os_strchr(q, '\r');
-            *p = '\0';
-        }
-    }
-
-    /* Call OS independent process entry point.
-     */
-    rval = osal_main(argc, myargv);
-#else
-    /* Call OS independent process entry point. We do not care about
-       command line that precisely if we do not have dynamic memory
-       allocation (some embedded/microcontroller system)
-     */
-    rval = osal_main(argc, argv);
-#endif
+    osal_main(1, arglist);
 
     /* Shut down operating system abstraction layer.
      */
     osal_shutdown();
 
-    return rval;
+    return 0;
 }
 
 #endif
