@@ -17,7 +17,6 @@ cmake_minimum_required(VERSION 3.9)
 
 # Project name, development root folder E_ROOT and eosal name for operatig system.
 set(E_PROJECT "eosal")
-set(ENV{E_OS} "esp32")
 include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-root-path.txt")
 
 # We always use mbedtls and FreeRTOS libraries with ESP-IDF, select related files to build.
@@ -27,10 +26,6 @@ set(E_MTLIB "freertos")
 include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-defs-espidf.txt")
 
 
-# Add defines to indicate target operating system, OS version, and architecture (at level needed for build).
-# add_definitions("-DE_OS_$ENV{E_OS}"")
-# add_definitions(-DE_OSVER_$ENV{E_OSVER})
-# add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
 # Set path to source files.
 set(BACKBONE "$ENV{E_ROOT}/${E_PROJECT}/code")

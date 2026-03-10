@@ -5,16 +5,8 @@ cmake_minimum_required(VERSION 3.5)
 set(E_PROJECT "eosal")
 
 # Select which TLS library, mbedtls or openssl to use for the OS.
+# For now, MbedTLS is the only supported TLS library, but we may add OpenSSL support later.
 set(E_TLSLIB "mbedtls")
-
-# If we are building for esp 
-# if (NOT DEFINED ESP_PLATFORM)
-#  message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-#else()
-#  message("xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-# endif()
-
-# set(ENV{E_ESPIDF} 1)
 
 # Set build root environment variable E_ROOT
 include("osbuild/cmakedefs/eosal-root-path.txt")
@@ -22,6 +14,14 @@ include("osbuild/cmakedefs/eosal-root-path.txt")
 if (DEFINED ESP_PLATFORM)
   # Cmake Source Directories
   set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/eosal_esp32)
+
+  # Add defines to indicate target operating system, OS version, and architecture.
+  add_definitions(-DE_OS_$ENV{E_OS})
+  add_definitions(-DE_OSVER_$ENV{E_OSVER})
+  add_definitions(-DE_ARCH_$ENV{E_ARCH})
+
+  # Enable dummy app_main for ESP-IDF build, so we cab build eosal as ESP32 library. 
+  add_definitions(-DOSAL_DUMMY_ESP32_APP_MAIN)
 
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
   project(${E_PROJECT})
