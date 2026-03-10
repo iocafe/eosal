@@ -19,12 +19,13 @@ set(E_TLSLIB "mbedtls")
 # Set build root environment variable E_ROOT
 include("osbuild/cmakedefs/eosal-root-path.txt")
 
-if(false)
+if (DEFINED ESP_PLATFORM)
   # Cmake Source Directories
   set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/code)
 
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
   project(${E_PROJECT})
+
 else()
   project(${E_PROJECT})
 
