@@ -1,5 +1,5 @@
-# eosal/CmakeLists.txt - Cmake build for the EOSAL library, 5.9.2021/pekka.
-cmake_minimum_required(VERSION 3.5)
+# eosal/CmakeLists.txt - Cmake build for the EOSAL library, 10.3.2026/pekka.
+cmake_minimum_required(VERSION 3.9)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "eosal")
@@ -15,6 +15,9 @@ if (DEFINED ESP_PLATFORM)
   # Cmake Source Directories
   set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/eosal_esp32)
 
+  # Include build information common to ESP32 projects.
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
+
   # Add defines to indicate target operating system, OS version, and architecture.
   add_definitions(-DE_OS_$ENV{E_OS})
   add_definitions(-DE_OSVER_$ENV{E_OSVER})
@@ -29,7 +32,7 @@ if (DEFINED ESP_PLATFORM)
 else()
   project(${E_PROJECT})
 
-  # include build information common to all projects.
+  # Include build information common to all projects.
   include("osbuild/cmakedefs/eosal-defs.txt")
 
   # Set path to where to keep libraries.

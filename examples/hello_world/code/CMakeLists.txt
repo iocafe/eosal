@@ -1,4 +1,4 @@
-# eosal/examples/code/CmakeLists.txt, 10.3.2026/pekka
+# eosal/examples/hello_world/code/CmakeLists.txt, 10.3.2026/pekka
 #
 # ESP-IDF build only: The second CMakeLists.txt in src_dir (code) is responsible for controlling 
 # the build process of the component and its integration into the overall project. 
@@ -22,7 +22,6 @@ file(GLOB E_MODULE_SOURCES "${E_MODULEDIR}/code")
 # Merge the .c files as one list. 
 set(srcs ${E_MODULE_SOURCES})
 # list(APPEND srcs ${EX_CM_SOURCES})
-
 
 # The eosal library depends on: 
 set(requires "eosal_esp32")

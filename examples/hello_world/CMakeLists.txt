@@ -12,15 +12,18 @@ if (DEFINED ESP_PLATFORM)
   set(E_EXTRA_DIRS $ENV{E_ROOT}/eosal/eosal_esp32)
   list(APPEND E_EXTRA_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
   set(EXTRA_COMPONENT_DIRS ${E_EXTRA_DIRS})
-  # set(EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/code)
-  # set(EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
 
  # ESP-IFD only: Include IDF project setup and declare the project.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
   project(${E_PROJECT})
 
-  # include build information common to all projects.
-  # include("${E_UP}/eosal-defs-espidf.txt")
+  # Include build information common to ESP32 projects.
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
+
+  # Add defines to indicate target operating system, OS version, and architecture.
+  add_definitions(-DE_OS_$ENV{E_OS})
+  add_definitions(-DE_OSVER_$ENV{E_OSVER})
+  add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
 else()
   project(${E_PROJECT})
