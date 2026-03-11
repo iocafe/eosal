@@ -1,5 +1,5 @@
 # eosal/build/arduino-library/CmakeLists.txt - Cmake build for eosal library.
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 # Set some informative project name.
 project("arduino-library")

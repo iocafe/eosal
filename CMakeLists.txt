@@ -1,5 +1,5 @@
 # eosal/CmakeLists.txt - Cmake build for the EOSAL library, 10.3.2026/pekka.
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "eosal")

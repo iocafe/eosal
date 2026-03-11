@@ -12,7 +12,7 @@
 # Since eosal code is placed in "code" and "extensions" folders for other build system, new directory 
 # eosal_esp32 holds the CmakeList.txt which compiles files in code and extensions directories.
 #
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 
 
 # Project name, development root folder E_ROOT and eosal name for operatig system.

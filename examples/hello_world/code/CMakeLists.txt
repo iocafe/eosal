@@ -5,7 +5,7 @@
 # The component CMakeLists.txt file lists source files and registers the component to the build 
 # system using idf_component_register.
 #
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 # Project name, development root folder E_ROOT and eosal name for operatig system.
 set(E_PROJECT "hello_world")
