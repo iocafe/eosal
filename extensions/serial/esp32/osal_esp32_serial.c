@@ -1,26 +1,16 @@
 /**
 
   @file    serial/esp32/osal_esp32_serial.cpp
-  @brief   OSAL stream API implementation for ESP32  serial communication.
+  @brief   OSAL stream API for ESP32 serial communication.
   @author  Pekka Lehtikoski
   @version 1.0
-  @date    26.4.2021
+  @date    11.3.2026
 
   Serial communication. Implementation of OSAL stream API.
 
   IMPORTANT
   We need RX buffer of 256 bytes and SERIAL_RX_BUFFER_SIZE is 64 by default.
   This is used HardwareSerial.h.
-
-  Create file named "build_opt.h" in Arduino sketch folder. The file should contain only text:
-  -DSERIAL_RX_BUFFER_SIZE=256 -DSERIAL_TX_BUFFER_SIZE=256
-
-  IMPORTANT: STM32DUINO CANNOT RELIABLY HANDLE BUFFER SIZES GREATER THAN 256 BYTES.
-  RARE CORRUPTION OF MESSAGE RESULTS FROM TRYING THIS. PERHAPS SAME IN OTHER ARDUINO
-  BASED SYSTEMS, BUT THIS IS NOT PROVEN.
-
-  Does this really do anything?
-  stty -F /dev/ttyUSB0 -ixon
 
   To display
   stty -a -F /dev/ttyUSB0
@@ -38,7 +28,7 @@
 
 #include "driver/uart.h"
 
-/** Arduino specific serial point state data structure. OSAL functions cast their own
+/** ESP32 specific serial point state data structure. OSAL functions cast their own
     structure pointers to osalStream pointers.
  */
 typedef struct osalSerial
@@ -84,8 +74,8 @@ static uart_port_t osal_get_esp32_uart_nr(
 
   @param  parameters Serial port name and parameters, for example "COM2,baud=38400".
           The parameters string must beging with serial port name. It is Windows
-          like COMx port name, "COM1" means Arduino Serial object, "COM2" Arduino Serial1
-          object...
+          like COMx port name, "COM1", "COM2"...
+          
           The port name can be followed by com port settings, in format "name=value".
           These settings are separated from serial port name and other setting by comma.
           Currectly supported settings are baud=<baudrate> and parity=none/odd/even.
@@ -98,7 +88,7 @@ static uart_port_t osal_get_esp32_uart_nr(
 
   @param  flags Flags for creating the serial. Bit fields, combination of:
           - OSAL_STREAM_NO_SELECT: Open serial without select functionality. Use this
-          always for Arduino. Select is not supported in Arduino environment.
+          always for ESP32. Select is not supported in ESP32 environment.
 
   @return Stream pointer representing the serial port, or OS_NULL if the function failed.
 
@@ -109,7 +99,7 @@ osalStream osal_serial_open(
     void *option,
     osalStatus *status,
     os_int flags)
-{
+{ 
     osalSerial *myserial = OS_NULL;
     uart_config_t uart_config;
     uart_port_t uart_nr;
@@ -174,8 +164,8 @@ osalStream osal_serial_open(
      */
     rxbuf_sz = osal_str_get_item_int(parameters, "rxbuf", 256, OSAL_STRING_DEFAULT);
     txbuf_sz = osal_str_get_item_int(parameters, "txbuf", 256, OSAL_STRING_DEFAULT);
-    if (rxbuf_sz < UART_FIFO_LEN + 16) rxbuf_sz = UART_FIFO_LEN + 16;
-    if (txbuf_sz < UART_FIFO_LEN + 16) txbuf_sz = UART_FIFO_LEN + 16;
+    if (rxbuf_sz < UART_HW_FIFO_LEN(uart_nr) + 16) rxbuf_sz = UART_HW_FIFO_LEN(uart_nr) + 16;
+    if (txbuf_sz < UART_HW_FIFO_LEN(uart_nr) + 16) txbuf_sz = UART_HW_FIFO_LEN(uart_nr) + 16;
 txbuf_sz = 0; // MUST BE ZERO, OTHERWISE BLOCKS
     ESP_ERROR_CHECK(uart_driver_install(uart_nr, rxbuf_sz, txbuf_sz,
         0, NULL, 0));
@@ -246,7 +236,7 @@ void osal_serial_close(
 
   @param   stream Stream pointer representing the serial port.
   @param   flags Bit fields. OSAL_STREAM_CLEAR_RECEIVE_BUFFER clears receive
-           buffer. Clearing transmit buffer is not implemented for Arduino.
+           buffer.
            See @ref osalStreamFlags "Flags for Stream Functions" for full list of flags.
   @return  Function status code. Value OSAL_SUCCESS (0) indicates success and all nonzero values
            indicate an error.
@@ -457,9 +447,9 @@ static uart_port_t osal_get_esp32_uart_nr(
   @anchor osal_serial_initialize
 
   The osal_serial_initialize() initializes the underlying serial communication library.
-  This is not needed for Arduino, just empty function to allow linking with code which
-  calls this function for some other OS.
 
+  This is not needed for ESP32, just empty function to allow linking with code which
+  calls this function for some other OS.
   @return  None.
 
 ****************************************************************************************************

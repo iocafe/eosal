@@ -37,14 +37,10 @@ set(EXTENSIONS "$ENV{E_ROOT}/${E_PROJECT}/extensions")
 # List source files common to all operating systems. We do not need header files for now.
 file(GLOB BB_CM_SOURCES "${BACKBONE}/*/common/*.c")
 file(GLOB EX_CM_SOURCES "${EXTENSIONS}/*/common/*.c")
-# file(GLOB BB_CM_HEADERS "${BACKBONE}/*/common/*.h")
-# file(GLOB EX_CM_HEADERS "${EXTENSIONS}/*/common/*.h")
 
 # List ESP32, mbedTLS and FreeRTOS specific source files. We do not need header files for now.
 file(GLOB BB_OS_SOURCES "${BACKBONE}/*/$ENV{E_OS}/*.c" "${BACKBONE}/*/$ENV{E_OS}/*.cpp" "${BACKBONE}/*/${E_MTLIB}/*.c" "${BACKBONE}/*/${E_MTLIB}/*.cpp")
 file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c" "${EXTENSIONS}/*/${E_TLSLIB}/*.cpp")
-# file(GLOB BB_OS_HEADERS "${BACKBONE}/*/$ENV{E_OS}/*.h")
-# file(GLOB EX_OS_HEADERS "${EXTENSIONS}/*/$ENV{E_OS}/*.h")
 
 # Merge the .c files as one list. On Windows it may be necessary to get rid of backslashes 
 # (especially if coderoot is set as environment variable)
@@ -67,9 +63,9 @@ list(APPEND requires "app_update")
 list(APPEND requires "esp_driver_gpio")
 list(APPEND requires "esp_driver_uart")
 
-
 set(includes $ENV{E_ROOT}/eosal)
 list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
+list(APPEND includes "$ENV{E_ROOT}/${E_PROJECT}/build/config")
 
 # Register eosal as ESP-IDEF component.
 # set(COMPONENT_NAME "${E_PROJECT}")
