@@ -1,0 +1,13 @@
+# eosal-top-level-espidf-setup.txt - Included from top level makefile to set up 
+# for ESP32 build.
+# 13.4.2026/pekka
+
+# Include build setting for ESP32 projects.
+include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
+
+ # Add defines to indicate target operating system, OS version, and architecture.
+ add_definitions(-DE_OS_$ENV{E_OS})
+ add_definitions(-DE_OSVER_$ENV{E_OSVER})
+ add_definitions(-DE_ARCH_$ENV{E_ARCH})
+
+  

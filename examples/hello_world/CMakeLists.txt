@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.12)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "hello_world")
-set(E_UP "../../../eosal/osbuild/cmakedefs")
 
-# Set build root environment variable E_ROOT
+# Set build root environment variable E_ROOT.
+set(E_UP "../../../eosal/osbuild/cmakedefs")
 include("${E_UP}/eosal-root-path.txt")
 
 if (DEFINED ESP_PLATFORM)
@@ -13,17 +13,14 @@ if (DEFINED ESP_PLATFORM)
   list(APPEND E_EXTRA_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
   set(EXTRA_COMPONENT_DIRS ${E_EXTRA_DIRS})
 
- # ESP-IFD only: Include IDF project setup and declare the project.
+  # Include ESP-IDF build specific eosal settings for the top level cmake. 
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-top-level-espidf-setup.txt")
+
+    # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+ 
+  # Name the project.
   project(${E_PROJECT})
-
-  # Include build information common to ESP32 projects.
-  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
-
-  # Add defines to indicate target operating system, OS version, and architecture.
-  add_definitions(-DE_OS_$ENV{E_OS})
-  add_definitions(-DE_OSVER_$ENV{E_OSVER})
-  add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
 else()
   project(${E_PROJECT})

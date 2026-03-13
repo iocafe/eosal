@@ -1,11 +1,11 @@
-# eosal/eosal_esp32/CmakeLists.txt, 4.9.2021/pekka
+# eosal/eosal_esp32/CmakeLists.txt, 13.3.2026/pekka
 #
-# ESP-IDF build only: The second CMakeLists.txt in src_dir (code) is responsible for controlling 
+# ESP-IDF build only: The second CMakeLists.txt in "eosal_esp32" is responsible for controlling 
 # the build process of the component and its integration into the overall project. 
 # The component CMakeLists.txt file lists source files and registers the component to the build 
 # system using idf_component_register.
 #
-# In ESP_IDFthe directory name is component name: The ESP-IDF build system identifies components 
+# In ESP_IDF the directory name is the component name: The ESP-IDF build system identifies components 
 # based on the name of the directory containing the CMakeLists.txt file. Here, a directory named 
 # eosal_esp32 is treated as the component eosal_esp32.
 #
@@ -14,31 +14,27 @@
 #
 cmake_minimum_required(VERSION 3.12)
 
-
-# Project name, development root folder E_ROOT and eosal name for operatig system.
+# Project name, is development root folder name for the project.
 set(E_PROJECT "eosal")
+
+# Set E_ROOT environment variable to point to the project root folder. 
+# This is used in the CMakeLists.txt files to locate source files and include paths.
 include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-root-path.txt")
 
-# We always use mbedtls and FreeRTOS libraries with ESP-IDF, select related files to build.
-set(E_TLSLIB "mbedtls")
-set(E_MTLIB "freertos")
-
+# Include ESP32 specific setting for build.
 include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-defs-espidf.txt")
-
-
 
 # Set path to source files.
 set(BACKBONE "$ENV{E_ROOT}/${E_PROJECT}/code")
 set(EXTENSIONS "$ENV{E_ROOT}/${E_PROJECT}/extensions")
-
-# Main headers. We do not need header files for now.
-# set(MAIN_HEADERS "$ENV{E_ROOT}/${E_PROJECT}/${E_PROJECT}.h" "$ENV{E_ROOT}/${E_PROJECT}/${E_PROJECT}x.h")
 
 # List source files common to all operating systems. We do not need header files for now.
 file(GLOB BB_CM_SOURCES "${BACKBONE}/*/common/*.c")
 file(GLOB EX_CM_SOURCES "${EXTENSIONS}/*/common/*.c")
 
 # List ESP32, mbedTLS and FreeRTOS specific source files. We do not need header files for now.
+set(E_MTLIB "freertos")
+set(E_TLSLIB "mbedtls")
 file(GLOB BB_OS_SOURCES "${BACKBONE}/*/$ENV{E_OS}/*.c" "${BACKBONE}/*/$ENV{E_OS}/*.cpp" "${BACKBONE}/*/${E_MTLIB}/*.c" "${BACKBONE}/*/${E_MTLIB}/*.cpp")
 file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c" "${EXTENSIONS}/*/${E_TLSLIB}/*.cpp")
 
@@ -63,12 +59,12 @@ list(APPEND requires "app_update")
 list(APPEND requires "esp_driver_gpio")
 list(APPEND requires "esp_driver_uart")
 
+# Set include paths
 set(includes $ENV{E_ROOT}/eosal)
 list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
 list(APPEND includes "$ENV{E_ROOT}/${E_PROJECT}/build/config")
 
 # Register eosal as ESP-IDEF component.
-# set(COMPONENT_NAME "${E_PROJECT}")
 idf_component_register(SRCS "${srcs}" 
     INCLUDE_DIRS "${includes}" 
     REQUIRES "${requires}" )

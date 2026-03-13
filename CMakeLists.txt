@@ -15,26 +15,24 @@ if (DEFINED ESP_PLATFORM)
   # Cmake Source Directories
   set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/eosal_esp32)
 
-  # Include build information common to ESP32 projects.
-  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
+  # Include ESP-IDF build specific eosal settings for the top level cmake. 
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-top-level-espidf-setup.txt")
 
-  # Add defines to indicate target operating system, OS version, and architecture.
-  add_definitions(-DE_OS_$ENV{E_OS})
-  add_definitions(-DE_OSVER_$ENV{E_OSVER})
-  add_definitions(-DE_ARCH_$ENV{E_ARCH})
-
-  # Enable dummy app_main for ESP-IDF build, so we cab build eosal as ESP32 library. 
+  # Enable dummy app_main for ESP-IDF build, so we can build eosal as executable ESP32 component. 
   add_definitions(-DOSAL_DUMMY_ESP32_APP_MAIN)
 
+  # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+ 
+  # Name the project.
   project(${E_PROJECT})
 
 else()
   project(${E_PROJECT})
 
-  # Include build information common to all projects.
-  include("osbuild/cmakedefs/eosal-defs.txt")
-
+  # Include common setting for most of builds.
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs.txt")
+ 
   # Set path to where to keep libraries.
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $ENV{E_LIBOUT})
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $ENV{E_LIBOUT})

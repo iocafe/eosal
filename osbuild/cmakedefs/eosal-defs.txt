@@ -1,5 +1,5 @@
-# eosal-defs.txt - Set cmake build environment variables common to all projects.
-# 1.9.2021/pekka
+# eosal-defs.txt - Set common cmake build environment variables.
+# 13.3.2026/pekka
 
 macro(print_all_variables)
     message(STATUS "print_all_variables------------------------------------------{")
@@ -124,17 +124,6 @@ set(ENV{E_LIBOUT} "$ENV{E_LIB}")
 # Binary path.
 set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OS}")
 
-# Set path to operating system specific scripts by build environment.
-if (NOT DEFINED ENV{E_BUILD_BIN})
-  if(WIN32)
-    set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/windows")
-    set(ENV{PATH} "$ENV{PATH};$ENV{E_BUILD_BIN}")
-  else()
-    set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/linux")
-    set(ENV{PATH} "$ENV{PATH}:$ENV{E_BUILD_BIN}")
-  endif()
-endif()
-
 # Temporary file path.
 set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_COMPILER}")
 
@@ -195,7 +184,6 @@ if($ENV{E_OS} STREQUAL "windows")
   set(CMAKE_CXX_FLAGS_DEBUG "/MTd ${E_UNICODE_FLAGS}")
   set(CMAKE_C_FLAGS_RELEASE "/MT ${E_UNICODE_FLAGS}")
   set(CMAKE_C_FLAGS_DEBUG "/MTd ${E_UNICODE_FLAGS}")
-# message(FATAL_ERROR "HERE ********** ${CMAKE_CXX_FLAGS}")
 
 endif()
 

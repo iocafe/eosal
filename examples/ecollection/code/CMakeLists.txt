@@ -1,4 +1,4 @@
-# eosal/examples/hello_world/code/CmakeLists.txt, 10.3.2026/pekka
+# eosal/examples/ecollection/code/CmakeLists.txt, 10.3.2026/pekka
 #
 # ESP-IDF build only: The second CMakeLists.txt in project source directory "code" 
 # controls the the build process of the main component. 
