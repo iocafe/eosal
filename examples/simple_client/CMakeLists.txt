@@ -9,14 +9,13 @@ set(E_UP "../../../eosal/osbuild/cmakedefs")
 include("${E_UP}/eosal-root-path.txt")
 
 if (DEFINED ESP_PLATFORM)
-  set(E_EXTRA_DIRS $ENV{E_ROOT}/eosal/eosal_esp32)
-  list(APPEND E_EXTRA_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
-  set(EXTRA_COMPONENT_DIRS ${E_EXTRA_DIRS})
-
   # Include ESP-IDF build specific eosal settings for the top level cmake. 
   include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-top-level-espidf-setup.txt")
 
-    # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
+  # Add project's code component directory
+  list(APPEND EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
+
+  # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
  
   # Name the project.

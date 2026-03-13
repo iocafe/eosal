@@ -59,6 +59,8 @@ list(APPEND requires "app_update")
 list(APPEND requires "esp_driver_gpio")
 list(APPEND requires "esp_driver_uart")
 
+list(APPEND requires "sock_utils")
+
 # Set include paths
 set(includes $ENV{E_ROOT}/eosal)
 list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")

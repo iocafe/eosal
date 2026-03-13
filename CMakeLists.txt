@@ -12,9 +12,6 @@ set(E_TLSLIB "mbedtls")
 include("osbuild/cmakedefs/eosal-root-path.txt")
 
 if (DEFINED ESP_PLATFORM)
-  # Cmake Source Directories
-  set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/eosal_esp32)
-
   # Include ESP-IDF build specific eosal settings for the top level cmake. 
   include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-top-level-espidf-setup.txt")
 
