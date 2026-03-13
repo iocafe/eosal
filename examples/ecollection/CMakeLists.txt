@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Set project name (= project root folder name).
-set(E_PROJECT "hello_world")
+set(E_PROJECT "ecollection")
 
 # Set build root environment variable E_ROOT.
 set(E_UP "../../../eosal/osbuild/cmakedefs")

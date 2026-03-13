@@ -1,20 +1,29 @@
-# eosal/examples/libjpeg_example/CmakeLists.txt - libjpeg example build.
+# eosal/examples/libjpeg_example/CmakeLists.txt - example collection build.
 cmake_minimum_required(VERSION 3.12)
 
 # Set project name (= project root folder name).
 set(E_PROJECT "libjpeg_example")
-set(E_UP "../../../eosal/osbuild/cmakedefs")
 
-# Set build root environment variable E_ROOT
+# Set build root environment variable E_ROOT.
+set(E_UP "../../../eosal/osbuild/cmakedefs")
 include("${E_UP}/eosal-root-path.txt")
 
-if("${IDF_TARGET}" STREQUAL "esp32")
-  # ESP-IFD only: Include IDF project setup and declare the project.
-  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-  project(${E_PROJECT})
+if (DEFINED ESP_PLATFORM)
+  set(E_EXTRA_DIRS $ENV{E_ROOT}/eosal/eosal_esp32)
+  list(APPEND E_EXTRA_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
+  set(EXTRA_COMPONENT_DIRS ${E_EXTRA_DIRS})
 
-  # include build information common to all projects.
-  include("${E_UP}/eosal-defs-espidf.txt")
+  # Include ESP-IDF build specific eosal settings for the top level cmake. 
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-top-level-espidf-setup.txt")
+
+  # Enable JPEG
+  add_definitions(-DOSAL_USE_JPEG_LIBRARY=1)
+
+  # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
+  include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+ 
+  # Name the project.
+  project(${E_PROJECT})
 
 else()
   project(${E_PROJECT})
@@ -22,6 +31,7 @@ else()
   # include build information common to all projects.
   include("${E_UP}/eosal-defs.txt")
 
+  # List of libraries for linker
   set(E_APPLIBS "$ENV{OSAL_TLS_APP_LIBS}")
   
   # Build individual library projects.
@@ -41,7 +51,10 @@ else()
 
   # Build executable. Set library folder and libraries to link with
   link_directories($ENV{E_LIB})
-  add_executable(${E_PROJECT}${E_POSTFIX} ${SOURCES})
+  add_executable(${E_PROJECT}${E_POSTFIX} ${HEADERS} ${SOURCES})
   target_link_libraries(${E_PROJECT}${E_POSTFIX} ${E_APPLIBS})
 
 endif()
+
+
+

@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Project name.
-set(E_PROJECT "hello_world")
+set(E_PROJECT "ecollection")
 
 # Set root folder E_ROOT for the build OS (/coderoot or c:/coderoot).
 include("${COMPONENT_PATH}/../../../osbuild/cmakedefs/eosal-root-path.txt")
@@ -16,7 +16,7 @@ include("${COMPONENT_PATH}/../../../osbuild/cmakedefs/eosal-root-path.txt")
 # Include build variable settings common to ESP32 projects.
 include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
 
-# List source files common to all operating systems. We do not need header files for now.
+# List source files for the project. We do not need header files for now.
 file(GLOB srcs "${COMPONENT_PATH}/*.c")
 
 # This project depends on: 

@@ -1,4 +1,4 @@
-# eosal/examples/hello_world/code/CmakeLists.txt, 10.3.2026/pekka
+# eosal/examples/persistent/code/CmakeLists.txt, 10.3.2026/pekka
 #
 # ESP-IDF build only: The second CMakeLists.txt in project source directory "code" 
 # controls the the build process of the main component. 
@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Project name.
-set(E_PROJECT "hello_world")
+set(E_PROJECT "persistent")
 
 # Set root folder E_ROOT for the build OS (/coderoot or c:/coderoot).
 include("${COMPONENT_PATH}/../../../osbuild/cmakedefs/eosal-root-path.txt")
