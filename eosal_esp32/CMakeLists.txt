@@ -66,7 +66,7 @@ set(includes $ENV{E_ROOT}/eosal)
 list(APPEND includes "$ENV{IDF_PATH}/components/mbedtls/mbedtls/include")
 list(APPEND includes "$ENV{E_ROOT}/${E_PROJECT}/build/config")
 
-# Register eosal as ESP-IDEF component.
+# Register eosal as ESP-IDF component.
 idf_component_register(SRCS "${srcs}" 
     INCLUDE_DIRS "${includes}" 
     REQUIRES "${requires}" )

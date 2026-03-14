@@ -22,5 +22,5 @@ file(GLOB srcs "${COMPONENT_PATH}/*.c")
 # This project depends on: 
 set(requires "eosal_esp32")
 
-# Register eosal as ESP-IDEF component.
+# Register eosal as ESP-IDF component.
 idf_component_register(SRCS "${srcs}" REQUIRES "${requires}" )
