@@ -17,8 +17,6 @@
 */
 #include "eosal.h"
 #ifdef OSAL_ESP32
-
-
 #ifdef OSAL_DUMMY_ESP32_APP_MAIN
 
 /**
@@ -38,6 +36,5 @@ extern "C" void app_main(void)
 }
 
 #endif
-
 #endif
 

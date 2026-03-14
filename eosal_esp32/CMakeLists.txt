@@ -22,7 +22,7 @@ set(E_PROJECT "eosal")
 include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-root-path.txt")
 
 # Include ESP32 specific setting for build.
-include("${COMPONENT_PATH}/../osbuild/cmakedefs/eosal-defs-espidf.txt")
+include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
 
 # Set path to source files.
 set(BACKBONE "$ENV{E_ROOT}/${E_PROJECT}/code")

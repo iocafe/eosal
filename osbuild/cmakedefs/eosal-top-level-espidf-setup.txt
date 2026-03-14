@@ -4,6 +4,9 @@
 # Set ESP-IDF component source directories
 set(EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/eosal_esp32)
 list(APPEND EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/dependencies/esp32/sock_utils)
+#These need to be in individual projects
+# list(APPEND EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/pins/pins_esp32)
+# list(APPEND EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/iocom/iocom_esp32)
 
 # Include build setting for ESP32 projects.
 include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
