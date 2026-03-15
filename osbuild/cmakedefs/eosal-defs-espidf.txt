@@ -31,35 +31,23 @@ endif()
 #  set(E_POSTFIX "")
 # endif()
 
-# Library path.
-# set(ENV{E_LIB} "$ENV{E_ROOT}/lib/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_COMPILER}")
-# set(ENV{E_LIBOUT} "$ENV{E_LIB}")
+# List components which are typically required by ESP32 binary.
+set(E_REQUIRES "eosal_esp32")
+list(APPEND E_REQUIRES "pins_esp32")
+list(APPEND E_REQUIRES "iocom_esp32")
+list(APPEND E_REQUIRES "nodeconf_esp32")
+list(APPEND E_REQUIRES "deviceinfo_esp32")
+list(APPEND E_REQUIRES "lighthouse_esp32")
+list(APPEND E_REQUIRES "devicedir_esp32")
+list(APPEND E_REQUIRES "gazerbeam_esp32")
 
-# Binary path.
-# set(ENV{E_BIN} "$ENV{E_ROOT}/bin/$ENV{E_OS}")
-
-# Set path to operating system specific scripts by build environment.
-# if (NOT DEFINED ENV{E_BUILD_BIN})
-#   if(WIN32)
-#     set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/windows")
-#     set(ENV{PATH} "$ENV{PATH};$ENV{E_BUILD_BIN}")
-#   else()
-#     set(ENV{E_BUILD_BIN} "$ENV{E_ROOT}/eosal/build/bin/linux")
-#     set(ENV{PATH} "$ENV{PATH}:$ENV{E_BUILD_BIN}")
-#   endif()
-#  endif()
-
-# Temporary file path.
-# set(ENV{E_TMP} "$ENV{E_ROOT}/tmp/$ENV{E_OS}_$ENV{E_OSVER}_$ENV{E_ARCH}_$ENV{E_COMPILER}")
-
-# Commonly used libraries for eosal console application.
-# set(ENV{OSAL_CONSOLE_APP_LIBS} "eosal${E_POSTFIX}")
-
-# Commonly used libraries for eosal application with TLS communication.
-# set(ENV{OSAL_TLS_APP_LIBS} "eosal${E_POSTFIX}")
-
-# Commonly used libraries for objects console application.
-# set(ENV{E_COMMON_CONSOLE_APP_LIBS} "eobjects${E_POSTFIX};eosal${E_POSTFIX}")
-
-
-
+# List typical include directories.  
+set(E_INCLUDE_DIRS ".")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/eosal")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/pins")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/nodeconf")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/deviceinfo")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/lighthouse")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/devicedir")
+list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/gazerbeam")

@@ -44,7 +44,7 @@ set(srcs ${BB_CM_SOURCES})
 list(APPEND srcs ${EX_CM_SOURCES})
 list(APPEND srcs ${BB_OS_SOURCES})
 list(APPEND srcs ${EX_OS_SOURCES})
-
+ 
 # The eosal library depends on: 
 set(requires, "mbedtls")
 list(APPEND requires "freertos")

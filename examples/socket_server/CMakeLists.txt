@@ -12,7 +12,8 @@ if (DEFINED ESP_PLATFORM)
   # Include ESP-IDF build specific eosal settings for the top level cmake. 
   include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-top-level-espidf-setup.txt")
 
-  # Add project's code component directory 
+  # Set extra component directories and add code directory of this componenet.
+  set(EXTRA_COMPONENT_DIRS ${E_MINIMAL_COMPONENT_DIRS})
   list(APPEND EXTRA_COMPONENT_DIRS $ENV{E_ROOT}/eosal/examples/${E_PROJECT}/code)
 
   # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
