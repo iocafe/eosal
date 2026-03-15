@@ -9,7 +9,7 @@ set(E_PROJECT "eosal")
 set(E_TLSLIB "mbedtls")
 
 # Set build root environment variable E_ROOT
-include("osbuild/cmakedefs/eosal-root-path.txt")
+include("${CMAKE_CURRENT_SOURCE_DIR}/osbuild/cmakedefs/eosal-root-path.txt")
 
 if (DEFINED ESP_PLATFORM)
   # Include ESP-IDF build specific eosal settings for the top level cmake. 
