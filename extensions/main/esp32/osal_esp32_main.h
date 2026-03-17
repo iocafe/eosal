@@ -31,7 +31,7 @@ int eosal_entry(
  */
 #define EOSAL_C_MAIN  \
     OSAL_C_HEADER_BEGINS \
-    void app_main(void) {eosal_entry(OS_NULL, 0); } \
+    void app_main(void) {eosal_entry(0, OS_NULL); } \
     OSAL_C_HEADER_ENDS
 
 #endif
