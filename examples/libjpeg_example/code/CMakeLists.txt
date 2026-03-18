@@ -20,7 +20,7 @@ include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs-espidf.txt")
 file(GLOB srcs "${COMPONENT_PATH}/*.c")
 
 # This project depends on: 
-set(requires "eosal_esp32")
+set(requires "eosal")
 
 # Register eosal as ESP-IDF component.
 idf_component_register(SRCS "${srcs}" REQUIRES "${requires}" )

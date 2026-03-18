@@ -1,19 +1,19 @@
-# eosal-top-level-espidf-setup.txt - Included from top level makefile to set up 
-# for ESP32 build. 14.4.2026/pekka
+# eosal-top-level-espidf-setup.txt - Included from project's top level CmakeLists.txt 
+# for ESP32 build. 18.3.2026/pekka
 
 # Set minimal eosal application component directories.
-set(E_MINIMAL_COMPONENT_DIRS $ENV{E_ROOT}/eosal/eosal_esp32)
+set(E_MINIMAL_COMPONENT_DIRS $ENV{E_ROOT}/eosal)
 list(APPEND E_MINIMAL_COMPONENT_DIRS $ENV{E_ROOT}/eosal/dependencies/esp32)
 
-# Set typical ESP-IDF component source directories in E_EXTRA_COMPONENT_DIRS
+# Set typical ESP-IDF component source directories in E_EXTRA_COMPONENT_DIRS.
 set(E_EXTRA_COMPONENT_DIRS ${E_MINIMAL_COMPONENT_DIRS})
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/iocom_esp32")
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/nodeconf/nodeconf_esp32")
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/deviceinfo/deviceinfo_esp32")
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/lighthouse/lighthouse_esp32")
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/devicedir/devicedir_esp32")
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/gazerbeam/gazerbeam_esp32")
-list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/pins/pins_esp32")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/nodeconf")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/deviceinfo")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/lighthouse")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/devicedir")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/iocom/extensions/gazerbeam")
+list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/pins")
 list(APPEND E_EXTRA_COMPONENT_DIRS "$ENV{E_ROOT}/pins/dependencies/esp32")
 
 # Include build setting for ESP32 projects.

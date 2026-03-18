@@ -105,6 +105,8 @@ CMakeCache.txt
 *.swo
 *.bak
 *.tmp
+*.lock
+*.old
 
 # Python environment files
 *.pyc
