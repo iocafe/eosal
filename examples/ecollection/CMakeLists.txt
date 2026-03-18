@@ -5,8 +5,7 @@ cmake_minimum_required(VERSION 3.12)
 set(E_PROJECT "ecollection")
 
 # Set build root environment variable E_ROOT.
-set(E_UP "../../../eosal/osbuild/cmakedefs")
-include("${E_UP}/eosal-root-path.txt")
+include("${CMAKE_CURRENT_LIST_DIR}/../../osbuild/cmakedefs/eosal-root-path.txt")
 
 if (DEFINED ESP_PLATFORM)
   # Include ESP-IDF build specific eosal settings for the top level cmake. 
@@ -26,7 +25,7 @@ else()
   project(${E_PROJECT})
 
   # include build information common to all projects.
-  include("${E_UP}/eosal-defs.txt")
+  include("$ENV{E_ROOT}/eosal/osbuild/cmakedefs/eosal-defs.txt")
 
   # List of libraries for linker
   set(E_APPLIBS "$ENV{OSAL_TLS_APP_LIBS}")
