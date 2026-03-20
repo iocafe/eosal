@@ -22,7 +22,6 @@ if (DEFINED ESP_PLATFORM)
 
   # List ESP32, mbedTLS and FreeRTOS specific source files. We do not need header files for now.
   set(E_MTLIB "freertos")
-  set(E_TLSLIB "mbedtls")
   file(GLOB BB_OS_SOURCES "${BACKBONE}/*/$ENV{E_OS}/*.c" "${BACKBONE}/*/$ENV{E_OS}/*.cpp" "${BACKBONE}/*/${E_MTLIB}/*.c" "${BACKBONE}/*/${E_MTLIB}/*.cpp")
   file(GLOB EX_OS_SOURCES "${EXTENSIONS}/*/$ENV{E_OS}/*.c" "${EXTENSIONS}/*/$ENV{E_OS}/*.cpp" "${EXTENSIONS}/*/${E_TLSLIB}/*.c" "${EXTENSIONS}/*/${E_TLSLIB}/*.cpp")
 

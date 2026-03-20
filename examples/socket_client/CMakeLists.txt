@@ -18,7 +18,10 @@ if (DEFINED ESP_PLATFORM)
 
   # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
- 
+
+  # Include the default preset (recommended for most applications)
+#  list(APPEND sdkconfig_defaults $ENV{IDF_PATH}/components/mbedtls/config/mbedtls_preset_default.conf)
+
   # Name the project.
   project(${E_PROJECT})
 
