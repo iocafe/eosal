@@ -114,7 +114,7 @@ typedef os_char os_boolean;
 #endif
 
 #ifndef OSAL_RING_BUFFER_SUPPORT
-#define OSAL_RING_BUFFER_SUPPORT OSAL_SOCKET_SUPPORT
+#define OSAL_RING_BUFFER_SUPPORT OSAL_ENABLE_NETWORK
 #endif
 
 /** No PSRAM (pseudo static RAM) support, unless it is defined in operating system
@@ -135,7 +135,7 @@ typedef os_char os_boolean;
  */
 #ifndef OSAL_NICKNAME_SUPPORT
   #if OSAL_MINIMALISTIC == 0
-    #if OSAL_SOCKET_SUPPORT
+    #if OSAL_ENABLE_NETWORK
       #define OSAL_NICKNAME_SUPPORT 1
     #endif
   #endif

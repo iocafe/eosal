@@ -17,7 +17,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_LWIP_SOCKET_API
+#if OSAL_ENABLE_NETWORK && OSAL_NETWORK_INTERFACE == OSAL_OS_NETWORK_INTERFACE
 
 #include <sys/socket.h>
 #include <netdb.h>

@@ -206,7 +206,7 @@ typedef struct
      */
     os_int64 sys_timer_param;
 
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
     /** Pointer to global socket structure
      */
     struct osalSocketGlobal *socket_global;

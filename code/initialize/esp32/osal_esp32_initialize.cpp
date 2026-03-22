@@ -30,7 +30,8 @@
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 #include "bootloader_random.h"
-#include "rtc_wdt.h"
+/* #include "rtc_wdt.h" replaced by hal/wdt_hal.h, which is the new way to control watchdog timers in ESP-IDF v5.5.3 and later. */
+#include "hal/wdt_hal.h"
 
 /* Prototypes of forward referred static functions.
  */
@@ -67,14 +68,16 @@ void osal_init_os_specific(
 
     /* No watchdog timers.
      */
+   /*There replaced by hal/wdt_hal.h functions, which is the new way to control watchdog timers
+     in ESP-IDF v5.5.3 and later. 
     rtc_wdt_protect_off();
-    rtc_wdt_disable();
+    rtc_wdt_disable(); */
 
-    /* This was the original esp32-arduino only implementation.
-    disableLoopWDT();
-    disableCore0WDT();
-    disableCore1WDT();
-     */
+
+    wdt_hal_context_t rtc_wdt_ctx = RWDT_HAL_CONTEXT_DEFAULT();
+    wdt_hal_write_protect_disable(&rtc_wdt_ctx);
+    wdt_hal_disable(&rtc_wdt_ctx);
+    wdt_hal_write_protect_enable(&rtc_wdt_ctx);
 
     /* Print some generic system information.
      */

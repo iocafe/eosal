@@ -99,7 +99,7 @@ osalNetStateItem;
  */
 typedef struct osalNetworkState
 {
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
     /** Network adapter status:
        - OSAL_SUCCESS = network ready
        - OSAL_PENDING = currently initializing.

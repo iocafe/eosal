@@ -22,7 +22,7 @@
 #define OSAL_DNS_H_
 #include "eosalx.h"
 
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
 /* Get host's binary address by name or IP address string.
  */

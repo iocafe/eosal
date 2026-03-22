@@ -238,26 +238,34 @@
 #define OSAL_MULTITHREAD_SUPPORT 1
 #endif
 
-/** Bits in socket type enumeration, these may select common components.
+/** On Linux, we practically always got network?
  */
-#define OSAL_SOCKET_NONE 0
-#define OSAL_SOCKET_AUTO_SELECT 1
-#define OSAL_OS_SOCKETS 2
-#define OSAL_SOCKET_MASK 0xFF
-#define OSAL_OS_ETHERNET_INIT (1 << 8)
-#define OSAL_NET_INIT_MASK 0xFF00
-
-#if OSAL_SOCKET_SUPPORT == OSAL_SOCKET_AUTO_SELECT
-#undef OSAL_SOCKET_SUPPORT
+#ifndef OSAL_ENABLE_NETWORK
+#define OSAL_ENABLE_NETWORK 1
 #endif
-#ifndef OSAL_SOCKET_SUPPORT
-#define OSAL_SOCKET_SUPPORT (OSAL_OS_SOCKETS + OSAL_OS_ETHERNET_INIT)
+
+/** Network library interface?
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+#define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+#endif
+
+/** Do we support Ethernet, like special initialization code, etc.
+ */
+#ifndef OSAL_ENABLE_ETHERNET
+#define OSAL_ENABLE_ETHERNET OSAL_ENABLE_NETWORK
+#endif
+
+/** Do we support WIFI, like special initialization code, etc.
+ */
+#ifndef OSAL_ENABLE_WIFI
+#define OSAL_ENABLE_WIFI OSAL_ENABLE_NETWORK
 #endif
 
 /** Include code for static IP configuration?
  */
 #ifndef OSAL_SUPPORT_STATIC_NETWORK_CONF
-#define OSAL_SUPPORT_STATIC_NETWORK_CONF OSAL_SOCKET_SUPPORT
+#define OSAL_SUPPORT_STATIC_NETWORK_CONF OSAL_ENABLE_NETWORK
 #endif
 
 /** Include code for MAC address configuration ?
@@ -269,7 +277,7 @@
 /** Include code for WiFI network configuration?
  */
 #ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
-#define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_SOCKET_SUPPORT
+#define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_ENABLE_NETWORK
 #endif
 
 /** Socket options for the platform. Suppport select function with sockets.
@@ -288,7 +296,7 @@
     security library.
  */
 #ifndef OSAL_TLS_SUPPORT
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 #define OSAL_TLS_SUPPORT OSAL_TLS_MBED_WRAPPER
 #else
 #define OSAL_TLS_SUPPORT OSAL_TLS_NONE

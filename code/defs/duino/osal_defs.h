@@ -364,27 +364,39 @@
 #define OS_PROGMEM_H const
 #define IOC_STATIC_MBLK_IN_PROGMEN 1
 
-/* If socket support if not selected by compiler define, select now.
- * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
+/** Use LWIP for STM32F4xx.
  */
-#ifdef OSAL_SOCKET_SUPPORT
-  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_AUTO_SELECT
-    #undef OSAL_SOCKET_SUPPORT
-  #endif
-#endif
-#ifndef OSAL_SOCKET_SUPPORT
-  #ifdef STM32L4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_ARDUINO_ETHERNET_WIZ
-  #endif
-  #ifdef STM32F4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_ARDUINO_ETHERNET_LWIP
-  #endif
+#ifdef STM32F4xx
+    #ifndef OSAL_ENABLE_NETWORK
+        #define OSAL_ENABLE_NETWORK 1
+    #endif
+    #ifndef OSAL_NETWORK_INTERFACE
+        #define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+    #endif
 #endif
 
-/* Unknown micro controller build, default to WizNET chip.
+/** On Arduino, we do not necessarily have network?
  */
-#ifndef OSAL_SOCKET_SUPPORT
-  #define OSAL_SOCKET_SUPPORT OSAL_ARDUINO_ETHERNET_WIZ
+#ifndef OSAL_ENABLE_NETWORK
+#define OSAL_ENABLE_NETWORK 0
+#endif
+
+/** Network library interface, if not known chip default to WIZ ?
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+#define OSAL_NETWORK_INTERFACE OSAL_WIZ_NETWORK_INTERFACE
+#endif
+
+/** Do we support Ethernet, like special initialization code, etc.
+ */
+#ifndef OSAL_ENABLE_ETHERNET
+#define OSAL_ENABLE_ETHERNET OSAL_ENABLE_NETWORK
+#endif
+
+/** Do we support WIFI, like special initialization code, etc.
+ */
+#ifndef OSAL_ENABLE_WIFI
+#define OSAL_ENABLE_WIFI 0
 #endif
 
 /** Include code for static IP configuration?
@@ -402,13 +414,13 @@
 /** Include code for WiFI network configuration?
  */
 #ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
-#define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_SOCKET_SUPPORT
+#define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_ENABLE_NETWORK
 #endif
 
 /** Socket options for the Arduino platform
  */
 #ifndef OSAL_SOCKET_SELECT_SUPPORT
-  #if OSAL_SOCKET_SUPPORT==OSAL_LWIP_SOCKET_API
+  #if OSAL_ENABLE_NETWORK && OSAL_NETWORK_INTERFACE == OSAL_OS_NETWORK_INTERFACE
     #define OSAL_SOCKET_SELECT_SUPPORT OSAL_MULTITHREAD_SUPPORT
   #else
     #define OSAL_SOCKET_SELECT_SUPPORT 0
@@ -419,8 +431,8 @@
     network implemntations. This may be necessary to keep up with DHCP leases, etc.
  */
 #ifndef OSAL_SOCKET_MAINTAIN_NEEDED
-  #if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_WIZ ||  OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_LWIP
-    #define OSAL_SOCKET_MAINTAIN_NEEDED OSAL_SOCKET_SUPPORT
+  #if OSAL_ENABLE_NETWORK && OSAL_NETWORK_INTERFACE == OSAL_WIZ_NETWORK_INTERFACE
+    #define OSAL_SOCKET_MAINTAIN_NEEDED OSAL_ENABLE_NETWORK
   #else
     #define OSAL_SOCKET_MAINTAIN_NEEDED 0
   #endif

@@ -52,3 +52,5 @@ list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/deviceinfo")
 list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/lighthouse")
 list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/devicedir")
 list(APPEND E_INCLUDE_DIRS "$ENV{E_ROOT}/iocom/extensions/gazerbeam")
+list(APPEND E_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}")
+

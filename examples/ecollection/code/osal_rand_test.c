@@ -49,7 +49,7 @@ osalStatus osal_rand_test(
        random numbers. In practice I got random numbers even without this, maybe
        the note relates to some older esp-idf version.
      */
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
     osal_socket_initialize(OS_NULL, 0, OS_NULL, 0);
 #endif
 

@@ -18,7 +18,7 @@
 #define OSAL_INCLUDE_METAL_HEADERS
 #include "eosalx.h"
 #ifdef OSAL_METAL
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
 #include "wizchip_conf.h"
 #include "W5500/w5500.h"

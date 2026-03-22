@@ -26,6 +26,8 @@
  */
 #define OSAL_ESP32
 
+#include <build/config/sdkconfig.h>
+
 /* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.
  */
@@ -245,16 +247,36 @@
 #endif  
  */
 
-/* If socket support if not selected by compiler define, select now.
- * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
+/** On ESP32 we can have at least WiFi, sometimes also ethernet
  */
-#ifdef OSAL_SOCKET_SUPPORT
-  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_AUTO_SELECT
-    #undef OSAL_SOCKET_SUPPORT
+#ifndef OSAL_ENABLE_NETWORK
+  #if CONFIG_ESP_HOST_WIFI_ENABLED
+    #define OSAL_ENABLE_NETWORK 1
+  #else
+    #define OSAL_ENABLE_NETWORK 0
   #endif
 #endif
-#ifndef OSAL_SOCKET_SUPPORT
-  #define OSAL_SOCKET_SUPPORT OSAL_LWIP_SOCKET_ARDUINO_WIFI
+
+/** Network library interface?
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+#define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+#endif
+
+/** Do we support Ethernet, like special initialization code, etc.
+ */
+#ifndef OSAL_ENABLE_ETHERNET
+#define OSAL_ENABLE_ETHERNET OSAL_ENABLE_NETWORK
+#endif
+
+/** Do we support WIFI, like special initialization code, etc.
+ */
+#ifndef OSAL_ENABLE_WIFI
+    #if CONFIG_ESP_HOST_WIFI_ENABLED
+        #define OSAL_ENABLE_WIFI OSAL_ENABLE_NETWORK
+    #else
+        #define OSAL_ENABLE_WIFI 0
+    #endif
 #endif
 
 /** Include code for static IP configuration?
@@ -272,28 +294,24 @@
 /** Include code for WiFI network configuration?
  */
 #ifndef OSAL_SUPPORT_WIFI_NETWORK_CONF
-#define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_SOCKET_SUPPORT
+#define OSAL_SUPPORT_WIFI_NETWORK_CONF OSAL_ENABLE_NETWORK
 #endif
 
 /** Do we support select() function for sockets
  */
 #ifndef OSAL_SOCKET_SELECT_SUPPORT
-  #if OSAL_SOCKET_SUPPORT==OSAL_LWIP_SOCKET_API
+  #if OSAL_ENABLE_NETWORK
     #define OSAL_SOCKET_SELECT_SUPPORT OSAL_MULTITHREAD_SUPPORT
   #else
     #define OSAL_SOCKET_SELECT_SUPPORT 0
-  #endif
+  #endif  
 #endif
 
 /** Calling "maintain socket" is periodically necessary in some single thread mode
     network implementations. This may be necessary to keep up with DHCP leases, etc.
  */
 #ifndef OSAL_SOCKET_MAINTAIN_NEEDED
-  #if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_WIZ ||  OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_ETHERNET_LWIP
-    #define OSAL_SOCKET_MAINTAIN_NEEDED OSAL_SOCKET_SUPPORT
-  #else
-    #define OSAL_SOCKET_MAINTAIN_NEEDED 0
-  #endif
+  #define OSAL_SOCKET_MAINTAIN_NEEDED 0
 #endif
 
 /** Select TLS wrapper implementation to use.

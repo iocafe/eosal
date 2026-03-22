@@ -22,7 +22,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_ESP32
-#if (OSAL_SOCKET_SUPPORT & OSAL_NET_INIT_MASK) == OSAL_ESPIDF_WIFI_INIT
+#if OSAL_ENABLE_NETWORK && OSAL_ENABLE_WIFI
 
 #include "esp_pm.h"
 #include "esp_wifi.h"

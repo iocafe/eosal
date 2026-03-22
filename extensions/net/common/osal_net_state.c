@@ -232,7 +232,7 @@ void osal_set_network_state_int(
 
     switch (item)
     {
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
         case OSAL_NS_NIC_STATE:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) return;
             if (ns->nic_code[index] == (osalStatus)value) return;
@@ -304,7 +304,7 @@ os_int osal_get_network_state_int(
     rval = 0;
     switch (item)
     {
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
         case OSAL_NS_NIC_STATE:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) break;
             rval = ns->nic_code[index];
@@ -369,7 +369,7 @@ void osal_set_network_state_str(
 
     switch (item)
     {
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
         case OSAL_NS_NIC_IP_ADDR:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) return;
             if (!os_strcmp(str, ns->nic_ip[index])) return;
@@ -423,7 +423,7 @@ void osal_get_network_state_str(
 
     switch (item)
     {
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
         case OSAL_NS_NIC_IP_ADDR:
             if (index < 0 || index >= OSAL_MAX_NRO_NICS) break;
             os_strncpy(str, ns->nic_ip[index], str_sz);

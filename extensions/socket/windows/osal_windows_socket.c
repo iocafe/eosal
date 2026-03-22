@@ -24,7 +24,7 @@
 
 #include "eosalx.h"
 #ifdef OSAL_WINDOWS
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>

@@ -24,7 +24,7 @@
 
 /** Stream interface structure for sockets.
  */
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 extern OS_CONST_H osalStreamInterface osal_socket_iface;
 #endif
 
@@ -37,7 +37,7 @@ extern OS_CONST_H osalStreamInterface osal_socket_iface;
  */
 #define OSAL_SOCKET_SELECT_MAX 8
 
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
 /** Define to get socket interface pointer. The define is used so that this can
     be converted to function call.

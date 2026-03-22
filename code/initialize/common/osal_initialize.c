@@ -146,7 +146,7 @@ void osal_shutdown(
 
     /* Shutdown sockets/TLS, serial and bluetooth libraries, if used.
      */
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
     if (osal_global->sockets_shutdown_func) {
         osal_global->sockets_shutdown_func();
     }

@@ -17,7 +17,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_WINDOWS
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN

@@ -18,6 +18,8 @@ if (DEFINED ESP_PLATFORM)
   # Include ESP-IDFbuild stuff. This will call the project() command and start the build process.
   include($ENV{IDF_PATH}/tools/cmake/project.cmake)
  
+  include_directories("${CMAKE_SOURCE_DIR}")
+
   # Name the project.
   project(${E_PROJECT})
 

@@ -16,7 +16,7 @@
 ****************************************************************************************************
 */
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_ESP32
+#if OSAL_ENABLE_NETWORK==OSAL_SOCKET_ESP32
 
 /* Force tracing on for this source file.
  */

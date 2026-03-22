@@ -97,7 +97,7 @@ typedef enum
   OSAL_RMON_FILE_HANDLE_COUNT,
 
 #endif
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
   /** Number of open sockets.
    */

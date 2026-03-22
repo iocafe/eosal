@@ -37,7 +37,7 @@
 
 #include "eosalx.h"
 #ifdef OSAL_ARDUINO
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) == OSAL_ARDUINO_WIFI
+#if OSAL_ENABLE_NETWORK && OSAL_ENABLE_WIFI
 
 
 /** Use WifiMulti to automatically select one from known access points. Define 1 or 0.

@@ -22,7 +22,7 @@
 #define OSAL_TRACE 3 */
 
 #include "eosalx.h"
-#if OSAL_SOCKET_SUPPORT==OSAL_ARDUINO_WIFI
+#if OSAL_ENABLE_NETWORK && OSAL_ENABLE_WIFI
 
 #include <WiFi.h>
 

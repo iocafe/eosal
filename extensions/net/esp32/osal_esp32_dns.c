@@ -15,7 +15,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_ESP32
-#if (OSAL_SOCKET_SUPPORT & OSAL_SOCKET_MASK) != OSAL_LWIP_SOCKET_API
+#if OSAL_ENABLE_NETWORK
 
 /**
 ****************************************************************************************************

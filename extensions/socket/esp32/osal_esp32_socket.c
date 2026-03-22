@@ -18,7 +18,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_ESP32
-#if OSAL_SOCKET_SUPPORT
+#if OSAL_ENABLE_NETWORK
 
 #include <sys/socket.h>
 #include <errno.h>

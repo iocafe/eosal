@@ -232,32 +232,37 @@
 
 /* Enumeration of socket types.
  */
-#define OSAL_SOCKET_NONE 0
-#define OSAL_SOCKET_AUTO_SELECT 1
+#define OSAL_SOCKET_LWIP 1
 #define OSAL_SOCKET_WIZNET 2
-#define OSAL_SOCKET_LWIP 3
 
 /* If socket support if not selected by compiler define, select now.
- * Socket support can be selected like "/DOSAL_SOCKET_SUPPORT=3"
  */
-#ifdef OSAL_SOCKET_SUPPORT
-  #if OSAL_SOCKET_SUPPORT==OSAL_SOCKET_AUTO_SELECT
-    #undef OSAL_SOCKET_SUPPORT
-  #endif
+#ifndef OSAL_ENABLE_NETWORK
+    #define OSAL_ENABLE_NETWORK 0
 #endif
-#ifndef OSAL_SOCKET_SUPPORT
-  #ifdef STM32L4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
-  #endif
-  #ifdef STM32F4xx
-    #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_LWIP
-  #endif
+
+/** Network library interface?
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+  #define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+#endif
+
+/** If nothing specified, we disable ethernet specific code.
+ */
+#ifndef OSAL_ENABLE_ETHERNET
+#define OSAL_ENABLE_ETHERNET OSAL_ENABLE_NETWORK
+#endif
+
+/** If nothing specified, we disable wifi specific code.
+ */
+#ifndef OSAL_ENABLE_WIFI
+#define OSAL_ENABLE_WIFI 0
 #endif
 
 /** Include code for static IP configuration?
  */
 #ifndef OSAL_SUPPORT_STATIC_NETWORK_CONF
-#define OSAL_SUPPORT_STATIC_NETWORK_CONF OSAL_SOCKET_SUPPORT
+#define OSAL_SUPPORT_STATIC_NETWORK_CONF OSAL_ENABLE_NETWORK
 #endif
 
 /** Include code for MAC address configuration ?
@@ -274,8 +279,8 @@
 
 /* Unknown micro controller build, default to WizNET chip.
  */
-#ifndef OSAL_SOCKET_SUPPORT
-  #define OSAL_SOCKET_SUPPORT OSAL_SOCKET_WIZNET
+#ifndef OSAL_ENABLE_NETWORK
+  #define OSAL_ENABLE_NETWORK OSAL_SOCKET_WIZNET
 #endif
 
 
