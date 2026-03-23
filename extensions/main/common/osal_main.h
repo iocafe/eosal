@@ -74,7 +74,7 @@ void osal_simulated_loop(
 /* If we are not running in microcontroller, we may want to allow setting device number
    from command line, like "-n=7".
  */
-#if OSAL_MAIN_SUPPORT
+#if OSAL_MAIN_DEVICE_NR_SUPPORT
     os_int osal_command_line_device_nr(
         os_int device_nr,
         os_int argc,

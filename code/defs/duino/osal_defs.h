@@ -513,6 +513,13 @@
 #define OSAL_MAIN_SUPPORT 0
 #endif
 
+/** OSAL extensions: If osal_main() can take device number as argument
+    from command line, define 1.
+ */
+#ifndef OSAL_MAIN_DEVICE_NR_SUPPORT
+#define OSAL_MAIN_DEVICE_NR_SUPPORT 0
+#endif
+
 /** OSAL extensions: If osal_rand() is supported for the platform, define 1.
  */
 #define OSAL_RAND_COMMON 1
