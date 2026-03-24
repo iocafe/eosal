@@ -1,14 +1,22 @@
 {
-    "idf.currentSetup": "/home/iocafe/esp/v5.5/esp-idf",
-    "cmake.buildDirectory": "${workspaceFolder}/build-pc",
-    "idf.flashType": "UART",
-    "idf.port": "/dev/ttyUSB0",
-    "idf.monitorPort": "/dev/ttyUSB0",
-    "idf.openOcdConfigs": [
-        "interface/ftdi/esp32_devkitj_v1.cfg",
-        "target/esp32.cfg"
-    ],
-    "idf.customExtraVars": {
-        "IDF_TARGET": "esp32"
-    }
+  "idf.currentSetup": "/home/iocafe/esp/v5.5/esp-idf",
+  "cmake.buildDirectory": "${workspaceFolder}/build-pc",
+  "idf.flashType": "UART",
+  "idf.port": "/dev/ttyACM0",
+  "idf.monitorPort": "/dev/ttyACM0",
+  "idf.openOcdConfigs": [
+    "board/esp32p4-builtin.cfg"
+  ],
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32p4"
+  },
+  "clangd.path": "/home/iocafe/.espressif/tools/esp-clang/esp-19.1.2_20250312/esp-clang/bin/clangd",
+  "clangd.arguments": [
+    "--background-index",
+    "--query-driver=**",
+    "--compile-commands-dir=/coderoot/eosal/examples/simple_client/build"
+  ],
+  "idf.espIdfPath": "/home/iocafe/esp/esp-idf-v5.5.3",
+  "idf.toolsPath": "/home/iocafe/.espressif",
+  "idf.pythonInstallPath": "/usr/bin/python"
 }

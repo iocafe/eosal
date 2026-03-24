@@ -31,7 +31,7 @@
 /* Select how to connect: TCP socket, TLS socket (OpenSSL, etc) or serial port.
    One of EXAMPLE_USE_TCP_SOCKET, EXAMPLE_USE_TLS_SOCKET or EXAMPLE_USE_SERIAL_PORT.
  */
-#define EXAMPLE_USE EXAMPLE_USE_TLS_SOCKET
+#define EXAMPLE_USE EXAMPLE_USE_TCP_SOCKET
 
 /* Modify connection parameters here: These apply to different communication types
    EXAMPLE_USE_TCP_SOCKET: Define EXAMPLE_TCP_SOCKET sets TCP/IP address to connect to.
@@ -41,8 +41,8 @@
    style using "COM1", "COM2"... These are mapped to hardware/operating system in device specific
    manner. On Linux port names like "ttyS30,baud=115200" or "ttyUSB0" can be also used.
  */
-#define EXAMPLE_TCP_SOCKET "127.0.0.1"
-#define EXAMPLE_TLS_SOCKET "192.168.1.220"
+#define EXAMPLE_TCP_SOCKET "192.168.1.252"
+#define EXAMPLE_TLS_SOCKET "192.168.1.252"
 #define EXAMPLE_SERIAL_PORT "COM4:,baud=115200"
 
 /* Parameters to start a worker thread.

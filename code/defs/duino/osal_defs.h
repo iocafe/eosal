@@ -375,16 +375,21 @@
     #endif
 #endif
 
+/** If Wiznet chip is selected as network interface ?
+ */
+#if OSAL_NETWORK_INTERFACE == OSAL_WIZ_NETWORK_INTERFACE
+    #undef OSAL_ENABLE_NETWORK
+    #undef OSAL_ENABLE_ETHERNET
+    #undef OSAL_ENABLE_WIFI
+    #define OSAL_ENABLE_NETWORK 1
+    #define OSAL_ENABLE_ETHERNET 1
+    #define OSAL_ENABLE_WIFI 0
+#endif
+
 /** On Arduino, we do not necessarily have network?
  */
 #ifndef OSAL_ENABLE_NETWORK
 #define OSAL_ENABLE_NETWORK 0
-#endif
-
-/** Network library interface, if not known chip default to WIZ ?
- */
-#ifndef OSAL_NETWORK_INTERFACE
-#define OSAL_NETWORK_INTERFACE OSAL_WIZ_NETWORK_INTERFACE
 #endif
 
 /** Do we support Ethernet, like special initialization code, etc.
@@ -397,6 +402,12 @@
  */
 #ifndef OSAL_ENABLE_WIFI
 #define OSAL_ENABLE_WIFI 0
+#endif
+
+/** Network library interface, if not known chip default to WIZ ?
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+#define OSAL_NETWORK_INTERFACE OSAL_NO_NETWORK_INTERFACE
 #endif
 
 /** Include code for static IP configuration?

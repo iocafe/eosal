@@ -22,7 +22,7 @@
 */
 #include "eosalx.h"
 #ifdef OSAL_ESP32
-#if OSAL_ENABLE_NETWORK && OSAL_ENABLE_WIFI
+#if OSAL_ENABLE_NETWORK
 
 #include "esp_pm.h"
 #include "esp_wifi.h"
@@ -40,7 +40,7 @@ static osalSocketGlobal sg;
 
 typedef struct
 {
-    /* Current status of the WiFi connection.
+    /* Current status of the network connection.
      */
     volatile osalStatus s;
     volatile osalStatus got_ip;
@@ -61,11 +61,13 @@ static osalWifiNetworkState wifistate;
 
 /* Forward referred.
  */
+#if OSAL_ENABLE_WIFI
 static void osal_wifi_event_handler(
     void *arg, 
     esp_event_base_t event_base,
     int32_t event_id, 
     void *event_data);
+#endif
 
 static void osal_ip_event_handler(
     void *arg, 
@@ -104,8 +106,10 @@ void osal_socket_initialize(
     os_int i;
     osalNetworkInterface defaultnic;
     esp_err_t rval;
+#if OSAL_ENABLE_WIFI
     esp_netif_t *sta_netif;
 	wifi_config_t wifi_config;
+#endif
 
     if (nic == OS_NULL && n_nics < 1)
     {
@@ -134,7 +138,9 @@ void osal_socket_initialize(
 	rval = esp_event_loop_create_default();
     osal_debug_assert(rval == ESP_OK);
 
-    /* Create default WIFI STA. In case of any init error this API aborts. 
+#if OSAL_ENABLE_WIFI
+
+    /* Create default WIFI STA. In case of any init error this API aborts.
      */
 	sta_netif = esp_netif_create_default_wifi_sta();
     osal_debug_assert(sta_netif != 0);
@@ -150,10 +156,12 @@ void osal_socket_initialize(
     rval = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
         &osal_wifi_event_handler, NULL);
     osal_debug_assert(rval == ESP_OK);
-	rval = esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID, 
+#endif
+    rval = esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID,
         &osal_ip_event_handler, NULL);
     osal_debug_assert(rval == ESP_OK);
 
+#if OSAL_ENABLE_WIFI
     /* Do not keep WiFi configuration on flash.
      */
     rval = esp_wifi_set_storage(WIFI_STORAGE_RAM);
@@ -190,6 +198,7 @@ void osal_socket_initialize(
         osal_debug_error("esp_wifi_start failed");
         return;            
     }
+#endif
 
     /** Copy NIC settings.
      */
@@ -201,6 +210,7 @@ void osal_socket_initialize(
         if (++(sg.n_nics) >= OSAL_MAX_NRO_NICS) break;
     }
 
+#if OSAL_ENABLE_WIFI
     /* Set network state.
      */
     for (i = 0; i < n_wifi; i++)
@@ -208,6 +218,7 @@ void osal_socket_initialize(
         osal_set_network_state_str(OSAL_NS_WIFI_NETWORK_NAME, i, wifi[i].wifi_net_name);
         osal_set_network_state_str(OSAL_NS_WIFI_PASSWORD, i, wifi[i].wifi_net_password);
     }
+#endif
     osal_set_network_state_int(OSAL_NS_NETWORK_CONNECTED, 0, OS_FALSE);
     osal_set_network_state_int(OSAL_NS_NETWORK_USED, 0, OS_TRUE);
 
@@ -221,7 +232,7 @@ void osal_socket_initialize(
     return;
 }
 
-
+#if OSAL_ENABLE_WIFI
 /**
 ****************************************************************************************************
 
@@ -273,6 +284,7 @@ static void osal_wifi_event_handler(
             break;                
     }
 }
+#endif
 
 
 /**

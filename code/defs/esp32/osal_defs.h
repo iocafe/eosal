@@ -26,7 +26,7 @@
  */
 #define OSAL_ESP32
 
-#include <build/config/sdkconfig.h>
+#include "build/config/sdkconfig.h"
 
 /* If there is custom configuration file for ESP32, include it. The custom configuration file
    should  be placed as /coderoot/eosal/eosal_esp32_config.h.
@@ -247,36 +247,61 @@
 #endif  
  */
 
-/** On ESP32 we can have at least WiFi, sometimes also ethernet
+/** If Wiznet chip is selected as network interface ?
+ */
+#if OSAL_NETWORK_INTERFACE == OSAL_WIZ_NETWORK_INTERFACE
+    #undef OSAL_ENABLE_NETWORK
+    #undef OSAL_ENABLE_ETHERNET
+    #undef OSAL_ENABLE_WIFI
+    #define OSAL_ENABLE_NETWORK 1
+    #define OSAL_ENABLE_ETHERNET 1
+    #define OSAL_ENABLE_WIFI 0
+#endif
+
+/** On ESP32 we can have at least WiFi, In case of ESP32P4 also ethernet.
+ *  Check what is set by menuconfig in sdkcongig.
  */
 #ifndef OSAL_ENABLE_NETWORK
   #if CONFIG_ESP_HOST_WIFI_ENABLED
     #define OSAL_ENABLE_NETWORK 1
-  #else
-    #define OSAL_ENABLE_NETWORK 0
+  #elif CONFIG_ETH_USE_ESP32_EMAC
+    #define OSAL_ENABLE_NETWORK 1
   #endif
 #endif
-
-/** Network library interface?
- */
-#ifndef OSAL_NETWORK_INTERFACE
-#define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+#ifndef OSAL_ENABLE_NETWORK
+  #define OSAL_ENABLE_NETWORK 0
 #endif
 
 /** Do we support Ethernet, like special initialization code, etc.
  */
 #ifndef OSAL_ENABLE_ETHERNET
-#define OSAL_ENABLE_ETHERNET OSAL_ENABLE_NETWORK
+  #if CONFIG_ETH_USE_ESP32_EMAC
+    #define OSAL_ENABLE_ETHERNET OSAL_ENABLE_NETWORK
+  #endif
+  #ifndef OSAL_ENABLE_ETHERNET
+    #define OSAL_ENABLE_ETHERNET 0
+  #endif
 #endif
 
 /** Do we support WIFI, like special initialization code, etc.
  */
 #ifndef OSAL_ENABLE_WIFI
-    #if CONFIG_ESP_HOST_WIFI_ENABLED
-        #define OSAL_ENABLE_WIFI OSAL_ENABLE_NETWORK
-    #else
-        #define OSAL_ENABLE_WIFI 0
-    #endif
+  #if CONFIG_ESP_HOST_WIFI_ENABLED
+    #define OSAL_ENABLE_WIFI OSAL_ENABLE_NETWORK
+  #else
+    #define OSAL_ENABLE_WIFI 0
+  #endif
+#endif
+
+/** Network library interface? This is still under making to allow
+ *  using for example WIZ chip with ESP32.
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+  #if OSAL_ENABLE_NETWORK
+    #define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+  #else
+    #define OSAL_NETWORK_INTERFACE OSAL_NO_NETWORK_INTERFACE
+  #endif
 #endif
 
 /** Include code for static IP configuration?
@@ -301,7 +326,8 @@
  */
 #ifndef OSAL_SOCKET_SELECT_SUPPORT
   #if OSAL_ENABLE_NETWORK
-    #define OSAL_SOCKET_SELECT_SUPPORT OSAL_MULTITHREAD_SUPPORT
+    #define OSAL_SOCKET_SELECT_SUPPORT 0
+// OSAL_MULTITHREAD_SUPPORT
   #else
     #define OSAL_SOCKET_SELECT_SUPPORT 0
   #endif  

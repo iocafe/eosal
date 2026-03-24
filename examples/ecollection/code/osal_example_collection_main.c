@@ -43,11 +43,11 @@ osalStatus osal_main(
 {
     // osal_sleep(7000);
     // osal_detached_thread_example();
-    osal_attached_thread_example();
+    // osal_attached_thread_example();
     // return osal_int64_test(argc, argv);
     // return osal_intser_test(argc, argv);
     // return osal_json_compress_test(argc, argv);
-    // return osal_rand_test(argc, argv);
+    return osal_rand_test(argc, argv);
     // return osal_float_int_conv_test(argc, argv);
     // return osal_password_test(argc, argv);
     // return osal_persistent_test(argc, argv);

@@ -231,16 +231,10 @@
 #define OSAL_MULTITHREAD_SUPPORT 1
 #endif
 
-/** On Windows, we practically always got network?
+/** On Linux, we practically always got network?
  */
 #ifndef OSAL_ENABLE_NETWORK
 #define OSAL_ENABLE_NETWORK 1
-#endif
-
-/** Network library interface?
- */
-#ifndef OSAL_NETWORK_INTERFACE
-#define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
 #endif
 
 /** Do we support Ethernet, like special initialization code, etc.
@@ -253,6 +247,16 @@
  */
 #ifndef OSAL_ENABLE_WIFI
 #define OSAL_ENABLE_WIFI OSAL_ENABLE_NETWORK
+#endif
+
+/** In Windows operating system network interface is always used.
+ */
+#ifndef OSAL_NETWORK_INTERFACE
+  #if OSAL_ENABLE_NETWORK
+    #define OSAL_NETWORK_INTERFACE OSAL_OS_NETWORK_INTERFACE
+  #else
+    #define OSAL_NETWORK_INTERFACE OSAL_NO_NETWORK_INTERFACE
+  #endif
 #endif
 
 /** Include code for static IP configuration?

@@ -24,4 +24,6 @@ add_definitions(-DE_OS_$ENV{E_OS})
 add_definitions(-DE_OSVER_$ENV{E_OSVER})
 add_definitions(-DE_ARCH_$ENV{E_ARCH})
 
+# Include project directory so we can include build/config/sdkconfig.h om code
+include_directories("${CMAKE_SOURCE_DIR}")
   
